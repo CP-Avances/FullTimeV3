@@ -1,0 +1,31 @@
+.btn-sm { background-color: rgb(80,87,97); color: white; } 
+
+p { font-size: x-small; }
+
+.tituloEmpleados { 
+    font-size: 15px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+#resulEmpleados { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+table { width: 100%; font-size: 14px;}
+
+tr { text-align: center; }
+
+td { padding-top: 10px; text-align: center; }
+
+
+#pdf { color:red; font-size: 20px; text-align: center; cursor: pointer; margin-left: 20px;}
+

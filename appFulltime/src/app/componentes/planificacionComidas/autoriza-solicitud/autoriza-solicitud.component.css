@@ -1,0 +1,12 @@
+.barraTituloD { 
+    font-size: 18px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+.btn-sm { background-color: rgb(80,87,97); color: white; } 
+
+#datosF { font-weight: bold; font-size: 16px; padding-right: 10px; }

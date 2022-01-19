@@ -1,0 +1,52 @@
+<div class="scrollbar scrollbar-primary">
+    <div class="d-flex bd-highlight autorizarDepa">
+        <mat-icon class="flex-shrink-1 bd-highlight" id="movilidad">open_with</mat-icon>
+        <h5 class="w-100 bd-highlight" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Administra Módulo
+            Alimentación</h5>
+    </div>
+    <!-- Formulario Completo -->
+    <form [formGroup]="adminComidaForm">
+        <mat-card-content>
+            <div class="container" style="padding-top: 15px; text-align: center;">
+                <div class="nota">
+                    <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                        Guardar.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around">
+                    <mat-form-field>
+                        <mat-label>Empleado</mat-label>
+                        <input id="nomEmple" matInput placeholder="Empleado" [formControl]="nombreEmpleadoF"
+                            readonly="readonly" required>
+                        <mat-icon id="autorizar" matSuffix matTooltipClass="autorizar-tooltip"
+                            matTooltipPosition="right" matTooltip="Nombre de identificación del empleado">
+                            help_outline</mat-icon>
+                    </mat-form-field>
+                    <mat-radio-group required aria-label="select an option" [formControl]="comidaF" required
+                        [value]="comidaF.value">
+                        <label class="d-flex justify-content-between">
+                            <span>Administrar Módulo *</span>
+                            <mat-icon id="autorizar" matSuffix matTooltipClass="autorizar-tooltip"
+                                matTooltipPosition="right"
+                                matTooltip="Indicar si el empleado será quien administre el Módulo de Alimentación.">
+                                help_outline
+                            </mat-icon>
+                        </label>
+                        <div class="d-flex justify-content-around">
+                            <mat-radio-button class="example-match" ngDefaultControl [(ngModel)]="selec1"
+                                [checked]="selec1" [ngModelOptions]="{standalone: true}" value="true">Si
+                            </mat-radio-button>
+                            <mat-radio-button class="example-match" ngDefaultControl [(ngModel)]="selec2"
+                                [checked]="selec2" [ngModelOptions]="{standalone: true}" value="false">No
+                            </mat-radio-button>
+                        </div>
+                    </mat-radio-group>
+                </div>
+            </div>
+        </mat-card-content>
+    </form>
+    <div style="text-align: center;">
+        <button type="submit" class="btn btn-sm" (click)="InsertarAutorizacion(adminComidaForm.value)"
+            [disabled]="!adminComidaForm.valid">Guardar</button>
+        <button type="submit" class="btn btn-sm" (click)="CerrarVentanaAutorizar()">Salir</button>
+    </div>
+</div>

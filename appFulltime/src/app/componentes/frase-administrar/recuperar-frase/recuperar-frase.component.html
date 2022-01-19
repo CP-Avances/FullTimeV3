@@ -1,0 +1,36 @@
+<header id="home-section">
+    <div class="dark-overlay">
+        <div class="home-inner">
+            <div class="container">
+                <div class="row">
+                    <div class="col d-flex align-items-center justify-content-center">
+                        <mat-card class="mat-elevation-z8">
+                            <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
+                            <span>Confirmar nueva frase</span>
+                            <form [formGroup]="fraseForm">
+                                <div class="nota">
+                                    <span>NOTA: Ingresar una frase que pueda recordar. Esta frase la usará para realizar
+                                        cambios importantes
+                                        dentro del sistema.</span>
+                                </div>
+                                <mat-form-field>
+                                    <mat-label>Nueva Frase</mat-label>
+                                    <textarea matInput #message2 maxlength="100" placeholder="***************"
+                                        formControlName="nFrase" required></textarea>
+                                    <mat-hint align="start"><strong>Ingresar hasta 100 caracteres</strong></mat-hint>
+                                    <mat-hint align="end">{{message2.value.length}} / 100</mat-hint>
+                                </mat-form-field>
+                                <br><br>
+                                <div style="margin: auto;">
+                                    <button type="submit" class="btn" (click)="IngresarFrase(fraseForm.value)"
+                                        [disabled]="!fraseForm.valid">Resetear Frase</button>
+                                </div>
+                            </form>
+                        </mat-card>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<app-footer></app-footer>

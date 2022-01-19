@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<root>
+  <empleado codigo="13">
+    <cedula>1222356964</cedula>
+    <apellido>Alvarez Mendoza</apellido>
+    <nombre>Mafer Lupecita</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>1995-01-13</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>beaterio</domicilio>
+    <telefono>023658956</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="57">
+    <cedula>5698123366</cedula>
+    <apellido>Enriquez</apellido>
+    <nombre>Pedro</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>2020-10-20</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0235698445</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="1001">
+    <cedula>1752693255</cedula>
+    <apellido>Lopez Lopez</apellido>
+    <nombre>Javier Marco</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>2020-07-17</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0856322699</telefono>
+    <nacionalidad>Ecuatoriano</nacionalidad>
+  </empleado>
+  <empleado codigo="1457">
+    <cedula>1485236699</cedula>
+    <apellido>Teran </apellido>
+    <nombre>Pamela</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>kevincuray41@gmail.com</correo>
+    <fechaNacimiento>1992-07-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Chillogallo</domicilio>
+    <telefono>0236589656</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="1458">
+    <cedula>1715478564</cedula>
+    <apellido>Altamirano Taco</apellido>
+    <nombre>Jose Luis</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>1993-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Santa Rita</domicilio>
+    <telefono>0984563215</telefono>
+    <nacionalidad>Afgana</nacionalidad>
+    <imagen>xQlsgvH6AhwKJdlmP5cl9z-L.png</imagen>
+  </empleado>
+  <empleado codigo="1496">
+    <cedula>1722125645</cedula>
+    <apellido>Perez Ruiz</apellido>
+    <nombre>Ana Karina</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>1992-05-04</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0987456321</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="4562">
+    <cedula>4588966323</cedula>
+    <apellido>Perez Morerira</apellido>
+    <nombre>Juan Pablo</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>1993-05-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0599632265</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="6001">
+    <cedula>1722128905</cedula>
+    <apellido>Tipan Villegas</apellido>
+    <nombre>Jenny Patricia</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>1993-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Santa Rita</domicilio>
+    <telefono>0253658965</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="47859">
+    <cedula>1722158956</cedula>
+    <apellido>Almeida Lopez</apellido>
+    <nombre>Lorena Abigail</nombre>
+    <estadoCivil>Casado/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>1995-07-03</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>La Magdalena</domicilio>
+    <telefono>0236589563</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+</root>

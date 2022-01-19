@@ -1,0 +1,1468 @@
+<br>
+<mat-tab-group [(selectedIndex)]=selectedIndex>
+
+    <!-- INFORMACION OFICIAL DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">person_pin</mat-icon>
+            Perfil Usuario
+        </ng-template>
+        <div class="container" *ngFor="let e of empleadoUno" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="d-flex bd-highlight barraTitulo">
+                            <h5 class="w-100 bd-highlight align-self-center">{{e.nombre}} {{e.apellido}}</h5>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;">
+                                <div class="row">
+                                    <div class="col-md d-flex align-items-center justify-content-center">
+                                        <div mat-card-avatar id="avatar" *ngIf="mostrarImagen; else inic">
+                                            <img src="{{urlImagen}}" alt="" id="avatarImagen">
+                                        </div>
+                                        <ng-template #inic>
+                                            <div mat-card-avatar id="avatar">
+                                                <span
+                                                    class="btn iniciales d-flex align-items-center justify-content-center">
+                                                    {{iniciales}}</span>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                    <div class="col-md d-flex align-items-center justify-content-center">
+                                        <form method="post" enctype="multipart/form-data">
+                                            <input (change)="FileChange($event)" type="file" [formControl]="archivoForm"
+                                                id="file" accept="image/png, image/jpeg">
+                                            <label for="file" class="btn-2">{{textoBoton}}</label>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Código:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.codigo}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Cédula:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.cedula}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Correo electrónico:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.correo}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Domicilio:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.domicilio | titlecase}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Teléfono:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.telefono}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Fecha de Nacimiento:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label"> {{ e.fec_nacimiento | date: 'dd/MM/yyyy' }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <a mat-button type="submit" (click)="AbirVentanaEditarEmpleado(e)">
+                                    <i class="fas fa-edit" id="edit" matSuffix matTooltipPosition="right"
+                                        matTooltip="Modificar los datos generales de este registro">
+                                        <p>Editar</p>
+                                    </i>
+                                </a>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <br>
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <mat-grid-list cols="2" rowHeight="3:1">
+                            <mat-grid-tile>
+                                <button type="submit" [routerLink]="['/empleado']"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons">keyboard_backspace</i><span>Atrás</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="GenerarPdf('open')"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons">picture_as_pdf</i><span>Abrir PDF</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="GenerarPdf('download')"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons">cloud_download</i><span>Descargar PDF</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="ExportToXML()"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons fas fa-file-code"></i><span>Exportar a XML</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="ExportToExcel()"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons fas fa-file-excel"></i><span>Exportar a Excel</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="ExportToCVS()"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons fas fa-file-csv"></i><span>Exportar a CSV</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile *ngIf="activar">
+                                <button class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector" (click)="CambiarContrasena()">Cambiar
+                                    Contraseña</button>
+                            </mat-grid-tile>
+                            <mat-grid-tile *ngIf="activar">
+                                <button *ngIf="frase"
+                                    class="btn btn-block d-flex align-items-center justify-content-center" id="Selector"
+                                    (click)="IngresarFrase()">Frase
+                                    Seguridad</button>
+                                <button *ngIf="cambiar_frase"
+                                    class="btn btn-block d-flex align-items-center justify-content-center" id="Selector"
+                                    (click)="CambiarFrase()">Cambiar Frase</button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector" (click)="AbrirLeaflet(e.nombre, e.apellido)">
+                                    Ubicación
+                                </button>
+                            </mat-grid-tile>
+                        </mat-grid-list>
+                        <!-- <div class="form-group">
+                        <label class="h4 mb-3" for="">Show your picture in Resume</label>
+                        <input type="file" class="form-control-file" (change)="FileChanged($event)">
+                    </div> -->
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+            <div id="geolocalizacion"></div>
+        </div>
+
+    </mat-tab>
+
+    <!-- DISCAPACIDAD Y TITULO DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">school</mat-icon>
+            Asignaciones
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="d-flex bd-highlight barraTitulo2">
+                            <div class="w-100 bd-highlight">
+                                <h5>Títulos</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="AbrirVentanaRegistarTituloEmpleado()">Añadir</button>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;"
+                                *ngFor="let rte of relacionTituloEmpleado">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Observaciones:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{rte.observaciones}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Nombre:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{rte.nombre}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Nivel:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{rte.nivel}}</label>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 5px;">
+                                    <div class="col" style="text-align: right;">
+                                        <a mat-button type="submit" class="btn" matSuffix matTooltipPosition="right"
+                                            matTooltip="Editar los datos generales de este registro."
+                                            (click)="AbrirVentanaEditarTitulo(rte)">
+                                            <i class="fas fa-edit" id="edit">
+                                                <p>Editar</p>
+                                            </i>
+                                        </a>
+                                        <i class="far fa-trash-alt" (click)="ConfirmarDeleteTitulo(rte.id)"
+                                            matTooltipPosition="right" id="delete" matTooltip="Eliminar este registro">
+                                            <p>Eliminar</p>
+                                        </i>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
+                        <div class="d-flex bd-highlight barraTitulo1">
+                            <div class="w-100 bd-highlight">
+                                <h5>Discapacidad</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    [disabled]="!btnHabilitado" (click)="mostrarDis()">{{btnDisc}}</button>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;" *ngFor="let d of discapacidadUser">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Carnet Conadis:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{d.carn_conadis}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Tipo:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{d.nom_tipo}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Porcentaje:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{d.porcentaje}} %</label>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 5px;">
+                                    <div class="col" style="text-align: right;">
+                                        <a mat-button type="submit" (click)="ConfirmarDeleteDiscapacidad(d.id_empleado)"
+                                            matSuffix>
+                                            <i class="far fa-trash-alt" matTooltipPosition="right" id="delete"
+                                                matTooltip="Eliminar registro">
+                                                <p>Eliminar</p>
+                                            </i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                    <div style="padding-bottom: 35px; padding-top: 35px;">
+                        <app-discapacidad [idEmploy]="idEmpleado" [editar]="editar" *ngIf="!mostrarDiscapacidad">
+                        </app-discapacidad>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <!-- REGISTRO DE VACUNACION -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">local_hospital</mat-icon>
+            Vacunación
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <div style="padding-bottom: 5px;">
+                        <app-crear-vacuna [idEmploy]="idEmpleado" *ngIf="!mostrarVacuna">
+                        </app-crear-vacuna>
+                        <app-editar-vacuna [idEmploy]="idEmpleado" [dvacuna]="vacuna_editar"
+                            *ngIf="mostrarVacunaEditar">
+                        </app-editar-vacuna>
+                    </div>
+                    <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
+                        <div class="d-flex bd-highlight barraTitulo1">
+                            <div class="w-100 bd-highlight">
+                                <h5>Registro de Vacunación</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    [disabled]="!btnHabilitadoVacuna"
+                                    (click)="MostrarVentanaVacuna()">{{btnVacuna}}</button>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;" *ngFor="let dv of datosVacuna">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <label *ngIf="dv.dosis_1 === true"><b>Primera Dosis</b></label>
+                                        <br>
+                                        <label *ngIf="dv.dosis_1 === true"><b>Vacuna:</b> {{dv.id_tipo_vacuna_1}}</label>
+                                        <br>
+                                        <label *ngIf="dv.fecha_1 != null"><b>Fecha:</b>
+                                            {{dv.fecha_1.split('T')[0]}}</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label *ngIf="dv.dosis_2 === true"><b>Segunda Dosis</b></label>
+                                        <br>
+                                        <label *ngIf="dv.dosis_2 === true"><b>Vacuna:</b> {{dv.id_tipo_vacuna_2}}</label>
+                                        <br>
+                                        <label *ngIf="dv.fecha_2 != null"><b>Fecha:</b>
+                                            {{dv.fecha_2.split('T')[0]}}</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label *ngIf="dv.dosis_3 === true"><b>Tercera Dosis</b></label>
+                                        <br>
+                                        <label *ngIf="dv.dosis_3 === true"><b>Vacuna:</b> {{dv.id_tipo_vacuna_3}}</label>
+                                        <br>
+                                        <label *ngIf="dv.fecha_3 != null"><b>Fecha:</b>
+                                            {{dv.fecha_3.split('T')[0]}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg">
+                                        <label *ngIf="dv.nom_carnet != null && dv.nom_carnet != '' && dv.nom_carnet != undefined"><b>Carnet:</b> <a *ngIf="dv.nom_carnet != null && dv.nom_carnet != '' && dv.nom_carnet != undefined"
+                                                class="fas fa-file-alt"
+                                                style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px;"
+                                                matSuffix matTooltipPosition="right"
+                                                matTooltip="Dar click para descargar carnet de vacunación."
+                                                href="{{hipervinculo}}/vacunas/documentos/{{dv.carnet}}"
+                                                target="_blank">
+                                                <p>{{dv.nom_carnet}}</p>
+                                            </a></label>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 5px;">
+                                    <div class="col" style="text-align: right;">
+                                        <a mat-button type="submit" class="btn" matSuffix matTooltipPosition="right"
+                                            matTooltip="Editar los datos generales de este registro"
+                                            (click)="AbrirVentanaEditar(dv)">
+                                            <i class="fas fa-edit" id="edit">
+                                                <p>Editar</p>
+                                            </i>
+                                        </a>
+                                        <a mat-button type="submit" (click)="ConfirmarEliminarVacuna(dv.id)" matSuffix>
+                                            <i class="far fa-trash-alt" matTooltipPosition="right" id="delete"
+                                                matTooltip="Eliminar registro">
+                                                <p>Eliminar</p>
+                                            </i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+    <!-- CONTRATO DEL EMPLEADO Y CARGO DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">description</mat-icon>
+            Contrato y Cargo
+        </ng-template>
+
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="d-flex bd-highlight barraTitulo">
+                            <div class="w-100 bd-highlight">
+                                <h5>Contrato Actual</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="AbrirVentanaCrearContrato()">Añadir</button>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" *ngFor="let ce of contratoEmpleado" style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="caja2 d-flex justify-content-start">
+                                        <label id="datosF">Código:</label>
+                                        <label>{{ce.id}}</label>
+                                    </div>
+                                    <div class="caja2 d-flex justify-content-start">
+                                        <label id="datosF">Regimen:</label>
+                                        <label>{{ce.descripcion}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Inicio:</label>
+                                        <label>{{ce.fec_ingreso | date: 'dd/MM/yyyy' }}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Salida:</label>
+                                        <label *ngIf="ce.fec_salida === null; else fechaSalida">Sin fecha</label>
+                                        <ng-template #fechaSalida>
+                                            <label>{{ce.fec_salida | date: 'dd/MM/yyyy' }}</label>
+                                        </ng-template>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Modalidad Trabajo:</label>
+                                        <label>{{ce.nombre_contrato}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Control de Asistencia:</label>
+                                        <label> {{ce.asis_controla === true ? 'Si' : 'No'}} </label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Control de Vacaciones:</label>
+                                        <label> {{ce.vaca_controla === true ? 'Si' : 'No'}} </label>
+                                    </div>
+                                    <div class="caja2 d-flex justify-content-start">
+                                        <label id="datosF">Contrato:</label>
+                                        <a *ngIf="ce.doc_nombre != null && ce.doc_nombre != ''; else ContratoCargar"
+                                            class="fas fa-file-alt"
+                                            style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px;"
+                                            matSuffix matTooltipPosition="right"
+                                            matTooltip="Dar click para descargar contrato de trabajo"
+                                            href="{{hipervinculo}}/contratoEmpleado/documentos/{{ce.documento}}"
+                                            target="_blank">
+                                            <p>{{ce.doc_nombre}}</p>
+                                        </a>
+                                        <ng-template #ContratoCargar>
+                                            <a mat-button type="submit" (click)="AbrirVentanaEditarContrato(ce)">
+                                                Cargar Contrato de Trabajo
+                                            </a>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <a mat-button type="submit" (click)="AbrirVentanaEditarContrato(ce)">
+                                        <i class="fas fa-edit" matTooltipPosition="right" id="edit"
+                                            matTooltip="Modificar los datos generales de este registro">
+                                            <p>Editar</p>
+                                        </i>
+                                    </a>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                    <br>
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;">
+                                        <h5>Contratos Anteriores</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px; text-align: center;">
+                                <form [formGroup]="contratoForm">
+                                    <mat-form-field>
+                                        <mat-label>Período del Contrato</mat-label>
+                                        <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
+                                            matTooltipPosition="right" matTooltip="Lista de contratos del empleado">
+                                            help_outline</mat-icon>
+                                        <mat-select [formControl]="fechaContrato">
+                                            <mat-option *ngFor="let c of contratoBuscado" [value]="c.id"
+                                                (click)="obtenerContratoSeleccionado(contratoForm.value)">
+                                                {{c.fec_ingreso.split("T")[0]}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </form>
+                            </div>
+                            <div class="container" *ngFor="let ce of contratoSeleccionado" style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="caja2 d-flex justify-content-start">
+                                        <label id="datosF">Código:</label>
+                                        <label>{{ce.id}}</label>
+                                    </div>
+                                    <div class="caja2 d-flex justify-content-start">
+                                        <label id="datosF">Regimen:</label>
+                                        <label>{{ce.descripcion}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Inicio:</label>
+                                        <label>{{ce.fec_ingreso.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Salida:</label>
+                                        <label *ngIf="ce.fec_salida === null">Sin fecha</label>
+                                        <label *ngIf="ce.fec_salida != null">{{ce.fec_salida.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Control de Asistencia:</label>
+                                        <label *ngIf="ce.asis_controla == true">Si</label>
+                                        <label *ngIf="ce.asis_controla == false">No</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Control de Vacaciones:</label>
+                                        <label *ngIf="ce.vaca_controla == true">Si</label>
+                                        <label *ngIf="ce.vaca_controla == false">No</label>
+                                    </div>
+                                    <div class="caja2 d-flex justify-content-start">
+                                        <label id="datosF">Contrato:</label>
+                                        <a *ngIf="ce.doc_nombre != null && ce.doc_nombre != ''" class="fas fa-file-alt"
+                                            style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px;"
+                                            matSuffix matTooltipPosition="right"
+                                            matTooltip="Dar click para descargar contrato de trabajo"
+                                            href="{{hipervinculo}}/contratoEmpleado/documentos/{{ce.documento}}"
+                                            target="_blank">
+                                            <p>{{ce.doc_nombre}}</p>
+                                        </a>
+                                        <a *ngIf="ce.doc_nombre === null || ce.doc_nombre === ''" mat-button
+                                            type="submit"
+                                            (click)="verContratoEdicion(false); ObtenerIdContratoSeleccionado(ce.id)"
+                                            [disabled]="!btnActualizarContrato">
+                                            Cargar Contrato de Trabajo
+                                        </a>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <a mat-button type="submit" (click)="LimpiarContrato()">
+                                        <i class="fa fa-times-circle" matTooltipPosition="right" id="cerrar"
+                                            matTooltip="Cerrar Registro">
+                                            <p>Cerrar</p>
+                                        </i>
+                                    </a>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="d-flex bd-highlight barraTitulo">
+                            <div class="w-100 bd-highlight">
+                                <h5>Cargo Actual</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="AbrirVentanaCargo()">{{btnTitulo}}</button>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" *ngFor="let c of cargoEmpleado" style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Código:</label>
+                                        <label>{{c.id}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Sucursal:</label>
+                                        <label>{{c.sucursal}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Cargo:</label>
+                                        <label>{{nombreCargo}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Departamento:</label>
+                                        <label>{{c.departamento}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Inicio:</label>
+                                        <label>{{c.fec_inicio.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Sueldo:</label>
+                                        <label>$ {{c.sueldo}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Final:</label>
+                                        <label>{{c.fec_final.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Horas de Trabajo:</label>
+                                        <label>{{c.hora_trabaja}}</label>
+                                    </div>
+                                </div>
+                                <!-- href="{{rutaCargo}}" -->
+                                <div style="text-align: right;">
+                                    <a mat-button type="submit"
+                                        (click)="verCargoEdicion(false); ObtenerIdCargoSeleccionado(c.id)"
+                                        [disabled]="!btnActualizarCargo">
+                                        <i class="fas fa-edit" matTooltipPosition="right" id="edit"
+                                            matTooltip="Modificar los datos generales de este registro">
+                                            <p>Editar</p>
+                                        </i>
+                                    </a>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                    <br>
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;">
+                                        <h5>Cargos Anteriores</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px; text-align: center;">
+                                <form [formGroup]="cargoForm">
+                                    <mat-form-field>
+                                        <mat-label>Período del Cargo</mat-label>
+                                        <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
+                                            matTooltipPosition="right"
+                                            matTooltip="Seleccionar contrato para obtener la lista de sus respectivos cargos">
+                                            help_outline</mat-icon>
+                                        <mat-select [formControl]="fechaICargo">
+                                            <mat-option *ngFor="let c of listaCargos" [value]="c.id"
+                                                (click)="obtenerCargoSeleccionadoEmpleado(cargoForm.value)">
+                                                {{c.fec_inicio.split("T")[0]}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </form>
+                            </div>
+                            <div class="container" *ngFor="let c of cargoSeleccionado" style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Código:</label>
+                                        <label>{{c.id}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Sucursal:</label>
+                                        <label>{{c.sucursal}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Cargo:</label>
+                                        <label>{{nombreCargoSeleccionado}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Departamento:</label>
+                                        <label>{{c.departamento}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Inicio:</label>
+                                        <label>{{c.fec_inicio.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Sueldo:</label>
+                                        <label>$ {{c.sueldo}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Final:</label>
+                                        <label>{{c.fec_final.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja3 d-flex justify-content-start">
+                                        <label id="datosF">Horas de Trabajo:</label>
+                                        <label>{{c.hora_trabaja}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <div style="padding-bottom: 35px; padding-top: 35px;">
+                        <app-editar-cargo *ngIf="!btnActualizarCargo" [idSelectCargo]="idSelectCargo"
+                            [idEmploy]="idEmpleado" id="editarCargo">
+                        </app-editar-cargo>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+    <!-- HORARIO DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">event</mat-icon>
+            Horario
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-sm" style="padding-bottom: 30px">
+                    <div class="barraTitulo">
+                        <h5>Horarios del Empleado</h5>
+                    </div>
+                    <mat-card class="example-card mat-elevation-z9" id="carta1">
+                        <mat-card-actions style="text-align: center">
+                            <button type="submit" class="btn btn-sm" id="boton"
+                                (click)="AbrirVentanaEmplHorario()">Añadir</button>
+                        </mat-card-actions>
+                    </mat-card>
+                </div>
+                <div class="col-md">
+                    <div class="barraTitulo">
+                        <h5>Carga múltiple de horarios</h5>
+                    </div>
+                    <mat-card class="example-card mat-elevation-z9" id="carta1">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md" style="width: 700px;">
+                                    <form method="post" enctype="multipart/form-data">
+                                        <input (change)="FileChangeHorario($event)" type="file"
+                                            [formControl]="archivoHorarioForm" id="file"
+                                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                                        <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
+                                            matTooltip="Presionar para cargar plantilla con nombre Horario Empleado">Subir
+                                            Horario</label>
+                                    </form>
+                                </div>
+                                <div class="col-md">
+                                    <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
+                                        matTooltipPosition="right"
+                                        matTooltip="Dar click para ver o descargar el documento"
+                                        href="{{hipervinculo}}/plantillaD/documento/Horario Empleado.xlsx">
+                                        <span class="material-icons">cloud_download</span> Descargar Plantilla Horario
+                                        Empleado
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container" style="padding-bottom: 50px; text-align: center;">
+            <div class="mat-elevation-z8" style="background: white;">
+                <div id="titulo">Lista de Horarios</div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm ">
+                        <thead class="thead-light">
+                            <tr style="text-align: center;">
+                                <th scope="col">Horario</th>
+                                <th scope="col">Inicio</th>
+                                <th scope="col">Final</th>
+                                <th scope="col">Lu</th>
+                                <th scope="col">Mar</th>
+                                <th scope="col">Mi</th>
+                                <th scope="col">Ju</th>
+                                <th scope="col">Vi</th>
+                                <th scope="col">Sa</th>
+                                <th scope="col">Do</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let h of horariosEmpleadoTotales | paginate:tamanio_pagina:numero_pagina">
+                                <td>{{h.nom_horario}}</td>
+                                <td>{{h.fec_inicio.split("T")[0]}}</td>
+                                <td>{{h.fec_final.split("T")[0]}}</td>
+                                <td *ngIf="h.lunes == true">Libre</td>
+                                <td *ngIf="h.lunes == false">Normal</td>
+                                <td *ngIf="h.martes == true">Libre</td>
+                                <td *ngIf="h.martes == false">Normal</td>
+                                <td *ngIf="h.miercoles == true">Libre</td>
+                                <td *ngIf="h.miercoles == false">Normal</td>
+                                <td *ngIf="h.jueves == true">Libre</td>
+                                <td *ngIf="h.jueves == false">Normal</td>
+                                <td *ngIf="h.viernes == true">Libre</td>
+                                <td *ngIf="h.viernes == false">Normal</td>
+                                <td *ngIf="h.sabado == true">Libre</td>
+                                <td *ngIf="h.sabado == false">Normal</td>
+                                <td *ngIf="h.domingo == true">Libre</td>
+                                <td *ngIf="h.domingo == false">Normal</td>
+                                <td>
+                                    <i class="fas fa-edit" id="edit" (click)="AbrirEditarHorario(h)" matSuffix
+                                        matTooltipPosition="right"
+                                        matTooltip="Modificar los datos generales de este registro">
+                                        <p>Editar</p>
+                                    </i>
+                                    <i class="far fa-trash-alt" (click)="ConfirmarDeleteHorario(h)"
+                                        style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
+                                        matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
+                                        matTooltip="Eliminar registro">
+                                        <p>Eliminar</p>
+                                    </i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <mat-paginator [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
+                    [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+                </mat-paginator>
+            </div>
+        </div>
+    </mat-tab>
+
+    <!-- PERIODO DE VACACIONES DEL EMPLEADO Y VACACIONES DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">flight_takeoff</mat-icon>
+            Vacaciones
+        </ng-template>
+
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <mat-card class="mat-elevation-z8">
+                <div class="d-flex bd-highlight barraTitulo">
+                    <div class="w-100 bd-highlight">
+                        <h5>Periodo de Vacaciones</h5>
+                    </div>
+                    <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                        <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                            (click)="AbrirVentanaPerVacaciones()">Añadir</button>
+                    </div>
+                </div>
+                <mat-card-content>
+                    <div *ngFor="let p of peridoVacaciones" style="padding-top: 15px;">
+                        <div class="d-flex flex-wrap justify-content-center" style="margin-bottom: 10px;">
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Descripción:</label>
+                                <label>{{p.descripcion}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Inicio de Periodo:</label>
+                                <label>{{p.fec_inicio.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fin de Periodo:</label>
+                                <label>{{p.fec_final.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Horas de Vacaciones:</label>
+                                <label>{{p.horas_vacaciones}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Minutos de Vacaciones:</label>
+                                <label>{{p.min_vacaciones}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Vacaciones usadas:</label>
+                                <label *ngIf="p.estado == 1">Sí</label>
+                                <label *ngIf="p.estado == 2">No</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Días por Antiguedad:</label>
+                                <label>{{p.dia_antiguedad}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Días de Vacaciones:</label>
+                                <label>{{p.dia_vacacion}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Días Perdidos:</label>
+                                <label>{{p.dia_perdido}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                            </div>
+                        </div>
+                        <div style="text-align: right; margin-right: 1px;">
+                            <i (click)="AbrirEditarPeriodoVacaciones(p)" class="fas fa-edit" id="edit" matSuffix
+                                matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro">
+                                <p>Editar</p>
+                            </i>
+                        </div>
+                        <mat-divider></mat-divider>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <mat-card class="mat-elevation-z8">
+                <div class="d-flex bd-highlight barraTitulo">
+                    <div class="w-100 bd-highlight">
+                        <h5>Solicitar Vacaciones</h5>
+                    </div>
+                    <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                        <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                            (click)="AbrirVentanaVacaciones()">{{btnTitulo}}</button>
+                    </div>
+                </div>
+                <mat-card-content>
+                    <div *ngFor="let v of vacaciones" style="padding-top: 15px;">
+                        <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Codigo:</label>
+                                <label>{{v.id}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha de Inicio:</label>
+                                <label>{{v.fec_inicio.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Final:</label>
+                                <label>{{v.fec_final.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha de Ingreso:</label>
+                                <label>{{v.fec_ingreso.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Días Laborables:</label>
+                                <label>{{v.dia_laborable}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Días Libres:</label>
+                                <label>{{v.dia_libre}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Legalizado:</label>
+                                <label *ngIf="v.legalizado == true">Sí</label>
+                                <label *ngIf="v.legalizado == false">No</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Estado:</label>
+                                <label>{{v.estado}}</label>
+                            </div>
+                        </div>
+                        <div class="float-right" *ngIf="v.estado === 'Solicitado'">
+                            <i class="fas fa-edit" id="edit" style="margin-right: 20px;" (click)="EditarVacaciones(v)"
+                                matSuffix matTooltipPosition="right"
+                                matTooltip="Modificar los datos generales de este registro">
+                                <p>Editar</p>
+                            </i>
+                            <i class="fas fa-backspace" id="cancel" (click)="CancelarVacaciones(v)" matSuffix
+                                matTooltipPosition="right" matTooltip="Cancelar solicitud de vacaciones">
+                                <p>Cancelar</p>
+                            </i>
+                        </div>
+                        <br><br>
+                        <mat-divider></mat-divider>
+                    </div>
+                    <mat-paginator [length]="vacaciones.length" [pageSize]="tamanio_pagina"
+                        [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
+                        showFirstLastButtons>
+                    </mat-paginator>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </mat-tab>
+
+    <!-- PLANIFICACION DE HORARIOS DEL EMPLEADO Y DETALLE PLANIFICACION HORARIO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">today</mat-icon>
+            Planificacion Horarios
+        </ng-template>
+
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <mat-card class="mat-elevation-z8">
+                <div class="d-flex bd-highlight barraTitulo">
+                    <div class="w-100 bd-highlight">
+                        <h5>Planificación Horario</h5>
+                    </div>
+                    <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                        <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                            (click)="AbrirVentanaPlanHorario()">{{btnTitulo}}</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm ">
+                        <thead class="thead-light">
+                            <tr style="text-align: center;">
+                                <th scope="col">Fecha Inicio</th>
+                                <th scope="col">Fecha Final</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let h of planHorario | paginate:tamanio_pagina:numero_pagina">
+                                <td>{{h.fec_inicio.split("T")[0]}}</td>
+                                <td>{{h.fec_final.split("T")[0]}}</td>
+                                <td class="d-flex justify-content-center">
+                                    <i matSuffix matTooltipPosition="right"
+                                        matTooltip="Agregar Detalles de Planificación de Horario"
+                                        class="far fa-list-alt" id="detalleH"
+                                        (click)="AbrirVentanaDetallePlanHorario(h)">
+                                        <p>Detalle</p>
+                                    </i>
+                                    <i *ngFor="let e of empleadoUno" matSuffix matTooltipPosition="right"
+                                        matTooltip="Ver datos generales de la planificación" class="fas fa-eye" id="ver"
+                                        [routerLink]="['/verDetalles/', h.id, e.id]">
+                                        <p>Ver</p>
+                                    </i>
+                                    <i class="fas fa-edit" style="color:green; margin-left: 15px;"
+                                        (click)="AbrirEditarPlanificacion(h)" matSuffix matTooltipPosition="right"
+                                        matTooltip="Modificar los datos generales de este registro">
+                                        <p>Editar</p>
+                                    </i>
+                                    <i class="far fa-trash-alt" (click)="ConfirmarDeletePlanificacion(h)"
+                                        style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
+                                        matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
+                                        matTooltip="Eliminar registro">
+                                        <p>Eliminar</p>
+                                    </i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <mat-paginator [length]="planHorario.length" [pageSize]="tamanio_pagina"
+                    [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+                </mat-paginator>
+            </mat-card>
+        </div>
+    </mat-tab>
+
+    <!-- PLANIFICACION DE ALMUERZO -->
+    <mat-tab *ngIf="HabilitarAlimentacion">
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">local_dining</mat-icon>
+            Alimentación
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <mat-card class="mat-elevation-z8">
+                <div class="d-flex bd-highlight barraTitulo">
+                    <div class="w-100 bd-highlight">
+                        <h5>Alimentación</h5>
+                    </div>
+                    <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                        <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                            (click)="AbrirVentanaPlanificacion()">{{btnTitulo}}</button>
+                    </div>
+                </div>
+                <div *ngFor="let pc of planComidas | paginate:tamanio_pagina:numero_pagina" style="padding-top: 15px;">
+                    <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Registro:</label>
+                            <label>{{pc.fecha.split("T")[0]}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Servicio:</label>
+                            <label>{{pc.nombre_servicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Menú:</label>
+                            <label>{{pc.nombre_menu}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Nombre Plato:</label>
+                            <label>{{pc.nombre_plato}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Precio Plato:</label>
+                            <label>$ {{pc.valor}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Observación:</label>
+                            <label>{{pc.observacion}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Inicia:</label>
+                            <label *ngIf="pc.fec_inicio != undefined">{{pc.fec_inicio.split("T")[0]}}</label>
+                            <label *ngIf="pc.fec_inicio === undefined">{{pc.fec_comida.split("T")[0]}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Finaliza:</label>
+                            <label *ngIf="pc.fec_final != undefined">{{pc.fec_final.split("T")[0]}}</label>
+                            <label *ngIf="pc.fec_final === undefined">{{pc.fec_comida.split("T")[0]}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora Inicio:</label>
+                            <label>{{pc.hora_inicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora Fin:</label>
+                            <label>{{pc.hora_fin}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Tipo:</label>
+                            <label *ngIf="pc.extra === false">Normal</label>
+                            <label *ngIf="pc.extra === true">Extra</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                        </div>
+                    </div>
+                    <div style="text-align: right;"
+                        *ngIf="pc.fec_final === undefined && pc.aprobada === false && pc.fec_comida > FechaActual">
+                        <i class="fas fa-edit" id="edit" (click)="AbrirEditarPlanComidas(pc)" matSuffix
+                            matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro">
+                            <p>Editar</p>
+                        </i>
+                        <!-- <i style="color:red; margin-left: 15px;" (click)="ConfirmarDeletePlanComidas(pc)"
+                            class=" far fa-trash-alt" matTooltipPosition="right" id="delete"
+                            matTooltip="Eliminar registro">
+                            <p>Eliminar</p>
+                        </i>-->
+                    </div>
+                    <div style="text-align: right;" *ngIf="pc.fec_final != undefined && pc.fec_final > FechaActual">
+                        <i class="fas fa-edit" id="edit" (click)="AbrirEditarPlanComidas(pc)" matSuffix
+                            matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro">
+                            <p>Editar</p>
+                        </i>
+                        <i style="color:red; margin-left: 15px;" (click)="ConfirmarDeletePlanComidas(pc)"
+                            class=" far fa-trash-alt" matTooltipPosition="right" id="delete"
+                            matTooltip="Eliminar registro">
+                            <p>Eliminar</p>
+                        </i>
+                    </div>
+                    <mat-divider></mat-divider>
+                </div>
+                <mat-paginator [length]="planComidas.length" [pageSize]="tamanio_pagina"
+                    [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+                </mat-paginator>
+            </mat-card>
+        </div>
+    </mat-tab>
+
+    <!-- PERMISOS -->
+    <mat-tab *ngIf="HabilitarPermisos">
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">transfer_within_a_station</mat-icon>
+            Permisos
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="d-flex bd-highlight barraTitulo">
+                            <div class="w-100 bd-highlight">
+                                <h5>Solicitar Permiso</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="AbrirVentanaPermiso()">{{btnTitulo}}</button>
+                            </div>
+                        </div>
+                        <div *ngFor="let pt of permisosTotales | paginate:tamanio_pagina:numero_pagina"
+                            style="padding-top: 15px;">
+                            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">N° Permiso:</label>
+                                    <label>{{pt.num_permiso}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Permiso:</label>
+                                    <label>{{pt.nom_permiso}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Descripción:</label>
+                                    <label>{{pt.descripcion}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Estado:</label>
+                                    <label *ngIf="pt.estado === 1">Pendiente</label>
+                                    <label *ngIf="pt.estado === 2">Pre-autorizado</label>
+                                    <label *ngIf="pt.estado === 3">Autorizado</label>
+                                    <label *ngIf="pt.estado === 4">Negado</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Fecha Salida:</label>
+                                    <label>{{pt.fec_inicio.split("T")[0]}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Fecha Ingreso:</label>
+                                    <label>{{pt.fec_final.split("T")[0]}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Hora Salida:</label>
+                                    <label>{{pt.hora_salida}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Hora Ingreso:</label>
+                                    <label>{{pt.hora_ingreso}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Documento:</label>
+                                    <a matSuffix matTooltipPosition="right"
+                                        matTooltip="Dar click para descargar contrato de trabajo"
+                                        href="{{hipervinculo}}/empleadoPermiso/documentos/{{pt.documento}}"
+                                        target="_blank">
+                                        <label style="font-size: 14px;">{{pt.docu_nombre}}</label>
+                                    </a>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                </div>
+                            </div>
+                            <div style="text-align: right;" *ngIf="pt.estado === 1">
+                                <i class="fas fa-edit" id="edit" style="margin-right: 20px;" (click)="EditarPermiso(pt)"
+                                    matSuffix matTooltipPosition="right"
+                                    matTooltip="Modificar los datos generales de este registro">
+                                    <p>Editar</p>
+                                </i>
+                                <i class="fas fa-backspace" id="cancel" (click)="CancelarPermiso(pt)" matSuffix
+                                    matTooltipPosition="right" matTooltip="Cancelar solicitud de permiso">
+                                    <p>Cancelar</p>
+                                </i>
+                            </div>
+                            <mat-divider style="margin-bottom: 10px;"></mat-divider>
+                        </div>
+                        <!-- <mat-paginator [length]="permisosTotales.length" [pageSize]="tamanio_pagina"
+                            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
+                            showFirstLastButtons>
+                        </mat-paginator> -->
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+
+    <!-- HORAS EXTRAS -->
+    <mat-tab *ngIf="!HabilitarHorasE">
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">query_builder</mat-icon>
+            Horas Extras
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="d-flex bd-highlight barraTitulo">
+                            <div class="w-100 bd-highlight">
+                                <h5>Solicitar Hora Extra</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="AbrirVentanaHoraExtra()">{{btnTitulo}}</button>
+                            </div>
+                        </div>
+                        <div *ngFor="let h of hora_extra | paginate:tamanio_pagina:numero_pagina"
+                            style="padding-top: 15px;">
+                            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Código: </label>
+                                    <label>{{h.id}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Descripción: </label>
+                                    <label>{{h.descripcion}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Fecha Solicita: </label>
+                                    <label>{{h.fec_solicita.split("T")[0]}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Estado: </label>
+                                    <label>{{h.estado}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Tiempo hora extra: </label>
+                                    <label>{{h.num_hora}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Fecha Inicio: </label>
+                                    <label>{{h.fec_inicio.split("T")[0]}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Fecha Final: </label>
+                                    <label>{{h.fec_final.split("T")[0]}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                </div>
+                            </div>
+                            <div style="text-align: right;" *ngIf="h.estado === 'Pendiente'">
+                                <i class="fas fa-edit" id="edit" style="margin-right: 20px" (click)="EditarHoraExtra(h)"
+                                    matSuffix matTooltipPosition="right"
+                                    matTooltip="Modificar los datos generales de este registro">
+                                    <p>Editar</p>
+                                </i>
+                                <i class="fas fa-backspace" id="cancel" (click)="CancelarHoraExtra(h)" matSuffix
+                                    matTooltipPosition="right" matTooltip="Cancelar solicitud de horas extras">
+                                    <p>Cancelar</p>
+                                </i>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <mat-paginator [length]="hora_extra.length" [pageSize]="tamanio_pagina"
+                            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
+                            showFirstLastButtons>
+                        </mat-paginator>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+    <!-- AUTORIZACIONES -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">supervisor_account</mat-icon>
+            Autorización
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;">
+                                        <h5>Administrar Módulo Alimentación</h5>
+                                    </div>
+                                    <div class="col" style="text-align: right;">
+                                        <button type="submit" class="btn btn-outline-light btn-sm"
+                                            (click)="AbrirVentanaAdminComida()">Editar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" *ngFor="let ac of administra_comida" style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="d-flex justify-content-start">
+                                        <label id="datosF">Administra Módulo de Alimentación:</label>
+                                        <label *ngIf="ac.admin_comida == true">Sí</label>
+                                        <label *ngIf="ac.admin_comida == false">No</label>
+                                        <label *ngIf="ac.admin_comida == null">No</label>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;">
+                                        <h5>Autorización Departamentos</h5>
+                                    </div>
+                                    <div class="col" style="text-align: right;">
+                                        <button type="submit" class="btn btn-outline-light btn-sm"
+                                            (click)="AbrirVentanaAutorizar()">Añadir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" *ngFor="let autoD of autorizacionesTotales"
+                                style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="caja1 d-flex justify-content-start">
+                                        <label id="datosF">Departamento de:</label>
+                                        <label>{{autoD.nom_depar}}</label>
+                                    </div>
+                                    <div class="caja1 d-flex justify-content-start">
+                                        <label id="datosF">Autoriza:</label>
+                                        <label *ngIf="autoD.estado == true">Sí</label>
+                                        <label *ngIf="autoD.estado == false">No</label>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <i class="fas fa-edit" id="edit" (click)="AbrirEditarAutorizar(autoD)" matSuffix
+                                        matTooltipPosition="right"
+                                        matTooltip="Modificar los datos generales de este registro">
+                                        <p>Editar</p>
+                                    </i>
+                                    <i style="color:red; margin-left: 15px;"
+                                        (click)="ConfirmarDeleteAutorizacion(autoD)" class=" far fa-trash-alt"
+                                        matTooltipPosition="right" id="delete" matTooltip="Eliminar registro">
+                                        <p>Eliminar</p>
+                                    </i>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+    <!-- PROCESOS DEL EMPLEADO -->
+    <mat-tab *ngIf="!HabilitarAccion">
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">wc</mat-icon>
+            Acción Personal
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;">
+                                        <h5>Procesos</h5>
+                                    </div>
+                                    <div class="col" style="text-align: right;">
+                                        <button type="submit" class="btn btn-outline-light btn-sm"
+                                            (click)="AbrirVentanaProcesos()">Añadir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container"
+                                *ngFor="let e of empleadoProcesos | paginate:tamanio_pagina:numero_pagina"
+                                style="padding-top: 15px;">
+                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                                    <div class="caja1 d-flex justify-content-start">
+                                        <label id="datosF">Proceso:</label>
+                                        <label>{{e.proceso}}</label>
+                                    </div>
+                                    <div class="caja1 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Inicio:</label>
+                                        <label>{{e.fec_inicio.split("T")[0]}}</label>
+                                    </div>
+                                    <div class="caja1 d-flex justify-content-start">
+                                        <label id="datosF">Fecha Final:</label>
+                                        <label>{{e.fec_final.split("T")[0]}}</label>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <i class="fas fa-edit" id="edit" (click)="AbrirVentanaEditarProceso(e)" matSuffix
+                                        matTooltipPosition="right"
+                                        matTooltip="Modificar los datos generales de este registro">
+                                        <p>Editar</p>
+                                    </i>
+                                    <i style="color:red; margin-left: 15px;" (click)="ConfirmarDeleteProceso(e)"
+                                        class=" far fa-trash-alt" matTooltipPosition="right" id="delete"
+                                        matTooltip="Eliminar registro">
+                                        <p>Eliminar</p>
+                                    </i>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                            <mat-paginator [length]="empleadoProcesos.length" [pageSize]="tamanio_pagina"
+                                [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
+                                showFirstLastButtons>
+                            </mat-paginator>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+</mat-tab-group>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<root>
+  <empleado id="34">
+    <cedula>1722458964</cedula>
+    <apellido>Perez Mendez</apellido>
+    <nombre>Isabel Jazmin</nombre>
+    <estadoCivil>Casado/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>isabel@hotmail.com</correo>
+    <fechaNacimiento>1993-06-11</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>La Magdalena</domicilio>
+    <telefono>0856213645</telefono>
+  </empleado>
+</root>

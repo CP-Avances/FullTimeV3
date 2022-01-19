@@ -1,0 +1,46 @@
+mat-label { font-size: 14px; } 
+
+mat-form-field { padding: 10px 15px 0px 15px;}
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+
+.barraTitulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 14px; 
+}
+
+/*.color-tooltip { background: #2c6ec5; }*/
+
+#permiso { cursor: pointer; }
+
+.nota {
+    font-size: 12px; 
+    font-weight: bold; 
+    text-align: justify;
+    padding: 0px 5px 10px 5px; 
+    color: rgb(52,65,84);
+}
+
+#movilidad { 
+    cursor: grab;
+    color: blue;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.scrollbar {
+    float: left;
+    height: 420px;
+    width: 100%;
+    background: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-bottom: 25px;
+}
+
+.scrollbar-primary::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5; 
+}

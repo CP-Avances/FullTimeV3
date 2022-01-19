@@ -1,0 +1,17 @@
+<div *ngIf="contenidoSolicitudes">
+    <h3>Elimina las notificaciones</h3>
+    <p>Se eliminaran todas las notificaciones de permisos, horas extras y vacaciones seleccionadas.</p>
+</div>
+<div *ngIf="contenidoAvisos">
+    <h3>Eliminar Avisos </h3>
+    <p>Se eliminaran todos los avisos de timbres selecionados.</p>
+</div>
+<!-- <ul *ngFor="let e of Empleados.lista">
+    <li style="margin-top: -10px;">{{e.empleado}}</li>
+</ul> -->
+
+
+<div class="d-flex justify-content-between">
+    <button class="btn btn-success" (click)="ConfirmarListaNotificaciones()">Aceptar</button>
+    <button class="btn btn-danger" (click)="dialogRef.close(false)">Salir</button>
+</div>

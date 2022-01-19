@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<root>
+  <empleado codigo="1458">
+    <cedula>1715478564</cedula>
+    <apellido>Altamirano Taco</apellido>
+    <nombre>Jose Luis</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>1993-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Santa Rita</domicilio>
+    <telefono>0984563215</telefono>
+    <imagen>xQlsgvH6AhwKJdlmP5cl9z-L.png</imagen>
+  </empleado>
+</root>

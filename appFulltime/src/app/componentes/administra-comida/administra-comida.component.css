@@ -1,0 +1,46 @@
+.mat-radio-button ~ .mat-radio-button { margin-left: 20px; }
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+
+mat-radio-group { width: 210px; padding: 15px 20px 15px 20x; margin-bottom: 10px;}
+
+mat-form-field { width: 210px; padding: 10px 10px 0px 10px;}
+
+#movilidad { 
+    cursor: grab;
+    color: blue;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.autorizarDepa { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 14px; 
+}
+
+/*.contratoE-tooltip { background-color : rgb(17, 182, 44); }*/
+
+#autorizar { cursor: pointer; }
+
+#nomEmple { font-size: 12px; }
+
+#selEmpre { font-size: 14px; }
+
+
+
+.scrollbar {
+    float: left;
+    height: 450px;
+    width: 100%;
+    background: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-bottom: 25px;
+}
+
+.scrollbar-primary::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5; 
+}

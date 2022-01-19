@@ -1,0 +1,46 @@
+<br>
+<div class="container" style="padding-bottom: 50px; text-align: center;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <span class="w-100 bd-highlight">
+                Lista de Planificaciones de Horas Extras</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Fecha Inicio</th>
+                        <th scope="col">Fecha Final</th>
+                        <th scope="col">Hora Inicio</th>
+                        <th scope="col">Hora Final</th>
+                        <th scope="col">Horas Totales</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of listaPlan | paginate:tamanio_pagina:numero_pagina">
+                        <td>{{p.descripcion}}</td>
+                        <td>{{p.fecha_desde.split('T')[0]}}</td>
+                        <td>{{p.fecha_hasta.split('T')[0]}}</td>
+                        <td>{{p.hora_inicio}}</td>
+                        <td>{{p.hora_fin}}</td>
+                        <td>{{p.horas_totales}}</td>
+                        <td class="d-flex justify-content-center">
+                            <i *ngIf = "p.fecha_desde.split('T')[0] > fecha" class="fas fa-edit" matSuffix matTooltipPosition="right"
+                                
+                                matTooltip="Modificar los datos generales de este registro"
+                                (click)="EditarPlanificacion(p)">
+                                <p>Editar</p>
+                            </i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <mat-paginator [length]="listaPlan.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

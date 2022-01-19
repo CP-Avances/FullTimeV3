@@ -1,0 +1,107 @@
+<div class="scrollbar scrollbar-primary">
+    <div class="d-flex bd-highlight tituloRegimen">
+        <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+        <h5 class="w-100 bd-highlight align-self-center">Modificar Datos de Régimen Laboral</h5>
+    </div>
+    <!-- Formulario Completo -->
+    <form [formGroup]="RegimenForm">
+        <div class="container" style="text-align: center">
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón Guardar.</span>
+            </div>
+            <div class="d-flex flex-wrap justify-content-between">
+                <mat-form-field>
+                    <mat-label>Régimen Laboral</mat-label>
+                    <input matInput placeholder="Nombre Régimen" [formControl]="descripcionF"
+                        readonly="readonly">
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Nombre del Régimen Laboral">
+                        help_outline</mat-icon>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Meses Período</mat-label>
+                    <input matInput placeholder="Ingresar meses período" [formControl]="mesesF"
+                        (keypress)="IngresarSoloNumeros($event)" required>
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Indicar el número de meses de duración del período">
+                        help_outline</mat-icon>
+                    <mat-error *ngIf="mesesF.invalid">
+                        {{ObtenerMensajeErrorMeses()}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label id="anioAnti">Años considerados antiguedad</mat-label>
+                    <input matInput placeholder="Ingresar años para antiguedad" [formControl]="anioAntiguedadF"
+                        (keypress)="IngresarSoloNumeros($event)" required>
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Indicar el número de años que deben pasar para considerar antiguedad de un empleado">
+                        help_outline</mat-icon>
+                    <mat-error *ngIf="anioAntiguedadF.invalid">
+                        {{ObtenerMensajeErrorAnioAntiguedadRequerido()}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label id="anio">Vacaciones: Días por año</mat-label>
+                    <input matInput placeholder="Días por año" [formControl]="diaAnioVacacionF"
+                        (keypress)="IngresarSoloNumeros($event)" (click)="LimpiarMeses()" required>
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Indicar cuantos días de vacación se concederan al empleado al cumplir un año de servicio">
+                        help_outline</mat-icon>
+                    <mat-error *ngIf="diaAnioVacacionF.invalid">
+                        {{ObtenerMensajeErrorCamposNumericosRequeridos()}}
+                    </mat-error>
+                </mat-form-field>
+                <div class="align-self-center" style="width: 250px;">
+                    <input style="margin-right: 10px;" type="checkbox"
+                        (click)="CalcularDiasMeses(RegimenForm.value)" id="activo" unchecked="false">
+                    <label style="margin-right: 35px;"> Calcular días por mes</label>
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Dar click para realizar cálculo de días de vacación por mes que se concederan al empleado al cumplir un año de servicio">
+                        help_outline</mat-icon>
+                </div>
+                <mat-form-field>
+                    <input matInput placeholder="Vacación: Días por mes" [formControl]="diaMesVacacionF"
+                        readonly="readonly" required>
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Días por mes de vacación que se concedera al empleado">
+                        help_outline</mat-icon>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label id="diasIncre">Días incremento-antiguedad</mat-label>
+                    <input matInput placeholder="Días de incremento" [formControl]="diaIncrAntiguedadF" required
+                        (keypress)="IngresarSoloNumeros($event)">
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Número de días que se incrementarán a los días de vacaciones que se le concederan al empleado al cumplir los años indicados de antiguedad">
+                        help_outline</mat-icon>
+                    <mat-error *ngIf="diaIncrAntiguedadF.invalid">
+                        {{ObtenerMensajeErrorIncreAntiguedadRequerido()}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label id="maxD">Máximo de días acumulables</mat-label>
+                    <input matInput placeholder="Días acumulables" [formControl]="maxDiasAcumulacionF" required
+                        (keypress)="IngresarSoloNumeros($event)">
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Número de días máximos de vacaciones que un empleado podrá acumular durante el tiempo que establesca la empresa">
+                        help_outline</mat-icon>
+                    <mat-error *ngIf="maxDiasAcumulacionF.invalid">
+                        {{ObtenerMensajeErrorDiasAcumulablesRequerido()}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label id="maxD">Fin de semana: días libres</mat-label>
+                    <input matInput placeholder="Días libres" [formControl]="diaLibreAnioVacacionF"
+                        (keypress)="IngresarSoloNumeros($event)">
+                    <mat-icon id="iReg" matSuffix matTooltipClass="regimen-tooltip" matTooltipPosition="right"
+                        matTooltip="Indicar cuantos días de fin de semana serán considerado dentro de los días de vacaciones que se le conceden a un empleado">
+                        help_outline</mat-icon>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex flex-wrap justify-content-center">
+        <input type="submit" class="btn btn-sm " [disabled]="!RegimenForm.valid"
+            (click)="InsertarRegimen(RegimenForm.value)" value="Guardar">
+        <input type="submit" class="btn btn-sm" (click)="CerrarVentanaRegistroRegimen()" value="Salir">
+    </div>
+</div>

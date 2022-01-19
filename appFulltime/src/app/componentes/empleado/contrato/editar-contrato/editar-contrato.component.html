@@ -1,0 +1,113 @@
+<div class="barraTituloContratoE">
+    <h5>Modificar Contrato del Empleado</h5>
+</div>
+<div class="container" style="text-align: center">
+    <div class="nota">
+        <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+            Guardar.</span>
+    </div>
+    <span class="nota">Desea subir un archivo (opcional) </span>
+    <mat-slide-toggle [(ngModel)]="isChecked"></mat-slide-toggle>
+</div>
+<br>
+<form [formGroup]="ContratoForm">
+    <div class="d-flex flex-wrap justify-content-around">
+        <mat-form-field>
+            <mat-label>Seleccionar Régimen</mat-label>
+            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                matTooltip="Seleccionar Régimen Laboral con el cual va a prestar sus servicios el empleado">
+                help_outline</mat-icon>
+            <mat-select id="nomContrato" [formControl]="idRegimenF" required>
+                <mat-option *ngFor="let regimen of regimenLaboral" [value]="regimen.id">
+                    {{regimen.descripcion}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Fecha de ingreso</mat-label>
+            <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa" [formControl]="fechaIngresoF" required>
+            <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" 
+                matTooltipPosition="right"
+                matTooltip="Ingresar la fecha de ingreso del empleado a la empresa. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
+            </mat-datepicker-toggle>
+            <mat-datepicker touchUi #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Fecha de salida</mat-label>
+            <input matInput [matDatepicker]="picker2" placeholder="dd/mm/aaaa" [formControl]="fechaSalidaF">
+            <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" 
+                matTooltipPosition="right"
+                matTooltip="Ingresar la fecha estimada de salida del empleado, en caso de conocerla. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
+            </mat-datepicker-toggle>
+            <mat-datepicker touchUi #picker2></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field *ngIf="habilitarSeleccion">
+            <mat-label id="selEmpre">Seleccionar Contrato</mat-label>
+            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
+                matTooltip="Seleccione el tipo de contrato con el que va a laborar">
+                help_outline
+            </mat-icon>
+            <mat-select [formControl]="tipoF">
+                <mat-option *ngFor="let tc of tipoContrato" [value]="tc.id" (click)="IngresarOtro(ContratoForm.value)">
+                    {{tc.descripcion}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field *ngIf="habilitarContrato">
+            <mat-label id="selEmpre">Tipo Contrato</mat-label>
+            <input matInput placeholder="Ej: Indefinido" [formControl]="contratoF" [ngStyle]="estilo">
+            <mat-icon id="cargoE" matSuffix matTooltipClass="cargoE-tooltip" matTooltipPosition="right"
+                matTooltip="Regresar a la lista de contratos existentes" (click)="VerTiposContratos()">
+                help_outline</mat-icon>
+            <mat-error *ngIf="contratoF.invalid">Ingresar un tipo de contrato válido</mat-error>
+        </mat-form-field>
+        <div class="d-flex flex-column bd-highlight">
+            <mat-form-field>
+                <mat-label>Controlar Vacaciones *</mat-label>
+                <input matInput readonly="readonly">
+                <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                    matTooltip="Selecionar Si para el control, caso contrario No">
+                    help_outline</mat-icon>
+            </mat-form-field>
+            <section style="margin-top: -15px;">
+                <mat-radio-group aria-label="select an option" [formControl]="controlVacacionesF" required>
+                    <mat-radio-button [value]="true">Si</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
+                </mat-radio-group>
+            </section>
+        </div>
+        <div class="d-flex flex-column bd-highlight">
+            <mat-form-field>
+                <mat-label>Controlar Asistencia *</mat-label>
+                <input matInput readonly="readonly">
+                <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                    matTooltip="Selecionar Si para el control, caso contrario No">
+                    help_outline</mat-icon>
+            </mat-form-field>
+            <section style="margin-top: -15px;">
+                <mat-radio-group aria-label="select an option" [formControl]="controlAsistenciaF" required>
+                    <mat-radio-button [value]="true">Si</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
+                </mat-radio-group>
+            </section>
+        </div>
+        <div class="d-flex flex-wrap justify-content-around" *ngIf="isChecked">
+            <form method="post" enctype="multipart/form-data">
+                <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
+                <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" id="iHor" matSuffix
+                     matTooltipPosition="right"
+                    matTooltip="Actualizar el documento contrato del empleado">Subir
+                    Contrato</label>
+            </form>
+            <input type="text" readonly id="nomContrato" placeholder="Ningún archivo seleccionado" class="form-control"
+                style="width: 212px; margin: 10px;" [formControl]="nombreContratoF">
+            <button *ngIf="HabilitarBtn" class="btn btn-sm" type="submit" (click)="deseleccionarArchivo()" style="margin-bottom: 10px;">Quitar
+                Documento</button>
+        </div>
+    </div>
+</form>
+<div style="text-align: center">
+    <input type="submit" class="btn btn-sm" [disabled]="!ContratoForm.valid"
+        (click)="ValidarDatosContrato(ContratoForm.value)" value="Guardar">
+    <input type="submit" (click)="cancelar()" class="btn btn-sm" value="Cancelar">
+</div>

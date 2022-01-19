@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<root>
+  <empleado codigo="13">
+    <cedula>1222356964</cedula>
+    <apellido>Alvarez Mendoza</apellido>
+    <nombre>Mafer Lupecita</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>1995-01-13</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>beaterio</domicilio>
+    <telefono>023658956</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+</root>

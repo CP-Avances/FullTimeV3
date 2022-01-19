@@ -1,0 +1,98 @@
+<div class="container" style="margin: 25px 0px 10px 0px;">
+    <div class="row">
+        <div class="col-sm-6" *ngFor="let c of cuenta">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title style="font-weight: bold; text-align: center;">TIMBRES TOTALES</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <b>N° timbres Entrada y Salida: </b> <span>{{c.timbres_EoS}} </span> <br>
+                    <b>N° timbres comidas: </b> <span>{{c.timbres_AES}} </span> <br>
+                    <b>N° timbres permisos: </b> <span>{{c.timbres_PES}} </span> <br>
+                    <b>Cantidad de timbres: </b> <span>{{c.total_timbres}} </span>
+                </mat-card-content>
+            </mat-card>
+            <br>
+        </div>
+        <div class="col-sm-6" *ngFor="let i of info">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title style="font-weight: bold; text-align: center;">INFORMACIÓN PERSONAL</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <b>Cargo: </b> <span>{{i.cargo}} </span> <br>
+                    <b>Sueldo: </b> <span>{{i.sueldo}} </span> <br>
+                    <b>Horas trabaja: </b> <span>{{i.hora_trabaja}} </span>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>
+<div class="container" style="margin: 0px 0px 10px 0px;">
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4">
+            <button class="btn btn-md btn-block" (click)="AbrirRegistrarTimbre()">Timbre Virtual</button>
+            <br>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+</div>
+<div class="container" style="padding-bottom: 50px; text-align: center;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div id="titulo">LISTA DE TIMBRES</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th scope="col">Maps</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Hora</th>
+                        <th scope="col">Acción</th>
+                        <th scope="col">Observacion</th>
+                        <th scope="col">Latitud</th>
+                        <th scope="col">Longitud</th>
+                        <th scope="col">Reloj</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr
+                        *ngFor="let t of timbres | fecTimbre: filtroFechaTimbre | paginate:tamanio_pagina:numero_pagina">
+                        <td>
+                            <mat-icon aria-hidden="false" id="accion" (click)="abrirMapa(t.latitud, t.longitud)"
+                                matSuffix matTooltipPosition="right"
+                                matTooltip="Direccionar al mapa con ubicación del timbre seleccionado.">
+                                location_on</mat-icon>
+                        </td>
+                        <td>{{t.fec_hora_timbre.split(' ')[0]}}</td>
+                        <td>{{t.fec_hora_timbre.split(' ')[1]}}</td>
+                        <td>{{t.tecl_funcion}}</td>
+                        <td>{{t.observacion}}</td>
+                        <td>{{t.latitud}}</td>
+                        <td>{{t.longitud}}</td>
+                        <td>{{t.id_reloj}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="timbres.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

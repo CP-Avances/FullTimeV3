@@ -1,0 +1,24 @@
+mat-form-field.input-tables {
+    margin-bottom: -5px;
+    font-size: 10px;
+    text-align: center;
+}
+
+.codigo { width: 60px; }
+.nombre { width: 120px; }
+.cedula { width: 100px; }
+
+mat-expansion-panel-header { text-align: center; background: rgb(52,65,84); }
+
+mat-panel-title { color: white; }
+
+mat-panel-description { color: white; }
+
+#resulEmpleados { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}

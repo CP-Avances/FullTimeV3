@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<root>
+  <empleado codigo="1752236994">
+    <cedula>1752236994</cedula>
+    <apellido>Manzano Perez</apellido>
+    <nombre>Isabel Karina</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>2020-07-16</fechaNacimiento>
+    <estado>Inactivo</estado>
+    <domicilio>La Magdalena</domicilio>
+    <telefono>0125896655</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado codigo="1150010">
+    <cedula>1222365900</cedula>
+    <apellido>Vargas Mendez</apellido>
+    <nombre>Maria Guadalupe</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>1995-01-15</fechaNacimiento>
+    <estado>Inactivo</estado>
+    <domicilio>beaterio</domicilio>
+    <telefono>0938274639</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+</root>

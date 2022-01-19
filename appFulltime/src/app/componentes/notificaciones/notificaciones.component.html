@@ -1,0 +1,45 @@
+<br>
+<div class="container" style="padding-bottom: 50px;">
+    <div id="titulo">Lista de todas las notificaciones</div>
+    <mat-card class="mat-elevation-z8 table-responsive">
+        <table class="table table-hover table-sm">
+            <thead class="thead-light">
+                <tr style="text-align: center;">
+                    <th scope="col">Empleado</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let n of notificaciones | paginate:tamanio_pagina:numero_pagina">
+                    <td>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</td>
+                    <td>{{n.estado}}</td>
+                    <td>{{n.create_at.split('T')[0]}}</td>
+                    <td>{{n.create_at.slice(11,16)}}</td>
+                    <td class="d-flex justify-content-start">
+                        <a *ngIf="n.id_vacaciones === null && n.id_hora_extra === null" [routerLink]="['/ver-permiso/', n.id_permiso]"
+                            (click)="CambiarVistaNotificacion(n.id)">
+                            permiso
+                        </a>
+                        <a *ngIf="n.id_permiso === null && n.id_hora_extra === null" [routerLink]="['/ver-vacacion/', n.id_vacaciones]"
+                            (click)="CambiarVistaNotificacion(n.id)">
+                            vacación 
+                        </a>
+                        <a *ngIf="n.id_permiso === null && n.id_vacaciones === null" [routerLink]="['/ver-hora-extra/', n.id_hora_extra]"
+                            (click)="CambiarVistaNotificacion(n.id)">
+                            hora extra
+                        </a>
+                        <!-- <i id="permisoSuc" class="far fa-trash-alt"  
+                            matTooltip="Eliminar este registro">
+                            <p>Eliminar</p>
+                        </i> -->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <mat-paginator [length]="notificaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons></mat-paginator>
+    </mat-card>
+</div>

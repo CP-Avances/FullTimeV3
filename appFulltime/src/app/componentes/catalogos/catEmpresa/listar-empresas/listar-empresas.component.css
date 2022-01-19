@@ -1,0 +1,47 @@
+.empresasL { 
+    font-size: 20px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+#resultadosEmpre { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+#permisoSuc { cursor: pointer; }
+
+mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
+
+button {margin: 5px 10px 5px 10px;}
+
+.btn { background-color: rgb(80,87,97); color: white; }
+
+p { font-size: x-small; }
+
+td { padding-top: 10px; text-align: center; }
+
+#ver { color: indianred; margin-left: 20px; cursor: pointer}
+
+#editar { color:green; cursor: pointer; margin-left: 20px; }
+
+#eliminar { color:red; cursor: pointer; margin-left: 20px; }
+
+table { width: 100%; font-size: 14px; }
+
+
+
+#pdf { color:red; font-size: 20px; text-align: center; margin-left: 20px; }
+
+#excel { color:green; font-size: 20px; text-align: center; margin-left: 20px; }
+
+#csv { color:blue; font-size: 20px; text-align: center; margin-left: 20px; }
+
+#xml { color:orangered; font-size: 20px; text-align: center; margin-left: 20px; cursor: pointer; }

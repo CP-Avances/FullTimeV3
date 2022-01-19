@@ -1,0 +1,56 @@
+<mat-icon class="float-right" id="cerrar" (click)="dialogRef.close(false)">clear</mat-icon>
+<br>
+<div class="d-flex bd-highlight barraTitulo">
+    <mat-icon class="flex-shrink-1 bd-highlight" id="movilidad">open_with</mat-icon>
+    <h4 class="w-100 bd-highlight" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Horas Extras</h4>
+</div>
+<form [formGroup]="TiempoHoraExtraForm" *ngIf="!Horas">
+    <mat-card-content>
+        <div class="container" style="padding-top: 15px;">
+            <div style="text-align: center;">
+                <p style="font-size: 20; text-align: center; font-weight: bold;">HORAS REALIZADAS</p>
+                <p style="font-size: 15px;"><b>{{data.horas_calculadas.hora}}</b></p>
+                <button type="submit" class="btn btn-sm" (click)="TiempoAceptado()">Autorizar Horas</button>
+            </div>
+            <br>
+            <div>
+                <p style="font-size: 20; text-align: center; font-weight: bold;">HORAS POR APROBAR</p>
+                <mat-form-field>
+                    <mat-label>Número Horas</mat-label>
+                    <input matInput [formControl]="timer" type="time" (keypress)="IngresarSoloNumeros($event)"
+                        (click)="LimpiarCampoHoras()">
+                    <mat-icon id="icon_help" matSuffix matTooltipPosition="right"
+                        matTooltip="Horas que autoriza el empleador">
+                        help_outline</mat-icon>
+                </mat-form-field>
+            </div>
+        </div>
+    </mat-card-content>
+</form>
+<div class="d-flex justify-content-between" *ngIf="!Horas">
+    <button type="submit" class="btn btn-sm" (click)="GuardarTiempoAutorizado(TiempoHoraExtraForm.value)"
+        [disabled]="!TiempoHoraExtraForm.valid"> Guardar </button>
+    <button type="submit" class="btn btn-sm" (click)="MostrarObservacion()"> Observación </button>
+</div>
+<br>
+<form [formGroup]="MensajeForm" *ngIf="!Observacion">
+    <mat-card-content>
+        <p style="font-size: 20; text-align: center; font-weight: bold;">SOLICITAR JUSTIFICACIÓN</p>
+        <mat-form-field>
+            <mat-label>Mensaje</mat-label>
+            <textarea matInput #message maxlength="150" placeholder="Ingresar mensaje" [formControl]="mensaje"
+                required></textarea>
+            <mat-icon id="icon_help" matSuffix matTooltipPosition="right"
+                matTooltip="Escribir mensaje que se enviará al empleado. No olvidar indicar su correo para recibir la respuesta del empleado.">
+                help_outline</mat-icon>
+            <mat-hint align="start"><strong>Ingresar hasta 150 caracteres</strong></mat-hint>
+            <mat-hint align="end">{{message.value.length}} / 150</mat-hint>
+        </mat-form-field>
+    </mat-card-content>
+</form>
+<br>
+<div class="d-flex justify-content-between" *ngIf="!Observacion">
+    <button type="submit" class="btn btn-sm" (click)="MostrarHoras()">Atras</button>
+    <button type="submit" class="btn btn-sm" (click)="EnviarMensaje(MensajeForm.value)"
+        [disabled]="!MensajeForm.valid">Enviar</button>
+</div>

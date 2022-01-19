@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<root>
+  <horario id="133">
+    <nombre>LA</nombre>
+    <min_almuerzo>30</min_almuerzo>
+    <hora_trabajo>5</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="134">
+    <nombre>LOB</nombre>
+    <min_almuerzo>0</min_almuerzo>
+    <hora_trabajo>8</hora_trabajo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="135">
+    <nombre>MA</nombre>
+    <min_almuerzo>15</min_almuerzo>
+    <hora_trabajo>7</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="136">
+    <nombre>LB</nombre>
+    <min_almuerzo>25</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="137">
+    <nombre>horario3</nombre>
+    <min_almuerzo>15</min_almuerzo>
+    <hora_trabajo>6</hora_trabajo>
+    <flexible>false</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="138">
+    <nombre>horario1</nombre>
+    <min_almuerzo>30</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="139">
+    <nombre>horario4</nombre>
+    <min_almuerzo>0</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="140">
+    <nombre>horario2</nombre>
+    <min_almuerzo>25</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="141">
+    <nombre>horario2</nombre>
+    <min_almuerzo>25</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="142">
+    <nombre>horario3</nombre>
+    <min_almuerzo>15</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="143">
+    <nombre>horario4</nombre>
+    <min_almuerzo>0</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="144">
+    <nombre>horario1</nombre>
+    <min_almuerzo>30</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="145">
+    <nombre>horario2</nombre>
+    <min_almuerzo>25</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="146">
+    <nombre>horario4</nombre>
+    <min_almuerzo>0</min_almuerzo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="147">
+    <nombre>horario3</nombre>
+    <min_almuerzo>15</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="148">
+    <nombre>horario1</nombre>
+    <min_almuerzo>30</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="149">
+    <nombre>horario13</nombre>
+    <min_almuerzo>45</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="150">
+    <nombre>horario12</nombre>
+    <min_almuerzo>30</min_almuerzo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="151">
+    <nombre>horario15</nombre>
+    <min_almuerzo>45</min_almuerzo>
+    <hora_trabajo>10:12</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="152">
+    <nombre>horario16</nombre>
+    <min_almuerzo>50</min_almuerzo>
+    <hora_trabajo>15</hora_trabajo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="153">
+    <nombre>horario21</nombre>
+    <min_almuerzo>50</min_almuerzo>
+    <hora_trabajo>45:12</hora_trabajo>
+    <flexible>false</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="154">
+    <nombre>horario20</nombre>
+    <min_almuerzo>59</min_almuerzo>
+    <hora_trabajo>15</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="155">
+    <nombre>Prueba</nombre>
+    <min_almuerzo>45</min_almuerzo>
+    <hora_trabajo>10:45</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="156">
+    <nombre>pruebas horario</nombre>
+    <min_almuerzo>50</min_almuerzo>
+    <hora_trabajo>12:25</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>true</por_horas>
+  </horario>
+  <horario id="157">
+    <nombre>horario50</nombre>
+    <min_almuerzo>45</min_almuerzo>
+    <hora_trabajo>14:45</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+  <horario id="158">
+    <nombre>horario51</nombre>
+    <min_almuerzo>30</min_almuerzo>
+    <hora_trabajo>12</hora_trabajo>
+    <flexible>true</flexible>
+    <por_horas>false</por_horas>
+  </horario>
+</root>

@@ -1,0 +1,267 @@
+<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+    <div class="row">
+        <div class="col-md">
+            <mat-card class="mat-elevation-z8">
+                <div class="barraTitulo">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
+                                <h5>Contrato de Trabajo</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <mat-card-content>
+                    <div class="container" *ngFor="let ce of contratoEmpleado" style="padding-top: 15px;">
+                        <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                            <div class="caja2 d-flex justify-content-start">
+                                <label id="datosF">Código:</label>
+                                <label>{{ce.id}}</label>
+                            </div>
+                            <div class="caja2 d-flex justify-content-start">
+                                <label id="datosF">Regimen:</label>
+                                <label>{{ce.descripcion}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Inicio:</label>
+                                <label>{{ce.fec_ingreso.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Salida:</label>
+                                <label *ngIf="ce.fec_salida === null">Sin fecha</label>
+                                <label *ngIf="ce.fec_salida != null">{{ce.fec_salida.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja3 d-flex justify-content-start">
+                                <label id="datosF">Modalidad Trabajo:</label>
+                                <label>{{ce.nombre_contrato}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Control de Asistencia:</label>
+                                <label *ngIf="ce.asis_controla == true">Si</label>
+                                <label *ngIf="ce.asis_controla == false">No</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Control de Vacaciones:</label>
+                                <label *ngIf="ce.vaca_controla == true">Si</label>
+                                <label *ngIf="ce.vaca_controla == false">No</label>
+                            </div>
+                            <div class="caja2 d-flex justify-content-start">
+                                <label id="datosF">Contrato:</label>
+                                <a *ngIf="ce.doc_nombre != null && ce.doc_nombre != ''" class="fas fa-file-alt"
+                                    style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px" matSuffix
+                                    matTooltipPosition="right" matTooltip="Dar click para descargar contrato de trabajo"
+                                    href="{{hipervinculo}}/contratoEmpleado/documentos/{{ce.documento}}"
+                                    target="_blank">
+                                    <p>{{ce.doc_nombre}}</p>
+                                </a>
+                                <label id="contratoLaboral"
+                                    *ngIf="ce.doc_nombre === null || ce.doc_nombre === ''">Contrato Laboral no
+                                    cargado</label>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <br>
+            <mat-card class="mat-elevation-z8">
+                <div class="barraTitulo">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
+                                <h5>Contratos Anteriores</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <mat-card-content>
+                    <div class="container" style="padding-top: 15px; text-align: center;">
+                        <form [formGroup]="contratoForm">
+                            <mat-form-field>
+                                <mat-label>Período del Contrato</mat-label>
+                                <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
+                                    matTooltipPosition="right" matTooltip="Lista de contratos del empleado">
+                                    help_outline</mat-icon>
+                                <mat-select [formControl]="fechaContrato">
+                                    <mat-option *ngFor="let c of contratoBuscado" [value]="c.id"
+                                        (click)="obtenerContratoSeleccionado(contratoForm.value)">
+                                        {{c.fec_ingreso.split("T")[0]}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <div class="container" *ngFor="let ce of contratoSeleccionado" style="padding-top: 15px;">
+                        <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                            <div class="caja2 d-flex justify-content-start">
+                                <label id="datosF">Código:</label>
+                                <label>{{ce.id}}</label>
+                            </div>
+                            <div class="caja2 d-flex justify-content-start">
+                                <label id="datosF">Regimen:</label>
+                                <label>{{ce.descripcion}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Inicio:</label>
+                                <label>{{ce.fec_ingreso.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Salida:</label>
+                                <label *ngIf="ce.fec_salida === null">Sin fecha</label>
+                                <label *ngIf="ce.fec_salida != null">{{ce.fec_salida.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Control de Asistencia:</label>
+                                <label *ngIf="ce.asis_controla == true">Si</label>
+                                <label *ngIf="ce.asis_controla == false">No</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Control de Vacaciones:</label>
+                                <label *ngIf="ce.vaca_controla == true">Si</label>
+                                <label *ngIf="ce.vaca_controla == false">No</label>
+                            </div>
+                            <div class="caja2 d-flex justify-content-start">
+                                <label id="datosF">Contrato:</label>
+                                <a *ngIf="ce.doc_nombre != null && ce.doc_nombre != ''" class="fas fa-file-alt"
+                                    style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px" matSuffix
+                                    matTooltipPosition="right" matTooltip="Dar click para descargar contrato de trabajo"
+                                    href="{{hipervinculo}}/contratoEmpleado/documentos/{{ce.documento}}"
+                                    target="_blank">
+                                    <p>{{ce.doc_nombre}}</p>
+                                </a>
+                                <label id="contratoLaboral"
+                                    *ngIf="ce.doc_nombre === null || ce.doc_nombre === ''">Contrato Laboral no
+                                    cargado</label>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <a mat-button type="submit" (click)="LimpiarContrato()">
+                                <i class="fa fa-times-circle" matTooltipPosition="right" id="cerrar"
+                                    matTooltip="Cerrar Registro">
+                                    <p>Cerrar</p>
+                                </i>
+                            </a>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <div class="col-md">
+            <mat-card class="mat-elevation-z8">
+                <div class="barraTitulo">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
+                                <h5>Cargo</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <mat-card-content>
+                    <div class="container" *ngFor="let c of cargoEmpleado" style="padding-top: 15px;">
+                        <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Código:</label>
+                                <label>{{c.id}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Sucursal:</label>
+                                <label>{{c.sucursal}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Cargo:</label>
+                                <label>{{nombreCargo}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Departamento:</label>
+                                <label>{{c.departamento}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Inicio:</label>
+                                <label>{{c.fec_inicio.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Sueldo:</label>
+                                <label>$ {{c.sueldo}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Final:</label>
+                                <label>{{c.fec_final.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Horas de Trabajo:</label>
+                                <label>{{c.hora_trabaja}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <br>
+            <mat-card class="mat-elevation-z8">
+                <div class="barraTitulo">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
+                                <h5>Cargos Anteriores</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <mat-card-content>
+                    <div class="container" style="padding-top: 15px; text-align: center;">
+                        <form [formGroup]="cargoForm">
+                            <mat-form-field>
+                                <mat-label>Período del Cargo</mat-label>
+                                <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
+                                    matTooltipPosition="right"
+                                    matTooltip="Seleccionar contrato para obtener la lista de sus respectivos cargos">
+                                    help_outline</mat-icon>
+                                <mat-select [formControl]="fechaICargo">
+                                    <mat-option *ngFor="let c of listaCargos" [value]="c.id"
+                                        (click)="obtenerCargoSeleccionadoEmpleado(cargoForm.value)">
+                                        {{c.fec_inicio.split("T")[0]}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <div class="container" *ngFor="let c of cargoSeleccionado" style="padding-top: 15px;">
+                        <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Código:</label>
+                                <label>{{c.id}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Sucursal:</label>
+                                <label>{{c.sucursal}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Cargo:</label>
+                                <label>{{nombreCargoSeleccionado}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Departamento:</label>
+                                <label>{{c.departamento}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Inicio:</label>
+                                <label>{{c.fec_inicio.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Sueldo:</label>
+                                <label>$ {{c.sueldo}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Fecha Final:</label>
+                                <label>{{c.fec_final.split("T")[0]}}</label>
+                            </div>
+                            <div class="caja1 d-flex justify-content-start">
+                                <label id="datosF">Horas de Trabajo:</label>
+                                <label>{{c.hora_trabaja}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

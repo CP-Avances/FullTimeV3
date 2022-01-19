@@ -1,0 +1,88 @@
+<mat-icon class="float-right" id="cerrar" (click)="cerrarVentana()">clear</mat-icon>
+<br>
+<div class="container" style="text-align: center;" *ngIf='verColores'>
+    <div id="titulo">SELECCIONAR COLORES</div>
+    <div class="container" style="text-align: center;">
+        <form [formGroup]="coloresForm">
+            <br>
+            <label>Color Principal</label>
+            <br>
+            <input type="color" [(ngModel)]="p_color" value="p_color" [formControl]="principal" matSuffix
+                 matTooltip="Seleccionar color principal">
+            <br>
+            <br>
+            <label>Color Secundario</label>
+            <br>
+            <input type="color" [(ngModel)]="s_color" value="s_color" [formControl]="secundario" matSuffix
+                 matTooltip="Seleccionar color secundario">
+            <br>
+            <br>
+            <div style="margin:auto;">
+                <button type="submit" class="btn" (click)="generarPdf('open')">Visualizar</button>
+                <button type="submit" class="btn" (click)="CambiarColores()">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container" style="text-align: center;" *ngIf='verFrase'>
+    <div id="titulo"> FRASE MARCA DE AGUA </div>
+    <br>
+    <div class="container" style="text-align: center;">
+        <form [formGroup]="fraseForm">
+            <mat-radio-group aria-label="Select an option" [formControl]="fraseReporte" required>
+                <label>Seleccionar Frase *</label>
+                <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                    matTooltip="Seleccionar la frase que se visualizará como marca de agua en sus reportes.">
+                    help_outline
+                </mat-icon>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm" style="text-align: left;">
+                            <mat-radio-button ngDefaultControl [(ngModel)]="selec1" [checked]="selec1"
+                                [ngModelOptions]="{standalone: true}" (change)="CambiarFrase($event)" value="FullTime">
+                                FullTime
+                            </mat-radio-button>
+                            <br>
+                            <mat-radio-button ngDefaultControl [(ngModel)]="selec2" [checked]="selec2"
+                                [ngModelOptions]="{standalone: true}" (change)="CambiarFrase($event)"
+                                value="Confidencial">
+                                Confidencial
+                            </mat-radio-button>
+                            <br>
+                            <mat-radio-button ngDefaultControl [(ngModel)]="selec3" [checked]="selec3"
+                                (change)="CambiarFrase($event)" [ngModelOptions]="{standalone: true}" value="">
+                                Ninguna
+                            </mat-radio-button>
+                            <br>
+                            <mat-radio-button ngDefaultControl [(ngModel)]="selec4" [checked]="selec4"
+                                [ngModelOptions]="{standalone: true}" (click)="IngresarFrase()" value="Otro">
+                                Otra
+                            </mat-radio-button>
+                        </div>
+                    </div>
+                </div>
+            </mat-radio-group>
+            <mat-form-field *ngIf="ingresarOtro">
+                <mat-label>Nueva Frase</mat-label>
+                <input matInput placeholder="Ingresar nombre" [formControl]="nuevaF" [ngStyle]="verOtro" maxlength="50"
+                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+                <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                    matTooltip="Ingresar frase que será usada como marca de agua en los reportes">
+                    help_outline
+                </mat-icon>
+
+            </mat-form-field>
+            <br>
+            <div style="margin:auto;">
+                <button type="submit" class="btn" (click)="VerArchivo(fraseForm.value)">Visualizar</button>
+                <button type="submit" class="btn" (click)="GuardarFrase(fraseForm.value)">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="pantalla-progress" *ngIf="habilitarprogress">
+    <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">
+    </mat-progress-spinner>
+</div>

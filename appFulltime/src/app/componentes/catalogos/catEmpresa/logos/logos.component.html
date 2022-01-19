@@ -1,0 +1,14 @@
+<span mat-button class="material-icons" (click)="dialogRef.close(false)" 
+    style="float: right; margin: -15px -15px 0px 0px; color: red; cursor: pointer;">
+    close
+</span>
+<div class="d-flex flex-wrap justify-content-center">
+    <img src="{{logo}}" alt="logo" srcset="" width="50%" height="50%">
+    <div style="padding: 25px 25px 0px 25px;">
+        <form method="post" enctype="multipart/form-data">
+            <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" 
+                id="file" accept="image/png, image/jpeg">
+            <label for="file" class="btn-2">{{textoBoton}}</label>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,235 @@
+<div class="scrollbar scrollbar-primary">
+    <div class="d-flex bd-highlight tituloEmpresaR">
+        <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+        <h5 class="w-100 bd-highlight align-self-center" cdkDrag cdkDragRootElement=".cdk-overlay-pane">Modificar Datos
+            Empresa</h5>
+    </div>
+    <form [formGroup]="RegistroEmpresaForm">
+        <div class="container" style="text-align: center">
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    Guardar.</span>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <mat-form-field>
+                        <mat-label>Nombre de la Empresa</mat-label>
+                        <input matInput placeholder="Nombre del empre" [formControl]="nombreF" required>
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Modificar nombre de la Empresa">
+                            help_outline</mat-icon>
+                        <mat-error *ngIf="nombreF.invalid">{{ObtenerMensajeErrorNombreRequerido()}}</mat-error>
+                        <mat-error *ngIf="nombreF.invalid">Ingresar un nombre válido</mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field>
+                        <mat-label>RUC</mat-label>
+                        <input matInput placeholder="Ingresar marca" [formControl]="rucF" maxlength="13"
+                            oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                            (keypress)="IngresarSoloNumeros($event)" required>
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Modificar el RUC de la Empresa">
+                            help_outline
+                        </mat-icon>
+                        <mat-error *ngIf="rucF.invalid">{{ObtenerMensajeErrorRucRequerido()}}</mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field>
+                        <mat-label>Teléfono</mat-label>
+                        <input matInput placeholder="Ingresar puerto" [formControl]="telefonoF" maxlength="10"
+                            (keypress)="IngresarSoloNumeros($event)"
+                            oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                            required>
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Modificar número de contacto de la Empresa">
+                            help_outline</mat-icon>
+                        <mat-error *ngIf="telefonoF.invalid">{{ObtenerMensajeErrorTelefonoRequerido()}}
+                        </mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field>
+                        <mat-label>Dirección</mat-label>
+                        <input matInput placeholder="Ingresar modelo" [formControl]="direccionF" required>
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Modificar dirección de ubicación de la Empresa">
+                            help_outline
+                        </mat-icon>
+                        <mat-error *ngIf="direccionF.invalid">{{ObtenerMensajeErrorDireccionRequerido()}}
+                        </mat-error>
+                        <mat-error *ngIf="direccionF.invalid">Ingresar una dirección válida</mat-error>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field>
+                        <mat-label>Correo</mat-label>
+                        <input matInput placeholder="Ingresar mail" [formControl]="correoF" required>
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Modificar correo electrónico de la Empresa">
+                            help_outline
+                        </mat-icon>
+                        <mat-error *ngIf="correoF.invalid">{{ObtenerMensajeErrorCorreoRequerido()}}</mat-error>
+                        <mat-error *ngIf="correoF.invalid">Ingresar un correo electrónico válido</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col">
+                    <div class="col-sm" style="text-align: left;">
+                        <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
+                            <label>Tipo de Empresa *</label>
+                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                                matTooltip="Seleccionar el tipo al que corresponde su empresa">help_outline
+                            </mat-icon>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm" style="text-align: left;">
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec1" [checked]="selec1"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarNombrePublica()"
+                                            value="Pública">
+                                            Pública
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec2" [checked]="selec2"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarNombrePrivada()"
+                                            value="Privada">
+                                            Privada
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec3" [checked]="selec3"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarNombreOng()"
+                                            value="ONG">
+                                            ONG
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec4" [checked]="selec4"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarNombreNatural()"
+                                            value="Persona Natural">Persona Natural
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec5" [checked]="selec5"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarNombreOtro()"
+                                            value="Otro">Otro
+                                        </mat-radio-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-radio-group>
+                    </div>
+                    <mat-form-field *ngIf="!HabilitarOtro">
+                        <mat-label>Tipo de Empresa</mat-label>
+                        <input matInput placeholder="Ingresar nombre" [formControl]="otroF" [ngStyle]="estiloOtro"
+                            id="otro">
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Ingresar el nombre del tipo de empresa">
+                            help_outline
+                        </mat-icon>
+                        <mat-error *ngIf="otroF.invalid">Ingresar un nombre válido</mat-error>
+                    </mat-form-field>
+                    <br *ngIf="!HabilitarOtro">
+                    <mat-form-field *ngIf="!HabilitarRepre">
+                        <mat-label ngDefaultControl [(ngModel)]="valor" [ngModelOptions]="{standalone: true}">{{valor}}
+                        </mat-label>
+                        <input matInput placeholder="Ingresar nombre" [formControl]="representanteF" required
+                            [ngStyle]="estiloRepre" id="repre">
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Modificar el nombre del representante de la empresa">
+                            help_outline
+                        </mat-icon>
+                        <mat-error *ngIf="representanteF.invalid">{{ObtenerMensajeErrorRepre()}}
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Num. Partida Presupuestaria</mat-label>
+                        <input matInput placeholder="Ingresar número" [formControl]="numeroF"
+                            (keypress)="IngresarSoloNumeros($event)">
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Ingresar número de partida presupuestaria de la Empresa">
+                            help_outline
+                        </mat-icon>
+                    </mat-form-field>
+                </div>
+                <div class="col">
+                    <div class="col-sm" style="text-align: left;">
+                        <mat-radio-group aria-label="Select an option" [formControl]="establecimientoF" required>
+                            <label>Establecimiento *</label>
+                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                                matTooltip="Seleccionar el establecimiento que tiene la empresa">help_outline
+                            </mat-icon>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm" style="text-align: left;">
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec6" [checked]="selec6"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarSucursalesAgencias()"
+                                            value="Sucursales">
+                                            Sucursales
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec7" [checked]="selec7"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarSucursalesAgencias()"
+                                            value="Agencias">
+                                            Agencias
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec8" [checked]="selec8"
+                                            [ngModelOptions]="{standalone: true}" (click)="CambiarEstablecimiento()"
+                                            value="Otro">Otro
+                                        </mat-radio-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-radio-group>
+                    </div>
+                    <mat-form-field *ngIf="!HabilitarOtroE">
+                        <mat-label>Nombre Establecimiento</mat-label>
+                        <input matInput placeholder="Ingresar nombre" [formControl]="otroE" [ngStyle]="estiloOtroE">
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Ingresar el nombre del establecimiento">
+                            help_outline
+                        </mat-icon>
+                        <mat-error *ngIf="otroE.invalid">Ingresar un nombre válido</mat-error>
+                    </mat-form-field>
+                    <div class="col-sm" style="text-align: left;">
+                        <mat-radio-group aria-label="Select an option" [formControl]="cambiosF" required>
+                            <label>Autorizaciones *</label>
+                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                                matTooltip="Seleccionar el establecimiento que tiene la empresa">help_outline
+                            </mat-icon>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm" style="text-align: left;">
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec9" [checked]="selec9"
+                                            [ngModelOptions]="{standalone: true}" (click)="RealizarCambiosSi()"
+                                            value=true>
+                                            Realizar Cambios
+                                        </mat-radio-button>
+                                        <br>
+                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec10" [checked]="selec10"
+                                            [ngModelOptions]="{standalone: true}" (click)="RealizarCambiosNo()"
+                                            value=false>
+                                            No realizar Cambios
+                                        </mat-radio-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-radio-group>
+                    </div>
+                    <mat-form-field *ngIf="!habilitarDias">
+                        <mat-label>Días previos a la fecha</mat-label>
+                        <input (keypress)="IngresarSoloNumeros($event)" matInput placeholder="Días previos a la fecha"
+                            [formControl]="dias_cambioF" [ngStyle]="estiloDias">
+                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            matTooltip="Ingresar el número de días que tendra para realizar un cambio en la autorización de solicitud de permisos, vacaciones u horas extras antes de la fecha de su cumplimiento">
+                            help_outline
+                        </mat-icon>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex flex-wrap justify-content-center">
+        <input type="submit" class="btn btn-sm button" [disabled]="!RegistroEmpresaForm.valid" value="Guardar"
+            (click)="InsertarEmpresa(RegistroEmpresaForm.value)">
+        <input type="submit" class="btn btn-sm button" (click)="Salir()" value="Salir">
+    </div>
+</div>
+<div class="pantalla-progress" *ngIf="habilitarprogress">
+    <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">
+    </mat-progress-spinner>
+</div>

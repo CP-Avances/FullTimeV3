@@ -1,0 +1,19 @@
+.barraTitulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+#ver { color: indianred; }
+
+p { font-size: x-small; }
+
+table { width: 100%; font-size: 14px; }
+
+#detalleH { color: rgb(38, 0, 255); margin-right: 15px; }
+
+td { padding-top: 10px; text-align: center; }
+
+

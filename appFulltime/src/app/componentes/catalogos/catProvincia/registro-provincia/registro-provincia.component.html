@@ -1,0 +1,52 @@
+<div class="d-flex bd-highlight barraTituloProvinciaR">
+    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+    <h5 class="w-100 bd-highlight align-self-center">Provincia - Departamento - Estado</h5>
+</div>
+<form [formGroup]="NuevaProvinciasForm">
+    <div class="container">
+        <div class="nota">
+            <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón Guardar.</span>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center">
+            <mat-form-field>
+                <mat-label>Seleccionar Continente</mat-label>
+                <mat-icon id="provReg" matSuffix matTooltipClass="provinciaReg-tooltip" matTooltipPosition="right"
+                    matTooltip="Seleccionar un continente">
+                    help_outline</mat-icon>
+                <mat-select [formControl]="nombreContinenteF" [(ngModel)]="seleccionarContinente" required>
+                    <mat-option *ngFor="let c of continentes" [value]="c.continente"
+                        (click)="FiltrarPaises(NuevaProvinciasForm.value)">
+                        {{c.continente}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <input type="text" placeholder="Ingresar País" aria-label="Number" matInput
+                    [formControl]="nombrePaisF" [matAutocomplete]="auto" required>
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let option of filteredOptions | async"
+                        [value]="option.nombre">
+                        {{option.nombre}}
+                    </mat-option>
+                </mat-autocomplete>                
+                <mat-icon id="provReg" matSuffix matTooltipClass="provinciaReg-tooltip" matTooltipPosition="right"
+                    matTooltip="Lista de países que se encuentran en el continente seleccionado">
+                    help_outline</mat-icon>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label id="nombreP">Provincia-Departamento-Estado</mat-label>
+                <input matInput placeholder="Ej: Pichincha" [formControl]="nombreProvinciaF"
+                    (keypress)="IngresarSoloLetras($event)" required>
+                <mat-icon id="provReg" matSuffix matTooltipClass="provinciaReg-tooltip" matTooltipPosition="right"
+                    matTooltip="Ingresar nombre de una provincia, departamento o estado ubicado en el país seleccionado">
+                    help_outline</mat-icon>
+                <mat-error *ngIf="nombreProvinciaF.invalid">{{ObtenerMensajeProvinciaRequerido()}}</mat-error>
+            </mat-form-field>
+        </div>
+    </div>
+</form>
+<div class="d-flex flex-wrap justify-content-center">
+    <input type="submit" class="btn btn-sm button" (click)="InsertarProvincia(NuevaProvinciasForm.value)"
+        [disabled]="!NuevaProvinciasForm.valid" value="Guardar">
+    <input type="submit" class="btn btn-sm button" (click)="CerrarVentanaRegistroProvincia()" value="Salir">
+</div>

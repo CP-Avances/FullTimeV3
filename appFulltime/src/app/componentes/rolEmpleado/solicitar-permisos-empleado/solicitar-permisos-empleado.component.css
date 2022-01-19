@@ -1,0 +1,22 @@
+.barraTitulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+p { font-size: x-small; }
+
+#datosF { font-weight: bold; font-size: 15px; padding-right: 5px; }
+
+
+
+.caja1 {padding: 0px 15px 0px 15px; width: 260px;}
+
+/* #edit { color:green; margin-right: 5px; cursor: pointer; font-size: 15px; text-align: center; } */
+
+/* #cancel { color:rgb(192, 36, 9); margin-right: 5px; cursor: pointer; font-size: 15px; text-align: center;} */
+#edit { color:green; margin-right: 20px; cursor: pointer; font-size: 15px; text-align: center; }
+
+#cancel { color:red; cursor: pointer; font-size: 15px; text-align: center; margin-right: 20px; }

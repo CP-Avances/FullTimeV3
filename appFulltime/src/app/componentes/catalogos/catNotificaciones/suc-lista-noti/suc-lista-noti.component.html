@@ -1,0 +1,36 @@
+<br>
+<div class="container" style="padding-bottom: 50px; text-align: center;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div id="resulProceso">Lista para asignar Catálogo Notificaciones</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th scope="col">Empresa</th>
+                        <th scope="col">Sucursal</th>
+                        <th scope="col">Departamento</th>
+                        <th scope="col">Nivel</th>
+                        <th scope="col">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let d of datos | paginate:tamanio_pagina:numero_pagina">
+                        <td *ngIf="d.nom_depa != 'Ninguno'">{{d.nom_emp}}</td>
+                        <td *ngIf="d.nom_depa != 'Ninguno'">{{d.nom_suc}}</td>
+                        <td *ngIf="d.nom_depa != 'Ninguno'">{{d.nom_depa}}</td>
+                        <td *ngIf="d.nom_depa != 'Ninguno'">{{d.nivel}}</td>
+                        <td *ngIf="d.nom_depa != 'Ninguno'" class="d-flex justify-content-center">
+                            <a [routerLink]="['/notificaciones/',d.sucursal,d.departamento,d.nivel]" class="fas fa-plus-circle" style="color:rgb(58, 90, 231); margin-left: 15px;" id="iprocesoL" 
+                                matSuffix matTooltipPosition="right" matTooltip="Agregar catalogos notificaciones en cada departamento.">
+                                <p>Agregar</p>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="datos.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

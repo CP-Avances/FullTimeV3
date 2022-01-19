@@ -1,0 +1,64 @@
+<div style="text-align: center;" *ngIf='contrasena'>
+    <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
+    <span>Confirmar su contraseña</span>
+    <form [formGroup]="seguridadForm">
+        <div class="nota">
+            <span>NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
+                Confirmar Contraseña.</span>
+        </div>
+        <mat-form-field>
+            <mat-label>Contraseña Actual</mat-label>
+            <input matInput placeholder="**************" [type]="hide1 ? 'password' : 'text'" maxlength="10"
+                oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                formControlName="aPass" required>
+            <button mat-icon-button matSuffix (click)="hide1 = !hide1" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide1">
+                <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                    matTooltip="Ocultar o mostrar la contraseña ingresada.">
+                    {{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+        <br>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn_b" (click)="CompararContrasenia(seguridadForm.value)"
+                [disabled]="!seguridadForm.valid">Confirmar Contraseña</button>
+        </div>
+        <br>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn_b" (click)="CerrarRegistro()">Salir</button>
+        </div>
+    </form>
+</div>
+<div style="text-align: center;" *ngIf='frase'>
+    <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
+    <span>Confirmar su frase</span>
+    <form [formGroup]="fraseForm">
+        <div class="nota">
+            <span>NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
+                Confirmar Frase.</span>
+        </div>
+        <mat-form-field>
+            <mat-label>Ingresar Frase</mat-label>
+            <textarea matInput #message maxlength="100" placeholder="Ingrese su frase de seguridad"
+                formControlName="aFrase" required></textarea>
+            <mat-icon id="i-cursor"  matSuffix matTooltipPosition="right"
+                matTooltip="Para asegurar que es usted dueño de esta cuenta ingrese su frase de seguridad.">
+                help_outline</mat-icon>
+            <mat-hint align="start"><strong>Ingresar hasta 100 caracteres</strong></mat-hint>
+            <mat-hint align="end">{{message.value.length}} / 100</mat-hint>
+        </mat-form-field>
+        <br>
+        <div class="caja1">
+            <button type="button" class="btn btn-link verde" (click)="RecuperarFrase()">Olvido su frase de
+                seguridad?</button>
+        </div>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn_b" (click)="CompararFrase(fraseForm.value)"
+                [disabled]="!fraseForm.valid">Confirmar Frase</button>
+        </div>
+        <br>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn_b" (click)="CerrarRegistro()">Salir</button>
+        </div>
+    </form>
+</div>

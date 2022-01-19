@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<root>
+  <departamento id="30">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Sucursal Norte</establecimiento>
+    <departamento>FINANZAS</departamento>
+    <nivel>1</nivel>
+    <departamento_superior>MARKETING</departamento_superior>
+  </departamento>
+  <departamento id="40">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Sucursal Central</establecimiento>
+    <departamento>GERENCIA</departamento>
+    <nivel>1</nivel>
+    <departamento_superior>Ninguno</departamento_superior>
+  </departamento>
+  <departamento id="38">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Agencia 2</establecimiento>
+    <departamento>GERENCIA</departamento>
+    <nivel>1</nivel>
+    <departamento_superior>Ninguno</departamento_superior>
+  </departamento>
+  <departamento id="31">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Sucursal Norte</establecimiento>
+    <departamento>MARKETING</departamento>
+    <nivel>1</nivel>
+    <departamento_superior>VENTAS</departamento_superior>
+  </departamento>
+  <departamento id="41">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Sucursal Central</establecimiento>
+    <departamento>SISTEMAS</departamento>
+    <nivel>2</nivel>
+    <departamento_superior>GERENCIA</departamento_superior>
+  </departamento>
+  <departamento id="39">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Agencia 2</establecimiento>
+    <departamento>SISTEMAS</departamento>
+    <nivel>2</nivel>
+    <departamento_superior>GERENCIA</departamento_superior>
+  </departamento>
+  <departamento id="17">
+    <empresa>Casa Pazmiño</empresa>
+    <establecimiento>Sucursal Norte</establecimiento>
+    <departamento>VENTAS</departamento>
+    <nivel>2</nivel>
+    <departamento_superior>GERENCIA</departamento_superior>
+  </departamento>
+</root>

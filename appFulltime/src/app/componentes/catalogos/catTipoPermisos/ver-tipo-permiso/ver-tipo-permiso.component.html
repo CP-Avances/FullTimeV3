@@ -1,0 +1,149 @@
+<div class="container" *ngFor="let p of datosPermiso" style="padding-top: 15px;">
+        <mat-card class="example-card mat-elevation-z8">
+                <div class="barraTituloD">
+                        <span>DATOS GENERALES</span>
+                </div>
+                <mat-card-content>
+                        <div class="container" style="padding-top: 15px;">
+                                <div class="row">
+                                        <br>
+                                        <div class="col">
+                                                <label id="datosF"
+                                                        class="col-sm col-form-label text-center">{{p.descripcion.toUpperCase()}}</label>
+                                        </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                        <div class="col" id="verticalLine">
+                                                <label id="datosF"
+                                                        class="col-sm col-form-label text-center">INFORMACIÓN</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"><b>Días máximos de permisos:</b>
+                                                        {{p.num_dia_maximo}}
+                                                </label>
+                                                <br>
+                                                <label class="col-sm col-form-label"><b>Horas máximas de permiso:</b>
+                                                        {{p.num_hora_maximo}}</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.acce_empleado == true"><b>Empleado podrá solicitar
+                                                                permiso:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.acce_empleado == false"><b>Empleado podrá
+                                                                solicitar permiso:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"><b>Días previos de solicitud:</b>
+                                                        {{p.num_dia_ingreso}}</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.almu_incluir == true"><b>Incluye
+                                                                almuerzo:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.almu_incluir == false"><b>Incluye
+                                                                almuerzo:</b> No</label>
+                                        </div>
+                                        <br>
+                                        <div class="col" id="verticalLine">
+                                                <label id="datosF" class="col-sm col-form-label text-center">EFECTOS DEL
+                                                        PERMISO</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.vaca_afecta == true"><b>Afecta
+                                                                Vacaciones:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.vaca_afecta == false"><b>Afecta
+                                                                Vacaciones:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.actualizar == true"><b>Actualización de
+                                                                permiso:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.actualizar == false"><b>Actualización de
+                                                                permiso:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.anio_acumula == true"><b>Acumular
+                                                                permiso en el año:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.anio_acumula == false"><b>Acumular
+                                                                permiso en el año:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.correo == true"><b>Notificación por
+                                                                correo:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.correo == false"><b>Notificación por
+                                                                correo:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.eliminar == true"><b>Eliminar
+                                                                permiso:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.eliminar == false"><b>Eliminar
+                                                                permiso:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.tipo_descuento == 1"><b>Tipo
+                                                                Descuento:</b> Vacaciones</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.tipo_descuento == 2"><b>Tipo
+                                                                Descuento:</b> Ninguno</label>
+                                        </div>
+                                        <br>
+                                        <div class="col" id="verticalLine">
+                                                <label id="datosF" class="col-sm col-form-label text-center">CONDICIONES
+                                                        DEL PERMISO</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.preautorizar == true"><b>Preautorizar
+                                                                Permiso:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.preautorizar == false"><b>Preautorizar
+                                                                Permiso:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.autorizar == true"><b>Autorizar
+                                                                Permiso:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.autorizar == false"><b>Autorizar
+                                                                Permiso:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.legalizar == true"><b>Legalizar
+                                                                Permiso:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.legalizar == false"><b>Legalizar
+                                                                Permiso:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.fec_validar == true"><b>Restricción por
+                                                                Fecha:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.fec_validar == false"><b>Restricción por
+                                                                Fecha:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.gene_justificacion == true"><b>Requiere
+                                                                Justificación:</b> Sí</label>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.gene_justificacion == false"><b>Requiere
+                                                                Justificación:</b> No</label>
+                                                <br>
+                                                <label class="col-sm col-form-label"
+                                                        *ngIf="p.gene_justificacion == true"><b>Días para
+                                                                justificar:</b> {{p.num_dia_justifica}} </label>
+                                        </div>
+                                </div>
+                                <div style="text-align: right;">
+                                        <i id="editarF" (click)="EditarDatosPermiso(p)" matSuffix
+                                                 matTooltipPosition="right"
+                                                matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                                                <p>Editar</p>
+                                        </i>
+                                </div>
+                        </div>
+                        <input type="submit" class="btn btn-sm" [routerLink]="['/verTipoPermiso/']"
+                                value="Ir a la Lista de Permisos">
+                </mat-card-content>
+        </mat-card>
+</div>

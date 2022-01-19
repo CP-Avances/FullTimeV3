@@ -1,0 +1,92 @@
+<br>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Carpetas</li>
+    </ol>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-center" style="margin-bottom: 25px">
+    <div *ngFor="let c of array_carpetas" style="padding: 20px 20px 20px 20px; height: 120px; width: 120px;">
+        <button class="btn" type="button" id="cajas-carpetas" 
+            (click)="AbrirCarpeta(c.filename)">
+            <mat-icon id="i-cursor">folder</mat-icon>
+            <h5 id="letras">{{c.nombre}}</h5>
+        </button>
+    </div>
+</div>
+<!-- 
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+    <div class="row">
+        <div class="col-md" style="margin-bottom: 25px; padding-bottom: 10px;">
+            <div class="tituloHorarioL">
+                <span>DOCUMENTOS</span>
+            </div>
+            <mat-card class="example-card mat-elevation-z9">
+                <h5 style="text-align: center">Críterios de Búsqueda</h5>
+                <form [formGroup]="buscarDocumentoForm">
+                    <div class="d-flex flex-wrap justify-content-center">
+                        <mat-form-field>
+                            <mat-label>Nombre</mat-label>
+                            <input matInput name="filtroNombreDocumento" placeholder="Nombre Documento"
+                                [formControl]="nombreDocF" [(ngModel)]="filtroNombreDocumento">
+                            <mat-icon id="iHorL" matSuffix 
+                                matTooltipPosition="right" matTooltip="Búsqueda del documento por el nombre">
+                                help_outline</mat-icon>
+                            <mat-error *ngIf="nombreDocF.invalid">Indispensable ingresar dos letras
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </form>
+                <div class="d-flex flex-wrap justify-content-center">
+                    <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()">Cancelar</button>
+                    <button mat-button type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrar()">Subir
+                        Documento</button>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</div>
+<div class="container" style="padding-bottom: 50px; text-align: center;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div id="titulo">RESULTADO DE BÚSQUEDA</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm ">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Documento</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let ld of listaDocumentos | filtrarNombreDocu: filtroNombreDocumento | paginate:tamanio_pagina:numero_pagina">
+                        <td>{{ld.doc_nombre}}</td>
+                        <td>                        
+                            <a class="fas fa-file-alt"
+                                style="color:rgb(197, 95, 11); margin-left: 15px; text-align: center;" matSuffix
+                                matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento"
+                                href="{{hipervinculo}}/archivosCargados/documentos/{{ld.documento}}" target="_blank">
+                                <p>Documento</p>
+                            </a>
+                        </td>
+                        <td class="d-flex justify-content-center">                        
+                            <i class="fas fa-edit" matSuffix matTooltipPosition="right"
+                                 (click)="AbrirVentanaEditarDocumento(ld)"
+                                matTooltip="Modificar los datos generales de este registro">
+                                <p>Editar</p>
+                            </i>
+                            <i class="far fa-trash-alt" (click)="ConfirmarDelete(ld)" matSuffix matTooltipPosition="right"
+                                 matTooltip="Eliminar este registro">
+                                <p>Eliminar</p>
+                            </i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="listaDocumentos.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div> -->

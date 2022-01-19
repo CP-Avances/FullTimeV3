@@ -1,0 +1,127 @@
+<!-- TABLA CON LISTA DE SOLICITUDES DE SERVICIO DE ALIMENTACIÓN PENDIENTES -->
+<br>
+<div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista_planificaciones">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <span class="w-100 bd-highlight">
+                Lista de Planificaciones Registradas</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th scope="col">Servicio</th>
+                        <th scope="col">Menú</th>
+                        <th scope="col">Fecha Inicio</th>
+                        <th scope="col">Fecha Fin</th>
+                        <th scope="col">Hora Inicio</th>
+                        <th scope="col">Hora Final</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let e of planificaciones | paginate:tamanio_pagina:numero_pagina">
+                        <td>{{e.nombre_servicio}}</td>
+                        <td>{{e.nombre_menu}}</td>
+                        <td>{{e.fec_inicio.split('T')[0]}}</td>
+                        <td>{{e.fec_final.split('T')[0]}}</td>
+                        <td>{{e.hora_inicio}}</td>
+                        <td>{{e.hora_fin}}</td>
+                        <td class="d-flex justify-content-center">
+                            <i *ngIf="ver_icono" class="fas fa-edit" (click)="HabilitarTablaEditar(e.id)" matSuffix
+                                matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro.">
+                                <p>Editar</p>
+                            </i>
+                            <i *ngIf="ver_icono" (click)="HabilitarTablaEliminar(e.id)" class="far fa-trash-alt"
+                                id="t-eliminar" matSuffix matTooltipPosition="right" matTooltip="Eliminar este registro.">
+                                <p>Eliminar</p>
+                            </i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="planificaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>
+
+<!-- TABLA CON LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA -->
+<br>
+<div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista_empleados">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <mat-icon class="flex-shrink-1 bd-highlight" (click)="HabilitarSeleccion()" matSuffix
+                matTooltipPosition="right"
+                matTooltip="Editar o Eliminar datos de esta planificación de servicio de alimentación."
+                id="SelectCheck">
+                library_add_check</mat-icon>
+            <button *ngIf="botonEditar" class="btn btn-primary" (click)="EditarRegistrosMultiple()"
+                style="float: left; margin-left: 10px;">Editar</button>
+            <button *ngIf="botonEliminar" class="btn btn-primary" (click)="EliminarRegistrosMultiple()"
+                style="float: left; margin-left: 10px;">Eliminar</button>
+            <mat-icon (click)="CerrarTabla()" matSuffix matTooltipPosition="right"
+                matTooltip="Cerrar lista de colaboradores con planificación de servicio de alimentación seleccionada."
+                id="cerrar">
+                close</mat-icon>
+            <span class="w-100 bd-highlight">
+                Lista de Empleados con Planificación</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th>
+                            <mat-checkbox *ngIf="botonSeleccion" (change)="$event ? masterToggle() : null"
+                                [checked]="selectionUno.hasValue() && isAllSelected()"
+                                [indeterminate]="selectionUno.hasValue() && !isAllSelected()"
+                                [aria-label]="checkboxLabel()">
+                            </mat-checkbox>
+                        </th>
+                        <th scope="col">Empleado</th>
+                        <th scope="col">Servicio</th>
+                        <th scope="col">Menú</th>
+                        <th scope="col">Fecha Inicio</th>
+                        <th scope="col">Fecha Fin</th>
+                        <th scope="col">Hora Inicio</th>
+                        <th scope="col">Hora Final</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let e of planEmpleados | paginate:tamanio_pagina_empleado:numero_pagina_empleado">
+                        <td>
+                            <mat-checkbox *ngIf="botonSeleccion" (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionUno.toggle(e) : null" [checked]="selectionUno.isSelected(e)"
+                                [aria-label]="checkboxLabel(e)">
+                            </mat-checkbox>
+                        </td>
+                        <td>{{e.nombre}} {{e.apellido}}</td>
+                        <td>{{e.nombre_servicio}}</td>
+                        <td>{{e.nombre_menu}}</td>
+                        <td>{{e.fec_inicio.split('T')[0]}}</td>
+                        <td>{{e.fec_final.split('T')[0]}}</td>
+                        <td>{{e.hora_inicio}}</td>
+                        <td>{{e.hora_fin}}</td>
+                        <td class="d-flex justify-content-center">
+                            <i *ngIf="ver_editar" class="fas fa-edit" (click)="AbrirEditarPlanComidas(e, 'individual')"
+                                matSuffix matTooltipPosition="right"
+                                matTooltip="Modificar los datos generales de este registro.">
+                                <p>Editar</p>
+                            </i>
+                            <i *ngIf="ver_eliminar" (click)="ConfirmarDeletePlanComidas(e)" class="far fa-trash-alt" id="t-eliminar"
+                                matSuffix matTooltipPosition="right" matTooltip="Eliminar este registro.">
+                                <p>Eliminar</p>
+                            </i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="planEmpleados.length" [pageSize]="tamanio_pagina_empleado"
+            [pageSizeOptions]="pageSizeOptions_empleado" id="pagina" (page)="ManejarPaginaEmpleados($event)"
+            showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

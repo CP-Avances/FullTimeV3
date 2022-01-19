@@ -1,0 +1,82 @@
+<div class="d-flex bd-highlight barraTituloRegDepa">
+    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+    <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        Editar Departamento</h5>
+</div>
+<form [formGroup]="nuevoDepartamentoForm">
+    <div style="text-align: center">
+        <div class="nota">
+            <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                Guardar.</span>
+        </div>
+        <div class="d-flex flex-wrap justify-content-between">
+            <mat-form-field>
+                <mat-label>Seleccionar Empresa</mat-label>
+                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                    matTooltip="Lista de Empresas">help_outline</mat-icon>
+                <mat-select [formControl]="idEmpresaF" required>
+                    <mat-option *ngFor="let empre of empresas" [value]="empre.id"
+                        (click)="FiltrarSucursales(nuevoDepartamentoForm.value)">
+                        {{empre.nombre}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label id="depSup">Seleccionar Establecimiento</mat-label>
+                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                    matTooltip="Lista de Sucursales que pertenecen a la Empresa seleccionada">help_outline
+                </mat-icon>
+                <mat-select [formControl]="idSucursalF" required>
+                    <mat-option *ngFor="let suc of sucursales" [value]="suc.id"
+                        (click)="ObtenerDepartamentos(nuevoDepartamentoForm.value)">
+                        {{suc.nombre}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Departamento</mat-label>
+                <input matInput placeholder="Ej: Contabilidad" [formControl]="nombre"
+                    (keypress)="IngresarSoloLetras($event)" [(ngModel)]="nombreD" required>
+                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                    matTooltip="Ingresar nombre del nuevo departamento">help_outline</mat-icon>
+                <mat-error *ngIf="nombre.invalid">{{ObtenerMensajeErrorNombre()}}</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Nivel</mat-label>
+                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                    matTooltip="Seleccionar niveles del departamento">help_outline</mat-icon>
+                <mat-select [formControl]="nivel" required>
+                    <mat-option *ngFor="let n of niveles" [value]="n.valor">
+                        {{n.nombre}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label id="depSup">Departamento Superior</mat-label>
+                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                    matTooltip="Seleccionar Departamento Superior del nuevo departamento">help_outline
+                </mat-icon>
+                <mat-select [formControl]="departamentoPadre">
+                    <mat-option [value]="0">Ninguno</mat-option>
+                    <mat-option *ngFor="let departamento of departamentos" [value]="departamento.nombre">
+                        {{departamento.nombre}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+</form>
+<div class="d-flex flex-wrap justify-content-center">
+    <input type="submit" class="btn btn-sm button" [disabled]="!nuevoDepartamentoForm.valid"
+        (click)="ModificarDepartamento(nuevoDepartamentoForm.value)" value="Guardar">
+    <input type="submit" class="btn btn-sm button" (click)="CerrarVentanaRegistroDepartamento()" value="Salir">
+</div>
+
+<div class="pantalla-progress" *ngIf="habilitarprogress">
+    <mat-progress-spinner
+        class="progress"
+        [color]="color"
+        [mode]="mode"
+        [value]="value">
+    </mat-progress-spinner>
+</div>

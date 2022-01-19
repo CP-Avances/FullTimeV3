@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root>
+  <horas_extras id="1">
+    <descripcion>hora 25%</descripcion>
+    <tipo_descuento>Recargo Nocturno</tipo_descuento>
+    <reca_porcentaje>39.00</reca_porcentaje>
+    <hora_inicio>10:00:00</hora_inicio>
+    <hora_final>11:12:00</hora_final>
+    <hora_jornada>Matutina</hora_jornada>
+    <tipo_dia>Libre</tipo_dia>
+    <incl_almuerzo>Si</incl_almuerzo>
+  </horas_extras>
+</root>

@@ -1,0 +1,100 @@
+<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+    <div class="row">
+        <div class="col-sm" style="padding-bottom: 15px;">
+            <div class="barraTitulo">
+                <h5>Horarios del Empleado</h5>
+            </div>
+            <mat-card class="example-card mat-elevation-z9" id="carta1">
+                <mat-card-actions style="text-align: center">
+                    <button type="submit" class="btn btn-sm" id="boton"
+                        (click)="AbrirVentanaEmplHorario()">Añadir</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="col-md">
+            <div class="barraTitulo">
+                <h5>Carga múltiple de horarios</h5>
+            </div>
+            <mat-card class="example-card mat-elevation-z9" id="carta1">
+                <div class="d-flex flex-wrap justify-content-around" style="margin-right: 5%;">
+                    <form method="post" enctype="multipart/form-data">
+                        <input (change)="fileChangeHorario($event)" type="file"
+                            [formControl]="archivoHorarioForm" id="file"
+                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                        <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
+                            
+                            matTooltip="Presionar para cargar plantilla con nombre Horario Empleado">Subir
+                            Horario</label>
+                    </form>
+                    <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
+                        matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento"
+                        href="{{hipervinculo}}/plantillaD/documento/Horario Empleado.xlsx">
+                        <span class="material-icons">cloud_download</span> Descargar Plantilla Horario
+                        Empleado
+                    </a>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</div>
+<div class="container" style="padding-bottom: 50px; text-align: center;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div id="titulo">Lista de Horarios</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm ">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th scope="col">Horario</th>
+                        <th scope="col">Inicio</th>
+                        <th scope="col">Final</th>
+                        <th scope="col">Lu</th>
+                        <th scope="col">Mar</th>
+                        <th scope="col">Mi</th>
+                        <th scope="col">Ju</th>
+                        <th scope="col">Vi</th>
+                        <th scope="col">Sa</th>
+                        <th scope="col">Do</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let h of horariosEmpleadoTotales | paginate:tamanio_pagina:numero_pagina">
+                        <td>{{h.nom_horario}}</td>
+                        <td>{{h.fec_inicio.split("T")[0]}}</td>
+                        <td>{{h.fec_final.split("T")[0]}}</td>
+                        <td *ngIf="h.lunes == true">Libre</td>
+                        <td *ngIf="h.lunes == false">Normal</td>
+                        <td *ngIf="h.martes == true">Libre</td>
+                        <td *ngIf="h.martes == false">Normal</td>
+                        <td *ngIf="h.miercoles == true">Libre</td>
+                        <td *ngIf="h.miercoles == false">Normal</td>
+                        <td *ngIf="h.jueves == true">Libre</td>
+                        <td *ngIf="h.jueves == false">Normal</td>
+                        <td *ngIf="h.viernes == true">Libre</td>
+                        <td *ngIf="h.viernes == false">Normal</td>
+                        <td *ngIf="h.sabado == true">Libre</td>
+                        <td *ngIf="h.sabado == false">Normal</td>
+                        <td *ngIf="h.domingo == true">Libre</td>
+                        <td *ngIf="h.domingo == false">Normal</td>
+                        <td class="d-flex justify-content-center">
+                            <i class="fas fa-edit" id="edit" (click)="AbrirEditarHorario(h)" matSuffix
+                                matTooltipPosition="right" 
+                                matTooltip="Modificar los datos generales de este registro">
+                                <p>Editar</p>
+                            </i>
+                            <i class="far fa-trash-alt" (click)="ConfirmarDeleteHorario(h)"
+                                style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
+                                matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
+                                matTooltip="Eliminar registro">
+                                <p>Eliminar</p>
+                            </i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

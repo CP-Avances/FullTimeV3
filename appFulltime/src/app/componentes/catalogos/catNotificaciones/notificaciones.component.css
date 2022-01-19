@@ -1,0 +1,50 @@
+.btn { margin-left: 20px; background-color: rgb(80,87,97); color: white; }
+
+.tituloNotifica { 
+    font-size: 20px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px;
+}
+#selecDepa { font-size: 13px; }
+
+#notifica { cursor: pointer; }
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
+
+p { font-size: x-small; }
+
+td { padding-top: 10px; text-align: center; }
+
+#iprocesoL { cursor: pointer; }
+
+#resulProceso { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+#proS { font-size: 15px;}
+
+table {width: 100%;}
+
+
+
+#pdf { color:red; font-size: 20px; text-align: center; margin-left: 20px; }
+
+#excel { color:green; font-size: 20px; text-align: center; margin-left: 20px;}
+
+#csv { color:blue; font-size: 20px; text-align: center; margin-left: 20px;}
+
+#xml { color:orangered; font-size: 20px; text-align: center; margin-left: 20px; cursor: pointer; }
+
+
+
+mat-form-field {
+    padding: 10px 15px 0px 15px;
+}

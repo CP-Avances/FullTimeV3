@@ -1,0 +1,58 @@
+<div class="d-flex bd-highlight barraTituloR">
+    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+    <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        Registra Nuevo Feriado</h5>
+</div>
+<!-- Formulario Completo -->
+<form [formGroup]="FeriadosForm">
+    <mat-card-content>
+        <div class="container" style="text-align: center">
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    Guardar.</span>
+            </div>
+            <mat-form-field>
+                <mat-label>Descripción</mat-label>
+                <input matInput placeholder="Descripción feriado" [formControl]="descripcionF"
+                    (keypress)="IngresarSoloLetras($event)" required>
+                <mat-icon id="feriado" matSuffix matTooltipClass="registrarF-tooltip" matTooltipPosition="right"
+                    matTooltip="Ingresar nombre del nuevo feriado">help_outline</mat-icon>
+                <mat-error *ngIf="descripcionF.invalid">{{ObtenerMensajeErrorNombreRequerido()}}</mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Fecha</mat-label>
+                <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa" [formControl]="fechaF" required>
+                <mat-datepicker-toggle matSuffix [for]="picker" matSuffix id="feriado" matSuffix
+                    matTooltipClass="registrarF-tooltip" matTooltipPosition="right"
+                    matTooltip="Ingresar fecha del feriado. Seleccione la fecha del Feriado dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
+                </mat-datepicker-toggle>
+                <mat-datepicker touchUi #picker></mat-datepicker>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Fecha Recuperación</mat-label>
+                <input matInput [matDatepicker]="picker2" placeholder="dd/mm/aaaa" [formControl]="fechaRecuperacionF">
+                <mat-datepicker-toggle matSuffix [for]="picker2" matSuffix id="feriado" matSuffix
+                    matTooltipClass="registrarF-tooltip" matTooltipPosition="right"
+                    matTooltip="Ingresar fecha de recuperación para el feriado, si es recuperable. Seleccione la fecha del Feriado dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
+                </mat-datepicker-toggle>
+                <mat-datepicker touchUi #picker2></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </mat-card-content>
+</form>
+<mat-card-actions class="d-flex justify-content-around">
+    <input type="submit" class="btn btn-sm" [disabled]="!FeriadosForm.valid"
+        (click)="InsertarFeriado(FeriadosForm.value)" value="Guardar">
+    <input type="submit" class="btn btn-sm" (click)="CerrarVentanaRegistroFeriado()" value="Salir">
+</mat-card-actions>
+
+<div class="pantalla-progress" *ngIf="habilitarprogress">
+    <mat-progress-spinner
+        class="progress"
+        [color]="color"
+        [mode]="mode"
+        [value]="value">
+    </mat-progress-spinner>
+</div>

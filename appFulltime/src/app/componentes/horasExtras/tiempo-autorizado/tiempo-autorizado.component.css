@@ -1,0 +1,27 @@
+.btn { background-color: rgb(80,87,97); color: white; } 
+
+#movilidad { 
+    cursor: grab;
+    color: blue;
+    font-size: 20px;
+}
+
+.barraTitulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white;  
+    padding-top: 10px; 
+}
+
+
+#icon_help { cursor: pointer; }
+
+#letras { font-size: 14px; }
+
+#solP { font-size: 13px; }
+
+mat-form-field { width: 100%; }
+
+#cerrar { color:red; cursor: pointer; }
+
+textarea {height: 75px; font-size: 13px;}

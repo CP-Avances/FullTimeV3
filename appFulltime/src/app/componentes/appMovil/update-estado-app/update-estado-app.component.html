@@ -1,0 +1,18 @@
+<h2 mat-dialog-title style="font-weight: bold;">Usuarios Seleccionados</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>Los siguientes usuarios cambiaran su acceso a la App de reloj virtual</h3>
+
+    <mat-list>
+        <mat-list-item *ngFor="let e of empleados">
+            <mat-icon mat-list-icon>perm_identity</mat-icon>
+            <div mat-line style="font-weight: bold;">{{e.nombre}}</div>
+            <div mat-line style="font-size: 12px;"> 
+                <span style="font-weight: bold;">Acceso a reloj virtual:</span> 
+                {{e.app_habilita.toString() | i18nSelect: BooleanAppMap}}</div>
+        </mat-list-item>
+    </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="empleados" cdkFocusInitial>Actualizar</button>
+</mat-dialog-actions>

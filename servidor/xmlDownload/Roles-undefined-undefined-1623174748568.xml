@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<root>
+  <rol id="1">
+    <nombre>Administrador</nombre>
+  </rol>
+  <rol id="2">
+    <nombre>Empleado</nombre>
+  </rol>
+  <rol id="5">
+    <nombre>RRHH</nombre>
+  </rol>
+  <rol id="7">
+    <nombre>Gerencia Prueba</nombre>
+  </rol>
+  <rol id="8">
+    <nombre>Ventas</nombre>
+  </rol>
+  <rol id="9">
+    <nombre>Marketing</nombre>
+  </rol>
+  <rol id="10">
+    <nombre>Redes</nombre>
+  </rol>
+  <rol id="11">
+    <nombre>Prueba Rol</nombre>
+  </rol>
+  <rol id="12">
+    <nombre>Prueba</nombre>
+  </rol>
+  <rol id="14">
+    <nombre>Jefaturas</nombre>
+  </rol>
+  <rol id="15">
+    <nombre>prueba nnnn</nombre>
+  </rol>
+  <rol id="16">
+    <nombre>Probando Auditoria</nombre>
+  </rol>
+</root>

@@ -1,0 +1,15 @@
+.btn { background-color: rgb(80,87,97); color: white; }
+
+#movilidad { 
+    cursor: grab;
+}
+
+.nota {
+    font-size: 12px; 
+    font-weight: bold; 
+    text-align: justify;
+    padding: 13px 5px 10px 5px; 
+    color: rgb(52,65,84);
+}
+
+mat-form-field {width: 100%; padding: 10px 10px 0px 10px;}

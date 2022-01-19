@@ -1,0 +1,50 @@
+.btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
+
+mat-form-field {width: 100%; padding: 10px 10px 0px 10px;}
+
+.nota {
+    font-size: 11px; 
+    font-weight: bold; 
+    text-align: justify;
+    padding-bottom: 7px; 
+    color: rgb(52,65,84);
+}
+
+#botonTimbreInicio {
+    margin: 2px 10px 2px 10px;
+    border-radius: 10px;
+    background: rgb(0, 123, 194);
+    color: white;
+    width: 175px;
+}
+
+#botonTimbreFin {
+    margin: 2px 10px 2px 10px;
+    border-radius: 10px;
+    background: rgb(37, 37, 37);
+    color: white;
+    width: 175px;
+}
+
+#botonTimbreAbierto{
+    margin: 2px 10px 2px 10px;
+    border-radius: 10px;
+    background: rgb(41, 187, 41);
+    color: white;
+    width: 175px;
+}
+
+.scrollbar {
+    float: left;
+    height: 460px;
+    width: 100%;
+    background: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-bottom: 25px;
+}
+
+.scrollbar-primary::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5; 
+}

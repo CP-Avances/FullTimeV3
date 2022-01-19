@@ -1,0 +1,30 @@
+<mat-icon id="movilidad">open_with</mat-icon>
+<div class="permisoEmpleado">
+    <h5 mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Cambia Estado de la Solicitud de Vacación</h5>
+</div>
+<form [formGroup]="VacacionForm">
+    <mat-card-content>
+        <div class="container" style="padding-top: 15px; text-align: center;">
+            <div class="row">
+               
+                <div class="col-sm">
+                    <mat-form-field>
+                        <mat-label>Estado</mat-label>
+                        <mat-icon id="permiso" matSuffix matTooltipPosition="right"
+                            matTooltip="Indicar cual es el estado de las vacaciones">
+                            help_outline
+                        </mat-icon>
+                        <mat-select [formControl]="estadoF">
+                            <mat-option *ngFor="let e of estados" [value]="e.valor">{{e.nombre}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+</form>
+<div style="text-align: center;">
+    <button type="submit" class="btn btn-sm" (click)="EditarEstadoVacacion(VacacionForm.value)"
+        [disabled]="!VacacionForm.valid"> Guardar </button>
+    <button type="submit" class="btn btn-sm" (click)="CerrarVentanaPermiso()"> Salir </button>
+</div>

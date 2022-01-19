@@ -1,0 +1,54 @@
+<div class="container" *ngFor="let r of datosRegimen" style="padding-top: 15px;">
+    <mat-card class="example-card mat-elevation-z8">
+        <div class="barraTituloD">
+            <span>DATOS GENERALES</span>
+        </div>
+        <mat-card-content>
+            <div class="container" style="padding-top: 15px;">
+                <div class="row">
+                    <br>
+                    <div class="col">
+                        <label id="datosF"
+                            class="col-sm col-form-label text-center">{{r.descripcion.toUpperCase()}}</label>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col" id="verticalLine">
+                        <label class="col-sm col-form-label"><b>Meses de duración del Período:</b>
+                            {{r.meses_periodo}}
+                        </label>
+                        <br>
+                        <label class="col-sm col-form-label"><b>Días de vacaciones por año:</b>
+                            {{r.dia_anio_vacacion}}
+                        </label>
+                        <br>
+                        <label class="col-sm col-form-label"><b>Días de vacaciones por mes:</b>
+                            {{r.dia_mes_vacacion}}</label>
+                        <br>
+                        <label class="col-sm col-form-label"><b>Días de vacaciones por antiguedad:</b>
+                            {{r.dia_incr_antiguedad}}</label>
+                    </div>
+                    <br>
+                    <div class="col" id="verticalLine">
+                        <label class="col-sm col-form-label"><b>Años para considerar antiguedad:</b>
+                            {{r.anio_antiguedad}}</label>
+                        <br>
+                        <label class="col-sm col-form-label"><b>Días máximos de acumulación:</b>
+                            {{r.max_dia_acumulacion}}</label>
+                        <br>
+                        <label class="col-sm col-form-label"><b>Días libres:</b> {{r.dia_libr_anio_vacacion}}</label>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <i id="editarF" (click)="EditarDatosRegimen(r)" matSuffix 
+                        matTooltipPosition="right" matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                        <p>Editar</p>
+                    </i>
+                </div>
+            </div>
+            <input type="submit" class="btn btn-sm" [routerLink]="['/listarRegimen/']"
+                value="Ir a la Lista de Régimenes Laborales">
+        </mat-card-content>
+    </mat-card>
+</div>

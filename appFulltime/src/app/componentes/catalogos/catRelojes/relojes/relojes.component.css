@@ -1,0 +1,56 @@
+/*.relojRegistro-tooltip { background-color : rgb(0, 102, 128); }*/
+
+.btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;}
+
+mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
+
+mat-radio-group { width: 250px; padding: 15px 20px 15px 20x; margin-bottom: 10px;}
+
+#movilidad { 
+    cursor: move;
+    color: blue;
+    margin-left: 10px;
+}
+
+#idFabrica { font-size: x-small; }
+
+.mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
+
+/*#reloj { font-size: 14px; }*/
+
+#dispositivo { cursor: pointer; }
+
+.barraTituloRelojR { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    height: 50px;
+}
+
+#selec { font-size: 14px; }
+
+#selecD { font-size: 12px; }
+
+.nota {
+    font-size: 12px; 
+    font-weight: bold; 
+    text-align: justify;
+    padding: 13px 5px 10px 5px; 
+    color: rgb(52,65,84);
+}
+
+.scrollbar {
+    float: left;
+    height: 500px;
+    width: 100%;
+    background: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-bottom: 25px;
+}
+
+.scrollbar-primary::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5; 
+}
+

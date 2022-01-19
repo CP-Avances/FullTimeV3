@@ -1,0 +1,28 @@
+.barraTitulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 14px; 
+    padding-bottom: 6px; 
+}
+
+mat-divider { background: rgba(131, 131, 131, 0.609); }
+
+#contratoLaboral { font-size: 14px; }
+
+#cerrar { color: rgb(38, 0, 255); }
+
+p { font-size: x-small; }
+
+
+#datosF { font-weight: bold; font-size: 15px; padding-right: 5px; }
+
+.caja1 {padding: 0px 5px 0px 5px; width: 200px; }
+
+.caja2 {padding: 0px 5px 0px 5px; width: 300px; }
+
+
+
+
+
+

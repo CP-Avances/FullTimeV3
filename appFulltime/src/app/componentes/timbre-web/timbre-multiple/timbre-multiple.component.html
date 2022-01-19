@@ -1,0 +1,160 @@
+<br>
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+    <div class="row">
+        <div class="col-md">
+            <div id="titulo">
+                <span>Críterios de Búsqueda</span>
+            </div>
+            <mat-card class="example-card mat-elevation-z9">
+                <form [formGroup]="busquedasForm">
+                    <div class="d-flex flex-wrap justify-content-around">
+                        <mat-form-field>
+                            <mat-label id="selec">1.Establecimientos</mat-label>
+                            <mat-icon id="cargoE" matSuffix matTooltipPosition="right"
+                                matTooltip="Muestra todos los empleados que pertenecen al establecimiento.">
+                                help_outline</mat-icon>
+                            <mat-select [formControl]="sucursalF">
+                                <mat-option *ngFor="let s of sucursales" [value]="s.id"
+                                    (click)="FiltrarSucursal(busquedasForm.value)">{{s.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label id="selec">2.Regimen Laboral</mat-label>
+                            <mat-icon id="cargoE" matSuffix matTooltipClass="cargoE-tooltip" matTooltipPosition="right"
+                                matTooltip="Indicar el regimen laboral en el que se encuentra registrado.">
+                                help_outline</mat-icon>
+                            <mat-select [formControl]="laboralF">
+                                <mat-option *ngFor="let r of regimen" [value]="r.id"
+                                    (click)="FiltrarRegimen(busquedasForm.value)">{{r.descripcion}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label id="selec">3.Departamentos</mat-label>
+                            <mat-icon id="cargoE" matSuffix matTooltipPosition="right"
+                                matTooltip="Indicar el Departamento en el que labora.">
+                                help_outline</mat-icon>
+                            <mat-select [formControl]="depaF">
+                                <mat-option *ngFor="let d of departamentos" [value]="d.id"
+                                    (click)="FiltrarDepartamento(busquedasForm.value)">{{d.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label id="selec">4.Cargos</mat-label>
+                            <mat-icon id="cargoE" matSuffix matTooltipClass="cargoE-tooltip" matTooltipPosition="right"
+                                matTooltip="Indicar el cargo que desempeña.">
+                                help_outline</mat-icon>
+                            <mat-select [formControl]="cargosF">
+                                <mat-option *ngFor="let c of cargos" [value]="c.id">{{c.cargo}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </form>
+                <div class="d-flex justify-content-around">
+                    <button mat-button type="submit" class="btn btn-sm" id="boton"
+                        (click)="VerificarBusquedas(busquedasForm.value)">Buscar</button>
+                    <button mat-button type="submit" class="btn btn-sm" id="boton"
+                        (click)="LimpiarBusquedas()">Cancelar</button>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</div>
+<div class="container" style="margin: 25px 0px 25px 0px; text-align: center;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <mat-icon class="flex-shrink-1 bd-highlight" matSuffix matTooltipPosition="right"
+                matTooltip="Registro múltiple de timbres." id="SelectCheck" (click)="HabilitarSeleccion()">
+                library_add_check</mat-icon>
+            <button *ngIf="btnCheckHabilitar" class="btn btn-primary" style="float: left; margin-left: 10px;"
+                (click)="VerificarSeguridad()">Crear Timbre</button>
+            <span class="w-100 bd-highlight">
+                REGISTRO MÚLTIPLE DE TIMBRES</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th>
+                            <mat-checkbox *ngIf="btnCheckHabilitar" (change)="$event ? masterToggle() : null"
+                                [checked]="selectionUno.hasValue() && isAllSelected()"
+                                [indeterminate]="selectionUno.hasValue() && !isAllSelected()"
+                                [aria-label]="checkboxLabel()">
+                            </mat-checkbox>
+                        </th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Empleado</th>
+                        <th scope="col">Cédula</th>
+                        <th scope="col">Departamento</th>
+                        <th scope="col">Cargo</th>
+                        <th scope="col">Regimen Laboral</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                                    (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroEmpleado" [formControl]="nombre"
+                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <mat-icon id="i-ayuda" (click)="LimpiarCampos()" matSuffix matTooltipPosition="right"
+                                matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
+                                format_clear
+                            </mat-icon>
+                        </td>
+                        <td>
+                            <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
+                                matTooltip="Búsqueda de datos de acuerdo a las columnas de la tabla.">
+                                help_outline</mat-icon>
+                        </td>
+                    </tr>
+                    <tr
+                        *ngFor="let e of Lista_empleados | emplCargo: filtroCargo | regimen: filtroRegimen | departamento: filtroDepartamento | emplCodigo: filtroCodigo | emplCedula: filtroCedula | nombreApellido: filtroEmpleado | paginate:tamanio_pagina:numero_pagina">
+                        <td>
+                            <mat-checkbox *ngIf="btnCheckHabilitar" (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionUno.toggle(e) : null" [checked]="selectionUno.isSelected(e)"
+                                [aria-label]="checkboxLabel(e)">
+                            </mat-checkbox>
+                        </td>
+                        <td>{{e.codigo}}</td>
+                        <td>{{e.nombre}} {{e.apellido}}</td>
+                        <td>{{e.cedula}}</td>
+                        <td>{{e.departamento | titlecase}}</td>
+                        <td>{{e.cargo}}</td>
+                        <td>{{e.regimen | titlecase}}</td>
+                        <td class="d-flex justify-content-center">
+                            <i class="far fa-clock" *ngIf="auto_individual" (click)="ConfirmarTimbre(e)" matSuffix
+                                id="accion" matTooltipPosition="right"
+                                matTooltip="Abrir formulario de registro de timbre.">
+                                <p>Timbrar</p>
+                            </i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="Lista_empleados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

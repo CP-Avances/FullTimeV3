@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<root>
+  <regimen_laboral id="3">
+    <descripcion>CODIGO DE TRABAJO</descripcion>
+    <dia_anio_vacacion>11</dia_anio_vacacion>
+    <dia_mes_vacacion>0.916667</dia_mes_vacacion>
+    <anio_antiguedad>6</anio_antiguedad>
+    <dia_incr_antiguedad>1.00</dia_incr_antiguedad>
+    <max_dia_acumulacion>45</max_dia_acumulacion>
+    <dia_libr_anio_vacacion>4</dia_libr_anio_vacacion>
+  </regimen_laboral>
+  <regimen_laboral id="8">
+    <descripcion>LOSEP</descripcion>
+    <dia_anio_vacacion>22</dia_anio_vacacion>
+    <dia_mes_vacacion>1.833333</dia_mes_vacacion>
+    <anio_antiguedad>5</anio_antiguedad>
+    <dia_incr_antiguedad>1.00</dia_incr_antiguedad>
+    <max_dia_acumulacion>30</max_dia_acumulacion>
+    <dia_libr_anio_vacacion>9</dia_libr_anio_vacacion>
+  </regimen_laboral>
+  <regimen_laboral id="10">
+    <descripcion>prueba</descripcion>
+    <dia_anio_vacacion>11</dia_anio_vacacion>
+    <dia_mes_vacacion>0.916667</dia_mes_vacacion>
+    <anio_antiguedad>5</anio_antiguedad>
+    <dia_incr_antiguedad>1.00</dia_incr_antiguedad>
+    <max_dia_acumulacion>45</max_dia_acumulacion>
+    <dia_libr_anio_vacacion>4</dia_libr_anio_vacacion>
+  </regimen_laboral>
+</root>

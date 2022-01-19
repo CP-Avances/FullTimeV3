@@ -1,0 +1,67 @@
+<div class="d-flex bd-highlight tituloCiudadR">
+    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+    <h5 class="w-100 bd-highlight align-self-center">Registrar Ciudad</h5>
+</div>
+<form [formGroup]="nuevaCiudadForm">
+    <mat-card-content>
+        <div class="container">
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón Guardar.</span>
+            </div>
+            <div class="d-flex flex-wrap justify-content-between">
+                <mat-form-field>
+                    <mat-label>Seleccionar Continente</mat-label>
+                    <mat-icon id="iciudadR" matSuffix matTooltipClass="ciudadR-tooltip"
+                        matTooltipPosition="right" matTooltip="Lista de continentes registrados en el sistema">
+                        help_outline</mat-icon>
+                    <mat-select [formControl]="nombreContinenteF" [(ngModel)]="seleccionarContinente" required>
+                        <mat-option *ngFor="let c of continentes" [value]="c.continente"
+                            (click)="FiltrarPaises(nuevaCiudadForm.value)">
+                            {{c.continente}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <input type="text" placeholder="Escribir País" aria-label="Number" matInput
+                        [formControl]="nombrePaisF" [matAutocomplete]="auto" [(ngModel)]="seleccionarPaises" required>
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions | async"
+                            [value]="option.nombre" (click)="FiltrarProvincias(nuevaCiudadForm.value)">
+                            {{option.nombre}}
+                        </mat-option>
+                    </mat-autocomplete>                
+                    <mat-icon id="iciudadR" matSuffix matTooltipClass="ciudadR-tooltip" matTooltipPosition="right"
+                        matTooltip="Lista de paises ubicados en el continente seleccionado">
+                        help_outline</mat-icon>
+                </mat-form-field>
+                <mat-form-field>
+                    <input type="text" placeholder="Escribir Provincia" aria-label="Number" matInput
+                        [formControl]="idProvinciaF" [matAutocomplete]="auto1" [(ngModel)]="seleccionarProvincia" required>
+                    <mat-autocomplete #auto1="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOpt | async" [value]="option.nombre">
+                            {{option.nombre}}
+                        </mat-option>
+                    </mat-autocomplete>                
+                    <mat-icon id="iciudadR" matSuffix matTooltipClass="ciudadR-tooltip" matTooltipPosition="right"
+                        matTooltip="Lista de provincias, departamentos o estados ubicados en el país seleccionado">
+                        help_outline</mat-icon>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Ingresar Ciudad</mat-label>
+                    <input matInput placeholder="Ej: Quito" [formControl]="nombreF"
+                        (keypress)="IngresarSoloLetras($event)" required>
+                    <mat-icon id="iciudadR" matSuffix matTooltipClass="ciudadR-tooltip"
+                        matTooltipPosition="right"
+                        matTooltip="Ingresar un nombre de las ciudades ubicadas en la provincia, departamento o estado seleccionado">
+                        help_outline</mat-icon>
+                    <mat-error *ngIf="nombreF.invalid">{{ObtenerMensajeErrorNombre()}}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+    </mat-card-content>
+</form>
+<div class="d-flex flex-wrap justify-content-center">
+    <input type="submit" class="btn btn-sm button" [disabled]=" !nuevaCiudadForm.valid"
+        (click)="InsertarCiudad(nuevaCiudadForm.value)" value="Guardar">
+    <input type="submit" class="btn btn-sm button" (click)="CerrarVentanaRegistroCiudad()" value="Salir">
+</div>

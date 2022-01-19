@@ -1,0 +1,50 @@
+<header id="home-section">
+    <div class="dark-overlay">
+        <div class="home-inner">
+            <div class="container">
+                <div class="row">
+                    <div class="col d-flex align-items-center justify-content-center">    
+                        <mat-card class="mat-elevation-z8">
+                            <img src="../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
+                            <form [formGroup]="validarCredencialesF">
+                                <mat-form-field>
+                                    <mat-label>Ingresa tu Usuario</mat-label>
+                                    <input matInput 
+                                        placeholder="pat@example.com" 
+                                        [formControl]="userMail" 
+                                        required>
+                                        <mat-error *ngIf="userMail.invalid">{{ObtenerMensajeCampoUsuarioError()}}</mat-error>
+                                </mat-form-field>
+                                <br>
+                                <mat-form-field>
+                                    <mat-label>Ingresa tu Contraseña</mat-label>
+                                    <input matInput 
+                                        (keyup.enter)="hide1 = true; ValidarUsuario(validarCredencialesF.value)"
+                                        [formControl]="pass"
+                                        [type]="hide1 ? 'password' : 'text'" 
+                                        required>
+                                    <button mat-icon-button matSuffix (click)="hide1 = !hide1">
+                                        <mat-icon>{{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                    </button>
+                                    <mat-error *ngIf="pass.invalid">{{ObtenerMensajeCampoContraseniaError()}}</mat-error>
+                                </mat-form-field>
+                            </form>
+                            <div class="caja1">
+                                <a [routerLink]="['/olvidar-contrasenia']" class="verde">Olvidó su contraseña?</a>
+                            </div>
+                            <div style="margin: auto;">
+                                <button type="submit" class="btn btn-lg btn-block" (click)="ValidarUsuario(validarCredencialesF.value)"
+                                    [disabled]="!validarCredencialesF.valid">Ingresar</button>
+                            </div>
+                            <div class="caja2">
+                                <span>Aún no registrado?</span>
+                                <a href="#" class="verde">Solicitar registro</a>
+                            </div>
+                        </mat-card>                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<app-footer></app-footer>

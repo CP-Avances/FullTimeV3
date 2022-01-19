@@ -1,0 +1,48 @@
+.mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
+
+.mat-stepper-horizontal { margin-top: 8px; }
+
+mat-label { font-size: 14px; } 
+
+mat-radio-group { width: 210px; padding: 15px 20px 15px 20x; margin-bottom: 10px;}
+
+#selec { font-size: 13px; } 
+
+#almuerzo { font-size: 15px; } 
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+
+.barraTitulo { 
+    font-size: 25px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white;  
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+/*.color-tooltip { background: #2c6ec5; }*/
+
+#permiso { cursor: pointer; }
+
+#emple_solicitar { font-size: 13px; }
+
+.titulo_permisoR { 
+    position: relative; 
+    float: left; 
+    font-size: 19px; 
+    font-weight: bold; 
+    text-align: center; 
+    color: rgb(0, 0, 0);
+}
+
+.subtitulo_permisoR {
+    font-size: 14px; 
+    font-weight: bold; 
+    padding-left: 5px; 
+    padding-top: 25px; 
+    padding-bottom: 25px; 
+    text-align: justify;
+}
+
+#seccion_permiso { color: rgba(8, 10, 124, 0.828); }

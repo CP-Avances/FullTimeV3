@@ -1,0 +1,76 @@
+<br><br>
+<div class="container" style="padding-bottom: 50px; text-align: center;">    
+    <div class="mat-elevation-z8" style="background: white;">
+        <div id="resulEmpleados">
+            <button mat-raised-button color="primary" (click)="openDialogUpdateAppMovil()">Reloj Virtual</button>
+            Lista de empleados
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th>
+                            <mat-checkbox (change)="$event ? masterToggleEmp() : null"
+                                [checked]="selectionEmp.hasValue() && isAllSelectedEmp()"
+                                [indeterminate]="selectionEmp.hasValue() && !isAllSelectedEmp()"
+                                [aria-label]="checkboxLabelEmp()">
+                            </mat-checkbox>
+                        </th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Empleado</th>
+                        <th scope="col">Cédula</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">App Movil</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field class="input-tables codigo">
+                                <input matInput placeholder="" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                                    (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-tables nombre">
+                                <input matInput placeholder="" [(ngModel)]="filtroNombre" [formControl]="nombre"
+                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                                <mat-error *ngIf="nombre.invalid">Indispensable ingresar dos letras
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-tables cedula">
+                                <input matInput placeholder="" [(ngModel)]="filtroCedula" maxlength="10"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
+                                <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr *ngFor="let u of usersAppMovil | emplCodigo: filtroCodigo | emplNombre: filtroNombre | emplCedula: filtroCedula | paginate:tamanio_pagina:numero_pagina">
+                        <td>
+                            <mat-checkbox (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionEmp.toggle(u) : null" 
+                                [checked]="selectionEmp.isSelected(u)"
+                                [aria-label]="checkboxLabelEmp(u)">
+                            </mat-checkbox>
+                        </td>
+                        <td scope="row">{{u.codigo}}</td>
+                        <td>{{u.nombre}}</td>
+                        <td>{{u.cedula}}</td>
+                        <td>{{u.usuario}}</td>
+                        <td>{{u.app_habilita.toString() | i18nSelect: BooleanAppMap}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="usersAppMovil.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="estilo" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

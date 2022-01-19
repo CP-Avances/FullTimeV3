@@ -1,0 +1,32 @@
+.btn-sm { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+
+p { font-size: x-small; }
+
+td { padding-top: 10px; text-align: center; }
+
+.fas { color:green; margin-left: 20px; cursor: pointer; }
+
+.far { color:red; cursor: pointer; margin-left: 20px; }
+
+.tituloHorarioL { 
+    font-size: 20px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px;
+}
+
+#iHorL { cursor: pointer; }
+
+#resulHorario { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+table { width: 100%; font-size: 14px; }
+

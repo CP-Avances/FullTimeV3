@@ -1,0 +1,116 @@
+<br>
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+    <div class="row">
+        <div class="col-lg-6" style="padding-bottom: 10px;">
+            <app-rango-fechas></app-rango-fechas>
+        </div>
+        <div class="col-lg-6">
+            <div id="titulo">
+                <span>Opciones de Descarga</span>
+            </div>
+            <mat-card class="example-card mat-elevation-z9">
+                <div class="d-flex flex-wrap justify-content-around" style="margin: 0px 10px 0px 10px;">
+                    <button mat-icon-button (click)="validacionReporte('open')">
+                        <mat-icon class="i-pdf" matTooltipPosition="right"
+                            matTooltip="Previsualizar reporte en el navegador en fomato PDF.">picture_as_pdf</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="validacionReporte('print')">
+                        <mat-icon class="i-print" matTooltipPosition="right"
+                            matTooltip="Imprimir reporte en formato PDF.">local_printshop</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="validacionReporte('download')">
+                        <mat-icon class="i-download" matTooltipPosition="right"
+                            matTooltip="Descargar reporte en formato PDF.">cloud_download</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="validacionReporte('excel')">
+                        <mat-icon class="fas fa-file-excel i-excel" matTooltipPosition="right"
+                            matTooltip="Descargar reporte en formato EXCEL."></mat-icon>
+                    </button>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom: 50px; text-align: center;">
+    <!-- TABLA PARA EMPLEADOS -->
+    <div class="mat-elevation-z8" style="background: white;">
+        <div id="titulo">REPORTE TIMBRE HORARIO ABIERTO</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th>
+                            <mat-checkbox (change)="$event ? masterToggleEmp() : null"
+                                [checked]="selectionEmp.hasValue() && isAllSelectedEmp()"
+                                [indeterminate]="selectionEmp.hasValue() && !isAllSelectedEmp()"
+                                [aria-label]="checkboxLabelEmp()">
+                            </mat-checkbox>
+                        </th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido</th>
+                        <th scope="col">Cédula</th>
+                        <th scope="col">Correo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                                    (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroNombre" [formControl]="nombre"
+                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroApellido"
+                                    [formControl]="apellido" type="text" (keypress)="IngresarSoloLetras($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-icon id="limpiar" (click)="LimpiarCampos()" matSuffix matTooltipPosition="right"
+                                matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
+                                format_clear
+                            </mat-icon>
+                            <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
+                                matTooltip="Búsqueda de datos de acuerdo a las columnas de la tabla.">
+                                help_outline</mat-icon>
+                        </td>
+                    </tr>
+                    <tr
+                        *ngFor="let e of empleados | emplCodigo: filtroCodigo | emplCedula: filtroCedula | emplNombre: filtroNombre | emplApellido: filtroApellido | paginate:tamanio_pagina:numero_pagina">
+                        <td>
+                            <mat-checkbox (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionEmp.toggle(e) : null" [checked]="selectionEmp.isSelected(e)"
+                                [aria-label]="checkboxLabelEmp(e)">
+                            </mat-checkbox>
+                        </td>
+                        <td scope="row">{{e.codigo}}</td>
+                        <td>{{e.nombre}}</td>
+                        <td>{{e.apellido}}</td>
+                        <td>{{e.cedula}}</td>
+                        <td>{{e.correo}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator [length]="empleados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+#resulEmpleados { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+table { width: 100%; font-size: 14px;}
+
+tr { text-align: center; }
+
+td { padding-top: 10px; text-align: center; }
+
+#botones { background-color: rgb(80,87,97); color: white; margin: 10px 10px 10px 10px;}
+
+#ayuda_fec {color: black}
+
+mat-form-field { padding: 10px 15px 0px 15px;}
+
+#limpiar { cursor: pointer; padding-top: 10px; margin-right: 20px;}

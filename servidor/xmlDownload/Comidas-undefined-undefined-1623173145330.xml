@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<root>
+  <tipo_comida id="11">
+    <tipo_servicio>Almuerzo</tipo_servicio>
+    <menu>Menu Vegetariano</menu>
+  </tipo_comida>
+  <tipo_comida id="16">
+    <tipo_servicio>Almuerzo</tipo_servicio>
+    <menu>Menu2</menu>
+  </tipo_comida>
+  <tipo_comida id="22">
+    <tipo_servicio>Break</tipo_servicio>
+    <menu>Menu 1</menu>
+  </tipo_comida>
+  <tipo_comida id="9">
+    <tipo_servicio>Cena</tipo_servicio>
+    <menu>Menu Vegano</menu>
+  </tipo_comida>
+  <tipo_comida id="10">
+    <tipo_servicio>Cena</tipo_servicio>
+    <menu>Menu Noche </menu>
+  </tipo_comida>
+  <tipo_comida id="15">
+    <tipo_servicio>Cena</tipo_servicio>
+    <menu>Merianda 4</menu>
+  </tipo_comida>
+  <tipo_comida id="8">
+    <tipo_servicio>Desayuno</tipo_servicio>
+    <menu>Menu Tarde</menu>
+  </tipo_comida>
+  <tipo_comida id="21">
+    <tipo_servicio>Desayuno</tipo_servicio>
+    <menu>Menu 2</menu>
+  </tipo_comida>
+  <tipo_comida id="14">
+    <tipo_servicio>Desayuno</tipo_servicio>
+    <menu>Continental</menu>
+  </tipo_comida>
+  <tipo_comida id="1">
+    <tipo_servicio>Desayuno</tipo_servicio>
+    <menu>Menu Día</menu>
+  </tipo_comida>
+  <tipo_comida id="18">
+    <tipo_servicio>Desayuno</tipo_servicio>
+    <menu>Menu 1</menu>
+  </tipo_comida>
+  <tipo_comida id="13">
+    <tipo_servicio>Desayuno</tipo_servicio>
+    <menu>Americano</menu>
+  </tipo_comida>
+  <tipo_comida id="17">
+    <tipo_servicio>Refrigerio</tipo_servicio>
+    <menu>Refrigerio</menu>
+  </tipo_comida>
+</root>

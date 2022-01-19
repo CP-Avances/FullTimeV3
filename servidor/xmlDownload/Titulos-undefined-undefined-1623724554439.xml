@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<root>
+  <titulos id="1">
+    <nombre>Ingenieria en Sistemas</nombre>
+    <nivel>Ingenieria</nivel>
+  </titulos>
+  <titulos id="2">
+    <nombre>Arquitectura</nombre>
+    <nivel>Ingenieria Civil</nivel>
+  </titulos>
+  <titulos id="5">
+    <nombre>Tecnologo en sistemas</nombre>
+    <nivel>Tecnología</nivel>
+  </titulos>
+  <titulos id="6">
+    <nombre>Nuevo</nombre>
+    <nivel>Cuarto Nivel</nivel>
+  </titulos>
+</root>

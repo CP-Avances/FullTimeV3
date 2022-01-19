@@ -1,0 +1,331 @@
+<br>
+<mat-tab-group>
+
+    <!-- INFORMACION OFICIAL DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">person_pin</mat-icon>
+            Perfil
+        </ng-template>
+        <div class="container" *ngFor="let e of empleadoUno" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo">
+                            <h5>{{e.nombre}} {{e.apellido}}</h5>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;">
+                                <div class="row">
+                                    <div class="col-md d-flex align-items-center justify-content-center">
+                                        <div mat-card-avatar id="avatar" *ngIf="mostrarImagen">
+                                            <img src="{{urlImagen}}" alt="" id="avatarImagen">
+                                        </div>
+                                        <div mat-card-avatar id="avatar" *ngIf="mostrarIniciales">
+                                            <span
+                                                class="btn iniciales d-flex align-items-center justify-content-center">{{iniciales}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md d-flex align-items-center justify-content-center">
+                                        <form method="post" enctype="multipart/form-data">
+                                            <input (change)="fileChange($event)" type="file" [formControl]="archivoForm"
+                                                id="file" accept="image/png, image/jpeg">
+                                            <label for="file" class="btn-2">{{textoBoton}}</label>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Código:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.codigo}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Cédula:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.cedula}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Correo electrónico:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.correo}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Domicilio:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.domicilio}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Teléfono:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{e.telefono}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Fecha de Nacimiento:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{fechaNacimiento}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                        <div class="col" style="text-align: right;">
+                            <button type="submit" class="btn" id="boton" (click)="CambiarContrasena()">Modificar
+                                Contraseña</button>
+                        </div>
+                    </mat-card>
+                </div>
+                <br>
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <mat-grid-list cols="2" rowHeight="3:1">
+                            <mat-grid-tile>
+                                <button type="submit" [routerLink]="['/empleado']"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons">keyboard_backspace</i><span>Atrás</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="generarPdf('open')"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons">picture_as_pdf</i><span>Abrir PDF</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="generarPdf('download')"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons">cloud_download</i><span>Descargar PDF</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="exportToXML()"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons fas fa-file-code"></i><span>Exportar a XML</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="exportToExcel()"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons fas fa-file-excel"></i><span>Exportar a Excel</span>
+                                </button>
+                            </mat-grid-tile>
+                            <mat-grid-tile>
+                                <button (click)="exportToCVS()"
+                                    class="btn btn-block d-flex align-items-center justify-content-center"
+                                    id="Selector">
+                                    <i class="material-icons fas fa-file-csv"></i><span>Exportar a CSV</span>
+                                </button>
+                            </mat-grid-tile>
+                        </mat-grid-list>
+                        <!-- <div class="form-group">
+                        <label class="h4 mb-3" for="">Show your picture in Resume</label>
+                        <input type="file" class="form-control-file" (change)="fileChanged($event)">
+                    </div> -->
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <br><br>
+    </mat-tab>
+
+    <!-- DISCAPACIDAD Y TITULO DEL EMPLEADO -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">school</mat-icon>
+            Asignaciones
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8">
+                        <div class="barraTitulo2">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;">
+                                        <h5>Títulos</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;"
+                                *ngFor="let rte of relacionTituloEmpleado">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Observaciones:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{rte.observaciones}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Nombre:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{rte.nombre}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Nivel:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{rte.nivel}}</label>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
+                        <div id="titulo">
+                            <div class="container">
+                                <div class="row" style="text-align: center;">
+                                    <div class="col">
+                                        <h5>Discapacidad</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;" *ngFor="let d of discapacidadUser">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Carnet Conadis:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{d.carn_conadis}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Tipo:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{d.nom_tipo}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col-sm col-form-label">Porcentaje:</label>
+                                    </div>
+                                    <div class="col">
+                                        <label class="col col-form-label">{{d.porcentaje}} %</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+
+    <!-- REGISTRO DE VACUNACION -->
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon class="example-tab-icon">local_pharmacy</mat-icon>
+            Vacunación
+        </ng-template>
+        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+            <div class="row">
+                <div class="col-md">
+                    <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
+                        <div class="d-flex bd-highlight barraTitulo1">
+                            <div class="w-100 bd-highlight">
+                                <h5>Registro de Vacunación</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <!--     <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    [disabled]="!btnHabilitadoVacuna"
+                                    (click)="MostrarVentanaVacuna()">{{btnVacuna}}</button>-->
+                            </div>
+                        </div>
+                        <mat-card-content>
+                            <div class="container" style="padding-top: 15px;" *ngFor="let dv of datosVacuna">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <label *ngIf="dv.dosis_1 === true"><b>Primera Dosis</b></label>
+                                        <br>
+                                        <label><b>Vacuna:</b> {{dv.id_tipo_vacuna_1}}</label>
+                                        <br>
+                                        <label *ngIf="dv.fecha_1 != null"><b>Fecha:</b>
+                                            {{dv.fecha_1.split('T')[0]}}</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label *ngIf="dv.dosis_2 === true"><b>Segunda Dosis</b></label>
+                                        <br>
+                                        <label><b>Vacuna:</b> {{dv.id_tipo_vacuna_2}}</label>
+                                        <br>
+                                        <label *ngIf="dv.fecha_2 != null"><b>Fecha:</b>
+                                            {{dv.fecha_2.split('T')[0]}}</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label *ngIf="dv.dosis_3 === true"><b>Tercera Dosis</b></label>
+                                        <br>
+                                        <label><b>Vacuna:</b> {{dv.id_tipo_vacuna_3}}</label>
+                                        <br>
+                                        <label *ngIf="dv.fecha_3 != null"><b>Fecha:</b>
+                                            {{dv.fecha_3.split('T')[0]}}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg">
+                                        <label><b>Carnet:</b> <a *ngIf="dv.nom_carnet != null && dv.nom_carnet != ''"
+                                                class="fas fa-file-alt"
+                                                style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px;"
+                                                matSuffix matTooltipPosition="right"
+                                                matTooltip="Dar click para descargar carnet de vacunación."
+                                                href="{{hipervinculo}}/vacunas/documentos/{{dv.carnet}}"
+                                                target="_blank">
+                                                <p>{{dv.nom_carnet}}</p>
+                                            </a></label>
+                                    </div>
+                                </div>
+                                <!--    <div class="row" style="margin-top: 5px;">
+                                    <div class="col" style="text-align: right;">
+                                        <a mat-button type="submit" (click)="ConfirmarEliminarVacuna(dv.id)" matSuffix>
+                                            <i class="far fa-trash-alt" matTooltipPosition="right" id="delete"
+                                                matTooltip="Eliminar registro">
+                                                <p>Eliminar</p>
+                                            </i>
+                                        </a>
+                                    </div>
+                                </div>-->
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                    <div style="padding-bottom: 35px; padding-top: 35px;">
+                        <app-crear-vacuna [idEmploy]="idEmpleado" *ngIf="!mostrarVacuna">
+                        </app-crear-vacuna>
+                        <app-editar-vacuna [idEmploy]="idEmpleado" [dvacuna]="datosVacuna" *ngIf="!mostrarVacunaEditar">
+                        </app-editar-vacuna>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+</mat-tab-group>

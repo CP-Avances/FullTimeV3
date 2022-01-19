@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<root>
+  <titulos id="1">
+    <nivel>Tercer Nivel</nivel>
+  </titulos>
+  <titulos id="2">
+    <nivel>Ingenieria Civil</nivel>
+  </titulos>
+  <titulos id="3">
+    <nivel>PHD</nivel>
+  </titulos>
+  <titulos id="4">
+    <nivel>Ingenieria</nivel>
+  </titulos>
+  <titulos id="5">
+    <nivel>Seguridad</nivel>
+  </titulos>
+  <titulos id="6">
+    <nivel>Construccion</nivel>
+  </titulos>
+  <titulos id="7">
+    <nivel>Tecnología</nivel>
+  </titulos>
+  <titulos id="8">
+    <nivel>Cuarto Nivel</nivel>
+  </titulos>
+</root>

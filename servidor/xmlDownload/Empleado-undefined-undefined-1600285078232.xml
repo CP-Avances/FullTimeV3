@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<root>
+  <empleado id="1">
+    <cedula>1715478563</cedula>
+    <apellido>Altamirano Taco</apellido>
+    <nombre>Jose Luis</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>jenny_p56@hotmail.com</correo>
+    <fechaNacimiento>1993-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Santa Rita</domicilio>
+    <telefono>0984563215</telefono>
+    <nacionalidad>Afgana</nacionalidad>
+    <imagen>Ne0pG7evOJowV93_cNZM3F-P.png</imagen>
+  </empleado>
+  <empleado id="2">
+    <cedula>1722125645</cedula>
+    <apellido>Perez Ruiz</apellido>
+    <nombre>Ana Karina</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jentipan7@gmail.com</correo>
+    <fechaNacimiento>1992-05-04</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0987456321</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="3">
+    <cedula>1485236699</cedula>
+    <apellido>Teran Alvarez</apellido>
+    <nombre>Pamela Sofia</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>pamela@hotmail.com</correo>
+    <fechaNacimiento>1992-07-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Chillogallo</domicilio>
+    <telefono>0236589656</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="4">
+    <cedula>1722158956</cedula>
+    <apellido>Almeida Lopez</apellido>
+    <nombre>Lorena Abigail</nombre>
+    <estadoCivil>Casado/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>lorena@hotmail.com</correo>
+    <fechaNacimiento>1995-07-03</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>La Magdalena</domicilio>
+    <telefono>0236589563</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="5">
+    <cedula>4588966323</cedula>
+    <apellido>Perez Morerira</apellido>
+    <nombre>Juan Pablo</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>juan@hotmail.com</correo>
+    <fechaNacimiento>1993-05-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0599632265</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="6">
+    <cedula>55236699</cedula>
+    <apellido>Moreira Ruiz</apellido>
+    <nombre>Margarita Mercedes</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>j@hotmail.com</correo>
+    <fechaNacimiento>2020-07-25</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>2589525952</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="7">
+    <cedula>1752693255</cedula>
+    <apellido>Lopez Lopez</apellido>
+    <nombre>Javier Marco</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>javier@hotmail.com</correo>
+    <fechaNacimiento>2020-07-17</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0856322699</telefono>
+    <nacionalidad>Ecuatoriano</nacionalidad>
+  </empleado>
+  <empleado id="8">
+    <cedula>1752236994</cedula>
+    <apellido>Manzano Perez</apellido>
+    <nombre>Isabel Karina</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>karina@hotmail.com</correo>
+    <fechaNacimiento>2020-07-16</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>La Magdalena</domicilio>
+    <telefono>0125896655</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="9">
+    <cedula>1785669952</cedula>
+    <apellido>Mena Ruiz</apellido>
+    <nombre>Josselyn Vannesa</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>vane@hotmail.com</correo>
+    <fechaNacimiento>2020-08-15</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>La Magdalena</domicilio>
+    <telefono>0856236985</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="10">
+    <cedula>1785623698</cedula>
+    <apellido>Corrales Perez</apellido>
+    <nombre>Marco Antonio</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>marco@hotmail.com</correo>
+    <fechaNacimiento>2020-08-23</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0856236985</telefono>
+    <nacionalidad>Colombiano</nacionalidad>
+  </empleado>
+  <empleado id="11">
+    <cedula>1785569952</cedula>
+    <apellido>Lopez Mendez</apellido>
+    <nombre>Javier Saul</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>javier@hotmail.com</correo>
+    <fechaNacimiento>2020-08-22</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0236589653</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="12">
+    <cedula>1722128905</cedula>
+    <apellido>Tipan Villegas</apellido>
+    <nombre>Jenny Patricia</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>jenny@hotmail.com</correo>
+    <fechaNacimiento>1993-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Santa Rita</domicilio>
+    <telefono>0253658965</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+  </empleado>
+  <empleado id="14">
+    <cedula>1523699553</cedula>
+    <apellido>Sandoval Ramirez</apellido>
+    <nombre>Mariela Alexandra</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Femenino</genero>
+    <correo>mariela@hotmail.com</correo>
+    <fechaNacimiento>1993-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Solanda</domicilio>
+    <telefono>0269852669</telefono>
+    <nacionalidad>Ecuatoriana</nacionalidad>
+    <imagen>K3plApQTGESEZ02gA538Tq3X.jpg</imagen>
+  </empleado>
+  <empleado id="15">
+    <cedula>1256983256</cedula>
+    <apellido>Alcivar Muñoz</apellido>
+    <nombre>Manual Daniel</nombre>
+    <estadoCivil>Soltero/a</estadoCivil>
+    <genero>Masculino</genero>
+    <correo>manuel@hotmail.com</correo>
+    <fechaNacimiento>1192-04-05</fechaNacimiento>
+    <estado>Activo</estado>
+    <domicilio>Santa Ana</domicilio>
+    <telefono>0985622365</telefono>
+    <nacionalidad>Colombiano</nacionalidad>
+  </empleado>
+</root>

@@ -1,0 +1,19 @@
+.btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;}
+
+mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
+
+#movilidad { 
+    cursor: grab;
+    color: blue;
+    margin-left: 10px;
+}
+
+.titulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    height: 50px; 
+}
+
+
+

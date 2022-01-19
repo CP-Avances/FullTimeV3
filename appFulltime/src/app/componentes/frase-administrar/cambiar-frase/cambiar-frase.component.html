@@ -1,0 +1,37 @@
+<div style="text-align: center;">
+    <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
+    <span>Modificar su frase</span>
+    <form [formGroup]="fraseForm">
+        <div class="nota">
+            <span>NOTA: Ingresar una frase que pueda recordar. Esta frase la usará para realizar cambios importantes
+                dentro del sistema.</span>
+        </div>
+        <mat-form-field>
+            <mat-label>Frase Actual</mat-label>
+            <textarea matInput #message1 maxlength="100" placeholder="***************" formControlName="aFrase"
+                required></textarea>
+            <mat-hint align="start"><strong>Ingresar hasta 100 caracteres</strong></mat-hint>
+            <mat-hint align="end">{{message1.value.length}} / 100</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Nueva Frase</mat-label>
+            <textarea matInput #message2 maxlength="100" placeholder="***************" formControlName="nFrase"
+                required></textarea>
+            <mat-hint align="start"><strong>Ingresar hasta 100 caracteres</strong></mat-hint>
+            <mat-hint align="end">{{message2.value.length}} / 100</mat-hint>
+        </mat-form-field>
+        <br>
+        <div class="caja1">
+            <button type="button" class="btn btn-link verde" (click)="RecuperarFrase()">Olvido su frase de
+                seguridad?</button>
+        </div>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn_b" (click)="CompararFrase(fraseForm.value)"
+                [disabled]="!fraseForm.valid">Guardar Frase</button>
+        </div>
+        <br>
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn_b" (click)="CerrarRegistro()">Salir</button>
+        </div>
+    </form>
+</div>

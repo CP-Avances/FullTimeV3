@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<root>
+  <tipo_comida id="11">
+    <servicio>Almuerzo</servicio>
+    <menu>Menu Vegetariano</menu>
+    <hora_inicia>12:00:00</hora_inicia>
+    <hora_finaliza>15:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="16">
+    <servicio>Almuerzo</servicio>
+    <menu>Menu2</menu>
+    <hora_inicia>13:00:00</hora_inicia>
+    <hora_finaliza>15:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="22">
+    <servicio>Break</servicio>
+    <menu>Menu 1</menu>
+    <hora_inicia>10:00:00</hora_inicia>
+    <hora_finaliza>13:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="9">
+    <servicio>Cena</servicio>
+    <menu>Menu Vegano</menu>
+    <hora_inicia>18:30:00</hora_inicia>
+    <hora_finaliza>20:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="10">
+    <servicio>Cena</servicio>
+    <menu>Menu Noche </menu>
+    <hora_inicia>19:00:00</hora_inicia>
+    <hora_finaliza>21:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="15">
+    <servicio>Cena</servicio>
+    <menu>Merianda 4</menu>
+    <hora_inicia>18:00:00</hora_inicia>
+    <hora_finaliza>20:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="1">
+    <servicio>Desayuno</servicio>
+    <menu>Menu Día</menu>
+    <hora_inicia>08:00:00</hora_inicia>
+    <hora_finaliza>10:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="8">
+    <servicio>Desayuno</servicio>
+    <menu>Menu Tarde</menu>
+    <hora_inicia>08:00:00</hora_inicia>
+    <hora_finaliza>10:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="13">
+    <servicio>Desayuno</servicio>
+    <menu>Americano</menu>
+    <hora_inicia>08:00:00</hora_inicia>
+    <hora_finaliza>11:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="14">
+    <servicio>Desayuno</servicio>
+    <menu>Continental</menu>
+    <hora_inicia>07:30:00</hora_inicia>
+    <hora_finaliza>09:30:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="18">
+    <servicio>Desayuno</servicio>
+    <menu>Menu 1</menu>
+    <hora_inicia>08:30:00</hora_inicia>
+    <hora_finaliza>11:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="21">
+    <servicio>Desayuno</servicio>
+    <menu>Menu 2</menu>
+    <hora_inicia>06:00:00</hora_inicia>
+    <hora_finaliza>11:00:00</hora_finaliza>
+  </tipo_comida>
+  <tipo_comida id="17">
+    <servicio>Refrigerio</servicio>
+    <menu>Refrigerio</menu>
+    <hora_inicia>11:00:00</hora_inicia>
+    <hora_finaliza>13:00:00</hora_finaliza>
+  </tipo_comida>
+</root>

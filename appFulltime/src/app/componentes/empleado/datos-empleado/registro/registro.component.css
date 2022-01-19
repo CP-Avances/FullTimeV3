@@ -1,0 +1,43 @@
+mat-form-field {width: 225px; padding: 10px 10px 0px 10px;}
+
+button {margin: 5px 10px 5px 10px;}
+
+.button {margin: 5px 10px 5px 10px;}
+
+#letraT { font-size: 11px; }
+
+#icono_emple { cursor: pointer; }
+
+#seccion_emple { color: rgba(8, 10, 124, 0.828); }
+
+.container{ padding-top: 15px; }
+
+/*.empleadoR-tooltip { background: #276bc3; }*/
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
+
+.barraTitulo { 
+    font-size: 25px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+.titulo_empleR { 
+    position: relative; 
+    float: left; 
+    font-size: 19px; 
+    font-weight: bold; 
+    text-align: center; 
+    color: rgb(0, 0, 0);}
+
+.subtitulo_empleR {
+    font-size: 14px; 
+    font-weight: bold; 
+    padding-left: 5px; 
+    padding-top: 25px; 
+    padding-bottom: 25px; 
+    text-align: justify;
+}

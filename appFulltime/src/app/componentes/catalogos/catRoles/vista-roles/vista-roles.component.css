@@ -1,0 +1,31 @@
+.btn { background-color: rgb(80,87,97); color: white; }
+
+p { font-size: x-small; }
+
+td { padding-top: 10px; text-align: center; }
+
+button { margin: 5px 10px 5px 10px; }
+
+#funtion { color: rgb(17, 4, 66); cursor: pointer; }
+
+.tituloRolesL { 
+    font-size: 20px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px;
+    padding-bottom: 6px; 
+}
+
+#resulRoles { 
+    font-size: 17px; 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    padding-top: 10px; 
+    padding-bottom: 6px; 
+}
+
+table {width: 100%;}
+
+

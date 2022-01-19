@@ -1,0 +1,132 @@
+<div class="scrollbar scrollbar-primary">
+    <div class="d-flex bd-highlight barraTituloC">
+        <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+        <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag
+            cdkDragRootElement=".cdk-overlay-pane">
+            Asignar Ciudad a:</h5>
+    </div>
+    <h4 style="text-align: center; margin-top: 10px;">{{data.feriado.descripcion}}</h4>
+    <div style="text-align: center">
+        <form [formGroup]="asignarCiudadForm">
+            <mat-card-content>
+                <div class="container">
+                    <div class="nota">
+                        <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el
+                            botón Guardar.</span>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-around">
+                        <mat-form-field>
+                            <mat-label>Seleccionar Continente</mat-label>
+                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
+                                matTooltipPosition="right" matTooltip="Lista de continentes">help_outline</mat-icon>
+                            <mat-select [formControl]="nombreContinenteF" [(ngModel)]="seleccionarContinente" required>
+                                <mat-option *ngFor="let c of continentes" [value]="c.continente"
+                                    (click)="FiltrarPaises(asignarCiudadForm.value)">
+                                    {{c.continente}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input type="text" placeholder="Escribir País" aria-label="Number" matInput
+                                [formControl]="nombrePaisF" [matAutocomplete]="auto" [(ngModel)]="seleccionarPaises"
+                                required>
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let option of filteredOptPais | async" [value]="option.nombre"
+                                    (click)="FiltrarProvincias(asignarCiudadForm.value)">
+                                    {{option.nombre}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
+                                matTooltipPosition="right" matTooltip="Lista de países del continente seleccionado">
+                                help_outline</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <input type="text" placeholder="Escribir Provincia" aria-label="Number" matInput
+                                [formControl]="idProvinciaF" [matAutocomplete]="auto1"
+                                [(ngModel)]="seleccionarProvincia" required>
+                            <mat-autocomplete #auto1="matAutocomplete">
+                                <mat-option *ngFor="let option of filteredOptProv | async" [value]="option.nombre"
+                                    (click)="FiltrarCiudades(asignarCiudadForm.value)">
+                                    {{option.nombre}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
+                                matTooltipPosition="right"
+                                matTooltip="Lista de provincias, departamentos o estados del país seleccionado">
+                                help_outline</mat-icon>
+                        </mat-form-field>
+                        <!--     <mat-form-field>
+                            <input type="text" placeholder="Escribir Ciudad" aria-label="Number" matInput
+                                [formControl]="nombreCiudadF" [matAutocomplete]="auto2" [(ngModel)]="seleccionarCiudad"
+                                required>
+                            <mat-autocomplete #auto2="matAutocomplete">
+                                <mat-option *ngFor="let option of filteredOptCiud | async" [value]="option.descripcion"
+                                    (click)="SeleccionarCiudad(asignarCiudadForm.value)">
+                                    {{option.descripcion}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
+                                matTooltipPosition="right"
+                                matTooltip="Lista de ciudades de la provincia, departamento o estado seleccionado">
+                                help_outline</mat-icon>
+                        </mat-form-field>
+                                <div *ngIf="!Habilitar">
+                            <label style="margin-right: 15px; font-weight: bold; font-size: 20px;">Lista de Ciudades</label>
+                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                                matTooltip="Seleccionar la ciudad en la que rige el feriado.">help_outline
+                            </mat-icon>
+                            <div class="row" *ngFor="let n of nombreCiudades">
+                                <div class="col-sm col-6" style="text-align: left;">
+                                    <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="checkboxes[n.descripcion]">
+                                        {{n.descripcion}}
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+                        </div>-->
+
+
+                        <div class="modal-body" *ngIf="!Habilitar">
+                            <div class="container-fluid">
+                                <label style="margin-right: 15px; font-weight: bold; font-size: 20px;">Lista de
+                                    Ciudades</label>
+                                <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip"
+                                    matTooltipPosition="right"
+                                    matTooltip="Seleccionar la ciudad en la que rige el feriado.">help_outline
+                                </mat-icon>
+                                <br>
+                                <input class="form-check-input" type="checkbox" id="selecTodo"
+                                    (change)="$event.target.checked ? AgregarTodos() : QuitarTodos()">
+                                <label class="form-check-label" for="inlineCheckbox1"
+                                    style="font-size: 15px; color: blue; font-weight: bold;">Todas</label>
+                                <br> <br>
+                                <div class="row" style="text-align: center;">
+                                    <div class="col-md-6 col-lg-6 col-6" style="text-align: left;"
+                                        *ngFor="let n of nombreCiudades; index as i">
+                                        <input class="form-check-input" type="checkbox" name="ciudadesSeleccionadas"
+                                            id="ciudadesSeleccionadas{{i}}"
+                                            (change)="$event.target.checked ? AgregarCiudad(n) : QuitarCiudad(n)">
+                                        <label class="form-check-label" for="inlineCheckbox1">{{n.descripcion}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </form>
+        <mat-card-actions class="d-flex justify-content-around">
+            <input type="submit" class="btn btn-sm" [disabled]="!asignarCiudadForm.valid"
+                (click)="InsertarFeriadoCiudad()" value="Guardar">
+            <input type="submit" class="btn btn-sm" (click)="CerrarVentanaAsignarCiudad()" value="Salir">
+        </mat-card-actions>
+    </div>
+</div>
+
+<div class="pantalla-progress" *ngIf="habilitarprogress">
+    <mat-progress-spinner
+        class="progress"
+        [color]="color"
+        [mode]="mode"
+        [value]="value">
+    </mat-progress-spinner>
+</div>

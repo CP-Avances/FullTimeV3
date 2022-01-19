@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<root>
+  <roles id="3">
+    <descripcion>Batalla de Pichincha</descripcion>
+    <fecha>2020-05-24</fecha>
+    <fec_recuperacion>2020-12-26</fec_recuperacion>
+  </roles>
+  <roles id="15">
+    <descripcion>Batalla de Pichincha</descripcion>
+    <fecha>2020-12-24</fecha>
+  </roles>
+  <roles id="104">
+    <descripcion>prueba</descripcion>
+    <fecha>2020-10-15</fecha>
+  </roles>
+  <roles id="105">
+    <descripcion>prueba 2</descripcion>
+    <fecha>2020-06-24</fecha>
+  </roles>
+  <roles id="106">
+    <descripcion>prueba 3</descripcion>
+    <fecha>2020-06-12</fecha>
+  </roles>
+  <roles id="107">
+    <descripcion>prueba 4</descripcion>
+    <fecha>2020-07-16</fecha>
+  </roles>
+  <roles id="108">
+    <descripcion>Fiestas de Quito</descripcion>
+    <fecha>2020-12-07</fecha>
+  </roles>
+  <roles id="111">
+    <descripcion>prueba</descripcion>
+    <fecha>2020-12-25</fecha>
+    <fec_recuperacion>2020-12-31</fec_recuperacion>
+  </roles>
+  <roles id="114">
+    <descripcion>prueba</descripcion>
+    <fecha>2020-12-10</fecha>
+    <fec_recuperacion>2020-12-17</fec_recuperacion>
+  </roles>
+  <roles id="115">
+    <descripcion>Año Nuevo prueba</descripcion>
+    <fecha>2021-12-03</fecha>
+    <fec_recuperacion>2021-12-05</fec_recuperacion>
+  </roles>
+  <roles id="116">
+    <descripcion>Navidad Prueba</descripcion>
+    <fecha>2021-12-25</fecha>
+    <fec_recuperacion>2022-01-05</fec_recuperacion>
+  </roles>
+  <roles id="117">
+    <descripcion>Feriado ingreso prueba</descripcion>
+    <fecha>2021-05-10</fecha>
+    <fec_recuperacion>2022-06-04</fec_recuperacion>
+  </roles>
+  <roles id="118">
+    <descripcion>Jenny</descripcion>
+    <fecha>2021-04-05</fecha>
+    <fec_recuperacion>2022-05-01</fec_recuperacion>
+  </roles>
+  <roles id="119">
+    <descripcion>Jenny prueba</descripcion>
+    <fecha>2021-04-07</fecha>
+    <fec_recuperacion>2022-05-08</fec_recuperacion>
+  </roles>
+  <roles id="126">
+    <descripcion>realizando una prueba</descripcion>
+    <fecha>2021-04-08</fecha>
+    <fec_recuperacion>2022-05-12</fec_recuperacion>
+  </roles>
+  <roles id="128">
+    <descripcion>Año Nuevo Jenny</descripcion>
+    <fecha>2023-01-01</fecha>
+    <fec_recuperacion>2023-01-12</fec_recuperacion>
+  </roles>
+</root>

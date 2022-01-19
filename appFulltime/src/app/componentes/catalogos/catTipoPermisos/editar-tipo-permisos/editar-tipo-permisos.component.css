@@ -1,0 +1,52 @@
+.example-section { display: flex; align-content: center; align-items: center; height: 60px; }
+
+.mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
+
+.mat-stepper-horizontal { margin-top: 8px; }
+
+mat-label { font-size: 14px; } 
+
+mat-radio-group { width: 230px; padding: 10px 10px 0px 10px; margin-bottom: 10px;}
+
+mat-form-field {width: 230px; padding: 10px 10px 0px 10px;}
+
+#selec { font-size: 12px; } 
+
+#letraRadius { font-size: 14px; } 
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
+
+.barraTitulo { 
+    text-align: center; 
+    background: rgb(52,65,84); 
+    color: white; 
+    height: 50px; 
+}
+
+#permiso { cursor: pointer; }
+
+#emple_solicitar { font-size: 13px; }
+
+.titulo_permisoR { 
+    position: relative; 
+    float: left; 
+    font-size: 19px; 
+    font-weight: bold; 
+    text-align: center; 
+    color: rgb(0, 0, 0);
+}
+
+.subtitulo_permisoR {
+    font-size: 14px; 
+    font-weight: bold; 
+    padding-left: 5px; 
+    padding-top: 25px; 
+    padding-bottom: 25px; 
+    text-align: justify;
+}
+
+#seccion_permiso { color: rgba(8, 10, 124, 0.828); }
+
+#movilidad { cursor: grab; color: blue; margin-left: 10px;}
+
+#cerrar { cursor: pointer; color: red; margin-left: 801px;}

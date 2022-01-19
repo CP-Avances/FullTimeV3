@@ -1,0 +1,54 @@
+<div class="scrollbar scrollbar-primary">
+    <div id="titulo">
+        <span>REGISTRAR TIMBRE</span>
+    </div>
+    <br>
+    <div class="container d-flex flex-wrap justify-content-start">
+        <span><b>Fecha:</b> {{f | date: 'fullDate' : undefined : 'es-EC'}} <br> <b>Hora:</b> {{f | date: 'h:mm:ss
+            a'}}</span>
+    </div>
+    <form [formGroup]="TimbreForm">
+        <div class="container">
+            <br>
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    enviar timbre.</span>
+            </div>
+            <br>
+            <div class="d-flex flex-wrap justify-content-start">
+                <mat-checkbox (change)="ActivarBotones($event)">Horario Abierto</mat-checkbox>
+            </div>
+            <br>
+            <div class="d-flex flex-wrap justify-content-center">
+                <button *ngIf='botones_normal' mat-button id="botonTimbreInicio" (click)="AlmacenarDatos(1)">Inicio
+                    Jornada Laboral</button>
+                <button *ngIf='botones_normal' mat-button id="botonTimbreFin" (click)="AlmacenarDatos(2)">Fin
+                    Jornada Laboral</button>
+                <button *ngIf='botones_normal' mat-button id="botonTimbreInicio" (click)="AlmacenarDatos(3)">Inicio
+                    Almuerzo</button>
+                <button *ngIf='botones_normal' mat-button id="botonTimbreFin" (click)="AlmacenarDatos(4)">Fin
+                    Almuerzo</button>
+                <button *ngIf='botones_normal' mat-button id="botonTimbreInicio" (click)="AlmacenarDatos(5)">Inicio
+                    Permiso</button>
+                <button *ngIf='botones_normal' mat-button id="botonTimbreFin" (click)="AlmacenarDatos(6)">Fin
+                    Permiso</button>
+                <button *ngIf='boton_abierto' mat-button id="botonTimbreAbierto" (click)="AlmacenarDatos(7)">Horario
+                    Abierto</button>
+                <mat-form-field>
+                    <mat-label>Observación</mat-label>
+                    <textarea matInput #message maxlength="150" placeholder="Ingresar una descripción"
+                        [formControl]="observacionF"></textarea>
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Descripción del timbre.">
+                        help_outline</mat-icon>
+                    <mat-hint align="start"><strong>Ingresar hasta 150 caracteres</strong></mat-hint>
+                    <mat-hint align="end">{{message.value.length}} / 150</mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex flex-wrap justify-content-around" style="margin-top: 15px;">
+        <button mat-button class="btn" [disabled]="!TimbreForm.valid" (click)="insertarTimbre(TimbreForm.value)">Enviar
+            Timbre</button>
+        <button mat-button class="btn" (click)="ventana.close({close: true})">Salir</button>
+    </div>
+</div>
