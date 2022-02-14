@@ -78,26 +78,26 @@ export class TimbreMultipleComponent implements OnInit {
 
   // DATOS DE FILTROS DE BÚSQUEDA
   filtroDepartamento: '';
-  filtroCodigo: number;
   filtroEmpleado = '';
   filtroRegimen: '';
+  filtroCodigo: number;
   filtroCedula: '';
   filtroCargo: '';
 
   constructor(
-    public restDepa: DepartamentosService,
     public restEmpleado: EmpleadoService,
-    private validar: ValidacionesService,
-    public restD: DatosGeneralesService,
     private restTimbres: TimbresService,
     private restEmpresa: EmpresaService,
-    public restCargo: EmplCargosService,
     private restUsuario: UsuarioService,
-    public restRegimen: RegimenService,
-    public restSucur: SucursalService,
     public loginService: LoginService,
-    private toastr: ToastrService,
+    public restRegimen: RegimenService,
+    public restCargo: EmplCargosService,
+    public restSucur: SucursalService,
+    public restDepa: DepartamentosService,
+    public restD: DatosGeneralesService,
+    private validar: ValidacionesService,
     private ventana: MatDialog,
+    private toastr: ToastrService,
     private router: Router,
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
@@ -298,13 +298,13 @@ export class TimbreMultipleComponent implements OnInit {
   }
 
   LimpiarCampos() {
+    this.filtroEmpleado = '';
+    this.departamentoF.reset();
+    this.regimenF.reset();
     this.codigo.reset();
     this.cedula.reset();
     this.nombre.reset();
-    this.departamentoF.reset();
-    this.regimenF.reset();
     this.cargoF.reset();
-    this.filtroEmpleado = '';
   }
 
   // FILTROS DE BÚSQUEDA
@@ -343,24 +343,24 @@ export class TimbreMultipleComponent implements OnInit {
   LimpiarBusquedas() {
     this.busquedasForm.patchValue(
       {
+        sucursalForm: '',
         laboralForm: '',
-        depaForm: '',
         cargosForm: '',
-        sucursalForm: ''
+        depaForm: '',
       })
+    this.ListarDepartamentos();
     this.ObtenerEmpleados();
     this.ListarSucursales();
-    this.ListarDepartamentos();
-    this.ListarCargos();
     this.ListarRegimen();
+    this.ListarCargos();
   }
 
   LimpiarCampos1() {
     this.busquedasForm.patchValue(
       {
         laboralForm: '',
+        cargosForm: '', 
         depaForm: '',
-        cargosForm: ''
       })
   }
 
@@ -368,7 +368,7 @@ export class TimbreMultipleComponent implements OnInit {
     this.busquedasForm.patchValue(
       {
         depaForm: '',
-        cargosForm: ''
+        cargosForm: '',
       })
   }
 

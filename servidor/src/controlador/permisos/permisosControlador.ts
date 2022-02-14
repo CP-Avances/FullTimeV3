@@ -391,7 +391,10 @@ class PermisosControlador {
         const id = req.params.id
         const { descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero, num_permiso, anterior_doc, docu_nombre, hora_salida, hora_ingreso } = req.body;
         console.log(descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero, num_permiso, anterior_doc, docu_nombre);
-        if (anterior_doc === null && docu_nombre === null) {
+        if ((anterior_doc === null && docu_nombre === null) || (anterior_doc === '' && docu_nombre === '')) {
+           
+           
+          console.log('entra ver permiso') 
             await pool.query('UPDATE permisos SET descripcion = $1, fec_inicio = $2, fec_final = $3, dia = $4, dia_libre = $5, id_tipo_permiso = $6, hora_numero = $7, num_permiso = $8, hora_salida = $9, hora_ingreso = $10 WHERE id = $11', [descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero, num_permiso, hora_salida, hora_ingreso, id]);
             res.jsonp({ message: 'Permiso Editado' });
         } else {

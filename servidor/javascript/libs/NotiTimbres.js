@@ -22,22 +22,28 @@ const NotificacionTimbreAutomatica = function () {
         // console.log(f.getMinutes());
         if (f.getMinutes() === MINUTO_TIMER) {
             console.log('FECHA:', f.toLocaleDateString(), 'HORA:', f.toLocaleTimeString());
-            var d = f.toLocaleDateString().split('/')[1];
-            var m = f.toLocaleDateString().split('/')[0];
-            var a = f.toLocaleDateString().split('/')[2];
-            f.setUTCDate(parseInt(d));
-            // f.setUTCDate(15);
-            f.setUTCMonth(parseInt(m) - 1);
-            f.setUTCFullYear(parseInt(a));
-            console.log(f.toJSON());
-            // let hora: number = parseInt(f.toLocaleTimeString().split(':')[0]);
-            let hora = 9; // =====> solo para probar
-            f.setUTCHours(hora);
-            console.log(f.toJSON());
-            let fecha = f.toJSON().split('T')[0];
-            var h = f.toJSON().split('T')[1];
-            let retorno = yield CalcularHoras(fecha, h.split(':')[0]);
-            console.log('Retorno final:', retorno);
+            if (f != null) {
+                var d = f.toLocaleDateString().split('/')[1];
+                var m = f.toLocaleDateString().split('/')[0];
+                var a = f.toLocaleDateString().split('/')[2];
+                f.setUTCDate(parseInt(d));
+                // f.setUTCDate(15);
+                f.setUTCMonth(parseInt(m) - 1);
+                f.setUTCFullYear(parseInt(a));
+                console.log(f.toJSON());
+                // let hora: number = parseInt(f.toLocaleTimeString().split(':')[0]);
+                let hora = 9; // =====> solo para probar
+                f.setUTCHours(hora);
+                console.log(f.toJSON());
+                if (f != null) {
+                    var fecha = f.toJSON().split('T')[0];
+                    var h = f.toJSON().split('T')[1];
+                    let retorno = yield CalcularHoras(fecha, h.split(':')[0]);
+                    console.log('Retorno final:', retorno);
+                }
+                //let retorno = await CalcularHoras(fecha, h.split(':')[0]);
+                //console.log('Retorno final:', retorno);
+            }
         }
     }), 60000);
 };

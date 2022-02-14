@@ -107,7 +107,7 @@ class TimbresControlador {
     CrearTimbreWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud } = req.body;
+                const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj } = req.body;
                 let f = new Date();
                 const id_empleado = req.userIdEmpleado;
                 let code = yield database_1.default.query('SELECT codigo FROM empleados WHERE id = $1', [id_empleado]).then(result => { return result.rows; });
@@ -115,7 +115,9 @@ class TimbresControlador {
                     return { mensaje: 'El empleado no tiene un codigo asignado.' };
                 var codigo = parseInt(code[0].codigo);
                 console.log(req.body, codigo);
-                const [timbre] = yield database_1.default.query('INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_empleado, fec_hora_timbre_servidor) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f])
+                const [timbre] = yield database_1.default.query('INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, ' +
+                    'observacion, latitud, longitud, id_empleado, fec_hora_timbre_servidor, id_reloj) ' +
+                    'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj])
                     .then(result => {
                     console.log(result.rows);
                     return result.rows;

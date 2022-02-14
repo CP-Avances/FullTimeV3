@@ -11,7 +11,7 @@ export const NotificacionSinTimbres = function () {
         // console.log(f.getMinutes());
         if (f.getMinutes() === MINUTO_TIMER) {
             console.log('FECHA:', f.toLocaleDateString(), 'HORA:', f.toLocaleTimeString());
-
+            if (f != null) {
             var d = f.toLocaleDateString().split('-')[2];
             var m = f.toLocaleDateString().split('-')[1];
             var a = f.toLocaleDateString().split('-')[0];
@@ -32,7 +32,8 @@ export const NotificacionSinTimbres = function () {
             var h = f.toJSON().split('T')[1];
             let horarios = await LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
             console.log(horarios);
-        }
+        }  
+    }
 
     }, 60000);
 
@@ -97,7 +98,7 @@ async function MetodoNorificacionEntradas(orden: number, fecha: string, num_dia:
 }
 
 async function EmpleadosSinTimbreEntrada(fecha: String, arrayIdsEmpleadosActivos: any[]) {
-    let IdsEmpleadosConTimbres = await pool.query('SELECT DISTINCT e.id FROM empleados AS e, timbres AS t WHERE e.codigo = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\' AND accion in (\'E\', \'EoS\') ORDER BY id', [fecha])
+    let IdsEmpleadosConTimbres = await pool.query('SELECT DISTINCT e.id FROM empleados AS e, timbres AS t WHERE e.codigo::int = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\' AND accion in (\'E\', \'EoS\') ORDER BY id', [fecha])
         .then(result => {
             return result.rows.map(obj => {
                 return obj.id

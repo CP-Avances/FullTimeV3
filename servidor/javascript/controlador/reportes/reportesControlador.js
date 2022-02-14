@@ -131,13 +131,15 @@ class ReportesControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empleado } = req.params;
             const { fechaInicio, fechaFinal } = req.body;
-            const DATOS = yield database_1.default.query('select t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, t.latitud, t.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, t.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion, cg_h.min_almuerzo ' +
-                'from timbres t, plan_general pg, cg_horarios cg_h where ' +
-                't.id_empleado = pg.codigo and pg.id_horario = cg_h.id and ' +
-                'date(pg.fec_horario) = date(t.fec_hora_timbre) and NOT accion = \'HA\' and ' +
-                't.id_empleado = $1 and t.fec_hora_timbre::date BETWEEN $2 AND $3 ' +
-                'group by t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, t.latitud, t.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, t.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion, cg_h.min_almuerzo ' +
-                'order by t.fec_hora_timbre asc;', [id_empleado, fechaInicio, fechaFinal]);
+            const DATOS = yield database_1.default.query('SELECT t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, ' +
+                't.latitud, t.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, ' +
+                't.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion ' +
+                'FROM timbres t WHERE t.id_empleado = $1 AND NOT accion = \'HA\' AND ' +
+                't.fec_hora_timbre::date BETWEEN $2 AND $3 ' +
+                'GROUP BY t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, t.latitud, ' +
+                't.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, ' +
+                't.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion ' +
+                'ORDER BY t.fec_hora_timbre ASC;', [id_empleado, fechaInicio, fechaFinal]);
             console.log("LT RepCont: ", (DATOS.rows));
             if (DATOS.rowCount > 0) {
                 return res.jsonp(DATOS.rows);

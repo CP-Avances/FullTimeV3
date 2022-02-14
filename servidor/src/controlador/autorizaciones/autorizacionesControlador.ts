@@ -49,8 +49,13 @@ class AutorizacionesControlador {
     }
 
     public async CrearAutorizacion(req: Request, res: Response): Promise<any> {
-        const { orden, estado, id_departamento, id_permiso, id_vacacion, id_hora_extra, id_plan_hora_extra, id_documento } = req.body;
-        await pool.query('INSERT INTO autorizaciones ( orden, estado, id_departamento, id_permiso, id_vacacion, id_hora_extra, id_plan_hora_extra, id_documento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [orden, estado, id_departamento, id_permiso, id_vacacion, id_hora_extra, id_plan_hora_extra, id_documento]);
+        const { orden, estado, id_departamento, id_permiso, id_vacacion, id_hora_extra,
+            id_plan_hora_extra, id_documento } = req.body;
+        await pool.query('INSERT INTO autorizaciones ( orden, estado, id_departamento, ' +
+            'id_permiso, id_vacacion, id_hora_extra, id_plan_hora_extra, id_documento) ' +
+            'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+            [orden, estado, id_departamento, id_permiso, id_vacacion, id_hora_extra,
+                id_plan_hora_extra, id_documento]);
         res.jsonp({ message: 'Autorizacion guardado' });
     }
 
@@ -137,7 +142,7 @@ class AutorizacionesControlador {
     public async ActualizarEstadoVacacion(req: Request, res: Response): Promise<void> {
         Credenciales(req.id_empresa);
         //const { id_documento, estado, id_vacaciones, id_departamento, id_empleado } = req.body;
-        const { id_documento, estado, id_vacacion} = req.body;
+        const { id_documento, estado, id_vacacion } = req.body;
 
         await pool.query('UPDATE autorizaciones SET estado = $1, id_documento = $2 WHERE id_vacacion = $3', [estado, id_documento, id_vacacion]);
         res.jsonp({ message: 'Autorizacion guardado' });

@@ -75,7 +75,6 @@ const TREE_DATA: CategoriasReportes[] = [
     children: [
       { name: 'Kardex', url: '/reporteKardex' },
       { name: 'Timbres', url: '/reporteTimbres' },
-      { name: 'Timbre Abierto', url: '/reporte-timbre-abierto' },
       { name: 'Atrasos', url: '/reporteAtrasos' },
       { name: 'Permisos', url: '/reportePermisos' },
       { name: 'Empleados', url: '/reporteEmpleados' },
@@ -90,9 +89,12 @@ const TREE_DATA: CategoriasReportes[] = [
     name: 'Reportes Múltiples',
     icono: 'watch_later',
     children: [
-     { name: 'Faltas', url: '/reporte-faltas' },
+      { name: 'Faltas', url: '/reporte-faltas' },
       //{ name: 'Atrasos', url: '/reporte-atrasos-multiples' },
       { name: 'Timbres', url: '/reporte-timbres-multiples' },
+      { name: 'Timbre Teletrabajo', url: '/reporte-timbre-sistema' },
+      { name: 'Timbre Reloj Virtual', url: '/reporte-timbre-reloj-virtual' },
+      { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto' },
       { name: 'Puntualidad', url: '/reporte-puntualidad' },
       //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja' },
       { name: 'Empleados Vacunados', url: '/lista-vacunados' },

@@ -14,13 +14,13 @@ export class ConfigAsistenciaComponent implements OnInit {
     name: 'Seleccionar Todo',
     completed: false,
     subtasks: [
-      {name: 'ATRASO', completed: false},
-      {name: 'SAL ANTES', completed: false},
-      {name: 'ALMUE', completed: false},
-      {name: 'HORA TRAB', completed: false},
-      {name: 'HORA SUPL', completed: false},
-      {name: 'HORA EX. L-V', completed: false},
-      {name: 'HORA EX. S-D', completed: false}
+      { name: 'ATRASO', completed: false },
+      { name: 'SALIDA ANTICIPADA', completed: false },
+      { name: 'ALIMENTACION', completed: false },
+      { name: 'HORAS TRABAJADAS', completed: false },
+      { name: 'HORAS SUPLEMENTARIAS', completed: false },
+      { name: 'HORAS EXTRAS L-V', completed: false },
+      { name: 'HORAS EXTRAS S-D', completed: false }
     ]
   };
 
@@ -52,7 +52,7 @@ export class ConfigAsistenciaComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   GuardarConfiguracionAsistencia() {
     sessionStorage.removeItem('arrayConfigAsistencia');
     sessionStorage.removeItem('columnasValidasAsistencia');
@@ -60,24 +60,24 @@ export class ConfigAsistenciaComponent implements OnInit {
     // console.log(this.task.subtasks);
     let columnasValidas = this.task.subtasks.filter(obj => {
       return (obj.completed === true)
-    }).length + 14;
+    }).length + 15;
     // console.log(columnasValidas);
     sessionStorage.setItem('columnasValidasAsistencia', columnasValidas.toString())
 
     let ObjetoJSON = {
-      atraso: this.task.subtasks.filter(obj => {return (obj.name === 'ATRASO')}).map(obj => {return obj.completed})[0],
-      salida_antes: this.task.subtasks.filter(obj => {return (obj.name === 'SAL ANTES')}).map(obj => {return obj.completed})[0],
-      almuerzo: this.task.subtasks.filter(obj => {return (obj.name === 'ALMUE')}).map(obj => {return obj.completed})[0],
-      h_trab: this.task.subtasks.filter(obj => {return (obj.name === 'HORA TRAB')}).map(obj => {return obj.completed})[0],
-      h_supl: this.task.subtasks.filter(obj => {return (obj.name === 'HORA SUPL')}).map(obj => {return obj.completed})[0],
-      h_ex_LV: this.task.subtasks.filter(obj => {return (obj.name === 'HORA EX. L-V')}).map(obj => {return obj.completed})[0],
-      h_ex_SD: this.task.subtasks.filter(obj => {return (obj.name === 'HORA EX. S-D')}).map(obj => {return obj.completed})[0]
+      atraso: this.task.subtasks.filter(obj => { return (obj.name === 'ATRASO') }).map(obj => { return obj.completed })[0],
+      salida_antes: this.task.subtasks.filter(obj => { return (obj.name === 'SALIDA ANTICIPADA') }).map(obj => { return obj.completed })[0],
+      almuerzo: this.task.subtasks.filter(obj => { return (obj.name === 'ALIMENTACION') }).map(obj => { return obj.completed })[0],
+      h_trab: this.task.subtasks.filter(obj => { return (obj.name === 'HORAS TRABAJADAS') }).map(obj => { return obj.completed })[0],
+      h_supl: this.task.subtasks.filter(obj => { return (obj.name === 'HORAS SUPLEMENTARIAS') }).map(obj => { return obj.completed })[0],
+      h_ex_LV: this.task.subtasks.filter(obj => { return (obj.name === 'HORAS EXTRAS L-V') }).map(obj => { return obj.completed })[0],
+      h_ex_SD: this.task.subtasks.filter(obj => { return (obj.name === 'HORAS EXTRAS S-D') }).map(obj => { return obj.completed })[0]
     }
 
     let jsonTask = JSON.stringify(ObjetoJSON)
     console.log(jsonTask);
     sessionStorage.setItem('arrayConfigAsistencia', jsonTask)
-    this.toastr.success('Configuración guardada','', {
+    this.toastr.success('Configuración guardada', '', {
       timeOut: 6000,
     })
     this.dialogRef.close(true)

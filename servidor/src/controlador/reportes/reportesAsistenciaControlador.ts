@@ -560,6 +560,127 @@ class ReportesAsistenciaControlador {
 
     }
 
+    // REPORTE DE TIMBRES REALIZADOS EN EL SISTEMA
+    public async ReporteTimbreSistema(req: Request, res: Response) {
+
+        let { desde, hasta } = req.params;
+        let datos: any[] = req.body;
+        //El reporte funciona para relojs de 6, 3 y sin acciones.        
+
+        let n: Array<any> = await Promise.all(datos.map(async (obj: IReporteTimbres) => {
+            obj.departamentos = await Promise.all(obj.departamentos.map(async (ele) => {
+                ele.empleado = await Promise.all(ele.empleado.map(async (o) => {
+                    o.timbres = await BuscarTimbreSistemas(desde, hasta, o.codigo);
+                    console.log('Timbres: ', o);
+                    return o
+                })
+                )
+                return ele
+            })
+            )
+            return obj
+        })
+        )
+
+        let nuevo = n.map((obj: IReporteTimbres) => {
+
+            obj.departamentos = obj.departamentos.map((e) => {
+
+                e.empleado = e.empleado.filter((t: any) => { return t.timbres.length > 0 })
+                // console.log('Empleados: ',e);
+                return e
+
+            }).filter((e: any) => { return e.empleado.length > 0 })
+            return obj
+
+        }).filter(obj => { return obj.departamentos.length > 0 })
+
+        if (nuevo.length === 0) return res.status(400).jsonp({ message: 'No hay timbres de empleados en ese periodo' })
+
+        return res.status(200).jsonp(nuevo)
+    }
+
+    // REPORTE DE TIMBRES REALIZADOS EN EL RELOJ VIRTUAL
+    public async ReporteTimbreRelojVirtual(req: Request, res: Response) {
+
+        let { desde, hasta } = req.params;
+        let datos: any[] = req.body;
+        //El reporte funciona para relojs de 6, 3 y sin acciones.        
+
+        let n: Array<any> = await Promise.all(datos.map(async (obj: IReporteTimbres) => {
+            obj.departamentos = await Promise.all(obj.departamentos.map(async (ele) => {
+                ele.empleado = await Promise.all(ele.empleado.map(async (o) => {
+                    o.timbres = await BuscarTimbreRelojVirtual(desde, hasta, o.codigo);
+                    console.log('Timbres: ', o);
+                    return o
+                })
+                )
+                return ele
+            })
+            )
+            return obj
+        })
+        )
+
+        let nuevo = n.map((obj: IReporteTimbres) => {
+
+            obj.departamentos = obj.departamentos.map((e) => {
+
+                e.empleado = e.empleado.filter((t: any) => { return t.timbres.length > 0 })
+                // console.log('Empleados: ',e);
+                return e
+
+            }).filter((e: any) => { return e.empleado.length > 0 })
+            return obj
+
+        }).filter(obj => { return obj.departamentos.length > 0 })
+
+        if (nuevo.length === 0) return res.status(400).jsonp({ message: 'No hay timbres de empleados en ese periodo' })
+
+        return res.status(200).jsonp(nuevo)
+    }
+
+    // REPORTE DE TIMBRES HORARIO ABIERTO
+    public async ReporteTimbreHorarioAbierto(req: Request, res: Response) {
+
+        let { desde, hasta } = req.params;
+        let datos: any[] = req.body;
+        //El reporte funciona para relojs de 6, 3 y sin acciones.        
+
+        let n: Array<any> = await Promise.all(datos.map(async (obj: IReporteTimbres) => {
+            obj.departamentos = await Promise.all(obj.departamentos.map(async (ele) => {
+                ele.empleado = await Promise.all(ele.empleado.map(async (o) => {
+                    o.timbres = await BuscarTimbreHorarioAbierto(desde, hasta, o.codigo);
+                    console.log('Timbres: ', o);
+                    return o
+                })
+                )
+                return ele
+            })
+            )
+            return obj
+        })
+        )
+
+        let nuevo = n.map((obj: IReporteTimbres) => {
+
+            obj.departamentos = obj.departamentos.map((e) => {
+
+                e.empleado = e.empleado.filter((t: any) => { return t.timbres.length > 0 })
+                // console.log('Empleados: ',e);
+                return e
+
+            }).filter((e: any) => { return e.empleado.length > 0 })
+            return obj
+
+        }).filter(obj => { return obj.departamentos.length > 0 })
+
+        if (nuevo.length === 0) return res.status(400).jsonp({ message: 'No hay timbres de empleados en ese periodo' })
+
+        return res.status(200).jsonp(nuevo)
+    }
+
+
     public async ReporteTimbresAbiertos(req: Request, res: Response) {
 
         const { data, desde, hasta } = req.query;
@@ -711,7 +832,49 @@ const BuscarTimbresSinAccionesDeEntrada = async function (fec_inicio: string, fe
 }
 
 const BuscarTimbres = async function (fec_inicio: string, fec_final: string, codigo: string | number) {
-    return await pool.query('SELECT CAST(fec_hora_timbre AS VARCHAR), id_reloj, accion, observacion, latitud, longitud, CAST(fec_hora_timbre_servidor AS VARCHAR)  FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) between $1 || \'%\' AND $2 || \'%\' AND id_empleado = $3 ORDER BY fec_hora_timbre ASC ', [fec_inicio, fec_final, codigo])
+    return await pool.query('SELECT CAST(fec_hora_timbre AS VARCHAR), id_reloj, accion, observacion, ' +
+        'latitud, longitud, CAST(fec_hora_timbre_servidor AS VARCHAR) ' +
+        'FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) BETWEEN $1 || \'%\' ' +
+        'AND ($2::timestamp + \'1 DAY\') || \'%\' AND id_empleado = $3 ' +
+        'ORDER BY fec_hora_timbre ASC', [fec_inicio, fec_final, codigo])
+        .then(res => {
+            return res.rows;
+        })
+}
+
+// CONSULTA TIMBRES REALIZADOS EN EL SISTEMA CODIGO 98
+const BuscarTimbreSistemas = async function (fec_inicio: string, fec_final: string, codigo: string | number) {
+    return await pool.query('SELECT CAST(fec_hora_timbre AS VARCHAR), id_reloj, accion, observacion, ' +
+        'latitud, longitud, CAST(fec_hora_timbre_servidor AS VARCHAR) ' +
+        'FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) BETWEEN $1 || \'%\' ' +
+        'AND ($2::timestamp + \'1 DAY\') || \'%\' AND id_empleado = $3 AND id_reloj = 98 ' +
+        'AND NOT accion = \'HA\' ' +
+        'ORDER BY fec_hora_timbre ASC', [fec_inicio, fec_final, codigo])
+        .then(res => {
+            return res.rows;
+        })
+}
+
+// CONSULTA TIMBRES REALIZADOS EN EL RELOJ VIRTUAL CODIGO 97
+const BuscarTimbreRelojVirtual = async function (fec_inicio: string, fec_final: string, codigo: string | number) {
+    return await pool.query('SELECT CAST(fec_hora_timbre AS VARCHAR), id_reloj, accion, observacion, ' +
+        'latitud, longitud, CAST(fec_hora_timbre_servidor AS VARCHAR) ' +
+        'FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) BETWEEN $1 || \'%\' ' +
+        'AND ($2::timestamp + \'1 DAY\') || \'%\' AND id_empleado = $3 AND id_reloj = 97 ' +
+        'AND NOT accion = \'HA\' ' +
+        'ORDER BY fec_hora_timbre ASC', [fec_inicio, fec_final, codigo])
+        .then(res => {
+            return res.rows;
+        })
+}
+
+// CONSULTA TIMBRES REALIZADOS EN EL RELOJ VIRTUAL CODIGO 97
+const BuscarTimbreHorarioAbierto = async function (fec_inicio: string, fec_final: string, codigo: string | number) {
+    return await pool.query('SELECT CAST(fec_hora_timbre AS VARCHAR), id_reloj, accion, observacion, ' +
+        'latitud, longitud, CAST(fec_hora_timbre_servidor AS VARCHAR) ' +
+        'FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) BETWEEN $1 || \'%\' ' +
+        'AND ($2::timestamp + \'1 DAY\') || \'%\' AND id_empleado = $3 AND accion = \'HA\' ' +
+        'ORDER BY fec_hora_timbre ASC', [fec_inicio, fec_final, codigo])
         .then(res => {
             return res.rows;
         })
@@ -1171,7 +1334,7 @@ async function BuscarHorarioEmpleado(fec_inicio: string, fec_final: string, codi
     });
 
     console.log('obj----faltas', array)
-    
+
     let timbres = await Promise.all(array.map(async (o: any) => {
         o.registros = await pool.query('SELECT count(*) FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) like $1 || \'%\' ', [o.fecha])
             .then(result => {

@@ -1,22 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+// IMPORTAR LIBRERIAS
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import * as xlsx from 'xlsx';
 import * as moment from 'moment';
+import * as xlsx from 'xlsx';
 
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { KardexService } from 'src/app/servicios/reportes/kardex.service';
-import { MatDialog } from '@angular/material/dialog';
-import { IReporteAsistenciaConsolidada, IRestAsisteConsoli, IRestTotalAsisteConsoli } from '../../../model/reportes.model'
-import { ConfigAsistenciaComponent } from '../../reportes-Configuracion/config-report-asistencia/config-asistencia.component';
-import { SelectionModel } from '@angular/cdk/collections';
-import { EmpleadoElemento } from 'src/app/model/empleado.model';
+// IMPORTAR SERVICIOS
 import { PlantillaReportesService } from '../plantilla-reportes.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { KardexService } from 'src/app/servicios/reportes/kardex.service';
+
+// IMPORTAR COMPONENTES
+import { ConfigAsistenciaComponent } from '../../reportes-Configuracion/config-report-asistencia/config-asistencia.component';
+import { EmpleadoElemento } from 'src/app/model/empleado.model';
+import { SelectionModel } from '@angular/cdk/collections';
+
+// IMPORTAR MODELOS
+import { IReporteAsistenciaConsolidada, IRestAsisteConsoli, IRestTotalAsisteConsoli } from '../../../model/reportes.model'
 
 @Component({
   selector: 'app-asistencia-consolidado',
@@ -37,10 +43,10 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   filtroCedula: '';
   filtroEmpleado = '';
 
-  // items de paginacion de la tabla
+  // ITEMS DE PAGINACIÓN DE LA TABLA
+  pageSizeOptions = [5, 10, 20, 50];
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
-  pageSizeOptions = [5, 10, 20, 50];
 
   empleadoD: any = [];
   idEmpleado: number;
@@ -63,19 +69,19 @@ export class AsistenciaConsolidadoComponent implements OnInit {
 
   selection = new SelectionModel<EmpleadoElemento>(true, []);
 
-  // Getters de colores, nombre empresa y logo para colocar en reporte 
+  // GETTERS DE COLORES, NOMBRE EMPRESA Y LOGO PARA COLOCAR EN REPORTE 
   get p_color(): string { return this.plantillaPDF.color_Primary }
   get s_color(): string { return this.plantillaPDF.color_Secundary }
   get urlImagen(): string { return this.plantillaPDF.logoBase64 }
   get nombreEmpresa(): string { return this.plantillaPDF.nameEmpresa }
 
   constructor(
-    private restEmpleado: EmpleadoService,
-    private restKardex: KardexService,
     private plantillaPDF: PlantillaReportesService,
-    private toastr: ToastrService,
+    private restEmpleado: EmpleadoService,
     private openVentana: MatDialog,
+    private restKardex: KardexService,
     private validar: ValidacionesService,
+    private toastr: ToastrService,
   ) { }
 
   ngOnInit(): void {
@@ -113,7 +119,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // mensaje de advertencia si tiene o no la configuracion para seleccionar los campos a imprimir
+  // MENSAJE DE ADVERTENCIA SI TIENE O NO LA CONFIGURACIÓN PARA SELECCIONAR LOS CAMPOS A IMPRIMIR
   MensajeInicio() {
     if (!!sessionStorage.getItem('arrayConfigAsistencia') === false) {
       if (this.habilitar === false) {
@@ -132,8 +138,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     }
   }
 
-  // Obtener lista de empleados
-
+  // OBTENER LISTA DE EMPLEADOS
   ObtenerEmpleados() {
     this.empleados = [];
     this.restEmpleado.getEmpleadosRest().subscribe(res => {
@@ -142,7 +147,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     });
   }
 
-  // Método para ver la informacion del empleado 
+  // MÉTODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
     this.empleadoD = [];
     this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
@@ -150,16 +155,13 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     });
   }
 
-  // Metodo de la paginacion
+  // MÉTODO DE LA PAGINACIÓN
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  /**
-   * Funciones para validar los campos y las fechas de rangos del reporte
-   */
-
+  // FUNCIONES PARA VALIDAR LOS CAMPOS Y LAS FECHAS DE RANGOS DEL REPORTE
   f_inicio_req: string = '';
   f_final_req: string = '';
   habilitar: boolean = false;
@@ -205,15 +207,13 @@ export class AsistenciaConsolidadoComponent implements OnInit {
         });
       })
     } else {
-      this.toastr.error('Una de las fechas no a sido asignada', 'Error al ingresar Fechas', {
+      this.toastr.error('Una de las fechas no ha sido asignada', 'Error al ingresar Fechas', {
         timeOut: 6000,
       });
     }
   }
 
-  /**
-   * Abrir ventana de selecion de campos para imprimir reporte 
-   */
+  // ABRIR VENTANA DE SELECCIÓN DE CAMPOS PARA IMPRIMIR REPORTE 
 
   ConfiguracionReporteAsistencia() {
     console.log('Esta listo para configurar');
@@ -265,53 +265,64 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     this.fechaHoy = f.toJSON();
     // console.log(this.fechaHoy);
 
+    var nomEmpleado = this.empleadoD[0].nombre;
+    var apelEmpleado = this.empleadoD[0].apellido;
     return {
       pageOrientation: 'landscape',
-      watermark: { text: 'this.frase', color: 'blue', opacity: 0.1, bold: true, italics: false },
-      header: { text: 'Impreso por:  ' + this.empleadoD[0].nombre + ' ' + this.empleadoD[0].apellido, margin: 10, fontSize: 9, opacity: 0.3 },
+      watermark: { text: 'Confidencial', color: 'blue', opacity: 0.1, bold: true, italics: false },
+      //header1: { text: 'Impreso por:  ' + this.empleadoD[0].nombre + ' ' + this.empleadoD[0].apellido, margin: 10, fontSize: 9, opacity: 0.3 },
 
-      footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
+      header: function (currentPage: any, pageCount: any, fecha: any) {
         fecha = f.toJSON().split("T")[0];
         var timer = f.toJSON().split("T")[1].slice(0, 5);
         return [
           {
-            table: {
-              widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-              body: [
-                [
-                  { text: 'TRAB: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Trabaja', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'SAL: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Salida.', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'ALIM o A: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Alimentación.', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'FT: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Falta Timbre.', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'SUPL: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Suplementaria.', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'EX. L-V: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Extra de lunes a viernes.', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'EX. S-D: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Extra sabado a domingo.', border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'L: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
-                  { text: 'Libre.', border: [false, false, false, false], style: ['quote', 'small'] }
-                ]
-              ]
-            }
-          },
-          {
-            margin: [10, -2, 10, 0],
+            margin: [10, 5, 10, 0],
             columns: [
-              'Fecha: ' + fecha + ' Hora: ' + timer,
+
+              'Impreso por: ' + nomEmpleado + ' ' + apelEmpleado,
               {
                 text: [
                   {
-                    text: '© Pag ' + currentPage.toString() + ' of ' + pageCount, alignment: 'right', color: 'blue', opacity: 0.5
-                  }
+                    text: 'Fecha: ' + fecha + ' Hora: ' + timer + '\n © Pag ' + currentPage.toString() + ' of ' + pageCount, alignment: 'right', opacity: 0.5, color: 'blue'
+                  },
                 ],
               }
             ],
             fontSize: 9, color: '#A4B8FF',
+          }
+        ]
+      },
+
+      footer: function () {
+        return [
+          {
+            table: {
+              //margin: [10, 5, 0, 2],
+              widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+              body: [
+                [
+                  { text: 'HORA TRAB: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Horas Trabajadas.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'TOTAL ALIM: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Total Alimentación.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'FT: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Falta Timbre.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'F: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Feriado.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'R: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Registrado.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'L: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Libre.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'SUPL: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Hora Suplementaria.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'EX. L-V: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Extra de lunes a viernes.', border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'EX. S-D: ', bold: true, border: [false, false, false, false], style: ['quote', 'small'] },
+                  { text: 'Extra sábado a domingo.', border: [false, false, false, false], style: ['quote', 'small'] },
+                ]
+              ]
+            }
           }
         ]
       },
@@ -328,13 +339,13 @@ export class AsistenciaConsolidadoComponent implements OnInit {
               text: this.nombreEmpresa,
               bold: true,
               fontSize: 20,
-              margin: [230, 5, 0, 0],
+              margin: [230, 2, 0, 0],
             }
           ]
         },
         {
           style: 'subtitulos',
-          text: 'Reporte - Asistencia Detalle Consolidado'
+          text: 'REPORTE ASISTENCIA DETALLE CONSOLIDADO'
         },
         this.CampoInformacionGeneralAsistencia(this.asistencia.empleado[0].descripcion, this.asistencia.empleado[0]),
         this.CampoDetalleAsistencia(this.asistencia.detalle),
@@ -342,14 +353,17 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       ],
       styles: {
         tableTotal: { fontSize: 30, bold: true, alignment: 'center', fillColor: this.p_color },
-        tableHeader: { fontSize: 9, bold: true, alignment: 'center', fillColor: this.p_color },
+        tableHeader: { fontSize: 8, bold: true, alignment: 'center', fillColor: this.p_color },
+        tableHeaderT: { fontSize: 7, bold: true, alignment: 'center', fillColor: this.p_color },
+        tableHeaderS: { fontSize: 6, bold: true, alignment: 'center', fillColor: this.p_color },
         itemsTable: { fontSize: 8, margin: [0, 3, 0, 3], },
+        itemsTableD: { fontSize: 7, margin: [0, 3, 0, 3], },
         itemsTableInfo: { fontSize: 10, margin: [0, 5, 0, 5] },
         subtitulos: { fontSize: 16, alignment: 'center', margin: [0, 0, 0, 4] },
         tableMargin: { margin: [0, 20, 0, 0] },
         CabeceraTabla: { fontSize: 12, alignment: 'center', margin: [0, 6, 0, 6], fillColor: this.p_color },
-        quote: { margin: [5, -2, 0, -2], italics: true },
-        small: { fontSize: 8, color: 'blue', opacity: 0.5 }
+        quote: { margin: [5, 20, -2, -5], italics: true },
+        small: { fontSize: 7, color: 'blue', opacity: 0.5 }
       }
     };
   }
@@ -440,34 +454,36 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     return {
       style: 'tableMargin',
       table: {
-        headerRows: 1,
+        headerRows: 2,
         widths: this.FuncionColumnas(columnas),
         body: [
-          this.FuncionTituloColumna(configuracion),
+          this.FuncionTituloColumna(configuracion, 'titulo'),
+          this.FuncionTituloColumna(configuracion, 'subtitulo'),
           ...datos.map((obj: IRestAsisteConsoli) => {
             contador = contador + 1;
             var array = [
-              { style: 'itemsTable', text: '1.' + contador },
-              { style: 'itemsTable', text: '2.' + obj.fecha_mostrar },
-              { style: 'itemsTable', text: '3.' + obj.E.hora_default },
-              { style: 'itemsTable', text: '4.' + obj.E.hora_timbre },
-              { style: 'itemsTable', text: '5.' + obj.E.descripcion },
-              { style: 'itemsTable', text: '6.' + obj.S_A.hora_default },
-              { style: 'itemsTable', text: '7.' + obj.S_A.hora_timbre },
-              { style: 'itemsTable', text: '8.' + obj.S_A.descripcion },
-              { style: 'itemsTable', text: '9.' + obj.E_A.hora_default },
-              { style: 'itemsTable', text: '10.' + obj.E_A.hora_timbre },
-              { style: 'itemsTable', text: '11.' + obj.E_A.descripcion },
-              { style: 'itemsTable', text: '12.' + obj.S.hora_default },
-              { style: 'itemsTable', text: '13.' + obj.S.hora_timbre },
-              { style: 'itemsTable', text: '14.' + obj.S.descripcion },
-              { style: 'itemsTable', text: '15.' + obj.atraso },
-              { style: 'itemsTable', text: '16.' + obj.sal_antes },
-              { style: 'itemsTable', text: '17.' + obj.almuerzo },
-              { style: 'itemsTable', text: '18.' + obj.hora_trab },
-              { style: 'itemsTable', text: '19.' + obj.hora_supl },
-              { style: 'itemsTable', text: '20.' + obj.hora_ex_L_V },
-              { style: 'itemsTable', text: '21.' + obj.hora_ex_S_D },
+              { style: 'itemsTable', margin: [0, 5, 0, 5], text: '1.' + contador },
+              { style: 'itemsTableD', text: '2.' + obj.fecha_mostrar.split('.')[0] },
+              { style: 'itemsTableD', text: '3.' + obj.fecha_mostrar.split('.')[1] },
+              { style: 'itemsTable', text: '4.' + obj.E.hora_default },
+              { style: 'itemsTable', text: '5.' + obj.E.hora_timbre },
+              { style: 'itemsTable', text: '6.' + obj.E.descripcion },
+              { style: 'itemsTable', text: '7.' + obj.S_A.hora_default },
+              { style: 'itemsTable', text: '8.' + obj.S_A.hora_timbre },
+              { style: 'itemsTable', text: '9.' + obj.S_A.descripcion },
+              { style: 'itemsTable', text: '10.' + obj.E_A.hora_default },
+              { style: 'itemsTable', text: '11.' + obj.E_A.hora_timbre },
+              { style: 'itemsTable', text: '12.' + obj.E_A.descripcion },
+              { style: 'itemsTable', text: '13.' + obj.S.hora_default },
+              { style: 'itemsTable', text: '14.' + obj.S.hora_timbre },
+              { style: 'itemsTable', text: '15.' + obj.S.descripcion },
+              { style: 'itemsTable', text: '16.' + obj.atraso },
+              { style: 'itemsTable', text: '17.' + obj.sal_antes },
+              { style: 'itemsTable', text: '18.' + obj.almuerzo },
+              { style: 'itemsTable', text: '19.' + obj.hora_trab },
+              { style: 'itemsTable', text: '20.' + obj.hora_supl },
+              { style: 'itemsTable', text: '21.' + obj.hora_ex_L_V },
+              { style: 'itemsTable', text: '22.' + obj.hora_ex_S_D },
             ]
 
             let index = 0;
@@ -476,7 +492,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.atraso === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '15') { index = cont; }
+                if (ele.text.split('.')[0] === '16') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -485,7 +501,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.salida_antes === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '16') { index = cont; }
+                if (ele.text.split('.')[0] === '17') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -494,7 +510,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.almuerzo === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '17') { index = cont; }
+                if (ele.text.split('.')[0] === '18') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -503,7 +519,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.h_trab === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '18') { index = cont; }
+                if (ele.text.split('.')[0] === '19') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -512,7 +528,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.h_supl === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '19') { index = cont; }
+                if (ele.text.split('.')[0] === '20') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -521,7 +537,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.h_ex_LV === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '20') { index = cont; }
+                if (ele.text.split('.')[0] === '21') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -530,7 +546,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
             if (configuracion.h_ex_SD === false) {
               cont = 0; index = 0;
               array.forEach(ele => {
-                if (ele.text.split('.')[0] === '21') { index = cont; }
+                if (ele.text.split('.')[0] === '22') { index = cont; }
                 cont = cont + 1
               })
               array.splice(index, 1)
@@ -551,17 +567,22 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   }
 
   FuncionColumnas(columnas: number) {
-    // console.log(columnas);
-    let col = ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
+    console.log('columnas -------------------', columnas);
+    if (columnas <= 17) {
+      var col = ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*'];
+    }
+    else {
+      col = ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
+    }
     // console.log(col.slice(0,columnas));
     return col.slice(0, columnas);
   }
 
-  FuncionTituloColumna(configuracion: IReporteAsistenciaConsolidada) {
-
+  FuncionTituloColumna(configuracion: IReporteAsistenciaConsolidada, fila: String) {
     var arrayTitulos = [
-      { text: 'Nº', style: 'tableHeader' },
-      { colSpan: 4, text: 'ENTRADA', style: 'tableHeader' },
+      { rowSpan: 2, text: 'Nº', style: 'tableHeader' },
+      { colSpan: 5, text: 'ENTRADA', style: 'tableHeader' },
+      { text: '' },
       { text: '' },
       { text: '' },
       { text: '' },
@@ -574,86 +595,135 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       { colSpan: 3, text: 'SALIDA', style: 'tableHeader' },
       { text: '' },
       { text: '' },
-      { text: 'ATRASO', style: 'tableHeader' },
-      { text: 'SAL ANTES', style: 'tableHeader' },
-      { text: 'ALIM', style: 'tableHeader' },
-      { text: 'HORA TRAB', style: 'tableHeader' },
-      { text: 'HORA SUPL', style: 'tableHeader' },
-      { text: 'HORA EX. L-V', style: 'tableHeader' },
-      { text: 'HORA EX. S-D', style: 'tableHeader' },
+      { rowSpan: 2, text: 'TOTAL ATRASO', style: 'tableHeaderT' },
+      { rowSpan: 2, text: 'TOTAL SALIDA ANTES', style: 'tableHeaderT' },
+      { rowSpan: 2, text: 'TOTAL ALIM', style: 'tableHeaderT' },
+      { rowSpan: 2, text: 'TOTAL HORA TRAB', style: 'tableHeaderT' },
+      { rowSpan: 2, text: 'TOTAL HORA SUPL', style: 'tableHeaderT' },
+      { rowSpan: 2, text: 'TOTAL HORA EX. L-V', style: 'tableHeaderT' },
+      { rowSpan: 2, text: 'TOTAL HORA EX. S-D', style: 'tableHeaderT' },
+    ]
+
+    var arraySubtitulos = [
+      { text: '' },
+      { text: 'DIA', style: 'tableHeaderS' },
+      { text: 'FECHA', style: 'tableHeaderS' },
+      { text: 'HORARIO', style: 'tableHeaderS' },
+      { text: 'TIMBRE', style: 'tableHeaderS' },
+      { text: 'ESTADO', style: 'tableHeaderS' },
+      { text: 'HORARIO', style: 'tableHeaderS' },
+      { text: 'TIMBRE', style: 'tableHeaderS' },
+      { text: 'ESTADO', style: 'tableHeaderS' },
+      { text: 'HORARIO', style: 'tableHeaderS' },
+      { text: 'TIMBRE', style: 'tableHeaderS' },
+      { text: 'ESTADO', style: 'tableHeaderS' },
+      { text: 'HORARIO', style: 'tableHeaderS' },
+      { text: 'TIMBRE', style: 'tableHeaderS' },
+      { text: 'ESTADO', style: 'tableHeaderS' },
+      { text: '' },
+      { text: '' },
+      { text: '' },
+      { text: '' },
+      { text: '' },
+      { text: '' },
+      { text: '' },
     ]
     let index = 0;
     let contador = 0;
+
     if (configuracion.atraso === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'ATRASO') { index = contador; }
+        if (obj.text === 'TOTAL ATRASO') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      // console.log(arraySubtitulos, 'indice ' + index);
     }
 
     if (configuracion.salida_antes === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'SAL ANTES') { index = contador; }
+        if (obj.text === 'TOTAL SALIDA ANTES') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      // console.log(arraySubtitulos, 'indice ***********************' + index);
     }
 
     if (configuracion.almuerzo === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'ALIM') { index = contador; }
+        if (obj.text === 'TOTAL ALIM') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      //console.log(arraySubtitulos, 'indice ***********************' + index);
     }
 
     if (configuracion.h_trab === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA TRAB') { index = contador; }
+        if (obj.text === 'TOTAL HORA TRAB') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      // console.log(arraySubtitulos, 'indice ***********************' + index);
     }
 
     if (configuracion.h_supl === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA SUPL') { index = contador; }
+        if (obj.text === 'TOTAL HORA SUPL') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      //console.log(arraySubtitulos, 'indice ***********************' + index);
     }
 
     if (configuracion.h_ex_LV === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA EX. L-V') { index = contador; }
+        if (obj.text === 'TOTAL HORA EX. L-V') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      //console.log(arraySubtitulos, 'indice ***********************' + index);
     }
 
     if (configuracion.h_ex_SD === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA EX. S-D') { index = contador; }
+        if (obj.text === 'TOTAL HORA EXTRAS S-D') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
+      arraySubtitulos.splice(index, 1)
+      //console.log(arraySubtitulos, 'indice ***********************' + index);
     }
-    // console.log(arrayTitulos);
-    return arrayTitulos
+    console.log(arraySubtitulos, 'indice ' + index);
+    if (fila === 'titulo') {
+      return arrayTitulos
+    }
+    else {
+      return arraySubtitulos
+    }
+
   }
+
 
   FuncionColumnasTotal(columnas: number) {
     // console.log(columnas);
     // let col = ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
-    let col = [17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
+    //let col = [17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 20, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
+    let col = ['*', 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
+
     // console.log(col.slice(0,columnas));
     return col.slice(0, columnas);
   }
@@ -663,11 +733,12 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     let s = JSON.parse(sessionStorage.getItem('arrayConfigAsistencia')) as IReporteAsistenciaConsolidada;
     // console.log(objeto);
     return {
-      //style: 'tableMargin',
+      style: 'tableMargin',
       table: {
         widths: this.FuncionColumnasTotal(columnas),
         body: [
           this.FuncionTituloColumnaTotal(s),
+          this.HorasTrabajadas(objeto.HHMM, s),
           this.FuncionHHMMTotal(objeto.HHMM, s),
           this.FuncionDecimalTotal(objeto.decimal, s)
         ]
@@ -676,19 +747,20 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   }
 
   FuncionTituloColumnaTotal(configuracion: IReporteAsistenciaConsolidada) {
+    console.log('ver configuracion ----------------------------- ' + configuracion.atraso)
 
     var arrayTitulos = [
-      { rowSpan: 3, colSpan: 14, text: 'TOTAL', style: 'tableTotal' },
+      { rowSpan: 4, colSpan: 15, text: 'TOTAL', style: 'tableTotal', margin: [0, 15, 0, 10] },
       { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: '' },
       { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: '' },
-      { text: '' }, { text: '' }, { text: '' },
-      { text: 'ATRASO', style: 'tableHeader' },
-      { text: 'SAL ANTES', style: 'tableHeader' },
-      { text: 'ALIM', style: 'tableHeader' },
-      { text: 'HORA TRAB', style: 'tableHeader' },
-      { text: 'HORA SUPL', style: 'tableHeader' },
-      { text: 'HORA EX. L-V', style: 'tableHeader' },
-      { text: 'HORA EX. S-D', style: 'tableHeader' }
+      { text: '' }, { text: '' }, { text: '' }, { text: '' },
+      { text: 'TOTAL ATRASOS', style: 'tableHeaderT' },
+      { text: 'TOTAL SALIDA ANTES', style: 'tableHeaderT' },
+      { text: 'TOTAL ALIM', style: 'tableHeaderT' },
+      { text: 'TOTAL HORAS TRAB', style: 'tableHeaderT' },
+      { text: 'TOTAL HORAS SUPL', style: 'tableHeaderT' },
+      { text: 'TOTAL HORAS EX. L-V', style: 'tableHeaderT' },
+      { text: 'TOTAL HORAS EX. S-D', style: 'tableHeaderT' }
     ]
 
     let index = 0;
@@ -696,7 +768,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.atraso === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'ATRASO') { index = contador; }
+        if (obj.text === 'TOTAL ATRASOS') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -705,7 +777,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.salida_antes === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'SAL ANTES') { index = contador; }
+        if (obj.text === 'TOTAL SALIDA ANTES') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -714,7 +786,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.almuerzo === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'ALIM') { index = contador; }
+        if (obj.text === 'TOTAL ALIM') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -723,7 +795,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.h_trab === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA TRAB') { index = contador; }
+        if (obj.text === 'TOTAL HORAS TRAB') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -732,7 +804,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.h_supl === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA SUPL') { index = contador; }
+        if (obj.text === 'TOTAL HORAS SUPL') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -741,7 +813,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.h_ex_LV === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA EX. L-V') { index = contador; }
+        if (obj.text === 'TOTAL HORAS EX. L-V') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -750,7 +822,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     if (configuracion.h_ex_SD === false) {
       contador = 0;
       arrayTitulos.forEach(obj => {
-        if (obj.text === 'HORA EX. S-D') { index = contador; }
+        if (obj.text === 'TOTAL HORAS EX. S-D') { index = contador; }
         contador = contador + 1
       })
       arrayTitulos.splice(index, 1)
@@ -759,33 +831,24 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     return arrayTitulos
   }
 
-  FuncionHHMMTotal(obj: IRestTotalAsisteConsoli, configuracion: IReporteAsistenciaConsolidada) {
+  HorasTrabajadas(obj: IRestTotalAsisteConsoli, configuracion: IReporteAsistenciaConsolidada) {
     var array = [
       { style: 'itemsTable', text: '1. ' }, { style: 'itemsTable', text: '2. ' }, { style: 'itemsTable', text: '3. ' },
       { style: 'itemsTable', text: '4. ' }, { style: 'itemsTable', text: '5. ' }, { style: 'itemsTable', text: '6. ' },
       { style: 'itemsTable', text: '7. ' }, { style: 'itemsTable', text: '8. ' }, { style: 'itemsTable', text: '9. ' },
       { style: 'itemsTable', text: '10. ' }, { style: 'itemsTable', text: '11. ' }, { style: 'itemsTable', text: '12. ' },
-      { style: 'itemsTable', text: '13. ' }, { style: 'itemsTable', text: '14. ' },
-      { style: 'itemsTable', text: '15.' + obj.atraso },
-      { style: 'itemsTable', text: '16.' + obj.sal_antes },
-      { style: 'itemsTable', text: '17.' + obj.almuerzo },
-      { style: 'itemsTable', text: '18.' + obj.hora_trab },
-      { style: 'itemsTable', text: '19.' + obj.hora_supl },
-      { style: 'itemsTable', text: '20.' + obj.hora_ex_L_V },
-      { style: 'itemsTable', text: '21.' + obj.hora_ex_S_D },
+      { style: 'itemsTable', text: '13. ' }, { style: 'itemsTable', text: '14. ' }, { style: 'itemsTable', text: '15. ' },
+      { style: 'itemsTable', text: '16.' },
+      { style: 'itemsTable', text: '17.' },
+      { style: 'itemsTable', text: '18.' + 456 },
+      { style: 'itemsTable', text: '19.' + 500 },
+      { style: 'itemsTable', text: '20.' },
+      { style: 'itemsTable', text: '21.' },
+      { style: 'itemsTable', text: '22.' },
     ]
     let index = 0;
     let cont = 0;
     if (configuracion.atraso === false) {
-      cont = 0;
-      array.forEach(ele => {
-        if (ele.text.split('.')[0] === '15') { index = cont; }
-        cont = cont + 1
-      })
-      array.splice(index, 1)
-    }
-
-    if (configuracion.salida_antes === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('.')[0] === '16') { index = cont; }
@@ -794,7 +857,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.almuerzo === false) {
+    if (configuracion.salida_antes === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('.')[0] === '17') { index = cont; }
@@ -803,7 +866,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_trab === false) {
+    if (configuracion.almuerzo === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('.')[0] === '18') { index = cont; }
@@ -812,7 +875,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_supl === false) {
+    if (configuracion.h_trab === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('.')[0] === '19') { index = cont; }
@@ -821,7 +884,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_ex_LV === false) {
+    if (configuracion.h_supl === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('.')[0] === '20') { index = cont; }
@@ -830,10 +893,104 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_ex_SD === false) {
+    if (configuracion.h_ex_LV === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('.')[0] === '21') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.h_ex_SD === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '22') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    return array.map(maping => {
+      return { style: maping.style, text: maping.text.split('.')[1] }
+    })
+  }
+
+  FuncionHHMMTotal(obj: IRestTotalAsisteConsoli, configuracion: IReporteAsistenciaConsolidada) {
+    var array = [
+      { style: 'itemsTable', text: '1. ' }, { style: 'itemsTable', text: '2. ' }, { style: 'itemsTable', text: '3. ' },
+      { style: 'itemsTable', text: '4. ' }, { style: 'itemsTable', text: '5. ' }, { style: 'itemsTable', text: '6. ' },
+      { style: 'itemsTable', text: '7. ' }, { style: 'itemsTable', text: '8. ' }, { style: 'itemsTable', text: '9. ' },
+      { style: 'itemsTable', text: '10. ' }, { style: 'itemsTable', text: '11. ' }, { style: 'itemsTable', text: '12. ' },
+      { style: 'itemsTable', text: '13. ' }, { style: 'itemsTable', text: '14. ' }, { style: 'itemsTable', text: '15. ' },
+      { style: 'itemsTable', text: '16.' + obj.atraso },
+      { style: 'itemsTable', text: '17.' + obj.sal_antes },
+      { style: 'itemsTable', text: '18.' + obj.almuerzo },
+      { style: 'itemsTable', text: '19.' + obj.hora_trab },
+      { style: 'itemsTable', text: '20.' + obj.hora_supl },
+      { style: 'itemsTable', text: '21.' + obj.hora_ex_L_V },
+      { style: 'itemsTable', text: '22.' + obj.hora_ex_S_D },
+    ]
+    let index = 0;
+    let cont = 0;
+    if (configuracion.atraso === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '16') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.salida_antes === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '17') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.almuerzo === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '18') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.h_trab === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '19') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.h_supl === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '20') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.h_ex_LV === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '21') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.h_ex_SD === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('.')[0] === '22') { index = cont; }
         cont = cont + 1
       })
       array.splice(index, 1)
@@ -845,32 +1002,25 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   }
 
   FuncionDecimalTotal(obj: IRestTotalAsisteConsoli, configuracion: IReporteAsistenciaConsolidada) {
+    console.log('ver horas totales formato decimal ------------- ' + obj.atraso +
+      '  flotante  --- ' + parseFloat(obj.atraso.toString()))
     var array = [
       { text: '1- ', style: 'itemsTable' }, { text: '2- ', style: 'itemsTable' }, { text: '3- ', style: 'itemsTable' },
       { text: '4- ', style: 'itemsTable' }, { text: '5- ', style: 'itemsTable' }, { text: '6- ', style: 'itemsTable' },
       { text: '7- ', style: 'itemsTable' }, { text: '8- ', style: 'itemsTable' }, { text: '9- ', style: 'itemsTable' },
       { text: '10- ', style: 'itemsTable' }, { text: '11- ', style: 'itemsTable' }, { text: '12- ', style: 'itemsTable' },
-      { text: '13- ', style: 'itemsTable' }, { text: '14- ', style: 'itemsTable' },
-      { text: '15-' + obj.atraso.toString().slice(0, 8), style: 'itemsTable' },
-      { text: '16-' + obj.sal_antes.toString().slice(0, 8), style: 'itemsTable' },
-      { text: '17-' + obj.almuerzo.toString().slice(0, 8), style: 'itemsTable' },
-      { text: '18-' + obj.hora_trab.toString().slice(0, 8), style: 'itemsTable' },
-      { text: '19-' + obj.hora_supl.toString().slice(0, 8), style: 'itemsTable' },
-      { text: '20-' + obj.hora_ex_L_V.toString().slice(0, 8), style: 'itemsTable' },
-      { text: '21-' + obj.hora_ex_S_D.toString().slice(0, 8), style: 'itemsTable' },
+      { text: '13- ', style: 'itemsTable' }, { text: '14- ', style: 'itemsTable' }, { text: '15- ', style: 'itemsTable' },
+      { text: '16-' + parseFloat(obj.atraso.toString()).toFixed(3), style: 'itemsTable' },
+      { text: '17-' + parseFloat(obj.sal_antes.toString()).toFixed(3), style: 'itemsTable' },
+      { text: '18-' + parseFloat(obj.almuerzo.toString()).toFixed(3), style: 'itemsTable' },
+      { text: '19-' + parseFloat(obj.hora_trab.toString()).toFixed(3), style: 'itemsTable' },
+      { text: '20-' + parseFloat(obj.hora_supl.toString()).toFixed(3), style: 'itemsTable' },
+      { text: '21-' + parseFloat(obj.hora_ex_L_V.toString()).toFixed(3), style: 'itemsTable' },
+      { text: '22-' + parseFloat(obj.hora_ex_S_D.toString()).toFixed(3), style: 'itemsTable' },
     ]
     let index = 0;
     let cont = 0;
     if (configuracion.atraso === false) {
-      cont = 0;
-      array.forEach(ele => {
-        if (ele.text.split('-')[0] === '15') { index = cont; }
-        cont = cont + 1
-      })
-      array.splice(index, 1)
-    }
-
-    if (configuracion.salida_antes === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('-')[0] === '16') { index = cont; }
@@ -879,7 +1029,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.almuerzo === false) {
+    if (configuracion.salida_antes === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('-')[0] === '17') { index = cont; }
@@ -888,7 +1038,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_trab === false) {
+    if (configuracion.almuerzo === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('-')[0] === '18') { index = cont; }
@@ -897,7 +1047,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_supl === false) {
+    if (configuracion.h_trab === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('-')[0] === '19') { index = cont; }
@@ -906,7 +1056,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_ex_LV === false) {
+    if (configuracion.h_supl === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('-')[0] === '20') { index = cont; }
@@ -915,10 +1065,19 @@ export class AsistenciaConsolidadoComponent implements OnInit {
       array.splice(index, 1)
     }
 
-    if (configuracion.h_ex_SD === false) {
+    if (configuracion.h_ex_LV === false) {
       cont = 0;
       array.forEach(ele => {
         if (ele.text.split('-')[0] === '21') { index = cont; }
+        cont = cont + 1
+      })
+      array.splice(index, 1)
+    }
+
+    if (configuracion.h_ex_SD === false) {
+      cont = 0;
+      array.forEach(ele => {
+        if (ele.text.split('-')[0] === '22') { index = cont; }
         cont = cont + 1
       })
       array.splice(index, 1)

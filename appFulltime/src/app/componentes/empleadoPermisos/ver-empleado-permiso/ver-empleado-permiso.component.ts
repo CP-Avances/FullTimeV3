@@ -216,13 +216,19 @@ export class VerEmpleadoPermisoComponent implements OnInit {
         var fecha_inicio = moment(this.datoSolicitud[0].fec_inicio);
         // MÉTODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
         console.log(fecha_inicio.diff(this.fechaActual, 'days'), ' dias de diferencia');
+
+        console.log('fecha inicio -- ' + fecha_inicio + ' fecha actual ' + this.fechaActual +
+          ' fecha dato ' + this.datoSolicitud[0].fec_inicio.split('T')[0])
+
         if (res[0].cambios === true) {
           if (res[0].cambios === 0) {
             this.habilitarActualizar = false;
           }
           else {
-            var dias = fecha_inicio.diff(this.fechaActual, 'days');
-            if (dias >= res[0].dias_cambio) {
+            //var dias = fecha_inicio.diff(this.fechaActual, 'days');
+            var dias = moment(this.fechaActual).diff(fecha_inicio, 'days');
+            console.log('dias ----- ', dias + ' cambio ' + res[0].dias_cambio);
+            if (res[0].dias_cambio >= dias) {
               this.habilitarActualizar = false;
             }
             else {

@@ -59,59 +59,77 @@ async function GenerarHorarioEmpleado(id_cargo: number, inicio: Date, final: Dat
 
     //console.log('ver datos anual', id_cargo, inicio.toJSON().split('T')[0], final);
 
+    /* let horarioAnual = await pool.query('SELECT id_horarios, fec_inicio, fec_final, domingo, lunes, ' +
+         'martes, miercoles, jueves, viernes, sabado ' +
+         'FROM empl_horarios WHERE estado = 1 AND id_empl_cargo = $1 ' +
+         'AND $2 BETWEEN CAST(fec_inicio AS VARCHAR) AND CAST(fec_final AS VARCHAR) ' +
+         'ORDER BY fec_inicio ASC',
+         [id_cargo, inicio.toJSON().split('T')[0]])
+         .then(result => {
+             console.log('ver horario anual', result.rows);
+             return result.rows
+         });
+ */
+
     let horarioAnual = await pool.query('SELECT id_horarios, fec_inicio, fec_final, domingo, lunes, ' +
         'martes, miercoles, jueves, viernes, sabado ' +
         'FROM empl_horarios WHERE estado = 1 AND id_empl_cargo = $1 ' +
-        'AND $2 BETWEEN CAST(fec_inicio AS VARCHAR) AND CAST(fec_final AS VARCHAR) ' +
+        'AND (CAST(fec_inicio AS VARCHAR) BETWEEN $2 AND $3 ' +
+        'OR CAST(fec_final AS VARCHAR) BETWEEN $2 AND $3) ' +
         'ORDER BY fec_inicio ASC',
-        [id_cargo, inicio.toJSON().split('T')[0]])
+        [id_cargo, inicio.toJSON().split('T')[0], final.toJSON().split('T')[0]])
         .then(result => {
             console.log('ver horario anual', result.rows);
             return result.rows
         });
 
 
-
-        console.log('ver tamaño horario', horarioAnual.length);
+    console.log('ver tamaño horario --------------------------********************', horarioAnual.length);
 
     // console.log(horarioAnual);
     if (horarioAnual.length === 0) return { message: 'No tienen asignado horario' }
 
-    if (horarioAnual.length === 1) { // referencia a horario anual
-        var fecha1 = moment(horarioAnual[0].fec_inicio.toJSON().split("T")[0]);
-        var fecha2 = moment(horarioAnual[0].fec_final.toJSON().split("T")[0]);
-
-        var diasHorario = fecha2.diff(fecha1, 'days');
-
-        console.log('ver tamaño horario', diasHorario );
-        if (diasHorario > 300) { // compruebo si es realmente horario anual
-            console.log('*************************');
-            console.log('LLEGO A HORARIO ANUAL');
-            console.log('*************************');
-            return HorarioConEstado(horarioAnual, inicio, final)
-        }
-    }
+    /* if (horarioAnual.length === 1) { // referencia a horario anual
+ 
+         console.log('enttra a revisar horario anual');
+ 
+         var fecha1 = moment(horarioAnual[0].fec_inicio.toJSON().split("T")[0]);
+         var fecha2 = moment(horarioAnual[0].fec_final.toJSON().split("T")[0]);
+ 
+         var diasHorario = fecha2.diff(fecha1, 'days');
+ 
+         console.log('ver tamaño horario', diasHorario);
+         if (diasHorario > 300) { // compruebo si es realmente horario anual
+            // if (diasHorario > 10) { // compruebo si es realmente horario anual
+             console.log('*************************');
+             console.log('LLEGO A HORARIO ANUAL');
+             console.log('*************************');
+             return HorarioConEstado(horarioAnual, inicio, final)
+         }
+     }*/
 
     let horarioMensual = horarioAnual.filter(obj => {
-        console.log('entra a revisar mensual', obj.fec_inicio.toJSON().split('T')[0], ' ', inicio.toJSON().split('T')[0])
-        return (obj.fec_inicio.toJSON().split('T')[0] <= inicio.toJSON().split('T')[0] || obj.fec_final.toJSON().split('T')[0] >= final.toJSON().split('T')[0])
+        console.log('entra a revisar mensual 1', obj.fec_inicio.toJSON().split('T')[0], ' ', inicio.toJSON().split('T')[0] + ' ' + final.toJSON().split('T')[0])
+        console.log('entra a revisar mensual 2', obj.fec_final.toJSON().split('T')[0], ' ')
+        //return (obj.fec_inicio.toJSON().split('T')[0] <= inicio.toJSON().split('T')[0] || obj.fec_final.toJSON().split('T')[0] >= final.toJSON().split('T')[0])
+        return (obj.fec_inicio.toJSON().split('T')[0])
     });
-    // console.log(horarioMensual);
+    console.log(' ver mensual resultado .....................', horarioMensual);
 
     if (horarioMensual.length === 0) return { message: 'No tiene asignado horario' }
 
-    if (horarioMensual.length === 1) { //referencia a un horario mensual
-        var fecha1 = moment(horarioMensual[0].fec_inicio.toJSON().split("T")[0]);
-        var fecha2 = moment(horarioMensual[0].fec_final.toJSON().split("T")[0]);
-
-        var diasHorario = fecha2.diff(fecha1, 'days');
-        if (diasHorario > 25) { // compruevo si es realmente horario mensual
-            console.log('*************************');
-            console.log('LLEGO A HORARIO MENSUAL');
-            console.log('*************************');
-            return HorarioConEstado(horarioMensual, inicio, final)
-        }
-    }
+    /*  if (horarioMensual.length === 1) { //referencia a un horario mensual
+          var fecha1 = moment(horarioMensual[0].fec_inicio.toJSON().split("T")[0]);
+          var fecha2 = moment(horarioMensual[0].fec_final.toJSON().split("T")[0]);
+  
+          var diasHorario = fecha2.diff(fecha1, 'days');
+          if (diasHorario > 25) { // compruevo si es realmente horario mensual
+              console.log('*************************');
+              console.log('LLEGO A HORARIO MENSUAL');
+              console.log('*************************');
+              return HorarioConEstado(horarioMensual, inicio, final)
+          }
+      }*/
 
     console.log('*************************');
     console.log('LLEGO A SEMANAL');
@@ -128,6 +146,8 @@ async function GenerarHorarioEmpleado(id_cargo: number, inicio: Date, final: Dat
         var fecha = new Date(obj.fec_iterada);
         return (fecha >= inicio && fecha <= final)
     });
+
+
 }
 
 function HorarioConEstado(estados: any[0], inicio: Date, final: Date) {
@@ -163,20 +183,34 @@ function HorarioConEstado(estados: any[0], inicio: Date, final: Date) {
     return arrayRespuesta
 }
 
-async function UltimoCargoContrato(id_empleado: number, desde: Date): Promise<any> {
+async function UltimoCargoContrato(id_empleado: number, desde: Date, hasta: Date): Promise<any> {
     /*  let horarios = await pool.query('SELECT ho.id_empl_cargo AS id_cargo, CAST(ho.fec_inicio AS VARCHAR), CAST(ho.fec_final AS VARCHAR), ho.id_horarios, ho.codigo FROM empl_contratos AS co, empl_cargos AS ca, empl_horarios AS ho ' +
           'WHERE co.id_empleado = $1 AND ca.id_empl_contrato = co.id AND ca.id = ho.id_empl_cargo ' +
           'AND CAST(ho.fec_inicio AS VARCHAR) LIKE $2 || \'%\' ORDER BY ho.fec_inicio ASC', [id_empleado, desde.toJSON().split('-')[0]])
           .then(result => {
               return result.rows;
           })*/
-    console.log('recibimos', id_empleado, desde)
-    let horarios = await pool.query('SELECT ho.id_empl_cargo AS id_cargo, CAST(ho.fec_inicio AS VARCHAR), ' +
+    // console.log('recibimos', id_empleado, desde)
+    /*let horarios = await pool.query('SELECT ho.id_empl_cargo AS id_cargo, CAST(ho.fec_inicio AS VARCHAR), ' +
         'CAST(ho.fec_final AS VARCHAR), ho.id_horarios, ho.codigo ' +
         'FROM empl_contratos AS co, empl_cargos AS ca, empl_horarios AS ho ' +
         'WHERE co.id_empleado = $1 AND ca.id_empl_contrato = co.id AND ca.id = ho.id_empl_cargo ' +
         'AND $2 BETWEEN CAST(ho.fec_inicio AS VARCHAR) AND CAST(ho.fec_final AS VARCHAR) ' +
-        'ORDER BY ho.fec_inicio ASC', [id_empleado, desde.toJSON().split('T')[0]])
+        'ORDER BY ho.fec_inicio ASC', [id_empleado, desde.toJSON().split('T')[0],
+        hasta.toJSON().split('T')[0]])
+        .then(result => {
+            return result.rows;
+        })*/
+
+
+    let horarios = await pool.query('SELECT ho.id_empl_cargo AS id_cargo, CAST(ho.fec_inicio AS VARCHAR), ' +
+        'CAST(ho.fec_final AS VARCHAR), ho.id_horarios, ho.codigo ' +
+        'FROM empl_contratos AS co, empl_cargos AS ca, empl_horarios AS ho ' +
+        'WHERE co.id_empleado = $1 AND ca.id_empl_contrato = co.id AND ca.id = ho.id_empl_cargo ' +
+        'AND (CAST(ho.fec_inicio AS VARCHAR) BETWEEN $2 AND $3 ' +
+        'OR CAST(ho.fec_final AS VARCHAR) BETWEEN $2 AND $3)  ' +
+        'ORDER BY ho.fec_inicio ASC', [id_empleado, desde.toJSON().split('T')[0],
+        hasta.toJSON().split('T')[0]])
         .then(result => {
             return result.rows;
         })
@@ -186,7 +220,7 @@ async function UltimoCargoContrato(id_empleado: number, desde: Date): Promise<an
     let set = new Set(horarios.map(obj => { return JSON.stringify(obj) }))
     let arrSinDuplicaciones = Array.from(set).map(obj => { return JSON.parse(obj) });
 
-    console.log('ver resultado', arrSinDuplicaciones)
+    //console.log('ver resultado', arrSinDuplicaciones)
     return arrSinDuplicaciones
 }
 
@@ -225,7 +259,7 @@ async function ListaTimbresDiario(hoy: any, codigo: number, bool: boolean, id_ho
     }
     let nuevo = timbres.map(obj => {
 
-        console.log('****************************************', obj)
+        //console.log('****************************************', obj)
 
         return {
 
@@ -242,12 +276,12 @@ async function ListaTimbresDiario(hoy: any, codigo: number, bool: boolean, id_ho
                     let seg_med_f: number = 0;
 
                     if (bool === true) {
-                        console.log('HORARIO LIBRE**********************************')
+                        //console.log('HORARIO LIBRE**********************************')
                         seg_med_i = HHMMtoSegundos('01:30');
                         seg_med_f = HHMMtoSegundos('01:40');
                     }
                     else {
-                        seg_med_i = HHMMtoSegundos('00:21');
+                        seg_med_i = HHMMtoSegundos('00:19');
                         seg_med_f = HHMMtoSegundos('00:22');
                     }
 
@@ -268,7 +302,8 @@ async function ListaTimbresDiario(hoy: any, codigo: number, bool: boolean, id_ho
 }
 
 function DiaEspaniol(dia: Date) {
-    let nom_dia = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+    //let nom_dia = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+    let nom_dia = ['Domingo.', 'Lunes.', 'Martes.', 'Miércoles.', 'Jueves.', 'Viernes.', 'Sábado.']
     return nom_dia[dia.getUTCDay()]
 }
 
@@ -308,6 +343,22 @@ function CalcularCamposFaltantes(obj: IAsistenciaDetalle, labora: boolean, accio
     if (obj.S.hora_timbre === '' && labora === false && accion === 'F') {
         obj.S.descripcion = 'F'
     }
+
+
+    if (obj.E.hora_timbre != '' && labora === false) { //false => son dias normales
+        obj.E.descripcion = 'R'
+    }
+    if (obj.S_A.hora_timbre != '' && labora === false) {
+        obj.S_A.descripcion = 'R'
+    }
+    if (obj.E_A.hora_timbre != '' && labora === false) {
+        obj.E_A.descripcion = 'R'
+    }
+    if (obj.S.hora_timbre != '' && labora === false) {
+        obj.S.descripcion = 'R'
+    }
+
+
 
     return obj
 }
@@ -519,11 +570,11 @@ function AsistenciaDetalleConsolidado(arr: any, IhorarioLaboral: any, id_cargo: 
                     }
 
 
-                    console.log('ver infor datos ---------------------************', obj);
+                    //console.log('ver infor datos ---------------------************', obj);
 
                     if (obj.accion === 'L' || obj.accion === 'F') {
                         // var f = new Date(obj.fec_hora_timbre)
-                        console.log('ENTRA 1************', obj);
+                        //console.log('ENTRA 1************', obj);
                         detalleAsistencia.fecha = obj.fec_hora_timbre;
                         detalleAsistencia.fecha_mostrar = DiaEspaniol(new Date(obj.fec_hora_timbre)) + ' ' + obj.fec_hora_timbre
 
@@ -537,7 +588,7 @@ function AsistenciaDetalleConsolidado(arr: any, IhorarioLaboral: any, id_cargo: 
                     contador = contador + 1
 
                     if (result.length === contador && obj.accion != 'L') {
-                        console.log('ENTRA 2 ************', obj);
+                        //console.log('ENTRA 2 ************', obj);
                         detalleAsistencia.E.hora_default = entrada_default;
                         detalleAsistencia.S_A.hora_default = salida_almuerzo_default;
                         detalleAsistencia.E_A.hora_default = (detalleAsistencia.S_A.hora_timbre === '') ? CalcularEntradaAlmuerzo(detalleAsistencia.S_A.hora_default, ele_map.min_almuerzo) : CalcularEntradaAlmuerzo(detalleAsistencia.S_A.hora_timbre, ele_map.min_almuerzo);
@@ -584,7 +635,7 @@ function AsistenciaDetalleConsolidado(arr: any, IhorarioLaboral: any, id_cargo: 
 async function MetodoModelarDetalleAsistencia(codigo: number, desde: Date, hasta: Date, IhorarioLaboral: any, id_cargo: number, empleado: any) {
 
     let horarios = await GenerarHorarioEmpleado(id_cargo, desde, hasta);
-    // console.log('horarios===',horarios);
+    // console.log('horarios===***************************************************************',horarios);
     if (horarios.message) return horarios;
 
     let arr: any[] = await Promise.all(horarios.map(async (obj: any) => {
@@ -615,27 +666,29 @@ async function DetalleHorario(id_horarios: number) {
 
 export const ContarHorasByCargo = async function (id_empleado: number, desde: Date, hasta: Date) {
 
-    let ids = await UltimoCargoContrato(id_empleado, desde); //devuelve los IDs de contrato y cargo, ademas del horarios o los horarios que el usuario ingreso.
-    console.log('entra en contar horas', ids);
+    let ids = await UltimoCargoContrato(id_empleado, desde, hasta); //devuelve los IDs de contrato y cargo, ademas del horarios o los horarios que el usuario ingreso.
+
     if (ids.message) return ids
 
+    // console.log('entra en contar horas ------------------------', ids);
+
     let horaIngresoEmpl = await Promise.all(ids.map(async (obj: any) => {
-        // console.log(obj);
+        //console.log('revisar id horario',   obj);
         return await DetalleHorario(obj.id_horarios).then(result => {
 
-            console.log('entra hora ingresa', result);
+            //console.log('entra hora ingresa', result);
 
             return result
         }) as ITiempoLaboral;
     }))
-    // console.log('IhorarioLaboral===');
+    console.log('IhorarioLaboral===', horaIngresoEmpl);
     // horaIngresoEmpl.forEach(obj => {
     //     console.log(obj);
     // })
 
     const empleado = await ObtenerInformacionEmpleado(id_empleado);
 
-    console.log('ver empleado ******************************************** ', empleado)
+    //console.log('ver empleado ******************************************** ', empleado)
 
     const DetalleConsolidado = await MetodoModelarDetalleAsistencia(ids[0].codigo, desde, hasta, horaIngresoEmpl, ids[0].id_cargo, empleado)
     // console.log('Mensaje de Detalle Horario',DetalleConsolidado);
@@ -678,7 +731,7 @@ async function CalcularTotal(arr: any) {
             obj.atraso = '00:00';
             obj.sal_antes = '00:00';
         }
-        console.log('entra calcular ......................................', obj.hora_trab);
+        //console.log('entra calcular ......................................', obj.hora_trab);
 
         dataDecimal.atraso = HHMMtoSegundos(obj.atraso) + dataDecimal.atraso
         dataDecimal.sal_antes = HHMMtoSegundos(obj.sal_antes) + dataDecimal.sal_antes
@@ -786,7 +839,7 @@ export const RegistrarAsistenciaByTimbres = async function () {
 
 export const ContarHorasByCargoSinAcciones = async function (id_empleado: number, desde: Date, hasta: Date) {
 
-    let ids = await UltimoCargoContrato(id_empleado, desde); //devuelve los IDs de contrato y cargo, ademas del horarios o los horarios que el usuario ingreso.
+    let ids = await UltimoCargoContrato(id_empleado, desde, hasta); //devuelve los IDs de contrato y cargo, ademas del horarios o los horarios que el usuario ingreso.
     console.log(ids);
     if (ids.message) return ids
 
