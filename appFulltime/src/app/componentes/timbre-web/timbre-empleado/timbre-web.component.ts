@@ -36,10 +36,10 @@ export class TimbreWebComponent implements OnInit {
   idEmpleado: number;
 
   constructor(
-    private validar: ValidacionesService, // VALIDACIONES DE SERVICIOS
     private restTimbres: TimbresService, // SERVICIOS DATOS TIMBRES
-    private toastr: ToastrService, // VARIABLE USADA PARA NOTIFICACIONES
     private ventana: MatDialog, // VARIABLE USADA PARA NAVEGACIÓN ENTRE VENTANAS
+    private validar: ValidacionesService, // VALIDACIONES DE SERVICIOS
+    private toastr: ToastrService, // VARIABLE USADA PARA NOTIFICACIONES
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -69,6 +69,8 @@ export class TimbreWebComponent implements OnInit {
   // MÉTODO PARA REGISTRAR TIMBRES
   AbrirRegistrarTimbre() {
     this.ventana.open(RegistrarTimbreComponent, { width: '500px' }).afterClosed().subscribe(data => {
+      //console.log('ver datos de timbres --------------------------', data)
+
       if (data !== undefined) {
         if (!data.close) {
           this.restTimbres.PostTimbreWeb(data).subscribe(res => {

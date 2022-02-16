@@ -19,12 +19,12 @@ import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 @Component({
-  selector: 'app-timbre-abiertos',
-  templateUrl: './timbre-abiertos.component.html',
-  styleUrls: ['./timbre-abiertos.component.css']
+  selector: 'app-timbre-sistema',
+  templateUrl: './timbre-sistema.component.html',
+  styleUrls: ['./timbre-sistema.component.css']
 })
 
-export class TimbreAbiertosComponent implements OnInit, OnDestroy {
+export class TimbreSistemaComponent implements OnInit, OnDestroy {
 
   get timbreServidor() { return this.reporteService.mostrarTimbreServidor };
 
@@ -192,7 +192,7 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
 
     // console.log('SUCURSAL', suc);
     this.data_pdf = []
-    this.R_asistencias.ReporteTimbreHorarioAbierto(suc, this.rangoFechas.fec_inico, this.rangoFechas.fec_final).subscribe(res => {
+    this.R_asistencias.ReporteTimbreSistema(suc, this.rangoFechas.fec_inico, this.rangoFechas.fec_final).subscribe(res => {
       this.data_pdf = res
       // console.log('DATA PDF', this.data_pdf);
       switch (accion) {
@@ -221,7 +221,7 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
     });
     // console.log('DEPARTAMENTOS', dep);
     this.data_pdf = []
-    this.R_asistencias.ReporteTimbreHorarioAbierto(dep, this.rangoFechas.fec_inico, this.rangoFechas.fec_final).subscribe(res => {
+    this.R_asistencias.ReporteTimbreSistema(dep, this.rangoFechas.fec_inico, this.rangoFechas.fec_final).subscribe(res => {
       this.data_pdf = res
       // console.log('DATA PDF',this.data_pdf);
       switch (accion) {
@@ -259,7 +259,7 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
 
     // console.log('EMPLEADOS', emp);
     this.data_pdf = []
-    this.R_asistencias.ReporteTimbreHorarioAbierto(emp, this.rangoFechas.fec_inico, this.rangoFechas.fec_final).subscribe(res => {
+    this.R_asistencias.ReporteTimbreSistema(emp, this.rangoFechas.fec_inico, this.rangoFechas.fec_final).subscribe(res => {
       this.data_pdf = res
       // console.log('DATA PDF',this.data_pdf);
       switch (accion) {
@@ -394,7 +394,7 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
       content: [
         { image: this.logo, width: 100, margin: [10, -25, 0, 5] },
         { text: localStorage.getItem('name_empresa'), bold: true, fontSize: 21, alignment: 'center', margin: [0, -30, 0, 10] },
-        { text: 'REPORTE TIMBRES HORARIO ABIERTO', bold: true, fontSize: 16, alignment: 'center', margin: [0, -5, 0, 5] },
+        { text: 'REPORTE TIMBRES TELETRABAJO', bold: true, fontSize: 16, alignment: 'center', margin: [0, -5, 0, 5] },
         { text: 'PERIODO DEL: ' + this.rangoFechas.fec_inico + " AL " + this.rangoFechas.fec_final, bold: true, fontSize: 15, alignment: 'center', margin: [0, 10, 0, 10] },
         ...this.impresionDatosPDF(this.data_pdf).map(obj => {
           return obj
@@ -543,7 +543,6 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
                       case 'S/A': accionT = 'Inicio Alimentación'; break;
                       case 'E/P': accionT = 'Fin Permiso'; break;
                       case 'S/P': accionT = 'Inicio Permiso'; break;
-                      case 'HA': accionT = 'HA'; break;
                       default: accionT = 'Desconocido'; break;
                     }
 
@@ -604,7 +603,6 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
                       case 'S/A': accionT = 'Inicio Alimentación'; break;
                       case 'E/P': accionT = 'Fin Permiso'; break;
                       case 'S/P': accionT = 'Inicio Permiso'; break;
-                      case 'HA': accionT = 'HA'; break;
                       default: accionT = 'Desconocido'; break;
                     }
                     c = c + 1
@@ -673,7 +671,7 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
       content: [
         { image: this.logo, width: 100, margin: [10, -25, 0, 5] },
         { text: localStorage.getItem('name_empresa'), bold: true, fontSize: 21, alignment: 'center', margin: [0, -30, 0, 10] },
-        { text: 'REPORTE TABULADO TIMBRE HORARIO ABIERTO', bold: true, fontSize: 15, alignment: 'center', margin: [0, 10, 0, 10] },
+        { text: 'REPORTE TABULADO TIMBRE TELETRABAJO', bold: true, fontSize: 15, alignment: 'center', margin: [0, 10, 0, 10] },
         { text: 'PERIODO DEL: ' + this.rangoFechas.fec_inico + " AL " + this.rangoFechas.fec_final, bold: true, fontSize: 15, alignment: 'center', margin: [0, 10, 0, 10] },
         this.impresionDatosPDFtabulado(this.data_pdf)
       ],
@@ -1004,5 +1002,6 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
   IngresarSoloNumeros(evt) {
     return this.validacionService.IngresarSoloNumeros(evt)
   }
+
 
 }

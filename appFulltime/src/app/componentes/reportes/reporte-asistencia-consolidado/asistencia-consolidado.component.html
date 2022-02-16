@@ -7,7 +7,14 @@
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
+
                     <form [formGroup]="fechasForm">
+                        <button mat-icon-button (click)="ConfiguracionReporteAsistencia()">
+                            <mat-icon style="color: black;" matSuffix matTooltipPosition="right"
+                                matTooltip="Se visualizaran opciones de descarga al validar fechas ingresadas y seleccionar campos que se visualizaran en el reporte.">
+                                settings</mat-icon> Seleccionar tipo de reporte
+                        </button>
+                        <br>
                         <mat-form-field>
                             <mat-label>Desde</mat-label>
                             <input matInput [matDatepicker]="pickerInicial" placeholder="dd/mm/aaaa"
@@ -34,11 +41,6 @@
                             (click)="ValidarRangofechas(fechasForm.value)">Aceptar</button>
                         <button mat-button type="submit" class="btn btn-sm" id="botones"
                             (click)="limpiarCamposRango()">Cancelar</button>
-                        <button mat-icon-button (click)="ConfiguracionReporteAsistencia()">
-                            <mat-icon style="color: black;" matSuffix matTooltipPosition="right"
-                                matTooltip="Se visualizaran opciones de descarga al validar fechas ingresadas y seleccionar campos que se visualizaran en el reporte.">
-                                settings</mat-icon>
-                        </button>
                     </div>
                 </div>
             </mat-card>

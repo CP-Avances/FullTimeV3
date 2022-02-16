@@ -28,7 +28,14 @@ const cumpleanios = function () {
         const fecha = date.toJSON().slice(4).split("T")[0];
         // console.log(fecha)
         if (hora === 10) {
-            const felizCumple = yield database_1.default.query("SELECT e.nombre, e.apellido, e.correo, e.fec_nacimiento, em.nombre AS empresa, em.correo AS correo_empresa, em.password_correo , m.titulo, m.mensaje, m.img, m.url FROM empleados AS e, empl_contratos AS cn, empl_cargos AS cr, sucursales AS s, cg_empresa AS em, message_birthday AS m WHERE CAST(e.fec_nacimiento AS VARCHAR) LIKE '%' || $1 AND cn.id_empleado = e.id AND e.estado = 1 AND cr.id_empl_contrato = cn.id AND s.id = cr.id_sucursal AND em.id = s.id_empresa AND m.id_empresa = em.id", [fecha]);
+            const felizCumple = yield database_1.default.query("SELECT e.nombre, e.apellido, e.correo, " +
+                "e.fec_nacimiento, em.nombre AS empresa, em.correo AS correo_empresa, " +
+                "em.password_correo , m.titulo, m.mensaje, m.img, m.url FROM empleados AS e, " +
+                "empl_contratos AS cn, empl_cargos AS cr, sucursales AS s, cg_empresa AS em, " +
+                "message_birthday AS m WHERE CAST(e.fec_nacimiento AS VARCHAR) LIKE '%' || $1 AND " +
+                "cn.id_empleado = e.id AND e.estado = 1 AND cr.id_empl_contrato = cn.id AND " +
+                "cr.id = (SELECT MAX(dc.cargo_id) FROM datos_empleado_cargo AS dc WHERE e.id = dc.empl_id) " +
+                "AND s.id = cr.id_sucursal AND em.id = s.id_empresa AND m.id_empresa = em.id", [fecha]);
             // console.log(felizCumple.rows);
             if (felizCumple.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada

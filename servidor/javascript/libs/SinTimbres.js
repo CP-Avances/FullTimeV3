@@ -22,24 +22,26 @@ const NotificacionSinTimbres = function () {
         // console.log(f.getMinutes());
         if (f.getMinutes() === MINUTO_TIMER) {
             console.log('FECHA:', f.toLocaleDateString(), 'HORA:', f.toLocaleTimeString());
-            var d = f.toLocaleDateString().split('-')[2];
-            var m = f.toLocaleDateString().split('-')[1];
-            var a = f.toLocaleDateString().split('-')[0];
-            f.setUTCFullYear(parseInt(a));
-            f.setUTCMonth(parseInt(m) - 1);
-            f.setUTCDate(parseInt(d));
-            // f.setUTCDate(19);
-            console.log(f.toJSON());
-            let hora = parseInt(f.toLocaleTimeString().split(':')[0]);
-            // let hora: number = 9; // =====> solo para probar
-            f.setUTCHours(hora);
-            console.log(f.toJSON());
-            console.log('Dia===', f.getDay());
-            var num_dia = f.getDay();
-            let fecha = f.toJSON().split('T')[0];
-            var h = f.toJSON().split('T')[1];
-            let horarios = yield LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
-            console.log(horarios);
+            if (f != null) {
+                var d = f.toLocaleDateString().split('-')[2];
+                var m = f.toLocaleDateString().split('-')[1];
+                var a = f.toLocaleDateString().split('-')[0];
+                f.setUTCFullYear(parseInt(a));
+                f.setUTCMonth(parseInt(m) - 1);
+                f.setUTCDate(parseInt(d));
+                // f.setUTCDate(19);
+                console.log(f.toJSON());
+                let hora = parseInt(f.toLocaleTimeString().split(':')[0]);
+                // let hora: number = 9; // =====> solo para probar
+                f.setUTCHours(hora);
+                console.log(f.toJSON());
+                console.log('Dia===', f.getDay());
+                var num_dia = f.getDay();
+                let fecha = f.toJSON().split('T')[0];
+                var h = f.toJSON().split('T')[1];
+                let horarios = yield LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
+                console.log(horarios);
+            }
         }
     }), 60000);
 };
@@ -97,7 +99,7 @@ function MetodoNorificacionEntradas(orden, fecha, num_dia, fechaDate) {
 }
 function EmpleadosSinTimbreEntrada(fecha, arrayIdsEmpleadosActivos) {
     return __awaiter(this, void 0, void 0, function* () {
-        let IdsEmpleadosConTimbres = yield database_1.default.query('SELECT DISTINCT e.id FROM empleados AS e, timbres AS t WHERE e.codigo = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\' AND accion in (\'E\', \'EoS\') ORDER BY id', [fecha])
+        let IdsEmpleadosConTimbres = yield database_1.default.query('SELECT DISTINCT e.id FROM empleados AS e, timbres AS t WHERE e.codigo::int = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\' AND accion in (\'E\', \'EoS\') ORDER BY id', [fecha])
             .then(result => {
             return result.rows.map(obj => {
                 return obj.id;

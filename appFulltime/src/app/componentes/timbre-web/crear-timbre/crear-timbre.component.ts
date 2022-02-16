@@ -17,19 +17,19 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
   styleUrls: ['./crear-timbre.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
 
 export class CrearTimbreComponent implements OnInit {
 
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
+  teclaFuncionF = new FormControl('');
   accionF = new FormControl('', Validators.required);
   FechaF = new FormControl('', Validators.required);
   HoraF = new FormControl('', Validators.required);
-  teclaFuncionF = new FormControl('');
 
   // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESIÓN
   idEmpleadoLogueado: any;

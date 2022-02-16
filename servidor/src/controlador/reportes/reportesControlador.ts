@@ -113,13 +113,15 @@ class ReportesControlador {
     public async ListarTimbres(req: Request, res: Response) {
         const { id_empleado } = req.params;
         const { fechaInicio, fechaFinal } = req.body;
-        const DATOS = await pool.query('select t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, t.latitud, t.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, t.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion, cg_h.min_almuerzo ' +
-            'from timbres t, plan_general pg, cg_horarios cg_h where ' +
-            't.id_empleado = pg.codigo and pg.id_horario = cg_h.id and ' +
-            'date(pg.fec_horario) = date(t.fec_hora_timbre) and NOT accion = \'HA\' and ' +
-            't.id_empleado = $1 and t.fec_hora_timbre::date BETWEEN $2 AND $3 ' +
-            'group by t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, t.latitud, t.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, t.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion, cg_h.min_almuerzo ' +
-            'order by t.fec_hora_timbre asc;', [id_empleado, fechaInicio, fechaFinal]);
+        const DATOS = await pool.query('SELECT t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, ' +
+            't.latitud, t.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, ' +
+            't.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion ' +
+            'FROM timbres t WHERE t.id_empleado = $1 AND NOT accion = \'HA\' AND ' +
+            't.fec_hora_timbre::date BETWEEN $2 AND $3 ' +
+            'GROUP BY t.fec_hora_timbre,t.accion, t.tecl_funcion, t.observacion, t.latitud, ' +
+            't.longitud, t.id, t.id_empleado, t.id_reloj, t.hora_timbre_diferente, ' +
+            't.fec_hora_timbre_servidor, t.dispositivo_timbre, t.tipo_autenticacion ' +
+            'ORDER BY t.fec_hora_timbre ASC;', [id_empleado, fechaInicio, fechaFinal]);
         console.log("LT RepCont: ", (DATOS.rows));
         if (DATOS.rowCount > 0) {
             return res.jsonp(DATOS.rows);
@@ -131,7 +133,7 @@ class ReportesControlador {
     ////FIN CAMBIO DE LISTAR TIMBRES
 
 
-    
+
     public async ListarPermisoHorarioEmpleado(req: Request, res: Response) {
         const { id_empleado } = req.params;
         /* const DATOS = await pool.query('SELECT * FROM permisos AS p INNER JOIN ' +
@@ -155,31 +157,31 @@ class ReportesControlador {
             'ec.id = (SELECT MAX(cargo_id) FROM datos_empleado_cargo WHERE codigo::int = $1) AND ' +
             'p.codigo = $1 ORDER BY p.num_permiso ASC', [id_empleado]);
 
-            if (DATOS.rowCount > 0) {
-                DATOS.rows.map(obj => {
-                    if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
-                        var autorizaciones = obj.id_documento.split(',');
-                        let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
-                        obj.autoriza = parseInt(empleado_id);
-                    }
-                    if (obj.estado === 1) {
-                        obj.estado = 'Pendiente';
-                    }
-                    else if (obj.estado === 2) {
-                        obj.estado = 'Pre-autorizado';
-                    }
-                    else if (obj.estado === 3) {
-                        obj.estado = 'Autorizado';
-                    }
-                    else if (obj.estado === 4) {
-                        obj.estado = 'Negado';
-                    }
-                });
-                return res.jsonp(DATOS.rows)
-            }
-            else {
-                return res.status(404).jsonp({ text: 'error' });
-            }
+        if (DATOS.rowCount > 0) {
+            DATOS.rows.map(obj => {
+                if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
+                    var autorizaciones = obj.id_documento.split(',');
+                    let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
+                    obj.autoriza = parseInt(empleado_id);
+                }
+                if (obj.estado === 1) {
+                    obj.estado = 'Pendiente';
+                }
+                else if (obj.estado === 2) {
+                    obj.estado = 'Pre-autorizado';
+                }
+                else if (obj.estado === 3) {
+                    obj.estado = 'Autorizado';
+                }
+                else if (obj.estado === 4) {
+                    obj.estado = 'Negado';
+                }
+            });
+            return res.jsonp(DATOS.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'error' });
+        }
     }
 
 

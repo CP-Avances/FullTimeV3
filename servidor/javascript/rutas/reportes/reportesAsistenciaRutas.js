@@ -25,7 +25,13 @@ class ReportesAsistenciasRutas {
         this.router.put('/puntualidad/:desde/:hasta', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReportePuntualidad);
         // Reportes de Timbres Multiple
         this.router.put('/timbres/:desde/:hasta', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReporteTimbresMultiple);
-        // Reportes de Timbres Habiertos
+        // REPORTES DE TIMBRES REALIZADOS MEDIANTE EL SISTEMA 
+        this.router.put('/timbres-sistema/:desde/:hasta', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReporteTimbreSistema);
+        // REPORTES DE TIMBRES REALIZADOS MEDIANTE EL RELOJ VIRTUAL 
+        this.router.put('/timbres-reloj-virtual/:desde/:hasta', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReporteTimbreRelojVirtual);
+        // REPORTES DE TIMBRES REALIZADOS MEDIANTE EL RELOJ VIRTUAL 
+        this.router.put('/timbres-horario-abierto/:desde/:hasta', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReporteTimbreHorarioAbierto);
+        // REPORTES DE TIMBRES DE HORARIO ABIERTO
         this.router.get('/timbres-abiertos', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReporteTimbresAbiertos);
         // Reportes de Timbres Tabulado
         this.router.put('/timbres-tabulados/:desde/:hasta', verificarToken_1.TokenValidation, reportesAsistenciaControlador_1.default.ReporteTimbresTabulado);
