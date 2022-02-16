@@ -97,6 +97,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   idPermisoF = new FormControl('', [Validators.required]);
   solicitarF = new FormControl('', [Validators.required]);
   legalizarF = new FormControl('', [Validators.required]);
+  diaLaboralF = new FormControl('');
   diaLibreF = new FormControl('');
   estadoF = new FormControl('');
   horasF = new FormControl('');
@@ -114,6 +115,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     idPermisoForm: this.idPermisoF,
     solicitarForm: this.solicitarF,
     legalizarForm: this.legalizarF,
+    diaLaboralForm: this.diaLaboralF,
     diaLibreForm: this.diaLibreF,
     estadoForm: this.estadoF,
     horasForm: this.horasF,
@@ -208,11 +210,34 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     return libres;
   }
 
+  ContarDiasLaborables(dateFrom, dateTo) {
+    var from = moment(dateFrom, 'DD/MM/YYY'),
+      to = moment(dateTo, 'DD/MM/YYY'),
+      days = 0,
+      libres = 0;
+    console.log('revisar ------', '1 ' + dateFrom, '2 ' + dateTo, '3' + from, '4 ' + to)
+    while (!from.isAfter(to)) {
+      // SI NO ES SÁBADO NI DOMINGO
+      if (from.isoWeekday() !== 6 && from.isoWeekday() !== 7) {
+        days++;
+      }
+      else {
+        libres++
+      }
+      from.add(1, 'days');
+    }
+    return days;
+  }
+
+// MÉTODO PARA CONTAR DÍAS LIBRES Y DÍAS LABORABLES
+
   ImprimirDiaLibre(form, ingreso) {
     if (form.solicitarForm === 'Días' || form.solicitarForm === 'Días y Horas') {
       var libre = this.ContarDiasLibres(form.fechaInicioForm, ingreso);
+      var laboral = this.ContarDiasLaborables(form.fechaInicioForm, ingreso);
       this.PermisoForm.patchValue({
         diaLibreForm: libre,
+        diaLaboralForm: laboral,
       });
     }
   }
@@ -287,6 +312,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
         this.horasTrabajo = datos;
 
+        console.log('ver horas trabajadas', this.horasTrabajo)
         // MÉTODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
         this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);
 
@@ -335,6 +361,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     }
   }
 
+
+
+  informacion: boolean = false;
   ImprimirDatos(form) {
     this.LimpiarCamposFecha();
     this.selec1 = false;
@@ -342,7 +371,13 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.readonly = false;
     this.datosPermiso = [];
     this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(datos => {
+      // INFORMACION PERMISO
+      this.Tdias = 0;
+      this.Thoras = 0;
+
+      this.informacion = true;
       this.datosPermiso = datos;
+
       console.log('datos permiso', this.datosPermiso)
       if (this.datosPermiso[0].num_dia_maximo === 0) {
         this.estiloHoras = { 'visibility': 'visible' }; this.HabilitarHoras = false;
@@ -353,6 +388,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           horasForm: this.datosPermiso[0].num_hora_maximo,
           diasForm: '',
         });
+        //this.Thoras = this.datosPermiso[0].num_hora_maximo != '' ? this.datosPermiso[0].num_hora_maximo : 0;
         this.Thoras = this.datosPermiso[0].num_hora_maximo;
         this.tipoPermisoSelec = 'Horas';
       }
@@ -494,11 +530,17 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   RevisarIngresoDias(form) {
-    if (parseInt(form.diasForm) <= this.Tdias) {
+    const resta = this.dIngreso.diff(this.dSalida, 'days');
+    console.log('datos', resta, ' ');
+    this.ImprimirDiaLibre(form, this.dIngreso);
+    this.PermisoForm.patchValue({
+      diasForm: resta + 1
+    })
+    console.log('ver dato dias *****************', form.diasForm + ' ********** ', this.Tdias)
+    if (parseInt(resta + 1) <= this.Tdias) {
       console.log('revisar', this.dIngreso, this.dSalida)
-      const resta = this.dIngreso.diff(this.dSalida, 'days');
-      console.log('datos', resta, ' ');
-      if (resta != form.diasForm) {
+
+      /*if (resta != form.diasForm) {
         this.toastr.error('Recuerde el día de ingreso no puede superar o ser menor a los días de permiso solicitados.',
           'Día de ingreso incorrecto.', {
           timeOut: 6000,
@@ -507,7 +549,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       }
       else {
         this.ImprimirDiaLibre(form, this.dIngreso);
-      }
+      }*/
     }
     else {
       this.toastr.info('Los días de permiso que puede solicitar deben ser menores o iguales a: ' + String(this.Tdias) + ' días.',
@@ -594,7 +636,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   RevisarIngresoDiasHoras(contarDias, form) {
     const resta = this.dIngreso.diff(this.dSalida, 'days');
-    if (resta != contarDias) {
+    if ((resta + 1) != contarDias) {
       this.toastr.error('Recuerde el día de ingreso no puede superar o ser menor a los días de permiso solicitados',
         'Día de ingreso incorrecto', {
         timeOut: 6000,

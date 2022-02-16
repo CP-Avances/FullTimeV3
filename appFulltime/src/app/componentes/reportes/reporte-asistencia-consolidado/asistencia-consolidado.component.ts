@@ -738,7 +738,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
         widths: this.FuncionColumnasTotal(columnas),
         body: [
           this.FuncionTituloColumnaTotal(s),
-          this.HorasTrabajadas(objeto.HHMM, s),
+          //this.HorasTrabajadas(objeto.HHMM, s),
           this.FuncionHHMMTotal(objeto.HHMM, s),
           this.FuncionDecimalTotal(objeto.decimal, s)
         ]
@@ -750,7 +750,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     console.log('ver configuracion ----------------------------- ' + configuracion.atraso)
 
     var arrayTitulos = [
-      { rowSpan: 4, colSpan: 15, text: 'TOTAL', style: 'tableTotal', margin: [0, 15, 0, 10] },
+      { rowSpan: 3, colSpan: 15, text: 'TOTAL', style: 'tableTotal', margin: [0, 15, 0, 10] },
       { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: '' },
       { text: '' }, { text: '' }, { text: '' }, { text: '' }, { text: '' },
       { text: '' }, { text: '' }, { text: '' }, { text: '' },
