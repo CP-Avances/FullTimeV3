@@ -65,14 +65,12 @@ class EmpleadoCargosControlador {
 
   public async EncontrarIdCargoActual(req: Request, res: Response): Promise<any> {
     const { id_empleado } = req.params;
-    const CARGO = await pool.query('SELECT MAX(e_cargo.id), e_cargo.hora_trabaja FROM empl_cargos AS e_cargo, empl_contratos AS contrato_e, empleados AS e WHERE contrato_e.id_empleado = e.id AND e_cargo.id_empl_contrato = contrato_e.id AND e.id = $1 GROUP BY e_cargo.id', [id_empleado]);
-    if (CARGO.rowCount > 0) {
-      if (CARGO.rows[0]['max'] != null) {
-        return res.jsonp(CARGO.rows)
-      }
-      else {
-        return res.status(404).jsonp({ text: 'Registro no encontrado' });
-      }
+    const CARGO = await pool.query('SELECT ec.id AS max, ec.hora_trabaja ' +
+      'FROM datos_actuales_empleado AS da, empl_cargos AS ec ' +
+      'WHERE ec.id = da.id_cargo AND da.id = $1',
+      [id_empleado]);
+    if (CARGO.rowCount > 0 && CARGO.rows[0]['max'] != null) {
+      return res.jsonp(CARGO.rows)
     }
     else {
       return res.status(404).jsonp({ text: 'Registro no encontrado' });
