@@ -43,7 +43,7 @@ const cumpleanios = function () {
                     // <p>Sabemos que es un dia especial para ti <b>${obj.nombre.split(" ")[0]} ${obj.apellido.split(" ")[0]}</b> 
                     // , esperamos que la pases muy bien en compañia de tus seres queridos.
                     //     </p>
-                    (0, settingsMail_1.Credenciales)(0, obj.correo_empresa, obj.password_correo);
+                    settingsMail_1.Credenciales(0, obj.correo_empresa, obj.password_correo);
                     let message_url = `<p></p>`;
                     if (obj.url != null) {
                         message_url = `<p>Da click en el siguiente enlace para ver tu felicitación <a href="${obj.url}">Happy</></p>`;
@@ -65,7 +65,7 @@ const cumpleanios = function () {
                             }]
                     };
                     console.log(data);
-                    (0, settingsMail_1.enviarMail)(data);
+                    settingsMail_1.enviarMail(data);
                 });
             }
         }

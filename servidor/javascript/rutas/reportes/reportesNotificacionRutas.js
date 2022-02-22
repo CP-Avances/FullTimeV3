@@ -7,7 +7,7 @@ const express_1 = require("express");
 const reporteNotificacionControlador_1 = __importDefault(require("../../controlador/reportes/reporteNotificacionControlador"));
 class NotificacionesRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

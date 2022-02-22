@@ -112,7 +112,7 @@ class EmpresaControlador {
                 .then(result => {
                 return result.rows[0];
             });
-            const codificado = yield (0, ImagenCodificacion_1.ImagenBase64LogosEmpresas)(file_name.logo);
+            const codificado = yield ImagenCodificacion_1.ImagenBase64LogosEmpresas(file_name.logo);
             if (codificado === 0) {
                 res.status(200).jsonp({ imagen: 0, nom_empresa: file_name.nombre });
             }
@@ -147,7 +147,7 @@ class EmpresaControlador {
                     }
                 }));
             }
-            const codificado = yield (0, ImagenCodificacion_1.ImagenBase64LogosEmpresas)(logo);
+            const codificado = yield ImagenCodificacion_1.ImagenBase64LogosEmpresas(logo);
             res.send({ imagen: codificado, nom_empresa: logo_name.rows[0].nombre, message: 'Logo actualizado' });
         });
     }

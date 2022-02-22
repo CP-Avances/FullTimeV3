@@ -18,7 +18,7 @@ class KardexVacacion {
             // console.log(req.params.desde, req.params.hasta);
             let fec_desde = req.params.desde;
             let fec_hasta = req.params.hasta;
-            let jsonData = yield (0, CalcularVacaciones_1.vacacionesByIdUser)(req.userIdEmpleado, fec_desde, fec_hasta);
+            let jsonData = yield CalcularVacaciones_1.vacacionesByIdUser(req.userIdEmpleado, fec_desde, fec_hasta);
             res.jsonp(jsonData);
         });
     }
@@ -27,7 +27,7 @@ class KardexVacacion {
             let id_empleado = parseInt(req.params.id_empleado);
             let fec_desde = req.params.desde;
             let fec_hasta = req.params.hasta;
-            let jsonData = yield (0, CalcularVacaciones_1.vacacionesByIdUser)(id_empleado, fec_desde, fec_hasta);
+            let jsonData = yield CalcularVacaciones_1.vacacionesByIdUser(id_empleado, fec_desde, fec_hasta);
             res.jsonp(jsonData);
         });
     }
@@ -36,14 +36,14 @@ class KardexVacacion {
             let id_empleado = parseInt(req.params.id_empleado);
             let fec_desde = req.params.desde;
             let fec_hasta = req.params.hasta;
-            let jsonData = yield (0, CalcularHorasExtras_1.CalcularHoraExtra)(id_empleado, new Date(fec_desde), new Date(fec_hasta));
+            let jsonData = yield CalcularHorasExtras_1.CalcularHoraExtra(id_empleado, new Date(fec_desde), new Date(fec_hasta));
             res.jsonp(jsonData);
         });
     }
     ReportePeriodosVacaciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let id_empleado = parseInt(req.params.id_empleado);
-            let jsonData = yield (0, CalcularVacaciones_1.ReportePeriVacaciones)(id_empleado);
+            let jsonData = yield CalcularVacaciones_1.ReportePeriVacaciones(id_empleado);
             res.jsonp(jsonData);
         });
     }

@@ -226,7 +226,7 @@ class AccionPersonalControlador {
     verLogoMinisterio(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const file_name = 'ministerio_trabajo.png';
-            const codificado = yield (0, ImagenCodificacion_1.ImagenBase64LogosEmpresas)(file_name);
+            const codificado = yield ImagenCodificacion_1.ImagenBase64LogosEmpresas(file_name);
             if (codificado === 0) {
                 res.send({ imagen: 0 });
             }

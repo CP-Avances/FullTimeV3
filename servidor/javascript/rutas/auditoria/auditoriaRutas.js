@@ -8,7 +8,7 @@ const auditoriaControlador_1 = __importDefault(require("../../controlador/audito
 const verificarToken_1 = require("../../libs/verificarToken");
 class AuditoriaRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

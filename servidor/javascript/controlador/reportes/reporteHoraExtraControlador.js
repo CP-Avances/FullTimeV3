@@ -14,7 +14,7 @@ class ReporteHoraExtraControlador {
     ReporteHorasExtras(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var { id_empleado, desde, hasta } = req.params;
-            let resultado = yield (0, CalcularHorasExtras_1.CalcularHoraExtra)(parseInt(id_empleado), new Date(desde), new Date(hasta));
+            let resultado = yield CalcularHorasExtras_1.CalcularHoraExtra(parseInt(id_empleado), new Date(desde), new Date(hasta));
             // console.log(resultado);
             if (resultado.message) {
                 return res.status(400).jsonp(resultado);

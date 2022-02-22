@@ -146,7 +146,7 @@ class HorasExtrasPedidasControlador {
     }
     SendMailNotifiHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, hora_extra_mail, hora_extra_noti } = req.body;
             const ultimo = yield database_1.default.query('SELECT id, estado FROM hora_extr_pedidos WHERE id_empl_cargo = $1 AND ' +
                 'id_usua_solicita = $2 AND fec_inicio = $3 AND fec_final = $4 AND fec_solicita = $5', [id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita]);
@@ -184,11 +184,11 @@ class HorasExtrasPedidasControlador {
         <a href="${url}/${ultimo.rows[0].id}">Ir a verificar hora extra</a>`
                 };
                 if (hora_extra_mail === true && hora_extra_noti === true) {
-                    (0, settingsMail_1.enviarMail)(data);
+                    settingsMail_1.enviarMail(data);
                     res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
                 }
                 else if (hora_extra_mail === true && hora_extra_noti === false) {
-                    (0, settingsMail_1.enviarMail)(data);
+                    settingsMail_1.enviarMail(data);
                     res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
                 }
                 else if (hora_extra_mail === false && hora_extra_noti === true) {
@@ -222,7 +222,7 @@ class HorasExtrasPedidasControlador {
     }
     ActualizarEstado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const id = req.params.id;
             const { estado, id_hora_extra, id_departamento } = req.body;
             console.log(estado, id_hora_extra, id_departamento);
@@ -279,11 +279,11 @@ class HorasExtrasPedidasControlador {
                     };
                     console.log(data);
                     if (obj.hora_extra_mail === true && obj.hora_extra_noti === true) {
-                        (0, settingsMail_1.enviarMail)(data);
+                        settingsMail_1.enviarMail(data);
                         res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                     }
                     else if (obj.hora_extra_maill === true && obj.hora_extra_noti === false) {
-                        (0, settingsMail_1.enviarMail)(data);
+                        settingsMail_1.enviarMail(data);
                         res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                     }
                     else if (obj.hora_extra_mail === false && obj.hora_extra_noti === true) {
@@ -332,7 +332,7 @@ class HorasExtrasPedidasControlador {
             const id_empl_cargo = parseInt(req.params.id_cargo);
             console.log('IDS: ', id_empl_cargo);
             // let respuesta = await ValidarHorarioEmpleado(id_empleado, id_empl_cargo)
-            let respuesta = yield (0, MetodosHorario_1.VerificarHorario)(id_empl_cargo);
+            let respuesta = yield MetodosHorario_1.VerificarHorario(id_empl_cargo);
             console.log(respuesta);
             res.jsonp(respuesta);
         });

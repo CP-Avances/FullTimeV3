@@ -18,7 +18,7 @@ class AsistenciaControlador {
             //false sin acciones || true con acciones
             if (req.acciones_timbres === true) {
                 // Resultados de timbres con 6 y 3 acciones
-                let resultado = yield (0, ContarHoras_1.ContarHorasByCargo)(parseInt(id_empleado), new Date(desde), new Date(hasta));
+                let resultado = yield ContarHoras_1.ContarHorasByCargo(parseInt(id_empleado), new Date(desde), new Date(hasta));
                 if (resultado.message)
                     return res.status(404).jsonp(resultado);
                 //console.log('ver resultado total', resultado)
@@ -26,7 +26,7 @@ class AsistenciaControlador {
             }
             else {
                 // Resultados de timbres sin acciones
-                let respuesta = yield (0, ContarHoras_1.ContarHorasByCargoSinAcciones)(parseInt(id_empleado), new Date(desde), new Date(hasta));
+                let respuesta = yield ContarHoras_1.ContarHorasByCargoSinAcciones(parseInt(id_empleado), new Date(desde), new Date(hasta));
                 if (respuesta.message)
                     return res.status(404).jsonp(respuesta);
                 return res.status(200).jsonp(respuesta);
@@ -36,7 +36,7 @@ class AsistenciaControlador {
     ObtenerListaEmpresa(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var { id_empresa } = req.params;
-            let c = yield (0, ListaEmpleados_1.Consultar)(parseInt(id_empresa));
+            let c = yield ListaEmpleados_1.Consultar(parseInt(id_empresa));
             res.jsonp(c);
         });
     }

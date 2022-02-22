@@ -6,7 +6,7 @@ const express_1 = require("express");
 const verificarToken_1 = require("../../libs/verificarToken");
 class KardexVacacionesRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

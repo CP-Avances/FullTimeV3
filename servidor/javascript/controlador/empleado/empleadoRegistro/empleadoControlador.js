@@ -810,7 +810,7 @@ class EmpleadoControlador {
                         .then(result => {
                         console.log(result.command, 'USUARIO ====>', obj);
                     });
-                    (0, MetodosHorario_1.EstadoHorarioPeriVacacion)(obj);
+                    MetodosHorario_1.EstadoHorarioPeriVacacion(obj);
                 }));
                 return res.jsonp({ message: 'Todos los empleados seleccionados han sido reactivados' });
             }

@@ -161,7 +161,7 @@ class LoginControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const correo = req.body.correo;
             const url_page = req.body.url_page;
-            (0, settingsMail_1.Credenciales)(1);
+            settingsMail_1.Credenciales(1);
             const correoValido = yield database_1.default.query('SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, ' +
                 'u.contrasena FROM empleados AS e, usuarios AS u WHERE correo = $1 AND u.id_empleado = e.id', [correo]);
             if (correoValido.rows[0] == undefined)
@@ -182,7 +182,7 @@ class LoginControlador {
         </a>
       `
             };
-            (0, settingsMail_1.enviarMail)(data);
+            settingsMail_1.enviarMail(data);
             res.jsonp({ mail: 'si', message: 'Mail enviado' });
         });
     }

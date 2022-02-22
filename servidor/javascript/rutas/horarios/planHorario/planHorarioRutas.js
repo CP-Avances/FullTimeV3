@@ -8,7 +8,7 @@ const planHorarioControlador_1 = __importDefault(require("../../../controlador/h
 const verificarToken_1 = require("../../../libs/verificarToken");
 class PlanHorarioRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

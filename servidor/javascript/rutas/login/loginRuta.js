@@ -7,7 +7,7 @@ const express_1 = require("express");
 const loginControlador_1 = __importDefault(require("../../controlador/login/loginControlador"));
 class LoginRuta {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

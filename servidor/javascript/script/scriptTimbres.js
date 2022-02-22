@@ -103,8 +103,8 @@ exports.generarTimbres = generarTimbres;
  * @param rango Fecha de inicio y final, puede ser rango semanal o mensual
  */
 function DiasByEstado(horario) {
-    var fecha1 = (0, moment_1.default)(horario.fec_inicio.toJSON().split("T")[0]);
-    var fecha2 = (0, moment_1.default)(horario.fec_final.toJSON().split("T")[0]);
+    var fecha1 = moment_1.default(horario.fec_inicio.toJSON().split("T")[0]);
+    var fecha2 = moment_1.default(horario.fec_final.toJSON().split("T")[0]);
     var diasHorario = fecha2.diff(fecha1, 'days');
     var fec_aux = new Date(horario.fec_inicio);
     let respuesta = [];

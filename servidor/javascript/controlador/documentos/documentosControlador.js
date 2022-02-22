@@ -28,7 +28,7 @@ class DocumentosControlador {
     listarArchivosCarpeta(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
-            res.status(200).jsonp(yield (0, listarArchivos_1.listaCarpetas)(nombre));
+            res.status(200).jsonp(yield listarArchivos_1.listaCarpetas(nombre));
         });
     }
     DownLoadFile(req, res) {
@@ -36,7 +36,7 @@ class DocumentosControlador {
             let nombre = req.params.nom_carpeta;
             let filename = req.params.filename;
             console.log(nombre, '==========', filename);
-            const path = (0, listarArchivos_1.DescargarArchivo)(nombre, filename);
+            const path = listarArchivos_1.DescargarArchivo(nombre, filename);
             console.log(path);
             res.status(200).sendFile(path);
         });

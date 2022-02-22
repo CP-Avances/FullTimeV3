@@ -33,7 +33,7 @@ const VerificarHorario = function (id_cargo) {
         let fechasRango;
         let objeto;
         if (respuesta === 'semanal') {
-            fechasRango = (0, MetodosFechas_1.ObtenerRangoSemanal)(f);
+            fechasRango = MetodosFechas_1.ObtenerRangoSemanal(f);
             feriados = yield database_1.default.query('SELECT f.fecha FROM empl_cargos AS ca, sucursales AS s, ciudades AS c, ciud_feriados AS cf, cg_feriados AS f WHERE ca.id_sucursal = s.id AND c.id = s.id_ciudad AND c.id = cf.id_ciudad AND f.id = cf.id_feriado AND ca.id = $1 AND CAST(f.fecha AS VARCHAR) between $2 || \'%\' AND $3 || \'%\'', [id_cargo, fechasRango.inicio.toJSON().split('T')[0], fechasRango.final.toJSON().split('T')[0]]).then(result => { return result.rows; });
             feriados.forEach(obj => {
                 FECHA_FERIADOS.push(obj);
@@ -41,11 +41,11 @@ const VerificarHorario = function (id_cargo) {
             objeto = DiasByEstado(horario, fechasRango);
         }
         else if (respuesta === 'mensual') {
-            fechasRango = (0, MetodosFechas_1.ObtenerRangoMensual)(f);
+            fechasRango = MetodosFechas_1.ObtenerRangoMensual(f);
             objeto = DiasByEstado(horario, fechasRango);
         }
         else if (respuesta === 'anual') {
-            fechasRango = (0, MetodosFechas_1.ObtenerRangoMensual)(f);
+            fechasRango = MetodosFechas_1.ObtenerRangoMensual(f);
             objeto = DiasByEstado(horario, fechasRango);
         }
         // console.log('Fechas rango: ', fechasRango);
@@ -60,8 +60,8 @@ exports.VerificarHorario = VerificarHorario;
  * @param final Fecha final del horario del empleado.
  */
 function tipoHorario(inicio, final) {
-    var fecha1 = (0, moment_1.default)(inicio.toJSON().split("T")[0]);
-    var fecha2 = (0, moment_1.default)(final.toJSON().split("T")[0]);
+    var fecha1 = moment_1.default(inicio.toJSON().split("T")[0]);
+    var fecha2 = moment_1.default(final.toJSON().split("T")[0]);
     var diasHorario = fecha2.diff(fecha1, 'days');
     if (diasHorario >= 1 && diasHorario <= 7)
         return 'semanal';
@@ -165,8 +165,8 @@ exports.HorariosParaInasistencias = HorariosParaInasistencias;
 function DiasConEstado(horario, rango) {
     var fec_aux = new Date(rango.inicio);
     // console.log('FECHA_FERIADOS', FECHA_FERIADOS);
-    var fecha1 = (0, moment_1.default)(rango.inicio.toJSON().split("T")[0]);
-    var fecha2 = (0, moment_1.default)(rango.final.toJSON().split("T")[0]);
+    var fecha1 = moment_1.default(rango.inicio.toJSON().split("T")[0]);
+    var fecha2 = moment_1.default(rango.final.toJSON().split("T")[0]);
     var diasHorario = fecha2.diff(fecha1, 'days');
     let respuesta = [];
     for (let i = 0; i <= diasHorario; i++) {

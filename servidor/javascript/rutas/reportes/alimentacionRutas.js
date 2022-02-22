@@ -9,7 +9,7 @@ const verificarAlimentacion_1 = require("../../libs/Modulos/verificarAlimentacio
 const verificarToken_1 = require("../../libs/verificarToken");
 class CiudadRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

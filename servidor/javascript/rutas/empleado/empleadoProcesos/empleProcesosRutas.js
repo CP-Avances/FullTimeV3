@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../../libs/verificarToken");
 const empleProcesoControlador_1 = __importDefault(require("../../../controlador/empleado/empleadoProcesos/empleProcesoControlador"));
 class DepartamentoRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

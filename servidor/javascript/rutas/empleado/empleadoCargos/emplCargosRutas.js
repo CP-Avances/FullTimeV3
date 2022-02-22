@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../../libs/verificarToken");
 const emplCargosControlador_1 = __importDefault(require("../../../controlador/empleado/empleadoCargos/emplCargosControlador"));
 class EmpleadosCargpsRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

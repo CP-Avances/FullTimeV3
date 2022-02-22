@@ -133,7 +133,7 @@ class DetallePlanHorarioControlador {
                     if (i != j) {
                         var inicio_1 = new Date(arreglos_datos[i].fecha.split('/')[2] + '-' + arreglos_datos[i].fecha.split('/')[1] + '-' + arreglos_datos[i].fecha.split('/')[0] + 'T00:00:00');
                         var inicio_2 = new Date(arreglos_datos[j].fecha.split('/')[2] + '-' + arreglos_datos[j].fecha.split('/')[1] + '-' + arreglos_datos[j].fecha.split('/')[0] + 'T00:00:00');
-                        if (Date.parse((0, moment_1.default)(inicio_1).format('YYYY-MM-DD')) != Date.parse((0, moment_1.default)(inicio_2).format('YYYY-MM-DD'))) {
+                        if (Date.parse(moment_1.default(inicio_1).format('YYYY-MM-DD')) != Date.parse(moment_1.default(inicio_2).format('YYYY-MM-DD'))) {
                         }
                         else {
                             if (arreglos_datos[i].horario.toUpperCase() === arreglos_datos[j].horario.toUpperCase()) {

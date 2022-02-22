@@ -8,7 +8,7 @@ const catProcesoControlador_1 = __importDefault(require("../../controlador/catal
 const verificarToken_1 = require("../../libs/verificarToken");
 class ProcesoRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

@@ -73,7 +73,7 @@ const validarConexion = (req, res, next) => {
 const LICENCIAS = new LicenciasControlador();
 class LicenciaRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

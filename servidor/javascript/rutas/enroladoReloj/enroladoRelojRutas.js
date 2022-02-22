@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../libs/verificarToken");
 const enroladoRelojControlador_1 = __importDefault(require("../../controlador/enroladoReloj/enroladoRelojControlador"));
 class CiudadRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {

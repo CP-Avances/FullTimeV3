@@ -134,7 +134,7 @@ class PlanComidasControlador {
     // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA SOLICITUD DE COMIDA 
     EnviarCorreoComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
                 'FROM empleados AS e WHERE e.id = $1', [id_usua_solicita]);
@@ -150,11 +150,11 @@ class PlanComidasControlador {
           <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>`
             };
             if (comida_mail === true && comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (comida_mail === true && comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (comida_mail === false && comida_noti === true) {
@@ -168,7 +168,7 @@ class PlanComidasControlador {
     // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA ELIMINADO UNA SOLICITUD DE COMIDA 
     EnviarCorreoEliminarSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
                 'FROM empleados AS e WHERE e.id = $1', [id_usua_solicita]);
@@ -184,11 +184,11 @@ class PlanComidasControlador {
           <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>`
             };
             if (comida_mail === true && comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (comida_mail === true && comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (comida_mail === false && comida_noti === true) {
@@ -465,7 +465,7 @@ class PlanComidasControlador {
     /** ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA PLANIFICACIÓN DE COMIDA */
     EnviarCorreoPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
                 'c.comida_noti FROM empleados AS e, config_noti AS c ' +
@@ -484,11 +484,11 @@ class PlanComidasControlador {
           <a href="${url}">Ir a ver Planificación</a>`
             };
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
@@ -502,7 +502,7 @@ class PlanComidasControlador {
     /** ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA PLANIFICACIÓN DE COMIDA */
     EnviarCorreoActualizaSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
                 'c.comida_noti FROM empleados AS e, config_noti AS c ' +
@@ -521,11 +521,11 @@ class PlanComidasControlador {
             <a href="${url}">Ir a ver Planificación</a>`
             };
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
@@ -538,7 +538,7 @@ class PlanComidasControlador {
     }
     EnviarCorreoEliminaPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
                 'c.comida_noti FROM empleados AS e, config_noti AS c ' +
@@ -555,11 +555,11 @@ class PlanComidasControlador {
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>`
             };
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
@@ -572,7 +572,7 @@ class PlanComidasControlador {
     }
     EnviarCorreoEstadoSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            settingsMail_1.Credenciales(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin, estado } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
                 'c.comida_noti FROM empleados AS e, config_noti AS c ' +
@@ -590,11 +590,11 @@ class PlanComidasControlador {
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>`
             };
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                settingsMail_1.enviarMail(data);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {

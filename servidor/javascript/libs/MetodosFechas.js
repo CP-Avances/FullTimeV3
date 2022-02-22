@@ -18,8 +18,8 @@ const ObtenerRangoSemanal = function (fHoy) {
     fHoy.setUTCMinutes(0);
     var fechaInicio = new Date(fHoy);
     var fechaFinal = new Date(fHoy);
-    let dia_suma = (0, exports.sumaDias)(fechaFinal, 6 - fHoy.getDay());
-    let dia_resta = (0, exports.restaDias)(fechaInicio, fHoy.getDay());
+    let dia_suma = exports.sumaDias(fechaFinal, 6 - fHoy.getDay());
+    let dia_resta = exports.restaDias(fechaInicio, fHoy.getDay());
     return {
         inicio: dia_resta,
         final: dia_suma
@@ -40,8 +40,8 @@ const ObtenerRangoMensual = function (fHoy) {
         var DiasCadaMes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         UltimoDiaMes = DiasCadaMes[fHoy.getMonth()];
     }
-    let dia_suma = (0, exports.sumaDias)(fechaFinal, UltimoDiaMes - fHoy.getDate() - 1);
-    let dia_resta = (0, exports.restaDias)(fechaInicio, fHoy.getDate());
+    let dia_suma = exports.sumaDias(fechaFinal, UltimoDiaMes - fHoy.getDate() - 1);
+    let dia_resta = exports.restaDias(fechaInicio, fHoy.getDate());
     return {
         inicio: dia_resta,
         final: dia_suma

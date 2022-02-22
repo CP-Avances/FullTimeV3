@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../libs/verificarToken");
 const ciudadControlador_1 = __importDefault(require("../../controlador/ciudad/ciudadControlador"));
 class CiudadRutas {
     constructor() {
-        this.router = (0, express_1.Router)();
+        this.router = express_1.Router();
         this.configuracion();
     }
     configuracion() {
