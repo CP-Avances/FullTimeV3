@@ -731,124 +731,128 @@ export class PermisosMultiplesComponent implements OnInit {
     // CONSULTA DE DATOS DE TIPO DE PERMISO
     this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(data => {
 
+  
       if (data[0].documento === true) {
 
-        if (form.nombreCertificadoForm != '' && form.nombreCertificadoForm != null) {
-
-          /* if (this.archivoSubido[0].size <= 2e+6) {
-             this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
-               this.toastr.success('Operación Exitosa', 'Permiso registrado', {
-                 timeOut: 6000,
-               });
-               this.arrayNivelesDepa = response;
-               this.LimpiarCampos();
-               this.arrayNivelesDepa.forEach(obj => {
-                 let datosPermisoCreado = {
-                   fec_creacion: datos.fec_creacion,
-                   id_tipo_permiso: datos.id_tipo_permiso,
-                   id_empl_contrato: datos.id_empl_contrato,
-                   id: obj.id,
-                   estado: obj.estado,
-                   id_dep: obj.id_dep,
-                   depa_padre: obj.depa_padre,
-                   nivel: obj.nivel,
-                   id_suc: obj.id_suc,
-                   departamento: obj.departamento,
-                   sucursal: obj.sucursal,
-                   cargo: obj.cargo,
-                   contrato: obj.contrato,
-                   empleado: obj.empleado,
-                   nombre: obj.nombre,
-                   apellido: obj.apellido,
-                   cedula: obj.cedula,
-                   correo: obj.correo,
-                   permiso_mail: obj.permiso_mail,
-                   permiso_noti: obj.permiso_noti
-                 }
-                 this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
-                   this.idPermisoRes = res;
-                   console.log(this.idPermisoRes);
-                   this.SubirRespaldo(this.idPermisoRes.id)
-                   this.ImprimirNumeroPermiso();
-                   var f = new Date();
-                   let notificacion = {
-                     id: null,
-                     id_send_empl: this.data.idEmpleado,
-                     id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
-                     id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
-                     estado: this.idPermisoRes.estado,
-                     create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-                     id_permiso: this.idPermisoRes.id,
-                     id_vacaciones: null,
-                     id_hora_extra: null
-                   }
-                   this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
-                     console.log(resN);
-                     this.NotifiRes = resN;
-                     notificacion.id = this.NotifiRes._id;
-                     if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
-                       this.restP.sendNotiRealTime(notificacion);
+        /*    if (form.nombreCertificadoForm != '' && form.nombreCertificadoForm != null) {
+    
+               if (this.archivoSubido[0].size <= 2e+6) {
+                 this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
+                   this.toastr.success('Operación Exitosa', 'Permiso registrado', {
+                     timeOut: 6000,
+                   });
+                   this.arrayNivelesDepa = response;
+                   this.LimpiarCampos();
+                   this.arrayNivelesDepa.forEach(obj => {
+                     let datosPermisoCreado = {
+                       fec_creacion: datos.fec_creacion,
+                       id_tipo_permiso: datos.id_tipo_permiso,
+                       id_empl_contrato: datos.id_empl_contrato,
+                       id: obj.id,
+                       estado: obj.estado,
+                       id_dep: obj.id_dep,
+                       depa_padre: obj.depa_padre,
+                       nivel: obj.nivel,
+                       id_suc: obj.id_suc,
+                       departamento: obj.departamento,
+                       sucursal: obj.sucursal,
+                       cargo: obj.cargo,
+                       contrato: obj.contrato,
+                       empleado: obj.empleado,
+                       nombre: obj.nombre,
+                       apellido: obj.apellido,
+                       cedula: obj.cedula,
+                       correo: obj.correo,
+                       permiso_mail: obj.permiso_mail,
+                       permiso_noti: obj.permiso_noti
                      }
+                     this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
+                       this.idPermisoRes = res;
+                       console.log(this.idPermisoRes);
+                       this.SubirRespaldo(this.idPermisoRes.id)
+                       this.ImprimirNumeroPermiso();
+                       var f = new Date();
+                       let notificacion = {
+                         id: null,
+                         id_send_empl: this.data.idEmpleado,
+                         id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
+                         id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
+                         estado: this.idPermisoRes.estado,
+                         create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
+                         id_permiso: this.idPermisoRes.id,
+                         id_vacaciones: null,
+                         id_hora_extra: null
+                       }
+                       this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
+                         console.log(resN);
+                         this.NotifiRes = resN;
+                         notificacion.id = this.NotifiRes._id;
+                         if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
+                           this.restP.sendNotiRealTime(notificacion);
+                         }
+                       });
+                     });
+                     this.IngresarAutorizacion(this.idPermisoRes.id);
                    });
                  });
-                 this.IngresarAutorizacion(this.idPermisoRes.id);
-               });
-             });
-           }
-           else {
-             this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
-               timeOut: 6000,
-             });
-           }
-*/
-
-        } else {
-          this.toastr.info('El permiso seleccionado requiere de un certificado.', 'Es indispensable que suba un documento de respaldo.', {
-            timeOut: 6000,
-          });
-        }
-
-
+               }
+               else {
+                 this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
+                   timeOut: 6000,
+                 });
+               }
+    
+    
+            } else {
+              this.toastr.info('El permiso seleccionado requiere de un certificado.', 'Es indispensable que suba un documento de respaldo.', {
+                timeOut: 6000,
+              });
+            }
+    
+    */
 
       } else {
 
-        // MÉTODO PARA INGRESAR 
+        // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
         this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
-
-          console.log('ver data de ingreso de permiso', response);
-
+         
           this.toastr.success('Operación Exitosa', 'Permiso registrado', {
             timeOut: 6000,
           });
+
           this.arrayNivelesDepa = response;
-          
+
+          // LECTURA DE DATOS DE NOTIFICACIÓN
           this.arrayNivelesDepa.forEach(obj => {
 
             let datosPermisoCreado = {
-              fec_creacion: datos.fec_creacion,
-              id_tipo_permiso: datos.id_tipo_permiso,
-              id_empl_contrato: datos.id_empl_contrato,
               id: obj.id,
-              estado: obj.estado,
-              id_dep: obj.id_dep,
-              depa_padre: obj.depa_padre,
               nivel: obj.nivel,
-              id_suc: obj.id_suc,
-              departamento: obj.departamento,
-              sucursal: obj.sucursal,
               cargo: obj.cargo,
-              contrato: obj.contrato,
-              empleado: obj.empleado,
+              id_dep: obj.id_dep,
+              id_suc: obj.id_suc,
+              estado: obj.estado,
               nombre: obj.nombre,
-              apellido: obj.apellido,
               cedula: obj.cedula,
               correo: obj.correo,
+              contrato: obj.contrato,
+              apellido: obj.apellido,
+              sucursal: obj.sucursal,
+              empleado: obj.empleado,
+              depa_padre: obj.depa_padre,
+              fec_creacion: datos.fec_creacion,
+              departamento: obj.departamento,
               permiso_mail: obj.permiso_mail,
-              permiso_noti: obj.permiso_noti
+              permiso_noti: obj.permiso_noti,
+              id_tipo_permiso: datos.id_tipo_permiso,
+              id_empl_contrato: datos.id_empl_contrato,
             }
+            console.log('entra ---- ', datosPermisoCreado )
             this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
               this.idPermisoRes = res;
-              this.IngresarAutorizacion(this.idPermisoRes.id);
+              console.log('ver id permiso ---- ', this.idPermisoRes)
+
+              /*this.IngresarAutorizacion(this.idPermisoRes.id);
               console.log(this.idPermisoRes);
               this.ImprimirNumeroPermiso();
               var f = new Date();
@@ -871,11 +875,8 @@ export class PermisosMultiplesComponent implements OnInit {
                   this.restP.sendNotiRealTime(notificacion);
                 }
               });
- 
- 
+              */
             });
- 
- 
           }, err => {
             const { access, message } = err.error.message;
             if (access === false) {
@@ -883,8 +884,6 @@ export class PermisosMultiplesComponent implements OnInit {
               this.dialogRef.close();
             }
           });
-          
-
         }, err => {
           const { access, message } = err.error.message;
           if (access === false) {
