@@ -5,7 +5,7 @@ const usuarioControlador_1 = require("../../controlador/usuarios/usuarioControla
 const verificarToken_1 = require("../../libs/verificarToken");
 class UsuarioRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

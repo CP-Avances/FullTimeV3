@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../libs/verificarToken");
 const graficasControlador_1 = __importDefault(require("../../controlador/graficas/graficasControlador"));
 class GraficasRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

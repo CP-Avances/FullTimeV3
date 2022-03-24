@@ -134,7 +134,7 @@ const beforeFiveDays = function () {
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
                 avisoVacacion.rows.forEach(obj => {
-                    settingsMail_1.Credenciales(0);
+                    (0, settingsMail_1.Credenciales)(0);
                     let data = {
                         to: obj.correo,
                         from: settingsMail_1.email,
@@ -147,7 +147,7 @@ const beforeFiveDays = function () {
                         `
                     };
                     console.log(data);
-                    settingsMail_1.enviarMail(data);
+                    (0, settingsMail_1.enviarMail)(data);
                 });
             }
         }
@@ -166,7 +166,7 @@ const beforeTwoDays = function () {
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
                 avisoVacacion.rows.forEach(obj => {
-                    settingsMail_1.Credenciales(0);
+                    (0, settingsMail_1.Credenciales)(0);
                     let data = {
                         to: obj.correo,
                         from: settingsMail_1.email,
@@ -179,7 +179,7 @@ const beforeTwoDays = function () {
                         `
                     };
                     console.log(data);
-                    settingsMail_1.enviarMail(data);
+                    (0, settingsMail_1.enviarMail)(data);
                 });
             }
         }

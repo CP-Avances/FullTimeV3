@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../libs/verificarToken");
 const solicitudVacacionControlador_1 = __importDefault(require("../../controlador/reportes/solicitudVacacionControlador"));
 class SolicitudVacacionesRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

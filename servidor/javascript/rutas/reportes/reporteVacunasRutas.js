@@ -8,7 +8,7 @@ const verificarToken_1 = require("../../libs/verificarToken");
 const reporteVacunasControlador_1 = __importDefault(require("../../controlador/reportes/reporteVacunasControlador"));
 class ReportesAsistenciasRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

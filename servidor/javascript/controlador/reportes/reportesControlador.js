@@ -482,9 +482,9 @@ function AtrasosTimbresSinAcciones(id_empleado, fechaInicio, fechaFinal) {
         return arrayModelado.filter(obj => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             // console.log(obj); console.log(h);
-            let hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(h) - SubMetodosGraficas_1.HHMMtoSegundos('05:00:00');
-            let hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora_total);
-            let hora_final = hora_inicio + SubMetodosGraficas_1.HHMMtoSegundos('02:00:00');
+            let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('05:00:00');
+            let hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_total);
+            let hora_final = hora_inicio + (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00');
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
         });
     });
@@ -539,9 +539,9 @@ function AtrasosTimbresPlanificadosSinAcciones(id_empleado, fechaInicio, fechaFi
         return arrayModelado.filter(obj => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             // console.log(obj); console.log(h);
-            let hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(h) - SubMetodosGraficas_1.HHMMtoSegundos('05:00:00');
-            let hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora_total);
-            let hora_final = hora_inicio + SubMetodosGraficas_1.HHMMtoSegundos('02:00:00');
+            let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('05:00:00');
+            let hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_total);
+            let hora_final = hora_inicio + (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00');
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
         }).map(obj => {
             obj.accion = obj.tipo_accion;
@@ -608,9 +608,9 @@ function EntradaSalidaHorarioSinAcciones(id_empleado, fechaInicio, fechaFinal) {
              let hora_inicio = HHMMtoSegundos(obj.hora);
              let hora_final = hora_inicio + HHMMtoSegundos('01:00:00');
      */
-            let hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(h);
-            let hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora) - SubMetodosGraficas_1.HHMMtoSegundos('03:00:00');
-            let hora_final = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora) + SubMetodosGraficas_1.HHMMtoSegundos('04:00:00');
+            let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h);
+            let hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('03:00:00');
+            let hora_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora) + (0, SubMetodosGraficas_1.HHMMtoSegundos)('04:00:00');
             //console.log('ver horas -------------- ', h + ' ' + hora_timbre + ' ' + hora_inicio + ' ' +
             //    hora_final + ' ' + obj.hora);
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
@@ -668,9 +668,9 @@ function EntradaSalidaPlanificacionSinAcciones(id_empleado, fechaInicio, fechaFi
         return arrayModelado.filter(obj => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             // console.log(obj); console.log(h);
-            let hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(h) - SubMetodosGraficas_1.HHMMtoSegundos('05:00:00');
-            let hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora_total);
-            let hora_final = hora_inicio + SubMetodosGraficas_1.HHMMtoSegundos('02:00:00');
+            let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('05:00:00');
+            let hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_total);
+            let hora_final = hora_inicio + (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00');
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
         }).map(obj => {
             obj.accion = obj.tipo_accion;

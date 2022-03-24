@@ -102,8 +102,8 @@ class EmpleadoHorariosControlador {
                 if (fecha_inicio != undefined && fecha_final != undefined) {
                     var inicio = new Date(fecha_inicio.split('/')[2] + '-' + fecha_inicio.split('/')[1] + '-' + fecha_inicio.split('/')[0] + 'T00:00:00');
                     var final = new Date(fecha_final.split('/')[2] + '-' + fecha_final.split('/')[1] + '-' + fecha_final.split('/')[0] + 'T00:00:00');
-                    console.log('fecha_inicio', Date.parse(moment_1.default(inicio).format('YYYY-MM-DD')), 'fecha_fin', Date.parse(moment_1.default(final).format('YYYY-MM-DD')));
-                    if (Date.parse(moment_1.default(inicio).format('YYYY-MM-DD')) <= Date.parse(moment_1.default(final).format('YYYY-MM-DD'))) {
+                    console.log('fecha_inicio', Date.parse((0, moment_1.default)(inicio).format('YYYY-MM-DD')), 'fecha_fin', Date.parse((0, moment_1.default)(final).format('YYYY-MM-DD')));
+                    if (Date.parse((0, moment_1.default)(inicio).format('YYYY-MM-DD')) <= Date.parse((0, moment_1.default)(final).format('YYYY-MM-DD'))) {
                         contarFechasValidas = contarFechasValidas + 1;
                     }
                 }
@@ -157,10 +157,10 @@ class EmpleadoHorariosControlador {
             function compare(a, b) {
                 var inicio_1 = new Date(a.fec_inicio.split('/')[2] + '-' + a.fec_inicio.split('/')[1] + '-' + a.fec_inicio.split('/')[0] + 'T00:00:00');
                 var inicio_2 = new Date(b.fec_inicio.split('/')[2] + '-' + b.fec_inicio.split('/')[1] + '-' + b.fec_inicio.split('/')[0] + 'T00:00:00');
-                if (Date.parse(moment_1.default(inicio_1).format('YYYY-MM-DD')) < Date.parse(moment_1.default(inicio_2).format('YYYY-MM-DD'))) {
+                if (Date.parse((0, moment_1.default)(inicio_1).format('YYYY-MM-DD')) < Date.parse((0, moment_1.default)(inicio_2).format('YYYY-MM-DD'))) {
                     return -1;
                 }
-                if (Date.parse(moment_1.default(inicio_1).format('YYYY-MM-DD')) > Date.parse(moment_1.default(inicio_2).format('YYYY-MM-DD'))) {
+                if (Date.parse((0, moment_1.default)(inicio_1).format('YYYY-MM-DD')) > Date.parse((0, moment_1.default)(inicio_2).format('YYYY-MM-DD'))) {
                     return 1;
                 }
                 return 0;
@@ -178,9 +178,9 @@ class EmpleadoHorariosControlador {
                         var inicio_1 = new Date(arreglos_datos[i].fec_inicio.split('/')[2] + '-' + arreglos_datos[i].fec_inicio.split('/')[1] + '-' + arreglos_datos[i].fec_inicio.split('/')[0] + 'T00:00:00');
                         var inicio_2 = new Date(arreglos_datos[j].fec_inicio.split('/')[2] + '-' + arreglos_datos[j].fec_inicio.split('/')[1] + '-' + arreglos_datos[j].fec_inicio.split('/')[0] + 'T00:00:00');
                         var final_1 = new Date(arreglos_datos[i].fec_final.split('/')[2] + '-' + arreglos_datos[i].fec_final.split('/')[1] + '-' + arreglos_datos[i].fec_final.split('/')[0] + 'T00:00:00');
-                        console.log('if', Date.parse(moment_1.default(inicio_1).format('YYYY-MM-DD')), Date.parse(moment_1.default(inicio_2).format('YYYY-MM-DD')), Date.parse(moment_1.default(final_1).format('YYYY-MM-DD')));
-                        if (Date.parse(moment_1.default(inicio_1).format('YYYY-MM-DD')) <= Date.parse(moment_1.default(inicio_2).format('YYYY-MM-DD')) &&
-                            Date.parse(moment_1.default(inicio_2).format('YYYY-MM-DD')) > Date.parse(moment_1.default(final_1).format('YYYY-MM-DD'))) {
+                        console.log('if', Date.parse((0, moment_1.default)(inicio_1).format('YYYY-MM-DD')), Date.parse((0, moment_1.default)(inicio_2).format('YYYY-MM-DD')), Date.parse((0, moment_1.default)(final_1).format('YYYY-MM-DD')));
+                        if (Date.parse((0, moment_1.default)(inicio_1).format('YYYY-MM-DD')) <= Date.parse((0, moment_1.default)(inicio_2).format('YYYY-MM-DD')) &&
+                            Date.parse((0, moment_1.default)(inicio_2).format('YYYY-MM-DD')) > Date.parse((0, moment_1.default)(final_1).format('YYYY-MM-DD'))) {
                         }
                         else {
                             if (arreglos_datos[i].horario.toUpperCase() === arreglos_datos[j].horario.toUpperCase()) {
@@ -294,7 +294,7 @@ class EmpleadoHorariosControlador {
                      if (moment(start).format('dddd') === 'domingo' && form.domingoForm === false) {
                        this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
                      }*/
-                    fechasHorario.push(moment_1.default(start).format('YYYY-MM-DD'));
+                    fechasHorario.push((0, moment_1.default)(start).format('YYYY-MM-DD'));
                     var newDate = start.setDate(start.getDate() + 1);
                     start = new Date(newDate);
                 }

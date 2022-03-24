@@ -8,7 +8,7 @@ const catProvinciaControlador_1 = __importDefault(require("../../controlador/cat
 const verificarToken_1 = require("../../libs/verificarToken");
 class ProvinciaRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

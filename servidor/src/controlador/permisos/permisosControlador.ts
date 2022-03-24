@@ -116,9 +116,18 @@ class PermisosControlador {
     }
 
     public async SendMailNotifiPermiso(req: Request, res: Response): Promise<void> {
-        const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, permiso_mail, permiso_noti } = req.body;
-        const ultimo = await pool.query('SELECT id, estado FROM permisos WHERE fec_creacion = $1 AND  id_tipo_permiso = $2 AND id_empl_contrato = $3', [fec_creacion, id_tipo_permiso, id_empl_contrato]);
-        const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ecn.id = ecr.id_empl_contrato ORDER BY cargo DESC', [id_empl_contrato]);
+        const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel,
+            id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo,
+            permiso_mail, permiso_noti } = req.body;
+        const ultimo = await pool.query('SELECT MAX(id) AS id, estado FROM permisos ' +
+            'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado',
+            [fec_creacion, id_tipo_permiso, id_empl_contrato]);
+        const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
+            'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo ' +
+            'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr ' +
+            'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+            '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
+            'ORDER BY cargo DESC', [id_empl_contrato]);
 
         const email = process.env.EMAIL;
         const pass = process.env.PASSWORD;
@@ -374,15 +383,19 @@ class PermisosControlador {
     }
 
     public async EliminarPermiso(req: Request, res: Response) {
-        const { id_permiso, doc } = req.params;
-        console.log(id_permiso, doc);
+        let { id_permiso, doc } = req.params;
+        
 
         await pool.query('DELETE FROM realtime_noti where id_permiso = $1', [id_permiso])
         await pool.query('DELETE FROM permisos WHERE id = $1', [id_permiso]);
 
-        let filePath = `servidor\\docRespaldosPermisos\\${doc}`
-        let direccionCompleta = __dirname.split("servidor")[0] + filePath;
-        fs.unlinkSync(direccionCompleta);
+        if (doc != 'null' && doc != "") {
+            console.log(id_permiso, doc, ' entra ');
+            let filePath = `servidor\\docRespaldosPermisos\\${doc}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+
 
         res.jsonp({ message: 'registro eliminado' });
     }
@@ -392,9 +405,9 @@ class PermisosControlador {
         const { descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero, num_permiso, anterior_doc, docu_nombre, hora_salida, hora_ingreso } = req.body;
         console.log(descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero, num_permiso, anterior_doc, docu_nombre);
         if ((anterior_doc === null && docu_nombre === null) || (anterior_doc === '' && docu_nombre === '')) {
-           
-           
-          console.log('entra ver permiso') 
+
+
+            console.log('entra ver permiso')
             await pool.query('UPDATE permisos SET descripcion = $1, fec_inicio = $2, fec_final = $3, dia = $4, dia_libre = $5, id_tipo_permiso = $6, hora_numero = $7, num_permiso = $8, hora_salida = $9, hora_ingreso = $10 WHERE id = $11', [descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero, num_permiso, hora_salida, hora_ingreso, id]);
             res.jsonp({ message: 'Permiso Editado' });
         } else {
@@ -419,6 +432,20 @@ class PermisosControlador {
         }
         else {
             return res.status(404).jsonp({ text: 'No se encuentran registros' });
+        }
+    }
+
+
+    // CONSULTA DE SOLICITUDES DENTRO DE UN RANGO DE FECHAS
+    public async BuscarPermisos_Fechas(req: Request, res: Response) {
+        try {
+            const { fec_inicio, fec_final, codigo } = req.body;
+            const PERMISO = await pool.query('SELECT id FROM permisos ' +
+                'WHERE ((fec_inicio between $1 AND $2) OR (fec_final between $1 AND $2)) ' +
+                'AND codigo = $3', [fec_inicio, fec_final, codigo]);
+            return res.jsonp(PERMISO.rows)
+        } catch (error) {
+            return res.jsonp(null);
         }
     }
 }

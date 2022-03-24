@@ -12,7 +12,7 @@ const multipartMiddleware = multipart({
 });
 class BirthdayRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

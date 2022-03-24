@@ -147,8 +147,8 @@ function GenerarHorarioEmpleado(id_cargo, inicio, final) {
     });
 }
 function HorarioConEstado(estados, inicio, final) {
-    var fecha1 = moment_1.default(inicio.toJSON().split("T")[0]);
-    var fecha2 = moment_1.default(final.toJSON().split("T")[0]);
+    var fecha1 = (0, moment_1.default)(inicio.toJSON().split("T")[0]);
+    var fecha2 = (0, moment_1.default)(final.toJSON().split("T")[0]);
     // console.log('ESTADOSSSSSSSS',estados);
     var diasHorario = fecha2.diff(fecha1, 'days');
     let horarioSemanalEstados = [];

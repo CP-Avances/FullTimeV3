@@ -131,8 +131,14 @@ class PermisosControlador {
     SendMailNotifiPermiso(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, permiso_mail, permiso_noti } = req.body;
-            const ultimo = yield database_1.default.query('SELECT id, estado FROM permisos WHERE fec_creacion = $1 AND  id_tipo_permiso = $2 AND id_empl_contrato = $3', [fec_creacion, id_tipo_permiso, id_empl_contrato]);
-            const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ecn.id = ecr.id_empl_contrato ORDER BY cargo DESC', [id_empl_contrato]);
+            const ultimo = yield database_1.default.query('SELECT MAX(id) AS id, estado FROM permisos ' +
+                'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado', [fec_creacion, id_tipo_permiso, id_empl_contrato]);
+            const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
+                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo ' +
+                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr ' +
+                'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+                '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
+                'ORDER BY cargo DESC', [id_empl_contrato]);
             const email = process.env.EMAIL;
             const pass = process.env.PASSWORD;
             let smtpTransport = nodemailer.createTransport({
@@ -395,13 +401,15 @@ class PermisosControlador {
     }
     EliminarPermiso(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_permiso, doc } = req.params;
-            console.log(id_permiso, doc);
+            let { id_permiso, doc } = req.params;
             yield database_1.default.query('DELETE FROM realtime_noti where id_permiso = $1', [id_permiso]);
             yield database_1.default.query('DELETE FROM permisos WHERE id = $1', [id_permiso]);
-            let filePath = `servidor\\docRespaldosPermisos\\${doc}`;
-            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
-            fs_1.default.unlinkSync(direccionCompleta);
+            if (doc != 'null' && doc != "") {
+                console.log(id_permiso, doc, ' entra ');
+                let filePath = `servidor\\docRespaldosPermisos\\${doc}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
             res.jsonp({ message: 'registro eliminado' });
         });
     }
@@ -437,6 +445,21 @@ class PermisosControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            }
+        });
+    }
+    // CONSULTA DE SOLICITUDES DENTRO DE UN RANGO DE FECHAS
+    BuscarPermisos_Fechas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { fec_inicio, fec_final, codigo } = req.body;
+                const PERMISO = yield database_1.default.query('SELECT id FROM permisos ' +
+                    'WHERE ((fec_inicio between $1 AND $2) OR (fec_final between $1 AND $2)) ' +
+                    'AND codigo = $3', [fec_inicio, fec_final, codigo]);
+                return res.jsonp(PERMISO.rows);
+            }
+            catch (error) {
+                return res.jsonp(null);
             }
         });
     }

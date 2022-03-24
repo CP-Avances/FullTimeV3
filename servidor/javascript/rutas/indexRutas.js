@@ -4,7 +4,7 @@ const express_1 = require("express");
 const indexControlador_1 = require("../controlador/indexControlador");
 class IndexRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

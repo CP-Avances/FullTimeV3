@@ -80,17 +80,17 @@ const http_1 = require("http");
 const socketIo = require('socket.io');
 class Servidor {
     constructor() {
-        this.app = express_1.default();
+        this.app = (0, express_1.default)();
         this.configuracion();
         this.rutas();
-        this.server = http_1.createServer(this.app);
+        this.server = (0, http_1.createServer)(this.app);
         this.io = socketIo(this.server);
-        this.app.use(cors_1.default());
+        this.app.use((0, cors_1.default)());
     }
     configuracion() {
         this.app.set('puerto', process.env.PORT || 3001);
-        this.app.use(morgan_1.default('dev'));
-        this.app.use(cors_1.default());
+        this.app.use((0, morgan_1.default)('dev'));
+        this.app.use((0, cors_1.default)());
         this.app.use(express_1.default.json());
         this.app.use(express_1.default.urlencoded({ extended: false }));
         this.app.use(express_1.default.raw({ type: 'image/*', limit: '2Mb' }));
@@ -226,14 +226,14 @@ const NotiTimbres_1 = require("./libs/NotiTimbres");
 const SinTimbres_1 = require("./libs/SinTimbres");
 const DesactivarEmpleado_1 = require("./libs/DesactivarEmpleado");
 // llama al meodo de cumpleaños
-sendBirthday_1.cumpleanios();
+(0, sendBirthday_1.cumpleanios)();
 // llama al metodo de avisos de vacaciones
-avisoVacaciones_1.beforeFiveDays();
-avisoVacaciones_1.beforeTwoDays();
+(0, avisoVacaciones_1.beforeFiveDays)();
+(0, avisoVacaciones_1.beforeTwoDays)();
 // llama al metodo de verificacion para crear un nuevo perido de vacaciones si se acaba el anterior
-avisoVacaciones_1.Peri_Vacacion_Automatico();
-ContarHoras_1.RegistrarAsistenciaByTimbres();
+(0, avisoVacaciones_1.Peri_Vacacion_Automatico)();
+(0, ContarHoras_1.RegistrarAsistenciaByTimbres)();
 // ----------// conteoPermisos();
-NotiTimbres_1.NotificacionTimbreAutomatica();
-SinTimbres_1.NotificacionSinTimbres();
-DesactivarEmpleado_1.DesactivarFinContratoEmpleado();
+(0, NotiTimbres_1.NotificacionTimbreAutomatica)();
+(0, SinTimbres_1.NotificacionSinTimbres)();
+(0, DesactivarEmpleado_1.DesactivarFinContratoEmpleado)();

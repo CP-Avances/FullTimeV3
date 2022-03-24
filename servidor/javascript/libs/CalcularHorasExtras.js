@@ -164,8 +164,8 @@ function HorasExtrasSolicitadas(id_empleado, id_cargo, fec_desde, fec_hasta) {
                 var f2 = new Date(obj.fec_final);
                 f1.setUTCHours(f1.getUTCHours() - 5);
                 f2.setUTCHours(f2.getUTCHours() - 5);
-                const hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(f1.toJSON().split('T')[1].split('.')[0]);
-                const hora_final = SubMetodosGraficas_1.HHMMtoSegundos(f2.toJSON().split('T')[1].split('.')[0]);
+                const hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(f1.toJSON().split('T')[1].split('.')[0]);
+                const hora_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(f2.toJSON().split('T')[1].split('.')[0]);
                 const dia = f1.getUTCDay();
                 f1.setUTCHours(f1.getUTCHours() - 5);
                 f2.setUTCHours(f2.getUTCHours() - 5);
@@ -176,8 +176,8 @@ function HorasExtrasSolicitadas(id_empleado, id_cargo, fec_desde, fec_hasta) {
                     fec_inicio: new Date(f1.toJSON().split('.')[0]),
                     fec_final: new Date(f2.toJSON().split('.')[0]),
                     descripcion: obj.descripcion,
-                    num_hora: SubMetodosGraficas_1.HHMMtoSegundos(obj.num_hora),
-                    tiempo_autorizado: SubMetodosGraficas_1.HHMMtoSegundos(obj.tiempo_autorizado),
+                    num_hora: (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.num_hora),
+                    tiempo_autorizado: (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.tiempo_autorizado),
                     valores_calculos: new Array,
                     calculos: new Array,
                     nocturno: false,
@@ -198,8 +198,8 @@ function PlanificacionHorasExtrasSolicitadas(id_empleado, id_cargo, fec_desde, f
                 var f2 = new Date(obj.fecha_hasta.toJSON().split('T')[0] + 'T' + obj.hora_fin);
                 f1.setUTCHours(f1.getUTCHours() - 5);
                 f2.setUTCHours(f2.getUTCHours() - 5);
-                const hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(f1.toJSON().split('T')[1].split('.')[0]);
-                const hora_final = SubMetodosGraficas_1.HHMMtoSegundos(f2.toJSON().split('T')[1].split('.')[0]);
+                const hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(f1.toJSON().split('T')[1].split('.')[0]);
+                const hora_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(f2.toJSON().split('T')[1].split('.')[0]);
                 const dia = f1.getUTCDay();
                 f1.setUTCHours(f1.getUTCHours() - 5);
                 f2.setUTCHours(f2.getUTCHours() - 5);
@@ -210,7 +210,7 @@ function PlanificacionHorasExtrasSolicitadas(id_empleado, id_cargo, fec_desde, f
                     fec_inicio: new Date(f1.toJSON().split('.')[0]),
                     fec_final: new Date(f2.toJSON().split('.')[0]),
                     descripcion: obj.descripcion,
-                    num_hora: SubMetodosGraficas_1.HHMMtoSegundos(obj.horas_totales),
+                    num_hora: (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.horas_totales),
                     tiempo_autorizado: obj.tiempo_autorizado,
                     valores_calculos: [],
                     calculos: [],
@@ -279,8 +279,8 @@ function CatalogoHorasExtras() {
     return __awaiter(this, void 0, void 0, function* () {
         return yield database_1.default.query('SELECT id, descripcion, tipo_descuento, reca_porcentaje, hora_inicio, hora_final, hora_jornada, tipo_dia, tipo_funcion FROM cg_hora_extras').then(result => {
             return result.rows.map(obj => {
-                obj.hora_inicio = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora_inicio);
-                obj.hora_final = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora_final);
+                obj.hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_inicio);
+                obj.hora_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_final);
                 (obj.tipo_descuento === 1) ? obj.tipo_descuento = 'HE' : obj.tipo_descuento = 'RN';
                 obj.reca_porcentaje = parseInt(obj.reca_porcentaje) / 100;
                 (obj.hora_jornada === 1) ? obj.hora_jornada = 'Diurna' : obj.hora_jornada = 'Nocturna';

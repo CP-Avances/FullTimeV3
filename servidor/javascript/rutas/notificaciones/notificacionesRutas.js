@@ -8,7 +8,7 @@ const notificacionesControlador_1 = __importDefault(require("../../controlador/n
 const verificarToken_1 = require("../../libs/verificarToken");
 class NotificacionTiempoRealRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

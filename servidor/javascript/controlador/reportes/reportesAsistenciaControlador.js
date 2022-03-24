@@ -290,7 +290,7 @@ class ReportesAsistenciaControlador {
                                         array.push(u[0]);
                                     }
                                 });
-                                o.puntualidad = parseInt(SubMetodosGraficas_1.SumarValoresArray(array));
+                                o.puntualidad = parseInt((0, SubMetodosGraficas_1.SumarValoresArray)(array));
                                 // console.log(o);
                             }
                             if (o.puntualidad >= parseInt(params_query.mayor)) {
@@ -318,7 +318,7 @@ class ReportesAsistenciaControlador {
                             o.contrato = yield database_1.default.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].contrato; });
                             o.cargo = yield database_1.default.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].cargo; });
                             let timbres = yield BuscarTimbresSinAccionesDeEntrada(desde, hasta, o.codigo);
-                            o.puntualidad = (timbres.length === 0) ? 0 : parseInt(SubMetodosGraficas_1.SumarValoresArray(timbres));
+                            o.puntualidad = (timbres.length === 0) ? 0 : parseInt((0, SubMetodosGraficas_1.SumarValoresArray)(timbres));
                             if (o.puntualidad >= parseInt(params_query.mayor)) {
                                 o.color = '#06F313'; // verde
                             }
@@ -598,11 +598,11 @@ const AtrasosTimbresSinAccion = function (fec_inicio, fec_final, codigo) {
         // console.log('HORARIOS: ',horarioEntrada);    
         let nuevo = [];
         let aux = yield Promise.all(horarioEntrada.map((obj) => __awaiter(this, void 0, void 0, function* () {
-            let fechas = SubMetodosGraficas_1.ModelarFechas(obj.fec_inicio, obj.fec_final, obj);
-            const hora_seg = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora) + (obj.minu_espera * 60);
+            let fechas = (0, SubMetodosGraficas_1.ModelarFechas)(obj.fec_inicio, obj.fec_final, obj);
+            const hora_seg = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora) + (obj.minu_espera * 60);
             let timbres = yield Promise.all(fechas.map((o) => __awaiter(this, void 0, void 0, function* () {
-                var f_inicio = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg);
-                var f_final = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg + SubMetodosGraficas_1.HHMMtoSegundos('02:00:00'));
+                var f_inicio = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg);
+                var f_final = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg + (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00'));
                 // console.log( f_inicio, ' || ', f_final, ' || ', codigo);
                 const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) from timbres where fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') ' +
                     'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') and id_empleado = ' + codigo + ' order by fec_hora_timbre';
@@ -615,7 +615,7 @@ const AtrasosTimbresSinAccion = function (fec_inicio, fec_final, codigo) {
                     else {
                         const f_timbre = res.rows[0].fec_hora_timbre.split(' ')[0];
                         const h_timbre = res.rows[0].fec_hora_timbre.split(' ')[1];
-                        const t_tim = SubMetodosGraficas_1.HHMMtoSegundos(h_timbre);
+                        const t_tim = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h_timbre);
                         // console.log(f_timbre);
                         let diferencia = (t_tim - hora_seg) / 3600;
                         return {
@@ -623,7 +623,7 @@ const AtrasosTimbresSinAccion = function (fec_inicio, fec_final, codigo) {
                             horario: obj.hora,
                             timbre: h_timbre,
                             atraso_dec: diferencia.toFixed(2),
-                            atraso_HHMM: SubMetodosGraficas_1.SegundosToHHMM(t_tim - hora_seg),
+                            atraso_HHMM: (0, SubMetodosGraficas_1.SegundosToHHMM)(t_tim - hora_seg),
                         };
                     }
                 });
@@ -663,11 +663,11 @@ const BuscarTimbresSinAccionesDeEntrada = function (fec_inicio, fec_final, codig
         if (horarioEntrada.length === 0)
             return [];
         let aux = yield Promise.all(horarioEntrada.map((obj) => __awaiter(this, void 0, void 0, function* () {
-            let fechas = SubMetodosGraficas_1.ModelarFechas(obj.fec_inicio, obj.fec_final, obj);
-            const hora_seg = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora) + (obj.minu_espera * 60);
+            let fechas = (0, SubMetodosGraficas_1.ModelarFechas)(obj.fec_inicio, obj.fec_final, obj);
+            const hora_seg = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora) + (obj.minu_espera * 60);
             let timbres = yield Promise.all(fechas.map((o) => __awaiter(this, void 0, void 0, function* () {
-                var f_inicio = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg - SubMetodosGraficas_1.HHMMtoSegundos('02:00:00'));
-                var f_final = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg);
+                var f_inicio = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg - (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00'));
+                var f_final = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg);
                 // console.log( f_inicio, ' || ', f_final, ' || ', codigo);
                 const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) from timbres where fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') ' +
                     'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') and id_empleado = ' + codigo + ' order by fec_hora_timbre';
@@ -755,8 +755,8 @@ const ModelarAtrasosReporte = function (obj) {
         console.log('Hora entrada y minuto Atrasos', array);
         return array.map(ele => {
             let retraso = false;
-            var timbre = SubMetodosGraficas_1.HHMMtoSegundos(obj.fec_hora_timbre.split(' ')[1]);
-            var hora_seg = SubMetodosGraficas_1.HHMMtoSegundos(ele.hora) + ele.minu_espera * 60;
+            var timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.fec_hora_timbre.split(' ')[1]);
+            var hora_seg = (0, SubMetodosGraficas_1.HHMMtoSegundos)(ele.hora) + ele.minu_espera * 60;
             console.log('Timbre: ', timbre, hora_seg);
             retraso = (timbre > hora_seg) ? true : false;
             if (retraso === false)
@@ -769,7 +769,7 @@ const ModelarAtrasosReporte = function (obj) {
                 horario: ele.hora,
                 timbre: obj.fec_hora_timbre.split(' ')[1],
                 atraso_dec: diferencia.toFixed(2),
-                atraso_HHMM: SubMetodosGraficas_1.SegundosToHHMM(timbre - hora_seg),
+                atraso_HHMM: (0, SubMetodosGraficas_1.SegundosToHHMM)(timbre - hora_seg),
             };
         })[0];
     });
@@ -820,8 +820,8 @@ const ModelarHorasTrabajaReporte = function (codigo, fec_inicio, fec_final) {
         nuevoArray.sort(compareFechas);
         let res_timbre = yield Promise.all(nuevoArray.map((obj) => __awaiter(this, void 0, void 0, function* () {
             var fec_aux = new Date(obj.Fecha.split(' ')[0]);
-            var fecha1 = moment_1.default(obj.Fecha.split(' ')[0]);
-            var fecha2 = moment_1.default(obj.Fecha.split(' ')[1]);
+            var fecha1 = (0, moment_1.default)(obj.Fecha.split(' ')[0]);
+            var fecha2 = (0, moment_1.default)(obj.Fecha.split(' ')[1]);
             var diasDiferencia = fecha2.diff(fecha1, 'days');
             let res = [];
             for (let i = 0; i <= diasDiferencia; i++) {
@@ -871,18 +871,18 @@ const ModelarHorasTrabajaReporte = function (codigo, fec_inicio, fec_final) {
                                 obj2.accion = 'EoS';
                                 obj2.hora_timbre = h.hora;
                                 obj2.observacion = 'Entrada';
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre);
                             }
                             else {
                                 obj2.accion = arr3[0].accion;
                                 obj2.observacion = arr3[0].observacion;
                                 obj2.hora_timbre = arr3[0].fec_hora_timbre.split(' ')[1];
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre);
                             }
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         case 2:
                             var arr4 = o.timbres.filter((t) => { return t.accion === 'AES' || t.accion === 'S/A'; });
@@ -890,18 +890,18 @@ const ModelarHorasTrabajaReporte = function (codigo, fec_inicio, fec_final) {
                                 obj2.accion = 'AES';
                                 obj2.hora_timbre = h.hora;
                                 obj2.observacion = 'Salida Almuerzo';
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre) - SubMetodosGraficas_1.HHMMtoSegundos(h.hora);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora);
                             }
                             else {
                                 obj2.accion = arr4[0].accion;
                                 obj2.observacion = arr4[0].observacion;
                                 obj2.hora_timbre = arr4[0].fec_hora_timbre.split(' ')[1];
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre) - SubMetodosGraficas_1.HHMMtoSegundos(h.hora);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora);
                             }
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         case 3:
                             var arr1 = o.timbres.filter((t) => { return t.accion === 'AES' || t.accion === 'E/A'; });
@@ -909,18 +909,18 @@ const ModelarHorasTrabajaReporte = function (codigo, fec_inicio, fec_final) {
                                 obj2.accion = 'AES';
                                 obj2.hora_timbre = h.hora;
                                 obj2.observacion = 'Entrada Almuerzo';
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre);
                             }
                             else {
                                 obj2.accion = arr1[arr1.length - 1].accion;
                                 obj2.observacion = arr1[arr1.length - 1].observacion;
                                 obj2.hora_timbre = arr1[arr1.length - 1].fec_hora_timbre.split(' ')[1];
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre);
                             }
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         case 4:
                             var arr2 = o.timbres.filter((t) => { return t.accion === 'EoS' || t.accion === 'S'; });
@@ -928,18 +928,18 @@ const ModelarHorasTrabajaReporte = function (codigo, fec_inicio, fec_final) {
                                 obj2.accion = 'EoS';
                                 obj2.hora_timbre = h.hora;
                                 obj2.observacion = 'Salida';
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre) - SubMetodosGraficas_1.HHMMtoSegundos(h.hora);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora);
                             }
                             else {
                                 obj2.accion = arr2[arr2.length - 1].accion;
                                 obj2.observacion = arr2[arr2.length - 1].observacion;
                                 obj2.hora_timbre = arr2[arr2.length - 1].fec_hora_timbre.split(' ')[1];
-                                dif = SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre) - SubMetodosGraficas_1.HHMMtoSegundos(h.hora);
+                                dif = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora);
                             }
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         default:
                             break;
@@ -949,15 +949,15 @@ const ModelarHorasTrabajaReporte = function (codigo, fec_inicio, fec_final) {
                 var resta_hor_EoS = parseFloat(arr_horario_EoS[1]) - parseFloat(arr_horario_EoS[0]);
                 var resta_hor_AES = parseFloat(arr_horario_AES[1]) - parseFloat(arr_horario_AES[0]);
                 let resta_hor = resta_hor_EoS - resta_hor_AES;
-                obj.total_horario = SubMetodosGraficas_1.SegundosToHHMM(resta_hor);
+                obj.total_horario = (0, SubMetodosGraficas_1.SegundosToHHMM)(resta_hor);
                 let resta_tim_EoS = parseFloat(arr_EoS[1]) - parseFloat(arr_EoS[0]);
                 let resta_tim_AES = parseFloat(arr_AES[1]) - parseFloat(arr_AES[0]);
                 let resta_tim = resta_tim_EoS - resta_tim_AES;
-                obj.total_timbres = SubMetodosGraficas_1.SegundosToHHMM(resta_tim);
+                obj.total_timbres = (0, SubMetodosGraficas_1.SegundosToHHMM)(resta_tim);
                 let dif_total = resta_tim - resta_hor;
                 let diferencia_Total = 0;
                 diferencia_Total = (dif_total < 0) ? dif_total * (-1) : dif_total;
-                obj.total_diferencia = (dif_total < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia_Total) : SubMetodosGraficas_1.SegundosToHHMM(diferencia_Total);
+                obj.total_diferencia = (dif_total < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia_Total) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia_Total);
                 arr_respuesta.push(obj);
             });
         });
@@ -993,8 +993,8 @@ const ModelarHorasTrabajaTimbresSinAcciones = function (codigo, fec_inicio, fec_
         nuevoArray.sort(compareFechas);
         let res_timbre = yield Promise.all(nuevoArray.map((obj) => __awaiter(this, void 0, void 0, function* () {
             var fec_aux = new Date(obj.Fecha.split(' ')[0]);
-            var fecha1 = moment_1.default(obj.Fecha.split(' ')[0]);
-            var fecha2 = moment_1.default(obj.Fecha.split(' ')[1]);
+            var fecha1 = (0, moment_1.default)(obj.Fecha.split(' ')[0]);
+            var fecha2 = (0, moment_1.default)(obj.Fecha.split(' ')[1]);
             var diasDiferencia = fecha2.diff(fecha1, 'days');
             let res = [];
             for (let i = 0; i <= diasDiferencia; i++) {
@@ -1041,67 +1041,67 @@ const ModelarHorasTrabajaTimbresSinAcciones = function (codigo, fec_inicio, fec_
                     switch (h.orden) {
                         case 1:
                             var arr3 = o.timbres.filter((t) => {
-                                const hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(t.fec_hora_timbre.split(' ')[1]);
-                                const h_inicio = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos('01:30:00');
-                                const h_final = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) + SubMetodosGraficas_1.HHMMtoSegundos('01:59:00');
+                                const hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(t.fec_hora_timbre.split(' ')[1]);
+                                const h_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('01:30:00');
+                                const h_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) + (0, SubMetodosGraficas_1.HHMMtoSegundos)('01:59:00');
                                 return (h_inicio <= hora_timbre && h_final >= hora_timbre);
                             });
                             obj2.hora_timbre = (arr3.length === 0) ? '' : arr3[0].fec_hora_timbre.split(' ')[1];
                             obj2.observacion = (arr3.length === 0) ? 'Entrada' : arr3[0].observacion;
                             obj2.accion = 'EoS';
-                            dif = (obj2.hora_timbre === '') ? 0 : SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre);
+                            dif = (obj2.hora_timbre === '') ? 0 : (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre);
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         case 2:
                             var arr4 = o.timbres.filter((t) => {
-                                const hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(t.fec_hora_timbre.split(' ')[1]);
-                                const h_inicio = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos('00:59:00');
-                                const h_final = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) + SubMetodosGraficas_1.HHMMtoSegundos('00:59:00');
+                                const hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(t.fec_hora_timbre.split(' ')[1]);
+                                const h_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00');
+                                const h_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) + (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00');
                                 return (h_inicio <= hora_timbre && h_final >= hora_timbre);
                             });
                             obj2.hora_timbre = (arr4.length === 0) ? '' : arr4[0].fec_hora_timbre.split(' ')[1];
                             obj2.observacion = (arr4.length === 0) ? 'Salida Almuerzo' : arr4[0].observacion;
                             obj2.accion = 'AES';
-                            dif = (obj2.hora_timbre === '') ? 0 : SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre) - SubMetodosGraficas_1.HHMMtoSegundos(h.hora);
+                            dif = (obj2.hora_timbre === '') ? 0 : (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora);
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         case 3:
                             var arr1 = o.timbres.filter((t) => {
-                                const hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(t.fec_hora_timbre.split(' ')[1]);
-                                const h_inicio = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos('00:59:00');
-                                const h_final = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) + SubMetodosGraficas_1.HHMMtoSegundos('00:59:00');
+                                const hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(t.fec_hora_timbre.split(' ')[1]);
+                                const h_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00');
+                                const h_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) + (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00');
                                 return (h_inicio <= hora_timbre && h_final >= hora_timbre);
                             });
                             obj2.hora_timbre = (arr1.length === 0) ? '' : arr1[0].fec_hora_timbre.split(' ')[1];
                             obj2.observacion = (arr1.length === 0) ? 'Entrada Almuerzo' : arr1[0].observacion;
                             obj2.accion = 'AES';
-                            dif = (obj2.hora_timbre === '') ? 0 : SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre);
+                            dif = (obj2.hora_timbre === '') ? 0 : (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre);
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_AES.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_AES.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         case 4:
                             var arr2 = o.timbres.filter((t) => {
-                                const hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(t.fec_hora_timbre.split(' ')[1]);
-                                const h_inicio = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos('01:59:00');
-                                const h_final = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) + SubMetodosGraficas_1.HHMMtoSegundos('01:30:00');
+                                const hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(t.fec_hora_timbre.split(' ')[1]);
+                                const h_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('01:59:00');
+                                const h_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) + (0, SubMetodosGraficas_1.HHMMtoSegundos)('01:30:00');
                                 return (h_inicio <= hora_timbre && h_final >= hora_timbre);
                             });
                             obj2.hora_timbre = (arr2.length === 0) ? '' : arr2[0].fec_hora_timbre.split(' ')[1];
                             obj2.observacion = (arr2.length === 0) ? 'Salida' : arr2[0].observacion;
                             obj2.accion = 'EoS';
-                            dif = (obj2.hora_timbre === '') ? 0 : SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre) - SubMetodosGraficas_1.HHMMtoSegundos(h.hora);
+                            dif = (obj2.hora_timbre === '') ? 0 : (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre) - (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora);
                             diferencia = (dif < 0) ? dif * (-1) : dif;
-                            obj2.hora_diferencia = (dif < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia) : SubMetodosGraficas_1.SegundosToHHMM(diferencia);
-                            arr_horario_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_horario));
-                            arr_EoS.push(SubMetodosGraficas_1.HHMMtoSegundos(obj2.hora_timbre));
+                            obj2.hora_diferencia = (dif < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia);
+                            arr_horario_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_horario));
+                            arr_EoS.push((0, SubMetodosGraficas_1.HHMMtoSegundos)(obj2.hora_timbre));
                             break;
                         default:
                             break;
@@ -1113,16 +1113,16 @@ const ModelarHorasTrabajaTimbresSinAcciones = function (codigo, fec_inicio, fec_
                 var resta_hor_AES = parseFloat(arr_horario_AES[1]) - parseFloat(arr_horario_AES[0]);
                 // console.log('RESTA HORARIOS: ',resta_hor_EoS, resta_hor_AES);
                 let resta_hor = (resta_hor_EoS === 0 || resta_hor_AES === 0) ? 0 : resta_hor_EoS - resta_hor_AES;
-                obj.total_horario = SubMetodosGraficas_1.SegundosToHHMM(resta_hor);
+                obj.total_horario = (0, SubMetodosGraficas_1.SegundosToHHMM)(resta_hor);
                 // RESTA DE TIEMPO DE LOS TIMBRES
                 let resta_tim_EoS = parseFloat(arr_EoS[1]) - parseFloat(arr_EoS[0]);
                 let resta_tim_AES = parseFloat(arr_AES[1]) - parseFloat(arr_AES[0]);
                 // console.log('RESTA TIMBRES: ',resta_tim_EoS, resta_tim_AES);
                 let resta_tim = (resta_tim_EoS === 0 || resta_tim_AES === 0) ? 0 : resta_tim_EoS - resta_tim_AES;
-                obj.total_timbres = SubMetodosGraficas_1.SegundosToHHMM(resta_tim);
+                obj.total_timbres = (0, SubMetodosGraficas_1.SegundosToHHMM)(resta_tim);
                 let dif_total = (resta_tim === 0 || resta_hor === 0) ? 0 : resta_tim - resta_hor;
                 let diferencia_Total = (dif_total < 0) ? dif_total * (-1) : dif_total;
-                obj.total_diferencia = (dif_total < 0) ? '-' + SubMetodosGraficas_1.SegundosToHHMM(diferencia_Total) : SubMetodosGraficas_1.SegundosToHHMM(diferencia_Total);
+                obj.total_diferencia = (dif_total < 0) ? '-' + (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia_Total) : (0, SubMetodosGraficas_1.SegundosToHHMM)(diferencia_Total);
                 arr_respuesta.push(obj);
             });
         });
@@ -1141,7 +1141,7 @@ function BuscarHorarioEmpleado(fec_inicio, fec_final, codigo) {
             return res;
         let array = [];
         res.forEach(obj => {
-            MetodosHorario_1.HorariosParaInasistencias(obj).forEach(o => {
+            (0, MetodosHorario_1.HorariosParaInasistencias)(obj).forEach(o => {
                 array.push(o);
             });
         });
@@ -1169,8 +1169,8 @@ const ModelarPuntualidad = function (obj) {
         // console.log('Hora entrada',array);
         return array.map(ele => {
             let puntual = false;
-            var timbre = SubMetodosGraficas_1.HHMMtoSegundos(obj.fec_hora_timbre.split(' ')[1]) / 3600;
-            var hora = SubMetodosGraficas_1.HHMMtoSegundos(ele.hora) / 3600;
+            var timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.fec_hora_timbre.split(' ')[1]) / 3600;
+            var hora = (0, SubMetodosGraficas_1.HHMMtoSegundos)(ele.hora) / 3600;
             (timbre <= hora) ? puntual = true : puntual = false;
             if (puntual === false)
                 return 0;
@@ -1254,7 +1254,7 @@ const TimbresIncompletos = function (fec_inicio, fec_final, codigo) {
             return [];
         let hora_deta = yield Promise.all(horarios.map((obj) => __awaiter(this, void 0, void 0, function* () {
             console.log('RESPUESTA TIMBRE ENCONTRADO:------------------------------------ ', obj);
-            obj.dias_laborados = MetodosHorario_1.HorariosParaInasistencias(obj);
+            obj.dias_laborados = (0, MetodosHorario_1.HorariosParaInasistencias)(obj);
             // obj.dias_laborados = ModelarFechas(obj.fec_inicio, obj.fec_final, obj)
             obj.deta_horarios = yield database_1.default.query('SELECT DISTINCT dh.hora, dh.orden, dh.tipo_accion FROM empl_horarios AS eh, cg_horarios AS h, deta_horarios AS dh ' +
                 'WHERE eh.id_horarios = h.id AND h.id = dh.id_horario AND eh.codigo = $1 AND h.id = $2 ' +
@@ -1288,10 +1288,10 @@ const TimbresIncompletos = function (fec_inicio, fec_final, codigo) {
                 }
                 else {
                     o.timbres_hora = obj.deta_horarios.map((h) => {
-                        var h_inicio = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) - SubMetodosGraficas_1.HHMMtoSegundos('01:00:00');
-                        var h_final = SubMetodosGraficas_1.HHMMtoSegundos(h.hora) + SubMetodosGraficas_1.HHMMtoSegundos('01:00:00');
+                        var h_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('01:00:00');
+                        var h_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h.hora) + (0, SubMetodosGraficas_1.HHMMtoSegundos)('01:00:00');
                         let respuesta = o.timbres_hora.filter((t) => {
-                            let hora_timbre = SubMetodosGraficas_1.HHMMtoSegundos(t.timbre.split(' ')[1]);
+                            let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(t.timbre.split(' ')[1]);
                             return h_inicio <= hora_timbre && h_final >= hora_timbre;
                         });
                         console.log('RESPUESTA TIMBRE ENCONTRADO: ', respuesta);
@@ -1335,11 +1335,11 @@ const TimbresSinAccionesTabulados = function (fec_inicio, fec_final, codigo) {
         if (horarioEntrada.length === 0)
             return [];
         let aux = yield Promise.all(horarioEntrada.map((obj) => __awaiter(this, void 0, void 0, function* () {
-            let fechas = SubMetodosGraficas_1.ModelarFechas(obj.fec_inicio, obj.fec_final, obj);
-            const hora_seg = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora);
+            let fechas = (0, SubMetodosGraficas_1.ModelarFechas)(obj.fec_inicio, obj.fec_final, obj);
+            const hora_seg = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora);
             let timbres = yield Promise.all(fechas.map((o) => __awaiter(this, void 0, void 0, function* () {
-                var f_inicio = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg - SubMetodosGraficas_1.HHMMtoSegundos('00:59:00'));
-                var f_final = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg + SubMetodosGraficas_1.HHMMtoSegundos('00:59:00'));
+                var f_inicio = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg - (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00'));
+                var f_final = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg + (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00'));
                 // console.log( f_inicio, ' || ', f_final, ' || ', codigo);
                 const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) from timbres where fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH24:MI:SS\') ' +
                     'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH24:MI:SS\') and id_empleado = ' + codigo + ' order by fec_hora_timbre';
@@ -1423,11 +1423,11 @@ const TimbresSinAccionesIncompletos = function (fec_inicio, fec_final, codigo) {
         if (horarioEntrada.length === 0)
             return [];
         let aux = yield Promise.all(horarioEntrada.map((obj) => __awaiter(this, void 0, void 0, function* () {
-            let fechas = SubMetodosGraficas_1.ModelarFechas(obj.fec_inicio, obj.fec_final, obj);
-            const hora_seg = SubMetodosGraficas_1.HHMMtoSegundos(obj.hora);
+            let fechas = (0, SubMetodosGraficas_1.ModelarFechas)(obj.fec_inicio, obj.fec_final, obj);
+            const hora_seg = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora);
             const timbres = yield Promise.all(fechas.map((o) => __awaiter(this, void 0, void 0, function* () {
-                var f_inicio = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg - SubMetodosGraficas_1.HHMMtoSegundos('00:59:00'));
-                var f_final = o.fecha + ' ' + SubMetodosGraficas_1.SegundosToHHMM(hora_seg + SubMetodosGraficas_1.HHMMtoSegundos('00:59:00'));
+                var f_inicio = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg - (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00'));
+                var f_final = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg + (0, SubMetodosGraficas_1.HHMMtoSegundos)('00:59:00'));
                 // console.log( f_inicio, ' || ', f_final, ' || ', codigo);
                 const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) from timbres where fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH24:MI:SS\') ' +
                     'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH24:MI:SS\') and id_empleado = ' + codigo + ' order by fec_hora_timbre';

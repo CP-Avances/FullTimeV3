@@ -229,7 +229,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     return days;
   }
 
-// MÉTODO PARA CONTAR DÍAS LIBRES Y DÍAS LABORABLES
+  // MÉTODO PARA CONTAR DÍAS LIBRES Y DÍAS LABORABLES
 
   ImprimirDiaLibre(form, ingreso) {
     if (form.solicitarForm === 'Días' || form.solicitarForm === 'Días y Horas') {
@@ -308,50 +308,70 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       console.log('datos', datosFechas)
       this.dIngreso = event.value;
 
-      // MÉTODO DE BÚSQUEDA DE HORAS DE TRABAJO
-      this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
-        this.horasTrabajo = datos;
+      let solicitud = {
+        fec_inicio: String(moment(this.dSalida, "YYYY/MM/DD").format("YYYY-MM-DD")),
+        fec_final: String(moment(this.dIngreso, "YYYY/MM/DD").format("YYYY-MM-DD")),
+        codigo: parseInt(this.empleado[0].codigo)
+      }
 
-        console.log('ver horas trabajadas', this.horasTrabajo)
-        // MÉTODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
-        this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);
+      this.restP.BuscarPermisosSolicitados(solicitud).subscribe(solicitados => {
+        if (solicitados.length != 0) {
+          console.log('ver permiso fechas', solicitados)
+          this.toastr.info('En las fechas ingresadas ya existe un registro de solicitud.', 'VERIFICAR', {
+            timeOut: 6000,
+          });
+          this.PermisoForm.patchValue({
+            fechaInicioForm: '',
+            fechaFinalForm: ''
+          });
+        } else {
+          // MÉTODO DE BÚSQUEDA DE HORAS DE TRABAJO
+          this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
+            this.horasTrabajo = datos;
 
-        // SOLICITUD DE PERMISO POR DÍAS
-        if (form.solicitarForm === 'Días') {
-          let datos = {
-            fec_inicio: form.fechaInicioForm,
-            fec_final: form.fechaFinalForm
-          }
-          this.restP.BuscarFechasPermiso(datos, parseInt(this.empleado[0].codigo)).subscribe(response => {
-            console.log('fechas_permiso', response);
-            this.fechas_horario = response;
-            this.fechas_horario.map(obj => {
-              if (obj.fecha.split('T')[0] === moment(this.dSalida).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
-                this.PermisoForm.patchValue({
-                  horaSalidaForm: obj.hora
-                })
+            console.log('ver horas trabajadas', this.horasTrabajo)
+            // MÉTODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
+            this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);
+
+            // SOLICITUD DE PERMISO POR DÍAS
+            if (form.solicitarForm === 'Días') {
+              let datos = {
+                fec_inicio: form.fechaInicioForm,
+                fec_final: form.fechaFinalForm
               }
-              if (obj.fecha.split('T')[0] === moment(this.dIngreso).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
-                this.PermisoForm.patchValue({
-                  horasIngresoForm: obj.hora
+              this.restP.BuscarFechasPermiso(datos, parseInt(this.empleado[0].codigo)).subscribe(response => {
+                console.log('fechas_permiso', response);
+                this.fechas_horario = response;
+                this.fechas_horario.map(obj => {
+                  if (obj.fecha.split('T')[0] === moment(this.dSalida).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
+                    this.PermisoForm.patchValue({
+                      horaSalidaForm: obj.hora
+                    })
+                  }
+                  if (obj.fecha.split('T')[0] === moment(this.dIngreso).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
+                    this.PermisoForm.patchValue({
+                      horasIngresoForm: obj.hora
+                    })
+                  }
                 })
-              }
-            })
-            this.readonly = true;
-          }, err => {
-            /*   const { access, message } = err.error.message;
-               if (access === false) {
-                 this.toastr.error(message)
-                 this.dialogRef.close();
-               }*/
-          })
+                this.readonly = true;
+              }, err => {
+                /*   const { access, message } = err.error.message;
+                   if (access === false) {
+                     this.toastr.error(message)
+                     this.dialogRef.close();
+                   }*/
+              })
+            }
+          }, error => {
+            this.toastr.info('Las fechas indicadas no se encuentran dentro de su horario laboral', 'VERIFICAR', {
+              timeOut: 6000,
+            });
+            this.LimpiarCamposFecha();
+          });
         }
-      }, error => {
-        this.toastr.info('Las fechas indicadas no se encuentran dentro de su horario laboral', 'VERIFICAR', {
-          timeOut: 6000,
-        });
-        this.LimpiarCamposFecha();
-      });
+
+      })
     }
     else {
       this.toastr.error('Aún no selecciona un Tipo de Permiso o aún no ingresa fecha de salida.', 'VERIFICAR', {

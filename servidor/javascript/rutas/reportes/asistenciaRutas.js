@@ -8,7 +8,7 @@ const asistenciaControlador_1 = __importDefault(require("../../controlador/repor
 const verificarToken_1 = require("../../libs/verificarToken");
 class AsistenciaRutas {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {

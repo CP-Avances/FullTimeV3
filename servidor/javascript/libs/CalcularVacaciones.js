@@ -96,15 +96,15 @@ function CarcularSaldoDecimal(contador, acumulado, descuen) {
 // falta mejorar este metodo en caso de usarlo
 function CalcularDiasAcumulados(dias_obliga, I_Periodo, F_Periodo) {
     var f = new Date();
-    var fecha1 = moment_1.default(I_Periodo.toJSON().split("T")[0]);
-    var fecha2 = moment_1.default(F_Periodo.toJSON().split("T")[0]);
+    var fecha1 = (0, moment_1.default)(I_Periodo.toJSON().split("T")[0]);
+    var fecha2 = (0, moment_1.default)(F_Periodo.toJSON().split("T")[0]);
     if (f.getFullYear() != F_Periodo.getFullYear() && f.getFullYear() != I_Periodo.getFullYear()) {
         var diasLaborados = fecha2.diff(fecha1, 'days');
         var aux = (diasLaborados * 15) / 365;
         return 15;
     }
     else {
-        var fechaAux = moment_1.default(f.toJSON().split("T")[0]);
+        var fechaAux = (0, moment_1.default)(f.toJSON().split("T")[0]);
         var diasLaborados = fechaAux.diff(fecha1, 'days');
         var aux = (diasLaborados * 15) / 365;
         return aux;
@@ -460,8 +460,8 @@ function DetallePeriodoMetodo(I_Periodo) {
     let valor;
     if (f < aux_f) {
         // console.log('Periodo Actual');
-        var fecha1 = moment_1.default(I_Periodo.toJSON().split("T")[0]);
-        var fecha2 = moment_1.default(f.toJSON().split("T")[0]);
+        var fecha1 = (0, moment_1.default)(I_Periodo.toJSON().split("T")[0]);
+        var fecha2 = (0, moment_1.default)(f.toJSON().split("T")[0]);
         diasLaborados = fecha2.diff(fecha1, 'days');
         valor = (diasLaborados * 15) / 365;
     }

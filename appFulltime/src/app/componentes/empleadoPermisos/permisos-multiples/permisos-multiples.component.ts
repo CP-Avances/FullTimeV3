@@ -72,6 +72,7 @@ export class PermisosMultiplesComponent implements OnInit {
   // NÚMERO DEL PERMISO
   num: number;
   tipoPermisoSelec: string;
+
   // VARIABLE PARA GUARDAR FECHA ACTUAL TOMADA DEL SISTEMA
   FechaActual: any;
   horasTrabajo: any = [];
@@ -135,8 +136,6 @@ export class PermisosMultiplesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    console.log('ver depa', parseInt(localStorage.getItem('departamento')))
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
     // ASIGNACIÓN DE ESTADO PENDIENTE EN LA SOLICITUD DE PERMISO
@@ -145,12 +144,10 @@ export class PermisosMultiplesComponent implements OnInit {
       estadoForm: 1
     });
     this.ObtenerTiposPermiso();
-    //this.ImprimirNumeroPermiso();
-    this.ObtenerEmpleado(this.data.idEmpleado);
   }
 
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO
   empleado: any = [];
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
     this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
@@ -158,6 +155,7 @@ export class PermisosMultiplesComponent implements OnInit {
     })
   }
 
+  // MÉTODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL DEL USUARIO
   ObtenerTiposPermiso() {
     this.tipoPermisos = [];
     let rol = this.loginServise.getRol();
@@ -170,25 +168,6 @@ export class PermisosMultiplesComponent implements OnInit {
         this.tipoPermisos = datos;
       });
     }
-  }
-
-  ImprimirNumeroPermiso() {
-    this.datoNumPermiso = [];
-    this.restP.BuscarNumPermiso(this.data.idEmpleado).subscribe(datos => {
-      this.datoNumPermiso = datos;
-      if (this.datoNumPermiso[0].max === null) {
-        this.num = 1;
-      }
-      else {
-        this.num = this.datoNumPermiso[0].max + 1;
-      }
-    }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        this.toastr.error(message)
-        this.dialogRef.close();
-      }
-    })
   }
 
   ContarDiasLibres(dateFrom, dateTo) {
@@ -218,49 +197,35 @@ export class PermisosMultiplesComponent implements OnInit {
     }
   }
 
+  // MÉTODO PARA VALIDAR SI EL PERMISO TIENE RESTRICCIONES POR FECHA
   dSalida: any;
   validarFechaSalida(event, form) {
+
+    // MÉTODO PARA LIMPIAR CAMPOS USADOS POR FECHAS
     this.LimpiarCamposFecha();
+
+    // VALIDACIÓN SELECCIÓN DE UN TIPO DE PERMISO
     if (form.idPermisoForm != '') {
+
       this.dSalida = event.value;
       var leer_fecha = event.value._i;
       var fecha = new Date(String(moment(leer_fecha)));
       var salida = String(moment(fecha, "YYYY/MM/DD").format("YYYY-MM-DD"));
+
+      // VALIDAR SI EXISTE RESTRICCIÓN DE FECHAS
       if (this.datosPermiso[0].fecha != '' && this.datosPermiso[0].fecha != null) {
         var fecha_negada = this.datosPermiso[0].fecha.split('T')[0];
-        console.log('salida', salida, fecha_negada);
-        if (Date.parse(salida) === Date.parse(fecha_negada)) {
-          this.toastr.error('En la fecha ingresada no se va a otorgar permisos. Ingresar otra fecha', 'VERIFICAR', {
-            timeOut: 6000,
-          });
-          this.PermisoForm.patchValue({
-            fechaInicioForm: '',
-          });
-        }
-        else if (Date.parse(salida) >= Date.parse(this.FechaActual)) {
-        }
-        else {
-          this.toastr.error('La fecha de solicitud de permiso no puede ser anterior a la fecha vigente.', 'VERIFICAR', {
-            timeOut: 6000,
-          });
-          this.PermisoForm.patchValue({
-            fechaInicioForm: '',
-          });
-        }
-      }
-      else {
-        if (Date.parse(salida) >= Date.parse(this.FechaActual)) {
-        }
-        else {
-          this.toastr.error('La fecha de solicitud de permiso no puede ser anterior a la fecha vigente.', 'VERIFICAR', {
-            timeOut: 6000,
-          });
-          this.PermisoForm.patchValue({
-            fechaInicioForm: '',
-          });
-        }
-      }
 
+        // VALIDAR FECHAS SIMILARES CON LA SOLICITUD
+        if (Date.parse(salida) === Date.parse(fecha_negada)) {
+          this.toastr.error('En la fecha ingresada no se va a otorgar permisos.', 'VERIFICAR', {
+            timeOut: 6000,
+          });
+          this.PermisoForm.patchValue({
+            fechaInicioForm: '',
+          });
+        }
+      }
     }
     else {
       this.toastr.error('Aún no selecciona un Tipo de Permiso', 'VERIFICAR', {
@@ -341,7 +306,6 @@ export class PermisosMultiplesComponent implements OnInit {
     this.datosPermiso = [];
     this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(datos => {
       this.datosPermiso = datos;
-      //console.log('datos permiso', this.datosPermiso)
       if (this.datosPermiso[0].num_dia_maximo === 0) {
         this.estiloHoras = { 'visibility': 'visible' }; this.HabilitarHoras = false;
         this.estiloDias = { 'visibility': 'hidden' }; this.HabilitarDias = true;
@@ -454,10 +418,33 @@ export class PermisosMultiplesComponent implements OnInit {
   }
 
   // MÉTODO PARA VALIDAR DATOS DE SOLICITUD DE PERMISO
-  contador: number = 0;
-  InsertarPermiso(form) {
-    this.contador = 0;
+  ValidarPermiso(form) {
 
+    // CONSULTA DE DATOS DE TIPO DE PERMISO
+    this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(tipo => {
+
+      // VALIDAR SI DOCUMENTO ES OBLIGATORIO U OPCIONAL
+      if (tipo[0].documento === true) {
+        // VALIDAR QUE SE HA SUBIDO OBLIGATORIAMENTE UN DOCUMENTO AL SISTEMA
+        if (form.nombreCertificadoForm === '' || form.nombreCertificadoForm === null) {
+          this.toastr.info('El permiso seleccionado requiere de un certificado.', 'Es indispensable que suba un documento de respaldo.', {
+            timeOut: 6000,
+          });
+        }
+        else {
+          this.InsertarPermiso(form, tipo[0].documento);
+        }
+      }
+      else {
+        this.InsertarPermiso(form, tipo[0].documento);
+      }
+    });
+  }
+
+  // MÉTODO INGRESO DE DATOS DE PERMISO
+  contador: number = 0;
+  InsertarPermiso(form, validar) {
+    this.contador = 0;
     // LECTURA DE DATOS DE USUARIOS SELECCIONADOS
     this.data.datos.map(obj => {
 
@@ -478,6 +465,7 @@ export class PermisosMultiplesComponent implements OnInit {
 
           // DATOS DE PERMISO
           let datosPermiso = {
+            id_empl: obj.id,
             dia: parseInt(form.diasForm),
             codigo: obj.codigo,
             estado: form.estadoForm,
@@ -506,8 +494,7 @@ export class PermisosMultiplesComponent implements OnInit {
           this.CambiarValorDiaLibre(datosPermiso);
 
           // MÉTODO PARA LEER DATOS DE LA SOLICITUD
-          this.GuardarDatos(datosPermiso, form);
-
+          this.GuardarDatos(datosPermiso, form, validar);
         })
       })
     });
@@ -524,7 +511,6 @@ export class PermisosMultiplesComponent implements OnInit {
     if (parseInt(form.diasForm) <= this.Tdias) {
       console.log('revisar', this.dIngreso, this.dSalida)
       const resta = this.dIngreso.diff(this.dSalida, 'days');
-      console.log('datos', resta, ' ');
       if (resta != form.diasForm) {
         this.toastr.error('Recuerde el día de ingreso no puede superar o ser menor a los días de permiso solicitados.',
           'Día de ingreso incorrecto.', {
@@ -727,176 +713,162 @@ export class PermisosMultiplesComponent implements OnInit {
   idPermisoRes: any;
   NotifiRes: any;
   arrayNivelesDepa: any = [];
-  GuardarDatos(datos, form) {
-    // CONSULTA DE DATOS DE TIPO DE PERMISO
-    this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(data => {
+  GuardarDatos(datos, form, validar) {
 
-  
-      if (data[0].documento === true) {
+    // VALIDAR SI DOCUMENTO ES OBLIGATORIO U OPCIONAL
+    if (validar === true) {
+      this.RegistrarPermiso_Documento(datos);
 
-        /*    if (form.nombreCertificadoForm != '' && form.nombreCertificadoForm != null) {
-    
-               if (this.archivoSubido[0].size <= 2e+6) {
-                 this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
-                   this.toastr.success('Operación Exitosa', 'Permiso registrado', {
-                     timeOut: 6000,
-                   });
-                   this.arrayNivelesDepa = response;
-                   this.LimpiarCampos();
-                   this.arrayNivelesDepa.forEach(obj => {
-                     let datosPermisoCreado = {
-                       fec_creacion: datos.fec_creacion,
-                       id_tipo_permiso: datos.id_tipo_permiso,
-                       id_empl_contrato: datos.id_empl_contrato,
-                       id: obj.id,
-                       estado: obj.estado,
-                       id_dep: obj.id_dep,
-                       depa_padre: obj.depa_padre,
-                       nivel: obj.nivel,
-                       id_suc: obj.id_suc,
-                       departamento: obj.departamento,
-                       sucursal: obj.sucursal,
-                       cargo: obj.cargo,
-                       contrato: obj.contrato,
-                       empleado: obj.empleado,
-                       nombre: obj.nombre,
-                       apellido: obj.apellido,
-                       cedula: obj.cedula,
-                       correo: obj.correo,
-                       permiso_mail: obj.permiso_mail,
-                       permiso_noti: obj.permiso_noti
-                     }
-                     this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
-                       this.idPermisoRes = res;
-                       console.log(this.idPermisoRes);
-                       this.SubirRespaldo(this.idPermisoRes.id)
-                       this.ImprimirNumeroPermiso();
-                       var f = new Date();
-                       let notificacion = {
-                         id: null,
-                         id_send_empl: this.data.idEmpleado,
-                         id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
-                         id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
-                         estado: this.idPermisoRes.estado,
-                         create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-                         id_permiso: this.idPermisoRes.id,
-                         id_vacaciones: null,
-                         id_hora_extra: null
-                       }
-                       this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
-                         console.log(resN);
-                         this.NotifiRes = resN;
-                         notificacion.id = this.NotifiRes._id;
-                         if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
-                           this.restP.sendNotiRealTime(notificacion);
-                         }
-                       });
-                     });
-                     this.IngresarAutorizacion(this.idPermisoRes.id);
-                   });
-                 });
-               }
-               else {
-                 this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
-                   timeOut: 6000,
-                 });
-               }
-    
-    
-            } else {
-              this.toastr.info('El permiso seleccionado requiere de un certificado.', 'Es indispensable que suba un documento de respaldo.', {
-                timeOut: 6000,
-              });
-            }
-    
-    */
+    } else {
+      // VALIDAR QUE SE HA SUBIDO UN DOCUMENTO AL SISTEMA
+      if (form.nombreCertificadoForm != '' && form.nombreCertificadoForm != null) {
+        this.RegistrarPermiso_Documento(datos);
 
       } else {
-
-        // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
-        this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
-         
-          this.toastr.success('Operación Exitosa', 'Permiso registrado', {
-            timeOut: 6000,
-          });
-
-          this.arrayNivelesDepa = response;
-
-          // LECTURA DE DATOS DE NOTIFICACIÓN
-          this.arrayNivelesDepa.forEach(obj => {
-
-            let datosPermisoCreado = {
-              id: obj.id,
-              nivel: obj.nivel,
-              cargo: obj.cargo,
-              id_dep: obj.id_dep,
-              id_suc: obj.id_suc,
-              estado: obj.estado,
-              nombre: obj.nombre,
-              cedula: obj.cedula,
-              correo: obj.correo,
-              contrato: obj.contrato,
-              apellido: obj.apellido,
-              sucursal: obj.sucursal,
-              empleado: obj.empleado,
-              depa_padre: obj.depa_padre,
-              fec_creacion: datos.fec_creacion,
-              departamento: obj.departamento,
-              permiso_mail: obj.permiso_mail,
-              permiso_noti: obj.permiso_noti,
-              id_tipo_permiso: datos.id_tipo_permiso,
-              id_empl_contrato: datos.id_empl_contrato,
-            }
-            console.log('entra ---- ', datosPermisoCreado )
-            this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
-              this.idPermisoRes = res;
-              console.log('ver id permiso ---- ', this.idPermisoRes)
-
-              /*this.IngresarAutorizacion(this.idPermisoRes.id);
-              console.log(this.idPermisoRes);
-              this.ImprimirNumeroPermiso();
-              var f = new Date();
-              let notificacion = {
-                id: null,
-                id_send_empl: this.data.idEmpleado,
-                id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
-                id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
-                estado: this.idPermisoRes.estado,
-                create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-                id_permiso: this.idPermisoRes.id,
-                id_vacaciones: null,
-                id_hora_extra: null
-              }
-              this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
-                console.log(resN);
-                this.NotifiRes = resN;
-                notificacion.id = this.NotifiRes._id;
-                if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
-                  this.restP.sendNotiRealTime(notificacion);
-                }
-              });
-              */
-            });
-          }, err => {
-            const { access, message } = err.error.message;
-            if (access === false) {
-              this.toastr.error(message)
-              this.dialogRef.close();
-            }
-          });
-        }, err => {
-          const { access, message } = err.error.message;
-          if (access === false) {
-            this.toastr.error(message)
-            this.dialogRef.close();
-          }
-        });
-
-        this.LimpiarCampos();
+        this.RegistrarPermiso(datos);
       }
 
+    }
+    this.LimpiarCampos();
+  }
 
 
+  RegistrarPermiso(datos) {
+    // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
+    this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
+
+      this.arrayNivelesDepa = response;
+
+      this.arrayNivelesDepa.forEach(obj => {
+
+        // LECTURA DE DATOS DE NOTIFICACIÓN CORREO
+        let datosPermisoCreado = this.LeerDatosMail(obj, datos);
+
+        // MÉTODO PARA ENVÍO DE CORREOS
+        this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
+          this.idPermisoRes = res;
+
+          // MÉTODO PARA REGISTRO DE AUTORIZACIÓN
+          this.IngresarAutorizacion(this.idPermisoRes.id);
+
+          // LECTURA DE DATOS Y ENVIO DE NOTIFICACIÓN SISTEMA
+          this.LeerDatosNotificacion(datos.id_empl);
+
+        });
+      }, err => {
+        this.ValidarAcceso(err);
+      });
+
+      this.contador = this.contador + 1;
+      this.MostrarMensaje();
+
+    }, err => {
+      this.contador = this.contador + 1;
+      this.MostrarMensaje();
+      //this.ValidarAcceso(err);
+    });
+  }
+
+  RegistrarPermiso_Documento(datos) {
+    // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
+    this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
+
+      this.arrayNivelesDepa = response;
+
+      this.arrayNivelesDepa.forEach(obj => {
+
+        // LECTURA DE DATOS DE NOTIFICACIÓN CORREO
+        let datosPermisoCreado = this.LeerDatosMail(obj, datos);
+
+        // MÉTODO PARA ENVÍO DE CORREOS
+        this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
+          this.idPermisoRes = res;
+
+          this.SubirRespaldo(this.idPermisoRes.id);
+
+          // MÉTODO PARA REGISTRO DE AUTORIZACIÓN
+          this.IngresarAutorizacion(this.idPermisoRes.id);
+
+          // LECTURA DE DATOS Y ENVIO DE NOTIFICACIÓN SISTEMA
+          this.LeerDatosNotificacion(datos.id_empl);
+        });
+      });
+      this.contador = this.contador + 1;
+      this.MostrarMensaje();
+    }, error => {
+      this.contador = this.contador + 1;
+      this.MostrarMensaje();
+    });
+  }
+
+  //MENSAJE DE REGISTRO DE SOLICITUD DE PERMISO
+  MostrarMensaje() {
+    if (this.contador === this.data.datos.length) {
+      this.toastr.success('Operación Exitosa', this.contador + ' Permisos registrados', {
+        timeOut: 6000,
+      });
+    }
+
+  }
+
+  // MÉTODO PARA VALIDAR ACCESO A FUNCIONES DE PERMISOS
+  ValidarAcceso(info: any) {
+    const { access, message } = info.error.message;
+    if (access === false) {
+      this.toastr.error(message)
+      this.dialogRef.close();
+    }
+  }
+
+  // MÉTODO PARA LEER DATOS DE ENVÍO DE EMAIL
+  LeerDatosMail(obj: any, datos: any) {
+    let datosPermisoCreado = {
+      id: obj.id,
+      nivel: obj.nivel,
+      cargo: obj.cargo,
+      id_dep: obj.id_dep,
+      id_suc: obj.id_suc,
+      estado: obj.estado,
+      nombre: obj.nombre,
+      cedula: obj.cedula,
+      correo: obj.correo,
+      contrato: obj.contrato,
+      apellido: obj.apellido,
+      sucursal: obj.sucursal,
+      empleado: obj.empleado,
+      depa_padre: obj.depa_padre,
+      fec_creacion: datos.fec_creacion,
+      departamento: obj.departamento,
+      permiso_mail: obj.permiso_mail,
+      permiso_noti: obj.permiso_noti,
+      id_tipo_permiso: datos.id_tipo_permiso,
+      id_empl_contrato: datos.id_empl_contrato,
+    }
+    return datosPermisoCreado;
+  }
+
+  // MÉTODO PARA LEER DATOS DE NOTIIFCACIÓN SISTEMA 
+  LeerDatosNotificacion(id_empl: any) {
+    var f = new Date();
+    let notificacion = {
+      id: null,
+      id_send_empl: id_empl,
+      id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
+      id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
+      estado: this.idPermisoRes.estado,
+      create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
+      id_permiso: this.idPermisoRes.id,
+      id_vacaciones: null,
+      id_hora_extra: null
+    }
+
+    // MÉTODO PARA ENVÍO DE NOTIFICACIONES EN EL SISTEMA
+    this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
+      this.NotifiRes = resN;
+      notificacion.id = this.NotifiRes._id;
+      if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
+        this.restP.sendNotiRealTime(notificacion);
+      }
     });
   }
 
@@ -938,9 +910,18 @@ export class PermisosMultiplesComponent implements OnInit {
   fileChange(element) {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
-      const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
-      this.PermisoForm.patchValue({ nombreCertificadoForm: name });
+
+      // VALIDAR QUE EL DOCUEMNTO SUBIDO CUMPLA CON EL TAMAÑO ESPECIFICADO
+      if (this.archivoSubido[0].size <= 2e+6) {
+        const name = this.archivoSubido[0].name;
+        console.log(this.archivoSubido[0].name);
+        this.PermisoForm.patchValue({ nombreCertificadoForm: name });
+      }
+      else {
+        this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
+          timeOut: 6000,
+        });
+      }
     }
   }
 
@@ -951,17 +932,13 @@ export class PermisosMultiplesComponent implements OnInit {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.restP.SubirArchivoRespaldo(formData, id).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
-        timeOut: 6000,
-      });
+      /*  this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
+          timeOut: 6000,
+        });*/
       this.archivoForm.reset();
       this.nameFile = '';
     }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        this.toastr.error(message)
-        this.dialogRef.close();
-      }
+      this.ValidarAcceso(err);
     });
   }
 
@@ -1006,7 +983,7 @@ export class PermisosMultiplesComponent implements OnInit {
       }
       console.log('horas', tiempoTotal, total)
       if (tiempoTotal === total) {
-        this.InsertarPermiso(form);
+        //this.InsertarPermiso(form);
       }
       else {
         this.toastr.error('El total de horas solicitadas no corresponda con el total de horas de salida e ingreso.', 'Verificar la hora de salida e ingreso de permiso.', {
@@ -1015,7 +992,7 @@ export class PermisosMultiplesComponent implements OnInit {
       }
     }
     else {
-      this.InsertarPermiso(form);
+      //this.InsertarPermiso(form);
     }
   }
 

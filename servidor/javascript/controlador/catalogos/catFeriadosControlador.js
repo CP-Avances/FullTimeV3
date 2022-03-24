@@ -137,7 +137,7 @@ class FeriadosControlador {
                         faltaDescripcion = faltaDescripcion + ' - Fila: ' + fila;
                     }
                     // VERIFICACIÓN DE FORMATO DE FECHA VÁLIDO
-                    if (fecha === moment_1.default(fecha).format('YYYY-MM-DD')) {
+                    if (fecha === (0, moment_1.default)(fecha).format('YYYY-MM-DD')) {
                         contarFechaValida = contarFechaValida + 1;
                         // VERIFICACIÓN DE REGISTRO DE FECHA DENTRO DEL SISTEMA - NO SON VÁLIDAS FECHAS DUPLICADAS
                         const VERIFICAR_FECHA = yield database_1.default.query('SELECT * FROM cg_feriados ' +
@@ -151,7 +151,7 @@ class FeriadosControlador {
                         // CAMPO FEC_RECUPERACON QUE INDICA RECUPERACIÓN DE FERIADO NO ES OBLIGATORIO
                         if (fec_recuperacion != undefined) {
                             // VALIDACIÓN DE FORMATO DE FECHA DE RECUPERACIÓN
-                            if (fec_recuperacion === moment_1.default(fec_recuperacion).format('YYYY-MM-DD')) {
+                            if (fec_recuperacion === (0, moment_1.default)(fec_recuperacion).format('YYYY-MM-DD')) {
                                 contarFechaRecuperarValida = contarFechaRecuperarValida + 1;
                                 // VALIDACIÓN DE INGRESO CORRECTO DE FECHAS - NO ES POSIBLE QUE FECHA DE RECUPERACIÓN SEA ANTERIOR A LA FECHA DE FERIADO
                                 if (fec_recuperacion > fecha) {

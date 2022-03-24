@@ -174,7 +174,7 @@ class PlanHoraExtraControlador {
     }
     EnviarCorreoNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            settingsMail_1.Credenciales(req.id_empresa);
+            (0, settingsMail_1.Credenciales)(req.id_empresa);
             let { id_empl_envia, id_empl_recive, mensaje } = req.body;
             var f = new Date();
             f.setUTCHours(f.getHours());
@@ -193,7 +193,7 @@ class PlanHoraExtraControlador {
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
             };
-            settingsMail_1.enviarMail(data);
+            (0, settingsMail_1.enviarMail)(data);
             res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
         });
     }
@@ -214,7 +214,7 @@ class PlanHoraExtraControlador {
     }
     EnviarCorreoPlanificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            settingsMail_1.Credenciales(req.id_empresa);
+            (0, settingsMail_1.Credenciales)(req.id_empresa);
             let { id_empl_envia, id_empl_recive, mensaje } = req.body;
             var f = new Date();
             f.setUTCHours(f.getHours());
@@ -234,7 +234,7 @@ class PlanHoraExtraControlador {
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
             };
-            settingsMail_1.enviarMail(data);
+            (0, settingsMail_1.enviarMail)(data);
             res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
         });
     }
