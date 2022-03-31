@@ -141,12 +141,12 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   MostrarDatos() {
     this.PermisoForm.patchValue({
       fechaInicioForm: String(moment(this.info.dataPermiso.fec_inicio).format('YYYY-MM-DD')),
-      horaSalidaForm: String(moment(this.info.dataPermiso.hora_salida).format('YYYY-MM-DD')),
+      horaSalidaForm: this.info.dataPermiso.hora_salida,
       nombreCertificadoForm: this.info.dataPermiso.docu_nombre,
       horasIngresoForm: this.info.dataPermiso.hora_ingreso,
       idPermisoForm: this.info.dataPermiso.id_tipo_permiso,
       descripcionForm: this.info.dataPermiso.descripcion,
-      fechaFinalForm: this.info.dataPermiso.fec_final,
+      fechaFinalForm: String(moment(this.info.dataPermiso.fec_final).format('YYYY-MM-DD')),
       diaLibreForm: this.info.dataPermiso.dia_libre,
       horasForm: this.info.dataPermiso.hora_numero,
       diasForm: this.info.dataPermiso.dia,

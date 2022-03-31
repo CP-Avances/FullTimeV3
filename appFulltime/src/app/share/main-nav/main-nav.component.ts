@@ -96,7 +96,7 @@ export class MainNavComponent implements OnInit {
         const text = (diferencia === 1) ? 'dia' : 'dias';
         this.toaster.warning(`Tu licencia expira en ${diferencia + ' ' + text}`)
       }
-      
+
     }
   }
 
@@ -104,7 +104,7 @@ export class MainNavComponent implements OnInit {
 
     if (this.loginService.loggedIn()) { // es importante el orden en el q se invocan las funciones.
       this.idEmpresa = parseInt(localStorage.getItem('empresa'))
-      
+
       this.FuncionLicencia()
 
       this.mainService.LogicaFunciones()
@@ -234,6 +234,7 @@ export class MainNavComponent implements OnInit {
           { name: 'Inicio', url: '/home' },
           { name: 'Crear Rol', url: '/roles' },
           { name: 'Crear Feriados', url: '/listarFeriados' },
+          { name: 'Parámetros Generales', url: '/parametros' },
           { name: 'Crear Régimen Laboral', url: '/listarRegimen' },
           { name: 'Crear Título Profesional', url: '/titulos' },
           { name: 'Crear Nivel de Educación', url: '/nivelTitulos' },

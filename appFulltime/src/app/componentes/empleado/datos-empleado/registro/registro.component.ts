@@ -1,16 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
+// SECCIÓN DE LIBRERIAS
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { FormGroup, Validators, FormBuilder, FormControl, NumberValueAccessor } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { Component, OnInit } from '@angular/core';
+import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr'
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import * as L from 'leaflet';
 
+// SECCIÓN DE SERVICIOS
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { RolesService } from 'src/app/servicios/catalogos/catRoles/roles.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { RolesService } from 'src/app/servicios/catalogos/catRoles/roles.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { EmplLeafletComponent } from 'src/app/componentes/settings/leaflet/empl-leaflet/empl-leaflet.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-registro',
@@ -19,9 +25,9 @@ import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
 
@@ -29,9 +35,9 @@ export class RegistroComponent implements OnInit {
 
   empleadoGuardado: any = [];
   nacionalidades: any = [];
+  escritura = false;
   roles: any = [];
   hide = true;
-  escritura = false;
 
   private idNacionalidad: number;
 
@@ -44,12 +50,14 @@ export class RegistroComponent implements OnInit {
   filteredOptions: Observable<string[]>;
 
   constructor(
-    private rest: EmpleadoService,
-    private toastr: ToastrService,
     private rol: RolesService,
+    private rest: EmpleadoService,
     private user: UsuarioService,
-    private _formBuilder: FormBuilder,
+    private toastr: ToastrService,
     private router: Router,
+    private validar: ValidacionesService,
+    private _formBuilder: FormBuilder,
+    public ventana: MatDialog,
   ) { }
 
   date: any;
@@ -74,7 +82,6 @@ export class RegistroComponent implements OnInit {
       domicilioForm: ['', Validators.required],
       estadoCivilForm: ['', Validators.required],
       generoForm: ['', Validators.required],
-      estadoForm: ['', Validators.required],
       nacionalidadForm: this.NacionalidadControl
     });
     this.terceroFormGroup = this._formBuilder.group({
@@ -87,9 +94,6 @@ export class RegistroComponent implements OnInit {
         startWith(''),
         map(value => this._filter(value))
       );
-    this.segundoFormGroup.patchValue({
-      estadoForm: 1
-    })
   }
 
   datosCodigo: any = [];
@@ -107,7 +111,7 @@ export class RegistroComponent implements OnInit {
         this.escritura = false;
       }
     }, error => {
-      this.toastr.info('Primero configurar el código de empleado.','', {
+      this.toastr.info('Primero configurar el código de empleado.', '', {
         timeOut: 6000,
       });
       this.router.navigate(['/codigo/']);
@@ -122,44 +126,11 @@ export class RegistroComponent implements OnInit {
   }
 
   IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    this.validar.IngresarSoloLetras(e);
   }
 
   IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    this.validar.IngresarSoloNumeros(evt);
   }
 
   LimpiarCampos() {
@@ -184,7 +155,7 @@ export class RegistroComponent implements OnInit {
       }
     });
 
-    // Realizar un capital letter a los nombres y apellidos
+    // REALIZAR UN CAPITAL LETTER A LOS NOMBRES Y APELLIDOS
     var NombreCapitalizado: any;
     let nombres = form1.nombreForm.split(' ');
     if (nombres.length > 1) {
@@ -218,14 +189,14 @@ export class RegistroComponent implements OnInit {
       genero: form2.generoForm,
       correo: form1.emailForm,
       fec_nacimiento: form1.fechaForm,
-      estado: form2.estadoForm,
+      estado: 1,
       mail_alernativo: form1.correoAlternativoForm,
       domicilio: form2.domicilioForm,
       telefono: form2.telefonoForm,
       id_nacionalidad: this.idNacionalidad,
       codigo: form1.codigoForm
     };
- 
+
     if (this.contador === 0) {
       this.rest.postEmpleadoRest(dataEmpleado).subscribe(response => {
         if (response.message === 'error') {
@@ -236,11 +207,14 @@ export class RegistroComponent implements OnInit {
         else {
           this.empleadoGuardado = response;
           this.GuardarDatosUsuario(form3, this.empleadoGuardado.id, form1);
+          this.RegistrarGeolocalizacion(this.empleadoGuardado.id, this.empleadoGuardado.codigo);
         }
       });
     }
     else {
       this.GuardarDatosUsuario(form3, this.empleadoGuardado.id, form1);
+      this.ActualizarDomicilio(this.empleadoGuardado.id);
+      this.ActualizarTrabajo(this.empleadoGuardado.id);
     }
   }
 
@@ -281,6 +255,7 @@ export class RegistroComponent implements OnInit {
         this.toastr.success('Operacion Exitosa', 'Empleado guardado', {
           timeOut: 6000,
         });
+        console.log('ver coordenadas', this.h_latitud + ' ' + this.h_longitud);
         this.LimpiarCampos();
         this.contador = 0;
       }
@@ -295,6 +270,85 @@ export class RegistroComponent implements OnInit {
       }
       this.rest.ActualizarCodigo(dataCodigo).subscribe(res => {
       })
+    }
+  }
+
+  /** ************************************************************************************** **
+   ** *              REGISTRO DE COORDENADAS DE UBICACIÓN DOMICILIO Y TRABAJO              * **
+   ** ************************************************************************************** **/
+
+  // VARIABLES DE COORDENADAS DE TRABAJO
+  t_longitud: String;
+  t_latitud: String;
+
+  // VARIABLES DE COORDENADAS DE DOMICILIO
+  h_longitud: String;
+  h_latitud: String;
+
+
+  // METODO INCLUIR EL CROKIS DOMICILIO
+  AbrirMapaDomicilio() {
+    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' })
+      .afterClosed().subscribe((res: any) => {
+        if (res.message === true) {
+          this.h_latitud = res.latlng.lat;
+          this.h_longitud = res.latlng.lng;
+        }
+      });
+  }
+
+  // METODO INCLUIR EL CROKIS TRABAJO
+  AbrirMapaTrabajo() {
+    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' })
+      .afterClosed().subscribe((res: any) => {
+        if (res.message === true) {
+          this.t_latitud = res.latlng.lat;
+          this.t_longitud = res.latlng.lng;
+        }
+      });
+  }
+
+  RegistrarGeolocalizacion(id: number, codigo: number) {
+    let data = {
+      h_lat: this.h_latitud,
+      h_lng: this.h_longitud,
+      t_lat: this.t_latitud,
+      t_lng: this.t_longitud
+    }
+    this.rest.InsertarUbicacion(id, codigo, data).subscribe(respuesta => {
+    }, err => { });
+
+    let mapa = {
+      lat: this.h_latitud,
+      lng: this.h_longitud
+    }
+    this.rest.putGeolocalizacion(id, mapa).subscribe(respuesta => {
+    }, err => { });
+  }
+
+  ActualizarDomicilio(id: number) {
+    if (this.h_latitud != '' && this.h_longitud != '') {
+      let data = {
+        lat: this.h_latitud,
+        lng: this.h_longitud,
+      }
+      this.rest.ActualizarUbicacionDomicilio(id, data).subscribe(respuesta => {
+      }, err => { });
+
+      this.rest.putGeolocalizacion(id, data).subscribe(respuesta => {
+      }, err => { });
+    }
+  }
+
+  ActualizarTrabajo(id: number) {
+    if (this.t_latitud != '' && this.t_longitud != '') {
+      let data = {
+        lat: this.t_latitud,
+        lng: this.t_longitud
+      }
+      this.rest.ActualizarUbicacionTrabajo(id, data).subscribe(respuesta => {
+      }, err => {
+      });
     }
   }
 

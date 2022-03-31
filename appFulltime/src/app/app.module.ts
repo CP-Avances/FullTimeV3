@@ -298,6 +298,12 @@ import { ListaAppComponent } from './componentes/appMovil/lista-app/lista-app.co
 import { UpdateEstadoAppComponent } from './componentes/appMovil/update-estado-app/update-estado-app.component';
 import { OlvidarFraseComponent } from './componentes/frase-administrar/olvidar-frase/olvidar-frase.component';
 import { TipoVacunaComponent } from './componentes/empleado/vacunacion/tipo-vacuna/tipo-vacuna.component';
+import { CrearParametroComponent } from './componentes/parametrosGenerales/crear-parametro/crear-parametro.component';
+import { ListarParametroComponent } from './componentes/parametrosGenerales/listar-parametro/listar-parametro.component';
+import { EditarParametroComponent } from './componentes/parametrosGenerales/editar-parametro/editar-parametro.component';
+import { VerParametroComponent } from './componentes/parametrosGenerales/ver-parametro/ver-parametro.component';
+import { CrearDetalleParametroComponent } from './componentes/parametrosGenerales/crear-detalle-parametro/crear-detalle-parametro.component';
+import { EditarDetalleParametroComponent } from './componentes/parametrosGenerales/editar-detalle-parametro/editar-detalle-parametro.component';
 
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
@@ -539,6 +545,12 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     UpdateEstadoAppComponent,
     OlvidarFraseComponent,
     TipoVacunaComponent,
+    CrearParametroComponent,
+    ListarParametroComponent,
+    EditarParametroComponent,
+    VerParametroComponent,
+    CrearDetalleParametroComponent,
+    EditarDetalleParametroComponent,
 
   ],
 

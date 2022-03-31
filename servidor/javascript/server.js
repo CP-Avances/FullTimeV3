@@ -76,6 +76,7 @@ const reporteVacunasRutas_1 = __importDefault(require("./rutas/reportes/reporteV
 const salidasAntesRutas_1 = __importDefault(require("./rutas/reportes/salidasAntesRutas"));
 const auditoriaRutas_1 = __importDefault(require("./rutas/auditoria/auditoriaRutas"));
 const solicitudVacacionesRutas_1 = __importDefault(require("./rutas/reportes/solicitudVacacionesRutas"));
+const parametrosRutas_1 = __importDefault(require("./rutas/parametrosGenerales/parametrosRutas"));
 const http_1 = require("http");
 const socketIo = require('socket.io');
 class Servidor {
@@ -100,6 +101,8 @@ class Servidor {
         this.app.use('/', indexRutas_1.default);
         this.app.use('/rol', catRolesRutas_1.default);
         this.app.use('/login', loginRuta_1.default);
+        // PARÁMETROS GENERALES
+        this.app.use('/parametrizacion', parametrosRutas_1.default);
         // Empleado
         this.app.use('/empleado', empleadoRutas_1.default);
         this.app.use('/contratoEmpleado', contratoEmpleadoRutas_1.default);

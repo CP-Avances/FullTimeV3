@@ -32,6 +32,7 @@ export interface EmpleadoElemento {
   templateUrl: './permisos-multiples-empleados.component.html',
   styleUrls: ['./permisos-multiples-empleados.component.css']
 })
+
 export class PermisosMultiplesEmpleadosComponent implements OnInit {
 
   Lista_empleados: any = [];

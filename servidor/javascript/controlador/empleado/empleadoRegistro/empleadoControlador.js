@@ -13,14 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EMPLEADO_CONTROLADOR = void 0;
-const database_1 = __importDefault(require("../../../database"));
-const xlsx_1 = __importDefault(require("xlsx"));
-const fs_1 = __importDefault(require("fs"));
-const ts_md5_1 = require("ts-md5");
+// SECCIÓN LIBRERIAS
 const MetodosHorario_1 = require("../../../libs/MetodosHorario");
+const ts_md5_1 = require("ts-md5");
+const xlsx_1 = __importDefault(require("xlsx"));
+const database_1 = __importDefault(require("../../../database"));
+const fs_1 = __importDefault(require("fs"));
 const builder = require('xmlbuilder');
 class EmpleadoControlador {
-    list(req, res) {
+    // LISTAR EMPLEADOS ACTIVOS EN EL SISTEMA
+    Listar(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const empleado = yield database_1.default.query('SELECT * FROM empleados WHERE estado = 1 ORDER BY id');
             res.jsonp(empleado.rows);
@@ -40,7 +42,8 @@ class EmpleadoControlador {
             }
         });
     }
-    getOne(req, res) {
+    // BÚSQUEDA DE UN SOLO EMPLEADO
+    BuscarEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const EMPLEADO = yield database_1.default.query('SELECT * FROM empleados WHERE id = $1', [id]);
@@ -52,14 +55,16 @@ class EmpleadoControlador {
             }
         });
     }
-    getImagen(req, res) {
+    // BÚSQUEDA DE IMAGEN DE EMPLEADO
+    BuscarImagen(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const imagen = req.params.imagen;
             let filePath = `servidor\\imagenesEmpleados\\${imagen}`;
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
-    create(req, res) {
+    // INGRESAR REGISTRO DE EMPLEADO EN BASE DE DATOS
+    InsertarEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo } = req.body;
@@ -67,16 +72,18 @@ class EmpleadoControlador {
                     'fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
                     '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', [cedula, apellido, nombre, esta_civil,
                     genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo]);
-                const oneEmpley = yield database_1.default.query('SELECT id FROM empleados WHERE cedula = $1', [cedula]);
+                const oneEmpley = yield database_1.default.query('SELECT id, codigo FROM empleados WHERE cedula = $1', [cedula]);
                 const idEmployGuardado = oneEmpley.rows[0].id;
-                res.jsonp({ message: 'Empleado guardado', id: idEmployGuardado });
+                const codigoEmployGuardado = oneEmpley.rows[0].codigo;
+                res.jsonp({ message: 'Empleado guardado', id: idEmployGuardado, codigo: codigoEmployGuardado });
             }
             catch (error) {
                 return res.jsonp({ message: 'error' });
             }
         });
     }
-    editar(req, res) {
+    // ACTUALIZAR INFORMACIÓN EL EMPLEADO
+    EditarEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
@@ -93,7 +100,8 @@ class EmpleadoControlador {
             }
         });
     }
-    crearImagenEmpleado(req, res) {
+    // CARGAR IMAGEN DE EMPLEADO
+    CrearImagenEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
             let imagen = list.image[0].path.split("\\")[1];
@@ -107,22 +115,323 @@ class EmpleadoControlador {
                             let filePath = `servidor\\imagenesEmpleados\\${obj.imagen}`;
                             let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                             fs_1.default.unlinkSync(direccionCompleta);
-                            yield database_1.default.query('Update empleados Set imagen = $2 Where id = $1 ', [id, imagen]);
-                            res.jsonp({ message: 'Imagen Actualizada' });
+                            yield database_1.default.query('UPDATE empleados SET imagen = $2 Where id = $1 ', [id, imagen]);
+                            res.jsonp({ message: 'Imagen Actualizada.' });
                         }
                         catch (error) {
-                            yield database_1.default.query('Update empleados Set imagen = $2 Where id = $1 ', [id, imagen]);
-                            res.jsonp({ message: 'Imagen Actualizada' });
+                            yield database_1.default.query('UPDATE empleados SET imagen = $2 Where id = $1 ', [id, imagen]);
+                            res.jsonp({ message: 'Imagen Actualizada.' });
                         }
                     }
                     else {
-                        yield database_1.default.query('Update empleados Set imagen = $2 Where id = $1 ', [id, imagen]);
-                        res.jsonp({ message: 'Imagen Actualizada' });
+                        yield database_1.default.query('UPDATE empleados SET imagen = $2 Where id = $1 ', [id, imagen]);
+                        res.jsonp({ message: 'Imagen Actualizada.' });
                     }
                 }));
             }
         });
     }
+    // INGRESAR TÍTULO PROFESIONAL DEL EMPLEADO
+    CrearEmpleadoTitulos(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { observacion, id_empleado, id_titulo } = req.body;
+            yield database_1.default.query('INSERT INTO empl_titulos ( observacion, id_empleado, id_titulo ) VALUES ($1, $2, $3)', [observacion, id_empleado, id_titulo]);
+            res.jsonp({ message: 'Titulo del empleado Guardado' });
+        });
+    }
+    // ACTUALIZAR TÍTULO PROFESIONAL DEL EMPLEADO
+    EditarTituloEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id_empleado_titulo;
+            const { observacion, id_titulo } = req.body;
+            yield database_1.default.query('UPDATE empl_titulos SET observacion = $1, id_titulo = $2 WHERE id = $3 ', [observacion, id_titulo, id]);
+            res.jsonp({ message: 'Titulo del empleado Actualizado' });
+        });
+    }
+    // MÉTODO PARA ELIMINAR TÍTULO PROFESIONAL DEL EMPLEADO
+    EliminarTituloEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id_empleado_titulo;
+            yield database_1.default.query('DELETE FROM empl_titulos WHERE id = $1', [id]);
+            res.jsonp({ message: 'Registro eliminado' });
+        });
+    }
+    // BÚSQUEDA DE TÍTULOS PROFESIONALES DEL EMPLEADO
+    ObtenerTitulosEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado } = req.params;
+            const unEmpleadoTitulo = yield database_1.default.query('SELECT et.id, et.observacion As observaciones, et.id_titulo, ' +
+                'et.id_empleado, ct.nombre, nt.nombre as nivel ' +
+                'FROM empl_titulos AS et, cg_titulos AS ct, nivel_titulo AS nt ' +
+                'WHERE et.id_empleado = $1 and et.id_titulo = ct.id and ct.id_nivel = nt.id ORDER BY id', [id_empleado]);
+            if (unEmpleadoTitulo.rowCount > 0) {
+                return res.jsonp(unEmpleadoTitulo.rows);
+            }
+            else {
+                res.status(404).jsonp({ text: 'El empleado no tiene titulos asignados' });
+            }
+        });
+    }
+    // CREAR INFORMACIÓN DEL EMPLEADO EN FORMATO XML
+    FileXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            console.log(req.body.userName);
+            let filename = "Empleado-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+                console.log("Archivo guardado");
+            });
+            res.jsonp({ text: 'XML creado', name: filename });
+        });
+    }
+    // DESCARGAR INFORMACIÓN DEL EMPLEADO EN FORMATO XML
+    downloadXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.nameXML;
+            let filePath = `servidor\\xmlDownload\\${name}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
+    // BÚSQUEDA INFORMACIÓN DEPARTAMENTOS EMPLEADO
+    ObtenerDepartamentoEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_emple, id_cargo } = req.body;
+            const DEPARTAMENTO = yield database_1.default.query('SELECT *FROM VistaDepartamentoEmpleado WHERE id_emple = $1 AND ' +
+                'id_cargo = $2', [id_emple, id_cargo]);
+            if (DEPARTAMENTO.rowCount > 0) {
+                return res.jsonp(DEPARTAMENTO.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados' });
+            }
+        });
+    }
+    // CREAR CÓDIGO DE EMPLEADO
+    CrearCodigo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id, valor, automatico, manual } = req.body;
+            yield database_1.default.query('INSERT INTO codigo ( id, valor, automatico, manual) VALUES ($1, $2, $3, $4)', [id, valor, automatico, manual]);
+            res.jsonp({ message: 'Codigo guardado' });
+        });
+    }
+    // MÉTODO PARA ACTUALIZAR INFORMACIÓN DE CODIGOS
+    ActualizarCodigoTotal(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { valor, automatico, manual, id } = req.body;
+            yield database_1.default.query('UPDATE codigo SET valor = $1, automatico = $2, manual = $3 WHERE id = $4', [valor, automatico, manual, id]);
+            res.jsonp({ message: 'Codigo guardado' });
+        });
+    }
+    // MÉTODO PARA ACTUALIZAR CÓDIGO DE EMPLEADO
+    ActualizarCodigo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { valor, id } = req.body;
+            yield database_1.default.query('UPDATE codigo SET valor = $1 WHERE id = $2', [valor, id]);
+            res.jsonp({ message: 'Codigo actualizado' });
+        });
+    }
+    // BÚSQUEDA DE CÓDIGO DEL EMPLEADO
+    ObtenerCodigo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const VALOR = yield database_1.default.query('SELECT *FROM codigo');
+            if (VALOR.rowCount > 0) {
+                return res.jsonp(VALOR.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados' });
+            }
+        });
+    }
+    // BÚSQUEDA DEL ÚLTIMO CÓDIGO REGISTRADO EN EL SISTEMA
+    ObtenerMAXCodigo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const VALOR = yield database_1.default.query('SELECT MAX(codigo) AS codigo FROM empleados');
+            if (VALOR.rowCount > 0) {
+                return res.jsonp(VALOR.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados' });
+            }
+        });
+    }
+    // BÚSQUEDA DE INFORMACIÓN ESPECÍFICA DE EMPLEADOS
+    ListarBusquedaEmpleados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const empleado = yield database_1.default.query('SELECT id, nombre, apellido FROM empleados ORDER BY apellido')
+                .then(result => {
+                return result.rows.map(obj => {
+                    return {
+                        id: obj.id,
+                        empleado: obj.apellido + ' ' + obj.nombre
+                    };
+                });
+            });
+            res.jsonp(empleado);
+        });
+    }
+    // MÉTODO PARA INHABILITAR USUARIOS EN EL SISTEMA
+    DesactivarMultiplesEmpleados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const arrayIdsEmpleados = req.body;
+            console.log(arrayIdsEmpleados);
+            if (arrayIdsEmpleados.length > 0) {
+                arrayIdsEmpleados.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
+                    yield database_1.default.query('UPDATE empleados SET estado = 2 WHERE id = $1', [obj]) // 2 => DESACTIVADO O INACTIVO
+                        .then(result => {
+                        console.log(result.command, 'EMPLEADO ====>', obj);
+                    });
+                    yield database_1.default.query('UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1', [obj]) // FALSE => YA NO TIENE ACCESO
+                        .then(result => {
+                        console.log(result.command, 'USUARIO ====>', obj);
+                    });
+                }));
+                return res.jsonp({ message: 'Todos los empleados han sido desactivados' });
+            }
+            return res.jsonp({ message: 'No ha sido desactivado ningún empleado' });
+        });
+    }
+    // MÉTODO QUE LISTA EMPLEADOS INHABILITADOS
+    ListarEmpleadosDesactivados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const empleado = yield database_1.default.query('SELECT * FROM empleados WHERE estado = 2 ORDER BY id');
+            res.jsonp(empleado.rows);
+        });
+    }
+    // MÉTODO PARA HABILITAR EMPLEADOS
+    ActivarMultiplesEmpleados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const arrayIdsEmpleados = req.body;
+            console.log(arrayIdsEmpleados);
+            if (arrayIdsEmpleados.length > 0) {
+                arrayIdsEmpleados.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
+                    yield database_1.default.query('UPDATE empleados SET estado = 1 WHERE id = $1', [obj]) // 1 => ACTIVADO 
+                        .then(result => {
+                        console.log(result.command, 'EMPLEADO ====>', obj);
+                    });
+                    yield database_1.default.query('UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1', [obj]) // TRUE => TIENE ACCESO
+                        .then(result => {
+                        console.log(result.command, 'USUARIO ====>', obj);
+                    });
+                }));
+                return res.jsonp({ message: 'Todos los empleados han sido activados' });
+            }
+            return res.jsonp({ message: 'No ha sido activado ningún empleado' });
+        });
+    }
+    // MÉTODO PARA HABILITAR TODA LA INFORMACIÓN DEL EMPLEADO
+    ReactivarMultiplesEmpleados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const arrayIdsEmpleados = req.body;
+            console.log(arrayIdsEmpleados);
+            if (arrayIdsEmpleados.length > 0) {
+                arrayIdsEmpleados.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
+                    yield database_1.default.query('UPDATE empleados SET estado = 1 WHERE id = $1', [obj]) // 1 => ACTIVADO 
+                        .then(result => {
+                        console.log(result.command, 'EMPLEADO ====>', obj);
+                    });
+                    yield database_1.default.query('UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1', [obj]) // TRUE => TIENE ACCESO
+                        .then(result => {
+                        console.log(result.command, 'USUARIO ====>', obj);
+                    });
+                    (0, MetodosHorario_1.EstadoHorarioPeriVacacion)(obj);
+                }));
+                return res.jsonp({ message: 'Todos los empleados seleccionados han sido reactivados' });
+            }
+            return res.jsonp({ message: 'No ha sido reactivado ningún empleado' });
+        });
+    }
+    // MÉTODO PARA TOMAR DATOS DE LA UBICACIÓN DEL DOMICILIO DEL EMPLEADO
+    GeolocalizacionCrokis(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let id = req.params.id;
+            let { lat, lng } = req.body;
+            console.log(lat, lng, id);
+            try {
+                yield database_1.default.query('UPDATE empleados SET latitud = $1, longitud = $2 WHERE id = $3', [lat, lng, id])
+                    .then(result => {
+                    console.log(result.command);
+                });
+                res.status(200).jsonp({ message: 'Geolocalizacion actualizada' });
+            }
+            catch (error) {
+                res.status(400).jsonp({ message: error });
+            }
+        });
+    }
+    // MÉTODO PARA INGRESAR DATOS DE UBICACIÓN DEL USUARIO
+    IngresarGelocalizacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let id = req.params.id;
+            let codigo = req.params.codigo;
+            let { h_lat, h_lng, t_lat, t_lng } = req.body;
+            try {
+                yield database_1.default.query('INSERT INTO ubicacion (t_latitud, t_longitud, h_latitud, h_longitud, codigo, id_empl) ' +
+                    'VALUES ($1, $2, $3, $4, $5, $6)', [t_lat, t_lng, h_lat, h_lng, codigo, id])
+                    .then(result => {
+                    console.log(result.command);
+                });
+                res.status(200).jsonp({ message: 'Geolocalizacion domicilio ingresada' });
+            }
+            catch (error) {
+                res.status(400).jsonp({ message: error });
+            }
+        });
+    }
+    // MÉTODO PARA ACTUALIZAR DATOS DE UBICACIÓN DE DOMICILIO DEL USUARIO
+    ActualizarDomicilio(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let id = req.params.id;
+            let { lat, lng } = req.body;
+            console.log(lat, lng, id);
+            try {
+                yield database_1.default.query('UPDATE ubicacion SET h_latitud = $1, h_longitud = $2 WHERE id_empl = $3', [lat, lng, id])
+                    .then(result => {
+                    console.log(result.command);
+                });
+                res.status(200).jsonp({ message: 'Geolocalizacion domicilio actualizada' });
+            }
+            catch (error) {
+                res.status(400).jsonp({ message: error });
+            }
+        });
+    }
+    // MÉTODO PARA ACTUALIZAR DATOS DE UBICACIÓN DE TRABAJO DEL USUARIO
+    ActualizarTrabajo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let id = req.params.id;
+            let { lat, lng } = req.body;
+            console.log(lat, lng, id);
+            try {
+                yield database_1.default.query('UPDATE ubicacion SET t_latitud = $1, t_longitud = $2 WHERE id_empl = $3', [lat, lng, id])
+                    .then(result => {
+                    console.log(result.command);
+                });
+                res.status(200).jsonp({ message: 'Geolocalizacion lugar de trabajo ingresado.' });
+            }
+            catch (error) {
+                res.status(400).jsonp({ message: error });
+            }
+        });
+    }
+    // MÉTODO PARA BUSCAR DATOS DE COORDENADAS
+    BuscarCoordenadas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const UBICACION = yield database_1.default.query('SELECT * FROM ubicacion WHERE id_empl = $1', [id]);
+            if (UBICACION.rowCount > 0) {
+                return res.jsonp(UBICACION.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se ha encontrado registros.' });
+            }
+        });
+    }
+    /** **************************************************************************************** **
+     ** **                      CARGAR INFORMACIÓN MEDIANTE PLANTILLA                            **
+     ** **************************************************************************************** **/
     VerificarPlantilla_Automatica(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
@@ -616,222 +925,6 @@ class EmpleadoControlador {
                 contador = contador + 1;
             }));
             fs_1.default.unlinkSync(filePath);
-        });
-    }
-    createEmpleadoTitulos(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { observacion, id_empleado, id_titulo } = req.body;
-            yield database_1.default.query('INSERT INTO empl_titulos ( observacion, id_empleado, id_titulo ) VALUES ($1, $2, $3)', [observacion, id_empleado, id_titulo]);
-            res.jsonp({ message: 'Titulo del empleado Guardado' });
-        });
-    }
-    editarTituloDelEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id_empleado_titulo;
-            const { observacion, id_titulo } = req.body;
-            yield database_1.default.query('UPDATE empl_titulos SET observacion = $1, id_titulo = $2 WHERE id = $3 ', [observacion,
-                id_titulo, id]);
-            res.jsonp({ message: 'Titulo del empleado Actualizado' });
-        });
-    }
-    eliminarTituloDelEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id_empleado_titulo;
-            yield database_1.default.query('DELETE FROM empl_titulos WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
-        });
-    }
-    getTitulosDelEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado } = req.params;
-            const unEmpleadoTitulo = yield database_1.default.query('SELECT et.id, et.observacion As observaciones, et.id_titulo, ' +
-                'et.id_empleado, ct.nombre, nt.nombre as nivel FROM empl_titulos AS et, cg_titulos AS ct, ' +
-                'nivel_titulo AS nt WHERE et.id_empleado = $1 and et.id_titulo = ct.id and ct.id_nivel = nt.id ORDER BY id', [id_empleado]);
-            if (unEmpleadoTitulo.rowCount > 0) {
-                return res.jsonp(unEmpleadoTitulo.rows);
-            }
-            else {
-                res.status(404).jsonp({ text: 'El empleado no tiene titulos asignados' });
-            }
-        });
-    }
-    FileXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var xml = builder.create('root').ele(req.body).end({ pretty: true });
-            console.log(req.body.userName);
-            let filename = "Empleado-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log("Archivo guardado");
-            });
-            res.jsonp({ text: 'XML creado', name: filename });
-        });
-    }
-    downloadXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownload\\${name}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
-    ObtenerDepartamentoEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_emple, id_cargo } = req.body;
-            const DEPARTAMENTO = yield database_1.default.query('SELECT *FROM VistaDepartamentoEmpleado WHERE id_emple = $1 AND ' +
-                'id_cargo = $2', [id_emple, id_cargo]);
-            if (DEPARTAMENTO.rowCount > 0) {
-                return res.jsonp(DEPARTAMENTO.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    // CREAR CÓDIGO
-    CrearCodigo(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id, valor, automatico, manual } = req.body;
-            yield database_1.default.query('INSERT INTO codigo ( id, valor, automatico, manual) VALUES ($1, $2, $3, $4)', [id, valor, automatico, manual]);
-            res.jsonp({ message: 'Codigo guardado' });
-        });
-    }
-    ActualizarCodigoTotal(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { valor, automatico, manual, id } = req.body;
-            yield database_1.default.query('UPDATE codigo SET valor = $1, automatico = $2, manual = $3 WHERE id = $4', [valor, automatico, manual, id]);
-            res.jsonp({ message: 'Codigo guardado' });
-        });
-    }
-    ActualizarCodigo(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { valor, id } = req.body;
-            yield database_1.default.query('UPDATE codigo SET valor = $1 WHERE id = $2', [valor, id]);
-            res.jsonp({ message: 'Codigo actualizado' });
-        });
-    }
-    ObtenerCodigo(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const VALOR = yield database_1.default.query('SELECT *FROM codigo');
-            if (VALOR.rowCount > 0) {
-                return res.jsonp(VALOR.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    ObtenerMAXCodigo(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const VALOR = yield database_1.default.query('SELECT MAX(codigo) AS codigo FROM empleados');
-            if (VALOR.rowCount > 0) {
-                return res.jsonp(VALOR.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    ListaBusquedaEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const empleado = yield database_1.default.query('SELECT id, nombre, apellido FROM empleados ORDER BY apellido')
-                .then(result => {
-                return result.rows.map(obj => {
-                    return {
-                        id: obj.id,
-                        empleado: obj.apellido + ' ' + obj.nombre
-                    };
-                });
-            });
-            res.jsonp(empleado);
-        });
-    }
-    DesactivarMultiplesEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const arrayIdsEmpleados = req.body;
-            console.log(arrayIdsEmpleados);
-            if (arrayIdsEmpleados.length > 0) {
-                arrayIdsEmpleados.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
-                    yield database_1.default.query('UPDATE empleados SET estado = 2 WHERE id = $1', [obj]) // 2 => desactivado o inactivo
-                        .then(result => {
-                        console.log(result.command, 'EMPLEADO ====>', obj);
-                    });
-                    yield database_1.default.query('UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1', [obj]) // false => Ya no tiene acceso
-                        .then(result => {
-                        console.log(result.command, 'USUARIO ====>', obj);
-                    });
-                }));
-                return res.jsonp({ message: 'Todos los empleados han sido desactivados' });
-            }
-            return res.jsonp({ message: 'No ha sido desactivado ningún empleado' });
-        });
-    }
-    listaEmpleadosDesactivados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const empleado = yield database_1.default.query('SELECT * FROM empleados WHERE estado = 2 ORDER BY id');
-            res.jsonp(empleado.rows);
-        });
-    }
-    ActivarMultiplesEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const arrayIdsEmpleados = req.body;
-            console.log(arrayIdsEmpleados);
-            if (arrayIdsEmpleados.length > 0) {
-                arrayIdsEmpleados.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
-                    yield database_1.default.query('UPDATE empleados SET estado = 1 WHERE id = $1', [obj]) // 1 => activado 
-                        .then(result => {
-                        console.log(result.command, 'EMPLEADO ====>', obj);
-                    });
-                    yield database_1.default.query('UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1', [obj]) // true => Tiene acceso
-                        .then(result => {
-                        console.log(result.command, 'USUARIO ====>', obj);
-                    });
-                }));
-                // var tiempo = 1000 * arrayIdsEmpleados.length
-                // setInterval(() => {
-                // }, tiempo)
-                return res.jsonp({ message: 'Todos los empleados han sido activados' });
-            }
-            return res.jsonp({ message: 'No ha sido activado ningún empleado' });
-        });
-    }
-    ReactivarMultiplesEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const arrayIdsEmpleados = req.body;
-            console.log(arrayIdsEmpleados);
-            if (arrayIdsEmpleados.length > 0) {
-                arrayIdsEmpleados.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
-                    yield database_1.default.query('UPDATE empleados SET estado = 1 WHERE id = $1', [obj]) // 1 => activado 
-                        .then(result => {
-                        console.log(result.command, 'EMPLEADO ====>', obj);
-                    });
-                    yield database_1.default.query('UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1', [obj]) // true => Tiene acceso
-                        .then(result => {
-                        console.log(result.command, 'USUARIO ====>', obj);
-                    });
-                    (0, MetodosHorario_1.EstadoHorarioPeriVacacion)(obj);
-                }));
-                return res.jsonp({ message: 'Todos los empleados seleccionados han sido reactivados' });
-            }
-            return res.jsonp({ message: 'No ha sido reactivado ningún empleado' });
-        });
-    }
-    GeolocalizacionCrokis(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let id = req.params.id;
-            let { lat, lng } = req.body;
-            console.log(lat, lng, id);
-            try {
-                yield database_1.default.query('UPDATE empleados SET latitud = $1, longitud = $2 WHERE id = $3', [lat, lng, id])
-                    .then(result => {
-                    console.log(result.command);
-                });
-                res.status(200).jsonp({ message: 'Geolocalizacion actulizada' });
-            }
-            catch (error) {
-                res.status(400).jsonp({ message: error });
-            }
         });
     }
 }

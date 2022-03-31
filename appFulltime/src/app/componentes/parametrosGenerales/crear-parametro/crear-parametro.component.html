@@ -1,0 +1,28 @@
+<div class="d-flex bd-highlight" id="titulo">
+    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
+    <h5 class="w-100 bd-highlight align-self-center" cdkDrag cdkDragRootElement=".cdk-overlay-pane">Registrar Parámetro
+        General
+    </h5>
+</div>
+<form [formGroup]="ParametrosForm">
+    <div style="text-align: center">
+        <div class="nota">
+            <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                Guardar.</span>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center">
+            <mat-form-field>
+                <mat-label>Descripción General</mat-label>
+                <input matInput [formControl]="descripcion" (keypress)="IngresarSoloLetras($event)" required>
+                <mat-icon matSuffix matTooltipPosition="right" matTooltip="Ingresar nuevo parámetro general.">
+                    help_outline</mat-icon>
+                <mat-error *ngIf="descripcion.invalid">{{ObtenerErrorNombre()}}</mat-error>
+            </mat-form-field>
+        </div>
+    </div>
+</form>
+<div class="d-flex flex-wrap justify-content-center">
+    <input type="submit" class="btn btn-sm" [disabled]=" !ParametrosForm.valid"
+        (click)="GuardarDatos(ParametrosForm.value)" value="Guardar">
+    <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Cancelar">
+</div>

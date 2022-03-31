@@ -91,4 +91,9 @@ export class PermisosService {
   BuscarFechasPermiso(datos: any, codigo: number) {
     return this.http.post(`${environment.url}/empleadoPermiso/fechas_permiso/${codigo}`, datos);
   }
+
+  BuscarPermisosSolicitados(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados`, datos);
+  }
+
 }

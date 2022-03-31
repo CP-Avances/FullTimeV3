@@ -71,7 +71,8 @@ import VACUNA_RUTAS from './rutas/empleado/empleadoVacuna/vacunasRutas';
 import VACUNAS_REPORTE_RUTAS from './rutas/reportes/reporteVacunasRutas';
 import SALIDAS_ANTICIPADAS_RUTAS from './rutas/reportes/salidasAntesRutas';
 import AUDITORIA_RUTAS from './rutas/auditoria/auditoriaRutas';
-import VACACIONES_REPORTES_RUTAS from './rutas/reportes/solicitudVacacionesRutas'
+import VACACIONES_REPORTES_RUTAS from './rutas/reportes/solicitudVacacionesRutas';
+import PARAMETROS_RUTAS from './rutas/parametrosGenerales/parametrosRutas';
 
 import { createServer, Server } from 'http';
 const socketIo = require('socket.io');
@@ -106,6 +107,9 @@ class Servidor {
         this.app.use('/', indexRutas);
         this.app.use('/rol', ROLES_RUTAS);
         this.app.use('/login', LOGIN_RUTA);
+
+        // PARÁMETROS GENERALES
+        this.app.use('/parametrizacion', PARAMETROS_RUTAS);
 
         // Empleado
         this.app.use('/empleado', EMPLEADO_RUTAS);
@@ -232,9 +236,9 @@ class Servidor {
 
         this.server.listen(this.app.get('puerto'), () => {
             console.log('Servidor en el puerto', this.app.get('puerto'));
-            
+
         });
-  
+
 
 
         this.io.on('connection', (socket: any) => {

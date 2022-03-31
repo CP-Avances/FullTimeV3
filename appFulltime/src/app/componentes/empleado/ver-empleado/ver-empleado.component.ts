@@ -1,82 +1,79 @@
 // IMPORTAR LIBRERIAS
-import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
 import * as L from 'leaflet';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR SERVICIOS
-import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
 import { AutorizaDepartamentoService } from 'src/app/servicios/autorizaDepartamento/autoriza-departamento.service';
+import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
+import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
+import { PlantillaReportesService } from '../../reportes/plantilla-reportes.service';
 import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProcesos/empleado-procesos.service';
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
-import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
-import { VacunacionService } from 'src/app/servicios/empleado/empleadoVacunas/vacunacion.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { DiscapacidadService } from 'src/app/servicios/discapacidad/discapacidad.service';
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
 import { PlanGeneralService } from 'src/app/servicios/planGeneral/plan-general.service';
-import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
-import { PlantillaReportesService } from '../../reportes/plantilla-reportes.service';
+import { VacunacionService } from 'src/app/servicios/empleado/empleadoVacunas/vacunacion.service';
+import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { FuncionesService } from 'src/app/servicios/funciones/funciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
 import { ScriptService } from 'src/app/servicios/empleado/script.service';
 
 // IMPORTAR COMPONENTES
-import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
-import { EditarHoraExtraEmpleadoComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
-import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/detallePlanHorarios/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
+import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/registro-autorizacion-depa/registro-autorizacion-depa.component';
-import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/editar-autorizacion-depa/editar-autorizacion-depa.component';
+import { EditarHoraExtraEmpleadoComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
 import { EditarPeriodoVacacionesComponent } from 'src/app/componentes/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
 import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
-import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
-import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
-import { CancelarPermisoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/cancelar-permiso/cancelar-permiso.component';
+import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/editar-autorizacion-depa/editar-autorizacion-depa.component';
 import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
+import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { RegistrarEmpleProcesoComponent } from 'src/app/componentes/empleadoProcesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { EditarEmpleadoProcesoComponent } from 'src/app/componentes/empleadoProcesos/editar-empleado-proceso/editar-empleado-proceso.component';
-import { PlanificacionComidasComponent } from 'src/app/componentes/planificacionComidas/planificacion-comidas/planificacion-comidas.component';
 import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
-import { EditarPlanComidasComponent } from 'src/app/componentes/planificacionComidas/editar-plan-comidas/editar-plan-comidas.component';
-import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
 import { EditarSolicitudComidaComponent } from '../../planificacionComidas/editar-solicitud-comida/editar-solicitud-comida.component';
-import { RegistrarPeriodoVComponent } from 'src/app/componentes/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
+import { PlanificacionComidasComponent } from 'src/app/componentes/planificacionComidas/planificacion-comidas/planificacion-comidas.component';
+import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
 import { EditarPlanificacionComponent } from 'src/app/componentes/planHorarios/editar-planificacion/editar-planificacion.component';
 import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
-import { RegistroContratoComponent } from 'src/app/componentes/empleado/contrato/registro-contrato/registro-contrato.component';
+import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
+import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
+import { EditarPlanComidasComponent } from 'src/app/componentes/planificacionComidas/editar-plan-comidas/editar-plan-comidas.component';
+import { RegistrarPeriodoVComponent } from 'src/app/componentes/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { CambiarContrasenaComponent } from '../../rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
-import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
+import { RegistroContratoComponent } from 'src/app/componentes/empleado/contrato/registro-contrato/registro-contrato.component';
+import { AdministraComidaComponent } from '../../administra-comida/administra-comida.component';
+import { CancelarPermisoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { PedidoHoraExtraComponent } from '../../horasExtras/pedido-hora-extra/pedido-hora-extra.component';
 import { EditarEmpleadoComponent } from '../datos-empleado/editar-empleado/editar-empleado.component';
-import { EditarTituloComponent } from '../titulos/editar-titulo/editar-titulo.component';
-import { EmplLeafletComponent } from '../../settings/leaflet/empl-leaflet/empl-leaflet.component';
-import { AdministraComidaComponent } from '../../administra-comida/administra-comida.component';
 import { FraseSeguridadComponent } from '../../frase-administrar/frase-seguridad/frase-seguridad.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
 import { TituloEmpleadoComponent } from '../titulos/titulo-empleado/titulo-empleado.component';
 import { EditarContratoComponent } from '../contrato/editar-contrato/editar-contrato.component';
-
+import { EditarTituloComponent } from '../titulos/editar-titulo/editar-titulo.component';
 import { CambiarFraseComponent } from '../../frase-administrar/cambiar-frase/cambiar-frase.component';
-
-import { switchMap, tap } from 'rxjs/operators';
-
+import { EmplLeafletComponent } from '../../settings/leaflet/empl-leaflet/empl-leaflet.component';
+import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
+import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -99,10 +96,10 @@ export class VerEmpleadoComponent implements OnInit {
 
   // VARIABLES DE ALMACENAMIENTO DE DATOS DE BOTONES
   btnTitulo = 'Añadir';
-  btnDisc = 'Añadir';
   btnVacuna = 'Añadir';
-  editar: string = '';
+  btnDisc = 'Añadir';
   idEmpleado: string; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO SELECCIONADO PARA VER DATOS
+  editar: string = '';
 
   // VARIABLES PARA HABILITAR O DESHABILITAR FUNCIONES
   HabilitarAccion: boolean = true;
@@ -211,7 +208,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // METODO INCLUIR EL CROKIS
-  AbrirLeaflet(nombre: string, apellido: string) {
+  AbrirLeaflet(nombre: string, apellido: string, codigo: number) {
     this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
       console.log(res);
       if (res.message === true) {
@@ -222,6 +219,20 @@ export class VerEmpleadoComponent implements OnInit {
           this.MapGeolocalizar(res.latlng.lat, res.latlng.lng, nombre + ' ' + apellido)
         }, err => {
           this.toastr.error(err)
+        });
+        this.restEmpleado.ActualizarUbicacionDomicilio(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
+        }, err => {
+        });
+      }
+    });
+  }
+
+  ActualizarTrabajo(id: number) {
+    this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
+      console.log(res);
+      if (res.message === true) {
+        this.restEmpleado.ActualizarUbicacionTrabajo(id, res.latlng).subscribe(respuesta => {
+        }, err => {
         });
       }
     });
@@ -1047,7 +1058,7 @@ export class VerEmpleadoComponent implements OnInit {
     } else {
       this.mostrarVacuna = true;
       this.btnVacuna = 'Añadir';
-    } 
+    }
   }
 
   // ELIMINAR REGISTRO DE VACUNA
@@ -1795,11 +1806,13 @@ export class VerEmpleadoComponent implements OnInit {
   empresa: any = [];
   frase: boolean = false;
   cambiar_frase: boolean = false;
+  activar_frase: boolean = false;
   VerEmpresa() {
     this.empresa = [];
     this.restEmpresa.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(data => {
       this.empresa = data;
       if (this.empresa[0].seg_frase === true) {
+        this.activar_frase = true;
         this.restU.BuscarDatosUser(this.idEmpleadoLogueado).subscribe(data => {
           if (data[0].frase === null || data[0].frase === '') {
             this.frase = true;
@@ -1808,6 +1821,9 @@ export class VerEmpleadoComponent implements OnInit {
             this.cambiar_frase = true;
           }
         });
+      }
+      else {
+        this.activar_frase = false;
       }
     });
   }
