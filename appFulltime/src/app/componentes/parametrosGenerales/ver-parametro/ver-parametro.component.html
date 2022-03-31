@@ -1,0 +1,62 @@
+<div class="container" *ngFor="let tp of parametros" style="padding-top: 15px;">
+    <mat-card class="example-card mat-elevation-z8">
+        <div id="titulo">
+            <span>DATOS GENERALES</span>
+        </div>
+        <mat-card-content>
+            <div class="container" style="padding-top: 15px;">
+                <div class="row">
+                    <br>
+                    <div class="col-6">
+                        <label id="datosF" class="col-form-label">Descripción:</label>
+                        <label class="col-form-label">{{tp.descripcion}}</label>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <i id="editarF" (click)="AbrirVentanaEditar(tp)" matSuffix matTooltipPosition="right"
+                        matTooltip="Modificar datos de este registro." class="fas fa-edit">
+                        <p>Editar</p>
+                    </i>
+                </div>
+            </div>
+            <hr>
+            <div class="container" style="padding-bottom: 50px; text-align: center;">
+                <div class="mat-elevation-z8" style="background: white;">
+                    <div id="resultados">DETALLES DE PARÁMETRO GENERAL</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="thead-light">
+                                <tr style="text-align: center;">
+                                    <th scope="col">Descripción</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let dp of datosDetalle | paginate:tamanio_pagina:numero_pagina">
+                                    <td>{{dp.descripcion}}</td>
+                                    <td>
+                                        <i id="editarI" (click)="AbrirVentanaEditarDetalle(dp)" matSuffix
+                                            matTooltipPosition="right" matTooltip="Modificar datos de este registro."
+                                            class="fas fa-edit">
+                                            <p>Editar</p>
+                                        </i>
+                                        <i matSuffix matTooltipPosition="right" matTooltip="Eliminar registro."
+                                            class="far fa-trash-alt" (click)="ConfirmarDelete(dp)" id="t-eliminar">
+                                            <p>Eliminar</p>
+                                        </i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <mat-paginator [length]="datosDetalle.length" [pageSize]="tamanio_pagina"
+                        [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
+                        showFirstLastButtons>
+                    </mat-paginator>
+                </div>
+            </div>
+            <input type="submit" class="btn btn-sm" [routerLink]="['/parametros/']" value="Lista Parámetros Generales">
+            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(tp)" value="Registrar Detalle">
+        </mat-card-content>
+    </mat-card>
+</div>

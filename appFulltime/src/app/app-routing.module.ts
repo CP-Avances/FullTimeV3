@@ -149,6 +149,8 @@ import { AuditoriaComponent } from './componentes/reportes/auditoria/auditoria.c
 import { SolicitudVacacionComponent } from './componentes/reportes/vacaciones/solicitud-vacacion/solicitud-vacacion.component';
 import { TimbreSistemaComponent } from './componentes/reportes/timbres/timbre-sistema/timbre-sistema.component';
 import { TimbreVirtualComponent } from './componentes/reportes/timbres/timbre-virtual/timbre-virtual.component';
+import { ListarParametroComponent } from './componentes/parametrosGenerales/listar-parametro/listar-parametro.component';
+import { VerParametroComponent } from './componentes/parametrosGenerales/ver-parametro/ver-parametro.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -220,6 +222,10 @@ const routes: Routes = [
   { path: 'listaPlanComida', component: ListarPlanificacionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'timbres-multiples', component: TimbreMultipleComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'app-movil', component: ListaAppComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+
+  // PARAMETRIZACIÓN GENERAL
+  { path: 'parametros', component: ListarParametroComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'mostrar/parametros/:id', component: VerParametroComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // Graficas administrador
   { path: 'macro/inasistencia', component: InasistenciaMacroComponent, canActivate: [AuthGuard], data: { roles: 1 } },

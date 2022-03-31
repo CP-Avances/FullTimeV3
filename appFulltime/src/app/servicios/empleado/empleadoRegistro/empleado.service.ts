@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
+import { number } from 'echarts/core';
 
 @Injectable({
   providedIn: 'root'
@@ -37,10 +38,6 @@ export class EmpleadoService {
   postEmpleadoRest(data: any) {
     return this.http.post(`${environment.url}/empleado`, data).pipe(
       catchError(data));
-  }
-
-  putGeolocalizacion(id: number, data: any) {
-    return this.http.put<any>(`${environment.url}/empleado/geolocalizacion/${id}`, data)
   }
 
   putEmpleadoRest(data: any, id: number) {
@@ -212,6 +209,30 @@ export class EmpleadoService {
 
   ListaEmpleadosDesactivados() {
     return this.http.get<any>(`${environment.url}/empleado/desactivados/empleados`);
+  }
+
+  /** *********************************************************************** **
+   ** **         CONTROL DE GEOLOCALIZACIÓN EN EL SISTEMA                     **
+   ** *********************************************************************** **/
+
+  putGeolocalizacion(id: number, data: any) {
+    return this.http.put<any>(`${environment.url}/empleado/geolocalizacion/${id}`, data)
+  }
+
+  InsertarUbicacion(id: number, codigo: number, data: any) {
+    return this.http.post<any>(`${environment.url}/empleado/geolocalizacion-domicilio/${id}/${codigo}`, data)
+  }
+
+  ActualizarUbicacionTrabajo(id: number, data: any) {
+    return this.http.put<any>(`${environment.url}/empleado/geolocalizacion-trabajo/${id}`, data)
+  }
+
+  ActualizarUbicacionDomicilio(id: number, data: any) {
+    return this.http.put<any>(`${environment.url}/empleado/geolocalizacion-nuevo-domicilio/${id}`, data)
+  }
+
+  BuscarUbicacion(id: number) {
+    return this.http.get<any>(`${environment.url}/empleado/ubicacion/${id}`);
   }
 
 }

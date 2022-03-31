@@ -208,7 +208,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // METODO INCLUIR EL CROKIS
-  AbrirLeaflet(nombre: string, apellido: string) {
+  AbrirLeaflet(nombre: string, apellido: string, codigo: number) {
     this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
       console.log(res);
       if (res.message === true) {
@@ -219,6 +219,20 @@ export class VerEmpleadoComponent implements OnInit {
           this.MapGeolocalizar(res.latlng.lat, res.latlng.lng, nombre + ' ' + apellido)
         }, err => {
           this.toastr.error(err)
+        });
+        this.restEmpleado.ActualizarUbicacionDomicilio(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
+        }, err => {
+        });
+      }
+    });
+  }
+
+  ActualizarTrabajo(id: number) {
+    this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
+      console.log(res);
+      if (res.message === true) {
+        this.restEmpleado.ActualizarUbicacionTrabajo(id, res.latlng).subscribe(respuesta => {
+        }, err => {
         });
       }
     });
@@ -1792,11 +1806,13 @@ export class VerEmpleadoComponent implements OnInit {
   empresa: any = [];
   frase: boolean = false;
   cambiar_frase: boolean = false;
+  activar_frase: boolean = false;
   VerEmpresa() {
     this.empresa = [];
     this.restEmpresa.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(data => {
       this.empresa = data;
       if (this.empresa[0].seg_frase === true) {
+        this.activar_frase = true;
         this.restU.BuscarDatosUser(this.idEmpleadoLogueado).subscribe(data => {
           if (data[0].frase === null || data[0].frase === '') {
             this.frase = true;
@@ -1805,6 +1821,9 @@ export class VerEmpleadoComponent implements OnInit {
             this.cambiar_frase = true;
           }
         });
+      }
+      else {
+        this.activar_frase = false;
       }
     });
   }
