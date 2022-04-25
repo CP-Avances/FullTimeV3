@@ -131,7 +131,7 @@
                 </tr>
             </tbody>
         </table>
-        <mat-paginator [length]="noti_res.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="noti_res.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <!-- <div style="text-align: right;">

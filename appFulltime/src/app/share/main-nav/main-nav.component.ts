@@ -273,6 +273,7 @@ export class MainNavComponent implements OnInit {
           { name: 'Registrar Ciudad', url: '/listarCiudades' },
           { name: 'Registrar Establecimiento', url: '/sucursales' },
           { name: 'Registrar Departamento', url: '/departamento' },
+          { name: 'Registrar Geolocalización', url: '/coordenadas' },
         ]
       },
       {

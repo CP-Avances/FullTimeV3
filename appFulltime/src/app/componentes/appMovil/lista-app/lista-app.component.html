@@ -69,7 +69,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="usersAppMovil.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="usersAppMovil.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="estilo" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

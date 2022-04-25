@@ -93,7 +93,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
+        <mat-paginator id="pagina" [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

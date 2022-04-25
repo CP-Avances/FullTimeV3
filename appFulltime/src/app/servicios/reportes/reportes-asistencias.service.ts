@@ -13,12 +13,12 @@ export class ReportesAsistenciasService {
 
   Departamentos() {
     const estado = 1; // 1 = activo 
-    return this.http.get<any>(`${environment.url}/reportes-asistencias/departamentos/${estado}`);
+    return this.http.get<any>(`${environment.url}/reportes-asistencias/datos_generales/${estado}`);
   }
 
   DepartamentosByEmplDesactivados() {
     const estado = 2; // 2 = desactivo 
-    return this.http.get<any>(`${environment.url}/reportes-asistencias/departamentos/${estado}`);
+    return this.http.get<any>(`${environment.url}/reportes-asistencias/datos_generales/${estado}`);
   }
 
   ReporteAtrasosMultiples(data: any, desde: string, hasta: string) {

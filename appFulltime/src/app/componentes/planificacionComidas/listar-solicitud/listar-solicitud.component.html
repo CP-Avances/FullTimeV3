@@ -61,7 +61,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="solicitudes.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="solicitudes.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -130,7 +130,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="solicitudesAutorizados.length" [pageSize]="tamanio_pagina_autorizado"
+        <mat-paginator id="pagina" [length]="solicitudesAutorizados.length" [pageSize]="tamanio_pagina_autorizado"
             [pageSizeOptions]="pageSizeOptions_autorizado" id="pagina" (page)="ManejarPaginaAutorizados($event)"
             showFirstLastButtons>
         </mat-paginator>
@@ -166,7 +166,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="solicitudesExpiradas.length" [pageSize]="tamanio_pagina_expirada"
+        <mat-paginator id="pagina" [length]="solicitudesExpiradas.length" [pageSize]="tamanio_pagina_expirada"
             [pageSizeOptions]="pageSizeOptions_expirada" id="pagina" (page)="ManejarPaginaExpiradas($event)"
             showFirstLastButtons>
         </mat-paginator>

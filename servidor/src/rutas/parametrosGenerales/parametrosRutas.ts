@@ -22,6 +22,7 @@ class ParametrosRutas {
         this.router.delete('/eliminar-tipo/:id', TokenValidation, PARAMETROS_CONTROLADOR.EliminarTipoParametro);
         this.router.post('/xmlDownload/', TokenValidation, PARAMETROS_CONTROLADOR.FileXML);
         this.router.get('/download/:nameXML', PARAMETROS_CONTROLADOR.downloadXML);
+        this.router.post('/coordenadas', TokenValidation, PARAMETROS_CONTROLADOR.CompararCoordenadas);
     }
 }
 

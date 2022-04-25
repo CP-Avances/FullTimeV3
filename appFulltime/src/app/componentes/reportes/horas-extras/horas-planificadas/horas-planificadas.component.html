@@ -66,7 +66,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="sucursales.length" [pageSize]="tamanio_pagina_suc"
+        <mat-paginator id="pagina" [length]="sucursales.length" [pageSize]="tamanio_pagina_suc"
             [pageSizeOptions]="pageSizeOptions_suc" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -101,7 +101,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="departamentos.length" [pageSize]="tamanio_pagina_dep"
+        <mat-paginator id="pagina" [length]="departamentos.length" [pageSize]="tamanio_pagina_dep"
             [pageSizeOptions]="pageSizeOptions_dep" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -140,7 +140,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="empleados.length" [pageSize]="tamanio_pagina_emp"
+        <mat-paginator id="pagina" [length]="empleados.length" [pageSize]="tamanio_pagina_emp"
             [pageSizeOptions]="pageSizeOptions_emp" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

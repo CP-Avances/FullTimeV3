@@ -96,7 +96,7 @@
                 </tr>
             </tbody>
         </table>
-        <mat-paginator [length]="timbres_noti.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="timbres_noti.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons></mat-paginator>
     </div>
 </div>

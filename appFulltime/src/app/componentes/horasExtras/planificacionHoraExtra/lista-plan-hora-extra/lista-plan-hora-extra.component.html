@@ -108,7 +108,7 @@
                 {{horasSumadas}}</button>
         </div>
         <br>
-        <mat-paginator [length]="horas_extras_plan.length" [pageSize]="tamanio_pagina"
+        <mat-paginator id="pagina" [length]="horas_extras_plan.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -263,7 +263,7 @@
                 {{horasSumadas2}}</button>
         </div>
         <br>
-        <mat-paginator [length]="horas_extras_plan_observacion.length" [pageSize]="tamanio_pagina_O"
+        <mat-paginator id="pagina" [length]="horas_extras_plan_observacion.length" [pageSize]="tamanio_pagina_O"
             [pageSizeOptions]="pageSizeOptions_O" id="pagina" (page)="ManejarPaginaObserva($event)"
             showFirstLastButtons>
         </mat-paginator>
@@ -330,7 +330,7 @@
                 {{horasSumadas_auto}}</button>
         </div>
         <br>
-        <mat-paginator [length]="horas_extras_autorizadas.length" [pageSize]="tamanio_pagina_auto"
+        <mat-paginator id="pagina" [length]="horas_extras_autorizadas.length" [pageSize]="tamanio_pagina_auto"
             [pageSizeOptions]="pageSizeOptions_auto" id="pagina" (page)="ManejarPagina_auto($event)"
             showFirstLastButtons>
         </mat-paginator>

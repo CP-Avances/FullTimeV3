@@ -63,6 +63,7 @@ class EmpleadoRutas {
         this.router.put('/geolocalizacion-trabajo/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.ActualizarTrabajo);
         this.router.put('/geolocalizacion/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.GeolocalizacionCrokis);
         this.router.put('/geolocalizacion-nuevo-domicilio/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.ActualizarDomicilio);
+        this.router.put('/actualizar-geolocalizacion/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.ActualizarGeolocalizacion);
     }
 }
 const EMPLEADO_RUTAS = new EmpleadoRutas();

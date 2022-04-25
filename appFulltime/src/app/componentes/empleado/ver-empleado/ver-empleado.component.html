@@ -164,12 +164,6 @@
                                     Ubicación Domicilio
                                 </button>
                             </mat-grid-tile>
-                            <mat-grid-tile>
-                                <button class="btn btn-block d-flex align-items-center justify-content-center"
-                                    id="Selector" (click)="ActualizarTrabajo(e.id)">
-                                    Ubicación Trabajo
-                                </button>
-                            </mat-grid-tile>
                         </mat-grid-list>
                         <!-- <div class="form-group">
                         <label class="h4 mb-3" for="">Show your picture in Resume</label>
@@ -828,7 +822,7 @@
                         </tbody>
                     </table>
                 </div>
-                <mat-paginator [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
+                <mat-paginator id="pagina" [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
             </div>
@@ -974,7 +968,7 @@
                         <br><br>
                         <mat-divider></mat-divider>
                     </div>
-                    <mat-paginator [length]="vacaciones.length" [pageSize]="tamanio_pagina"
+                    <mat-paginator id="pagina" [length]="vacaciones.length" [pageSize]="tamanio_pagina"
                         [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
                         showFirstLastButtons>
                     </mat-paginator>
@@ -1042,7 +1036,7 @@
                         </tbody>
                     </table>
                 </div>
-                <mat-paginator [length]="planHorario.length" [pageSize]="tamanio_pagina"
+                <mat-paginator id="pagina" [length]="planHorario.length" [pageSize]="tamanio_pagina"
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
             </mat-card>
@@ -1143,7 +1137,7 @@
                     </div>
                     <mat-divider></mat-divider>
                 </div>
-                <mat-paginator [length]="planComidas.length" [pageSize]="tamanio_pagina"
+                <mat-paginator id="pagina" [length]="planComidas.length" [pageSize]="tamanio_pagina"
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
             </mat-card>
@@ -1232,7 +1226,7 @@
                             </div>
                             <mat-divider style="margin-bottom: 10px;"></mat-divider>
                         </div>
-                        <!-- <mat-paginator [length]="permisosTotales.length" [pageSize]="tamanio_pagina"
+                        <!-- <mat-paginator id="pagina" [length]="permisosTotales.length" [pageSize]="tamanio_pagina"
                             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
                             showFirstLastButtons>
                         </mat-paginator> -->
@@ -1309,7 +1303,7 @@
                             </div>
                             <mat-divider></mat-divider>
                         </div>
-                        <mat-paginator [length]="hora_extra.length" [pageSize]="tamanio_pagina"
+                        <mat-paginator id="pagina" [length]="hora_extra.length" [pageSize]="tamanio_pagina"
                             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
                             showFirstLastButtons>
                         </mat-paginator>
@@ -1465,7 +1459,7 @@
                                 </div>
                                 <mat-divider></mat-divider>
                             </div>
-                            <mat-paginator [length]="empleadoProcesos.length" [pageSize]="tamanio_pagina"
+                            <mat-paginator id="pagina" [length]="empleadoProcesos.length" [pageSize]="tamanio_pagina"
                                 [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
                                 showFirstLastButtons>
                             </mat-paginator>

@@ -98,7 +98,7 @@ class TimbresControlador {
 
     public async CrearTimbreWeb(req: Request, res: Response): Promise<any> {
         try {
-            const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj } = req.body;
+            const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj, ubicacion } = req.body;
             let f = new Date();
             const id_empleado = req.userIdEmpleado;
             let code = await pool.query('SELECT codigo FROM empleados WHERE id = $1', [id_empleado]).then(result => { return result.rows });
@@ -107,9 +107,9 @@ class TimbresControlador {
             console.log(req.body, codigo)
 
             const [timbre] = await pool.query('INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, ' +
-                'observacion, latitud, longitud, id_empleado, fec_hora_timbre_servidor, id_reloj) ' +
-                'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
-                [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj])
+                'observacion, latitud, longitud, id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion) ' +
+                'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+                [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj, ubicacion])
                 .then(result => {
                     console.log(result.rows);
                     return result.rows

@@ -60,7 +60,7 @@
             </div>
             <mat-divider></mat-divider>
         </div>
-        <mat-paginator [length]="hora_extra.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="hora_extra.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <!-- <div class="card-footer pb-0 pt-3">

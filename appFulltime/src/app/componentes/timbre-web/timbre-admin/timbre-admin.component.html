@@ -67,7 +67,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="datosEmpleado.length" [pageSize]="tamanio_pagina_e"
+        <mat-paginator id="pagina" [length]="datosEmpleado.length" [pageSize]="tamanio_pagina_e"
             [pageSizeOptions]="pageSizeOptions_e" id="pagina" (page)="ManejarPaginaE($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -126,7 +126,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="timbres.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="timbres.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

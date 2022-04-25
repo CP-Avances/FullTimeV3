@@ -21,7 +21,7 @@ class ReportesAsistenciaControlador {
      * Realiza un array de sucursales con departamentos y empleados dependiendo del estado del empleado si busca empleados activos o inactivos.
      * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
      */
-    Departamentos(req, res) {
+    DatosGenerales(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let estado = req.params.estado;
             console.log('Estado: ', estado);
@@ -47,13 +47,25 @@ class ReportesAsistenciaControlador {
             let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 obj.departamentos = yield Promise.all(obj.departamentos.map((ele) => __awaiter(this, void 0, void 0, function* () {
                     if (estado === '1') {
-                        ele.empleado = yield database_1.default.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) name_empleado, e.codigo, e.cedula, e.genero FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
-                            'WHERE ca.id_departamento = $1 AND ca.id_empl_contrato = co.id AND co.id_regimen = r.id AND co.id_empleado = e.id AND e.estado = $2', [ele.id_depa, estado])
+                        ele.empleado = yield database_1.default.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \' , apellido) ' +
+                            'name_empleado, e.codigo, e.cedula, e.genero ' +
+                            'FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
+                            'WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE ' +
+                            'codigo = e.codigo) ' +
+                            'AND ca.id_departamento = $1 ' +
+                            'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
+                            'codigo = e.codigo) ' +
+                            'AND co.id_regimen = r.id AND e.estado = $2', [ele.id_depa, estado])
                             .then(result => { return result.rows; });
                     }
                     else {
-                        ele.empleado = yield database_1.default.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) name_empleado, e.codigo, e.cedula, e.genero, ca.fec_final FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
-                            'WHERE ca.id_departamento = $1 AND ca.id_empl_contrato = co.id AND co.id_regimen = r.id AND co.id_empleado = e.id AND e.estado = $2', [ele.id_depa, estado])
+                        ele.empleado = yield database_1.default.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) ' +
+                            'name_empleado, e.codigo, e.cedula, e.genero, ca.fec_final ' +
+                            'FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
+                            'WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE ' +
+                            'codigo = e.codigo) AND ca.id_departamento = $1 ' +
+                            'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
+                            'codigo = e.codigo) AND co.id_regimen = r.id AND e.estado = $2', [ele.id_depa, estado])
                             .then(result => { return result.rows; });
                     }
                     return ele;

@@ -199,7 +199,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <mat-paginator [length]="datosSucursales.length" [pageSize]="tamanio_pagina"
+                    <mat-paginator id="pagina" [length]="datosSucursales.length" [pageSize]="tamanio_pagina"
                         [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
                         showFirstLastButtons>
                     </mat-paginator>

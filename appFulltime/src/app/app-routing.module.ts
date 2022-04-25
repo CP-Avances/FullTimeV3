@@ -151,6 +151,8 @@ import { TimbreSistemaComponent } from './componentes/reportes/timbres/timbre-si
 import { TimbreVirtualComponent } from './componentes/reportes/timbres/timbre-virtual/timbre-virtual.component';
 import { ListarParametroComponent } from './componentes/parametrosGenerales/listar-parametro/listar-parametro.component';
 import { VerParametroComponent } from './componentes/parametrosGenerales/ver-parametro/ver-parametro.component';
+import { ListarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/listar-coordenadas/listar-coordenadas.component';
+import { VerCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/ver-coordenadas/ver-coordenadas.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -226,6 +228,10 @@ const routes: Routes = [
   // PARAMETRIZACIÓN GENERAL
   { path: 'parametros', component: ListarParametroComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'mostrar/parametros/:id', component: VerParametroComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+
+  // UBICACIÓN GEOGRÁFICA
+  { path: 'coordenadas', component: ListarCoordenadasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'detalle-coordenadas/:id', component: VerCoordenadasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // Graficas administrador
   { path: 'macro/inasistencia', component: InasistenciaMacroComponent, canActivate: [AuthGuard], data: { roles: 1 } },

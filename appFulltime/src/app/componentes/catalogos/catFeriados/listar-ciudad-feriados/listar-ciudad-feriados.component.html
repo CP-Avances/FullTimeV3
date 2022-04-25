@@ -63,7 +63,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <mat-paginator [length]="datosCiudades.length" [pageSize]="tamanio_pagina"
+                <mat-paginator id="pagina" [length]="datosCiudades.length" [pageSize]="tamanio_pagina"
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
             </div>

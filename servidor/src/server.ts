@@ -73,6 +73,7 @@ import SALIDAS_ANTICIPADAS_RUTAS from './rutas/reportes/salidasAntesRutas';
 import AUDITORIA_RUTAS from './rutas/auditoria/auditoriaRutas';
 import VACACIONES_REPORTES_RUTAS from './rutas/reportes/solicitudVacacionesRutas';
 import PARAMETROS_RUTAS from './rutas/parametrosGenerales/parametrosRutas';
+import UBICACION_RUTAS from './rutas/empleado/empleadoUbicacion/emplUbicacionRutas';
 
 import { createServer, Server } from 'http';
 const socketIo = require('socket.io');
@@ -110,6 +111,9 @@ class Servidor {
 
         // PARÁMETROS GENERALES
         this.app.use('/parametrizacion', PARAMETROS_RUTAS);
+
+        // COORDENADAS DE UBICACIONES
+        this.app.use('/ubicacion', UBICACION_RUTAS);
 
         // Empleado
         this.app.use('/empleado', EMPLEADO_RUTAS);

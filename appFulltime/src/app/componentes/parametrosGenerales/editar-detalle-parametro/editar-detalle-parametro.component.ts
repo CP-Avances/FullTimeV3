@@ -24,6 +24,7 @@ export class EditarDetalleParametroComponent implements OnInit {
     descripcionForm: this.descripcion,
   });
 
+  nota: string = '';
   constructor(
     private rest: ParametrosService,
     private toastr: ToastrService,
@@ -34,6 +35,18 @@ export class EditarDetalleParametroComponent implements OnInit {
 
   ngOnInit(): void {
     this.MostrarDatos();
+    if (this.data.parametros.id_tipo === 22) {
+      this.nota = 'NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón ' +
+        'Guardar. Rango de perímetro en metros.'
+    }
+    else if (this.data.parametros.id_tipo === 23) {
+      this.nota = 'NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón ' +
+        'Guardar. Parámetros válidos Activar o Desactivar.'
+    }
+    else {
+      this.nota = 'NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón ' +
+        'Guardar.'
+    }
   }
 
   // MÉTIODO PARA MOSTRAR DETALLE DE PARÁMETRO
