@@ -65,7 +65,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="sucursales.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="sucursales.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -100,7 +100,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="departamentos.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="departamentos.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -139,7 +139,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="empleados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="empleados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -174,7 +174,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="tabular.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="tabular.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

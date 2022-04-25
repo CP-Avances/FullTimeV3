@@ -32,7 +32,7 @@
                     </tbody>
                 </table>
             </div>
-            <mat-paginator [length]="autorizan.length" [pageSize]="tamanio_pagina"
+            <mat-paginator id="pagina" [length]="autorizan.length" [pageSize]="tamanio_pagina"
                 [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
             </mat-paginator>
         </div>

@@ -304,7 +304,10 @@ import { EditarParametroComponent } from './componentes/parametrosGenerales/edit
 import { VerParametroComponent } from './componentes/parametrosGenerales/ver-parametro/ver-parametro.component';
 import { CrearDetalleParametroComponent } from './componentes/parametrosGenerales/crear-detalle-parametro/crear-detalle-parametro.component';
 import { EditarDetalleParametroComponent } from './componentes/parametrosGenerales/editar-detalle-parametro/editar-detalle-parametro.component';
-
+import { CrearCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/crear-coordenadas/crear-coordenadas.component';
+import { ListarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/listar-coordenadas/listar-coordenadas.component';
+import { EditarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/editar-coordenadas/editar-coordenadas.component';
+import { VerCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/ver-coordenadas/ver-coordenadas.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -551,6 +554,10 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     VerParametroComponent,
     CrearDetalleParametroComponent,
     EditarDetalleParametroComponent,
+    CrearCoordenadasComponent,
+    ListarCoordenadasComponent,
+    EditarCoordenadasComponent,
+    VerCoordenadasComponent,
 
   ],
 

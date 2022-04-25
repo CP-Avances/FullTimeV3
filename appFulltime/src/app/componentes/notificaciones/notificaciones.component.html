@@ -39,7 +39,7 @@
                 </tr>
             </tbody>
         </table>
-        <mat-paginator [length]="notificaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="notificaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons></mat-paginator>
     </mat-card>
 </div>

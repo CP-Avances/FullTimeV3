@@ -142,6 +142,25 @@ class ParametrosControlador {
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
+    CompararCoordenadas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { lat1, lng1, lat2, lng2, valor } = req.body;
+                console.log(lat1, lng1, lat2, lng2, valor);
+                const VALIDACION = yield database_1.default.query('SELECT CASE ( SELECT 1 ' +
+                    'WHERE ' +
+                    ' ($1::DOUBLE PRECISION  BETWEEN $3::DOUBLE PRECISION  - $5 AND $3::DOUBLE PRECISION  + $5) AND ' +
+                    ' ($2::DOUBLE PRECISION  BETWEEN $4::DOUBLE PRECISION  - $5 AND $4::DOUBLE PRECISION  + $5) ' +
+                    ') IS null WHEN true THEN \'vacio\' ELSE \'ok\' END AS verificar', [lat1, lng1, lat2, lng2, valor]);
+                console.log(VALIDACION.rows);
+                return res.jsonp(VALIDACION.rows);
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
 }
 exports.PARAMETROS_CONTROLADOR = new ParametrosControlador();
 exports.default = exports.PARAMETROS_CONTROLADOR;

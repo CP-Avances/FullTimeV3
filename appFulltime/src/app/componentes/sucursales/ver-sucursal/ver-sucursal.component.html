@@ -73,7 +73,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <mat-paginator [length]="datosDepartamentos.length" [pageSize]="tamanio_pagina"
+                <mat-paginator id="pagina" [length]="datosDepartamentos.length" [pageSize]="tamanio_pagina"
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
                 <input type="submit" class="btn btn-sm" [routerLink]="['/sucursales/']"

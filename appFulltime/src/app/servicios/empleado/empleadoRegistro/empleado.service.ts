@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { number } from 'echarts/core';
 
 @Injectable({
   providedIn: 'root'
@@ -233,6 +232,10 @@ export class EmpleadoService {
 
   BuscarUbicacion(id: number) {
     return this.http.get<any>(`${environment.url}/empleado/ubicacion/${id}`);
+  }
+
+  ActualizarUbicacion(id: number, data: any) {
+    return this.http.put<any>(`${environment.url}/empleado/actualizar-geolocalizacion/${id}`, data);
   }
 
 }

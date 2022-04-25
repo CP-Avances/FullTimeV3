@@ -74,6 +74,7 @@ import { EmplLeafletComponent } from '../../settings/leaflet/empl-leaflet/empl-l
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
 import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
 import { switchMap } from 'rxjs/operators';
+import { CrearCoordenadasComponent } from '../../timbre-web/ubicacion-geografica/crear-coordenadas/crear-coordenadas.component';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -209,33 +210,25 @@ export class VerEmpleadoComponent implements OnInit {
 
   // METODO INCLUIR EL CROKIS
   AbrirLeaflet(nombre: string, apellido: string, codigo: number) {
-    this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
-      console.log(res);
-      if (res.message === true) {
-        this.restEmpleado.putGeolocalizacion(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
-          this.toastr.success(respuesta.message);
-          this.MAP.off();
-          this.MAP.remove();
-          this.MapGeolocalizar(res.latlng.lat, res.latlng.lng, nombre + ' ' + apellido)
-        }, err => {
-          this.toastr.error(err)
-        });
-        this.restEmpleado.ActualizarUbicacionDomicilio(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
-        }, err => {
-        });
-      }
-    });
-  }
 
-  ActualizarTrabajo(id: number) {
     this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
       console.log(res);
       if (res.message === true) {
-        this.restEmpleado.ActualizarUbicacionTrabajo(id, res.latlng).subscribe(respuesta => {
-        }, err => {
-        });
+        if (res.latlng != undefined) {
+          this.restEmpleado.putGeolocalizacion(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
+            this.toastr.success(respuesta.message);
+            this.MAP.off();
+            this.MAP.remove();
+            this.MapGeolocalizar(res.latlng.lat, res.latlng.lng, nombre + ' ' + apellido)
+          }, err => {
+            this.toastr.error(err)
+          });
+        }
       }
     });
+
+
+
   }
 
   // EVENTO PARA MOSTRAR NÚMERO DE FILAS DETERMINADO EN TABLA

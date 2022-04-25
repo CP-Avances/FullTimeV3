@@ -32,7 +32,23 @@ export class CrearDetalleParametroComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
-  ngOnInit(): void { }
+  nota: string = '';
+
+  ngOnInit(): void {
+
+    if (this.data.parametros.id === 22) {
+      this.nota = 'NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón ' +
+        'Guardar. Rango de perímetro en metros.'
+    }
+    else if (this.data.parametros.id === 23) {
+      this.nota = 'NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón ' +
+        'Guardar. Parámetros válidos Activar o Desactivar.'
+    }
+    else {
+      this.nota = 'NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón ' +
+        'Guardar.'
+    }
+  }
 
   // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
   GuardarDatos(form: any) {

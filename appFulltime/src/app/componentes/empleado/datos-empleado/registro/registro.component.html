@@ -161,8 +161,6 @@
                         </mat-form-field>
                     </div>
                 </form>
-                <button (click)="AbrirMapaDomicilio()" class="btn btn-sm">Ubicación Domicilio</button>
-                <button (click)="AbrirMapaTrabajo()" class="btn btn-sm">Ubicación Trabajo</button>
                 <div>
                     <button matStepperPrevious class="btn btn-sm">Atrás</button>
                     <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
@@ -222,7 +220,7 @@
                     <div>
                         <button matStepperPrevious class="btn btn-sm">Atrás</button>
                         <button
-                            (click)="insertarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value);"
+                            (click)="insertarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value, cuartoFormGroup.value);"
                             type="submit" class="btn btn-sm" [disabled]="!terceroFormGroup.valid">Guardar
                         </button>
                         <button (click)="stepper.reset()" class="btn btn-sm float-right">Cancelar</button>

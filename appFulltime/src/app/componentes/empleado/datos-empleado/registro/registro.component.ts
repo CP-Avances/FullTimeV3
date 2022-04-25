@@ -45,6 +45,7 @@ export class RegistroComponent implements OnInit {
   primeroFormGroup: FormGroup;
   segundoFormGroup: FormGroup;
   terceroFormGroup: FormGroup;
+  cuartoFormGroup: FormGroup;
 
   NacionalidadControl = new FormControl('', Validators.required);
   filteredOptions: Observable<string[]>;
@@ -63,6 +64,7 @@ export class RegistroComponent implements OnInit {
   date: any;
   HabilitarDescrip: boolean = true;
   estilo: any;
+
 
   ngOnInit(): void {
     this.cargarRoles();
@@ -89,6 +91,7 @@ export class RegistroComponent implements OnInit {
       userForm: ['', Validators.required],
       passForm: ['', Validators.required],
     });
+
     this.filteredOptions = this.NacionalidadControl.valueChanges
       .pipe(
         startWith(''),
@@ -145,7 +148,7 @@ export class RegistroComponent implements OnInit {
     });
   }
 
-  insertarEmpleado(form1, form2, form3) {
+  insertarEmpleado(form1, form2, form3, form4) {
 
     // Busca el id de la nacionalidad elegida en el autocompletado
     this.nacionalidades.forEach(obj => {
@@ -198,6 +201,7 @@ export class RegistroComponent implements OnInit {
     };
 
     if (this.contador === 0) {
+
       this.rest.postEmpleadoRest(dataEmpleado).subscribe(response => {
         if (response.message === 'error') {
           this.toastr.error('El código y cédula del empleado son datos únicos y no deben ser igual al resto de registros.', 'Uno de los datos ingresados es Incorrecto', {
@@ -206,15 +210,16 @@ export class RegistroComponent implements OnInit {
         }
         else {
           this.empleadoGuardado = response;
+
+
           this.GuardarDatosUsuario(form3, this.empleadoGuardado.id, form1);
-          this.RegistrarGeolocalizacion(this.empleadoGuardado.id, this.empleadoGuardado.codigo);
+
         }
       });
     }
     else {
+
       this.GuardarDatosUsuario(form3, this.empleadoGuardado.id, form1);
-      this.ActualizarDomicilio(this.empleadoGuardado.id);
-      this.ActualizarTrabajo(this.empleadoGuardado.id);
     }
   }
 
@@ -255,7 +260,6 @@ export class RegistroComponent implements OnInit {
         this.toastr.success('Operacion Exitosa', 'Empleado guardado', {
           timeOut: 6000,
         });
-        console.log('ver coordenadas', this.h_latitud + ' ' + this.h_longitud);
         this.LimpiarCampos();
         this.contador = 0;
       }
@@ -270,85 +274,6 @@ export class RegistroComponent implements OnInit {
       }
       this.rest.ActualizarCodigo(dataCodigo).subscribe(res => {
       })
-    }
-  }
-
-  /** ************************************************************************************** **
-   ** *              REGISTRO DE COORDENADAS DE UBICACIÓN DOMICILIO Y TRABAJO              * **
-   ** ************************************************************************************** **/
-
-  // VARIABLES DE COORDENADAS DE TRABAJO
-  t_longitud: String;
-  t_latitud: String;
-
-  // VARIABLES DE COORDENADAS DE DOMICILIO
-  h_longitud: String;
-  h_latitud: String;
-
-
-  // METODO INCLUIR EL CROKIS DOMICILIO
-  AbrirMapaDomicilio() {
-    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' })
-      .afterClosed().subscribe((res: any) => {
-        if (res.message === true) {
-          this.h_latitud = res.latlng.lat;
-          this.h_longitud = res.latlng.lng;
-        }
-      });
-  }
-
-  // METODO INCLUIR EL CROKIS TRABAJO
-  AbrirMapaTrabajo() {
-    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' })
-      .afterClosed().subscribe((res: any) => {
-        if (res.message === true) {
-          this.t_latitud = res.latlng.lat;
-          this.t_longitud = res.latlng.lng;
-        }
-      });
-  }
-
-  RegistrarGeolocalizacion(id: number, codigo: number) {
-    let data = {
-      h_lat: this.h_latitud,
-      h_lng: this.h_longitud,
-      t_lat: this.t_latitud,
-      t_lng: this.t_longitud
-    }
-    this.rest.InsertarUbicacion(id, codigo, data).subscribe(respuesta => {
-    }, err => { });
-
-    let mapa = {
-      lat: this.h_latitud,
-      lng: this.h_longitud
-    }
-    this.rest.putGeolocalizacion(id, mapa).subscribe(respuesta => {
-    }, err => { });
-  }
-
-  ActualizarDomicilio(id: number) {
-    if (this.h_latitud != '' && this.h_longitud != '') {
-      let data = {
-        lat: this.h_latitud,
-        lng: this.h_longitud,
-      }
-      this.rest.ActualizarUbicacionDomicilio(id, data).subscribe(respuesta => {
-      }, err => { });
-
-      this.rest.putGeolocalizacion(id, data).subscribe(respuesta => {
-      }, err => { });
-    }
-  }
-
-  ActualizarTrabajo(id: number) {
-    if (this.t_latitud != '' && this.t_longitud != '') {
-      let data = {
-        lat: this.t_latitud,
-        lng: this.t_longitud
-      }
-      this.rest.ActualizarUbicacionTrabajo(id, data).subscribe(respuesta => {
-      }, err => {
-      });
     }
   }
 

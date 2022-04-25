@@ -409,7 +409,7 @@ class EmpleadoControlador {
                     .then(result => {
                     console.log(result.command);
                 });
-                res.status(200).jsonp({ message: 'Geolocalizacion lugar de trabajo ingresado.' });
+                res.status(200).jsonp({ message: 'Geolocalización de Lugar de Trabajo registrada.' });
             }
             catch (error) {
                 res.status(400).jsonp({ message: error });
@@ -420,12 +420,30 @@ class EmpleadoControlador {
     BuscarCoordenadas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const UBICACION = yield database_1.default.query('SELECT * FROM ubicacion WHERE id_empl = $1', [id]);
+            const UBICACION = yield database_1.default.query('SELECT longitud, latitud FROM empleados WHERE id = $1', [id]);
             if (UBICACION.rowCount > 0) {
                 return res.jsonp(UBICACION.rows);
             }
             else {
                 return res.status(404).jsonp({ text: 'No se ha encontrado registros.' });
+            }
+        });
+    }
+    // MÉTODO PARA ACTUALIZAR DATOS DE UBICACIÓN DEL USUARIO
+    ActualizarGeolocalizacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let id = req.params.id;
+            let { h_lat, h_lng, t_lat, t_lng } = req.body;
+            try {
+                yield database_1.default.query('UPDATE ubicacion SET t_latitud = $1, t_longitud = $2, h_latitud = $3, ' +
+                    'h_longitud = $4 WHERE id_empl = $5', [t_lat, t_lng, h_lat, h_lng, id])
+                    .then(result => {
+                    console.log(result);
+                });
+                res.status(200).jsonp({ message: 'Geolocalizacion ingresada' });
+            }
+            catch (error) {
+                res.status(400).jsonp({ message: error });
             }
         });
     }

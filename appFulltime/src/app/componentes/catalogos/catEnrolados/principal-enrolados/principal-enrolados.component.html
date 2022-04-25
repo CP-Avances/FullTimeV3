@@ -122,7 +122,7 @@
             </table>
         </div>
         
-        <mat-paginator [length]="enrolados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="enrolados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">

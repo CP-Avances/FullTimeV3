@@ -51,4 +51,8 @@ export class ParametrosService {
     return this.http.post(`${environment.url}/parametrizacion/xmlDownload`, data);
   }
 
+  ObtenerCoordenadas(data: any) {
+    return this.http.post<any>(`${environment.url}/parametrizacion/coordenadas`, data);;
+  }
+
 }

@@ -117,7 +117,7 @@
             </div>
             <mat-divider></mat-divider>
         </div>
-        <mat-paginator [length]="vacaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="vacaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

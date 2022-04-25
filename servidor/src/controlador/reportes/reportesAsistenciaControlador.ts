@@ -11,7 +11,7 @@ class ReportesAsistenciaControlador {
      * Realiza un array de sucursales con departamentos y empleados dependiendo del estado del empleado si busca empleados activos o inactivos. 
      * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
      */
-    public async Departamentos(req: Request, res: Response) {
+    public async DatosGenerales(req: Request, res: Response) {
         let estado = req.params.estado;
         console.log('Estado: ', estado);
 
@@ -40,12 +40,25 @@ class ReportesAsistenciaControlador {
         let lista = await Promise.all(depa.map(async (obj: any) => {
             obj.departamentos = await Promise.all(obj.departamentos.map(async (ele: any) => {
                 if (estado === '1') {
-                    ele.empleado = await pool.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) name_empleado, e.codigo, e.cedula, e.genero FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
-                        'WHERE ca.id_departamento = $1 AND ca.id_empl_contrato = co.id AND co.id_regimen = r.id AND co.id_empleado = e.id AND e.estado = $2', [ele.id_depa, estado])
+                    ele.empleado = await pool.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \' , apellido) ' +
+                        'name_empleado, e.codigo, e.cedula, e.genero ' +
+                        'FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
+                        'WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE ' +
+                        'codigo = e.codigo) ' +
+                        'AND ca.id_departamento = $1 ' +
+                        'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
+                        'codigo = e.codigo) ' +
+                        'AND co.id_regimen = r.id AND e.estado = $2', [ele.id_depa, estado])
                         .then(result => { return result.rows })
                 } else {
-                    ele.empleado = await pool.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) name_empleado, e.codigo, e.cedula, e.genero, ca.fec_final FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
-                        'WHERE ca.id_departamento = $1 AND ca.id_empl_contrato = co.id AND co.id_regimen = r.id AND co.id_empleado = e.id AND e.estado = $2', [ele.id_depa, estado])
+                    ele.empleado = await pool.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) ' +
+                        'name_empleado, e.codigo, e.cedula, e.genero, ca.fec_final ' +
+                        'FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e ' +
+                        'WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE ' +
+                        'codigo = e.codigo) AND ca.id_departamento = $1 ' +
+                        'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
+                        'codigo = e.codigo) AND co.id_regimen = r.id AND e.estado = $2',
+                        [ele.id_depa, estado])
                         .then(result => { return result.rows })
                 }
 

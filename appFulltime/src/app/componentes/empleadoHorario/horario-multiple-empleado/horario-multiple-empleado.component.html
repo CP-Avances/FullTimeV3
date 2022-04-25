@@ -153,7 +153,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="Lista_empleados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="Lista_empleados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -188,7 +188,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="empleados_sin_asignacion.length" [pageSize]="tamanio_pagina_h"
+        <mat-paginator id="pagina" [length]="empleados_sin_asignacion.length" [pageSize]="tamanio_pagina_h"
             [pageSizeOptions]="pageSizeOptions_h" id="pagina" (page)="ManejarPaginaH($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

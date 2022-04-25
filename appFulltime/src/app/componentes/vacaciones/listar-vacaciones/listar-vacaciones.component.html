@@ -59,7 +59,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="vacaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
+        <mat-paginator id="pagina" [length]="vacaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
             id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -97,7 +97,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator [length]="vacaciones_autorizadas.length" [pageSize]="tamanio_pagina_auto"
+        <mat-paginator id="pagina" [length]="vacaciones_autorizadas.length" [pageSize]="tamanio_pagina_auto"
             [pageSizeOptions]="pageSizeOptions_auto" id="pagina" (page)="ManejarPaginaAutorizadas($event)"
             showFirstLastButtons>
         </mat-paginator>
