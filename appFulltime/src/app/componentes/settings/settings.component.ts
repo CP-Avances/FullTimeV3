@@ -32,7 +32,9 @@ export class SettingsComponent implements OnInit {
       horaExtraMail: false,
       horaExtraNoti: false,
       comidaMail: false,
-      comidaNoti: false
+      comidaNoti: false,
+      comunicadoMail: false,
+      comunicadoNoti: false,
     });
   }
 
@@ -49,7 +51,9 @@ export class SettingsComponent implements OnInit {
         horaExtraMail: res[0].hora_extra_mail,
         horaExtraNoti: res[0].hora_extra_noti,
         comidaMail: res[0].comida_mail,
-        comidaNoti: res[0].comida_noti
+        comidaNoti: res[0].comida_noti,
+        comunicadoMail: res[0].comunicado_mail,
+        comunicadoNoti: res[0].comunicado_noti
       });
     }, error => {
       console.log(error);
@@ -67,7 +71,9 @@ export class SettingsComponent implements OnInit {
       hora_extra_mail: form.horaExtraMail,
       hora_extra_noti: form.horaExtraNoti,
       comida_mail: form.comidaMail,
-      comida_noti: form.comidaNoti
+      comida_noti: form.comidaNoti,
+      comunicado_mail: form.comunicadoMail,
+      comunicado_noti: form.comunicadoNoti
     }
     console.log(data);
     this.restN.IngresarConfigNotiEmpleado(data).subscribe(res => {
@@ -88,7 +94,9 @@ export class SettingsComponent implements OnInit {
       hora_extra_mail: form.horaExtraMail,
       hora_extra_noti: form.horaExtraNoti,
       comida_mail: form.comidaMail,
-      comida_noti: form.comidaNoti
+      comida_noti: form.comidaNoti,
+      comunicado_mail: form.comunicadoMail,
+      comunicado_noti: form.comunicadoNoti
     }
     console.log(data);
     this.restN.ActualizarConfigNotiEmpl(this.data.id_empleado, data).subscribe(res => {

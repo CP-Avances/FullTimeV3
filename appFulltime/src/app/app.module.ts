@@ -31,7 +31,6 @@ import { HorasExtrasComponent } from './componentes/catalogos/catHorasExtras/reg
 import { RegimenComponent } from './componentes/catalogos/catRegimen/regimen/regimen.component';
 import { TipoComidasComponent } from './componentes/catalogos/catTipoComidas/tipo-comidas/tipo-comidas.component';
 import { RelojesComponent } from './componentes/catalogos/catRelojes/relojes/relojes.component';
-import { NotificacionesComponent } from './componentes/catalogos/catNotificaciones/notificaciones.component';
 import { ListarFeriadosComponent } from './componentes/catalogos/catFeriados/listar-feriados/listar-feriados.component';
 import { PrincipalDepartamentoComponent } from './componentes/catalogos/catDepartamentos/listar-departamento/principal-departamento.component';
 import { RegistroDepartamentoComponent } from './componentes/catalogos/catDepartamentos/registro-departamento/registro-departamento.component';
@@ -116,7 +115,6 @@ import { EditarDocumentoComponent } from './componentes/documentos/editar-docume
 import { VerDocumentosComponent } from './componentes/documentos/ver-documentos/ver-documentos.component';
 import { SettingsComponent } from './componentes/settings/settings.component';
 import { VacacionAutorizacionesComponent } from './componentes/autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
-import { SucListaNotiComponent } from './componentes/catalogos/catNotificaciones/suc-lista-noti/suc-lista-noti.component';
 import { PlanHoraExtraComponent } from './componentes/horasExtras/planificacionHoraExtra/plan-hora-extra/plan-hora-extra.component';
 import { ListaEmplePlanHoraEComponent } from './componentes/horasExtras/planificacionHoraExtra/empleados-planificar/lista-emple-plan-hora-e.component';
 import { ConfigurarAtrasosComponent } from './componentes/configurar-atrasos/configurar-atrasos.component';
@@ -174,7 +172,7 @@ import { EditarVacacionesEmpleadoComponent } from './componentes/rolEmpleado/vac
 // Cambiar el local de la APP
 import localEsEC from '@angular/common/locales/es-EC'
 import { registerLocaleData } from '@angular/common'
-registerLocaleData( localEsEC )
+registerLocaleData(localEsEC)
 
 // PIE DE PÁGINA Y NAVEGABILIDAD
 import { FooterComponent } from './share/footer/footer.component';
@@ -308,6 +306,7 @@ import { CrearCoordenadasComponent } from './componentes/timbre-web/ubicacion-ge
 import { ListarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/listar-coordenadas/listar-coordenadas.component';
 import { EditarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/editar-coordenadas/editar-coordenadas.component';
 import { VerCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/ver-coordenadas/ver-coordenadas.component';
+import { ComunicadosComponent } from './componentes/notificaciones/comunicados/comunicados.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -336,7 +335,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     RegistroHorarioComponent,
     FooterComponent,
     HorasExtrasComponent,
-    NotificacionesComponent,
     ListarFeriadosComponent,
     PrincipalDepartamentoComponent,
     RegistroDepartamentoComponent,
@@ -432,7 +430,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     VerDocumentacionComponent,
     SettingsComponent,
     VacacionAutorizacionesComponent,
-    SucListaNotiComponent,
     ListaPedidoHoraExtraComponent,
     VerPedidoHoraExtraComponent,
     HoraExtraEmpleadoComponent,
@@ -558,6 +555,7 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ListarCoordenadasComponent,
     EditarCoordenadasComponent,
     VerCoordenadasComponent,
+    ComunicadosComponent,
 
   ],
 
@@ -573,7 +571,7 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ImageUploadModule.forRoot(),
     ScrollingModule,
     JwPaginationModule,
-    
+
     FiltrosModule,
     MaterialModule,
     ReportesModule

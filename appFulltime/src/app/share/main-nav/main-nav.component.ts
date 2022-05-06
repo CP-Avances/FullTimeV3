@@ -358,12 +358,13 @@ export class MainNavComponent implements OnInit {
         ]
       },
       {
-        name: 'Cumpleaños',
+        name: 'Notificaciones',
         accion: true,
         estado: true,
-        icono: 'card_giftcard',
+        icono: 'notifications',
         children: [
           { name: 'Cumpleaños', url: '/cumpleanios' },
+          { name: 'Comunicados', url: '/comunicados' },
         ]
       },
       {
