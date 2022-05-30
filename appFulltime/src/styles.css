@@ -95,7 +95,7 @@ body { margin: 0;}
 #i-cursor {cursor: pointer; }
 
 /* ESTILO PARA ICONO DE MOVILIDAD */
-#movilidad {  cursor: grab; color: blue; }
+#movilidad {  cursor: grab; color: blue; margin-left: 10px; }
 
 /* ESTILO INFORMACION DE PERMISO*/
 .info {

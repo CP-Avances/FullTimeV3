@@ -1,5 +1,5 @@
 import pool from '../database';
-import { enviarMail, email, Credenciales } from './settingsMail';
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from './settingsMail';
 import PVacacion from '../class/periVacacion';
 
 const HORA_ENVIO_VACACION_AUTOMATICO = 23;
@@ -152,8 +152,13 @@ export const beforeFiveDays = function () {
                         `
                     };
                     console.log(data)
+                    let port = 465;
 
-                    enviarMail(data)
+                    if (puerto != null && puerto != '') {
+                        port = parseInt(puerto);
+                    }
+
+                    enviarMail(data, servidor, port)
                 })
             }
         }
@@ -188,8 +193,12 @@ export const beforeTwoDays = function () {
                         `
                     };
                     console.log(data)
+                    let port = 465;
 
-                    enviarMail(data)
+                    if (puerto != null && puerto != '') {
+                        port = parseInt(puerto);
+                    }
+                    enviarMail(data, servidor, port)
                 })
             }
         }

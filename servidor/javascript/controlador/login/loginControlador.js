@@ -17,6 +17,7 @@ const settingsMail_1 = require("../../libs/settingsMail");
 const database_1 = __importDefault(require("../../database"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 class LoginControlador {
     // MÉTODO PARA VALIDAR DATOS DE ACCESO AL SISTEMA
     ValidarCredenciales(req, res) {
@@ -161,28 +162,58 @@ class LoginControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const correo = req.body.correo;
             const url_page = req.body.url_page;
-            (0, settingsMail_1.Credenciales)(1);
+            const path_folder = path_1.default.resolve('logos');
+            (0, settingsMail_1.Credenciales)(7);
             const correoValido = yield database_1.default.query('SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, ' +
                 'u.contrasena FROM empleados AS e, usuarios AS u WHERE correo = $1 AND u.id_empleado = e.id', [correo]);
             if (correoValido.rows[0] == undefined)
                 return res.status(401).send('Correo de usuario no válido.');
             const token = jsonwebtoken_1.default.sign({ _id: correoValido.rows[0].id }, process.env.TOKEN_SECRET_MAIL || 'llaveEmail', { expiresIn: 60 * 5, algorithm: 'HS512' });
             var url = url_page + '/confirmar-contrasenia';
+            // OBTENER HORA DEL SERVIDOR
+            var f = new Date();
+            f.setUTCHours(f.getHours());
+            let fecha = f.toJSON();
+            fecha = fecha.split('T')[0];
             // ESTRUCTURA DEL MENSAJE DE CORREO ELECTRÓNICO
             var data = {
                 to: correoValido.rows[0].correo,
                 from: settingsMail_1.email,
                 template: 'forgot-password-email',
                 subject: 'FullTime Recuperar contraseña!',
-                html: `<p>Hola <b>${correoValido.rows[0].nombre.split(' ')[0] + ' ' +
+                html: `
+      <img src="cid:cabeceraf" width="50%" height="50%"/>
+               
+      <p>Hola <b>${correoValido.rows[0].nombre.split(' ')[0] + ' ' +
                     correoValido.rows[0].apellido.split(' ')[0]}</b>
        ingrese al siguiente link y registre una nueva contraseña: </p>
         <a href="${url}/${token}">
         ${url}/${token}
         </a>
-      `
+        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+        <b>Gracias por la atención</b><br>
+        <b>Saludos cordiales,</b> <br><br>
+      </p>
+        <img src="cid:pief" width="50%" height="50%"/>
+      `,
+                attachments: [
+                    {
+                        filename: 'cabecera_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                        cid: 'cabeceraf' //same cid value as in the html img src
+                    },
+                    {
+                        filename: 'pie_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                        cid: 'pief' //same cid value as in the html img src
+                    }
+                ]
             };
-            (0, settingsMail_1.enviarMail)(data);
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
             res.jsonp({ mail: 'si', message: 'Mail enviado' });
         });
     }

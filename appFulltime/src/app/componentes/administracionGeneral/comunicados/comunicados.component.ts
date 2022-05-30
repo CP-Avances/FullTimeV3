@@ -244,7 +244,6 @@ export class ComunicadosComponent implements OnInit {
   sucursales: any = [];
   respuesta: any[];
   empleados: any = [];
-  tabulado: any = [];
 
 
 

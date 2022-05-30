@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PLAN_HORA_EXTRA_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
+const path_1 = __importDefault(require("path"));
 class PlanHoraExtraControlador {
     ListarPlanificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -174,6 +175,7 @@ class PlanHoraExtraControlador {
     }
     EnviarCorreoNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             let { id_empl_envia, id_empl_recive, mensaje } = req.body;
             var f = new Date();
@@ -193,7 +195,11 @@ class PlanHoraExtraControlador {
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
             };
-            (0, settingsMail_1.enviarMail)(data);
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
             res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
         });
     }
@@ -234,7 +240,11 @@ class PlanHoraExtraControlador {
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
             };
-            (0, settingsMail_1.enviarMail)(data);
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
             res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
         });
     }

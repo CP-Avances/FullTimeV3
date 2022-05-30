@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
 import { VerificarHorario } from '../../libs/MetodosHorario';
-import { enviarMail, email, Credenciales } from '../../libs/settingsMail';
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail';
 import { ReporteHoraExtra } from '../../class/HorasExtras';
+import path from 'path';
 const nodemailer = require("nodemailer");
 
 class HorasExtrasPedidasControlador {
@@ -131,7 +132,13 @@ class HorasExtrasPedidasControlador {
   }
 
   public async SendMailNotifiHoraExtra(req: Request, res: Response): Promise<void> {
+
+
+    const path_folder = path.resolve('logos')
+
     Credenciales(req.id_empresa);
+
+
     const { id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, id,
       estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado,
       nombre, apellido, cedula, correo, hora_extra_mail, hora_extra_noti } = req.body;
@@ -165,19 +172,54 @@ class HorasExtrasPedidasControlador {
       var url = `${process.env.URL_DOMAIN}/ver-hora-extra`;
       let id_departamento_autoriza = id_dep;
       let id_empleado_autoriza = empleado;
+
+      var f = new Date();
+      f.setUTCHours(f.getHours())
+      let fecha = f.toJSON();
+      fecha = fecha.split('T')[0];
+
       let data = {
         to: correo,
         from: email,
         subject: 'Solicitud de Hora Extra',
-        html: `<p><b>${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido}</b> con número de
+        html: `
+        <img src="cid:cabeceraf" width="50%" height="50%"/>
+                
+        <p><b>${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido}</b> con número de
         cédula ${correoInfoPideHoraExtra.rows[0].cedula} solicita autorización de hora extra: </p>
-        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar hora extra</a>`
+        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar hora extra</a>
+        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+        <b>Gracias por la atención</b><br>
+        <b>Saludos cordiales,</b> <br><br>
+      </p>
+      <img src="cid:pief" width="50%" height="50%"/>
+        `,
+        attachments: [
+          {
+            filename: 'cabecera_firma.jpg',
+            path: `${path_folder}/${cabecera_firma}`,
+            cid: 'cabeceraf' //same cid value as in the html img src
+          },
+          {
+            filename: 'pie_firma.jpg',
+            path: `${path_folder}/${pie_firma}`,
+            cid: 'pief' //same cid value as in the html img src
+          }]
+
       };
+
+
+      let port = 465;
+
+      if (puerto != null && puerto != '') {
+        port = parseInt(puerto);
+      }
+
       if (hora_extra_mail === true && hora_extra_noti === true) {
-        enviarMail(data);
+        enviarMail(data, servidor, port);
         res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
       } else if (hora_extra_mail === true && hora_extra_noti === false) {
-        enviarMail(data);
+        enviarMail(data, servidor, port);
         res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
       } else if (hora_extra_mail === false && hora_extra_noti === true) {
         res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
@@ -206,7 +248,10 @@ class HorasExtrasPedidasControlador {
   }
 
   public async ActualizarEstado(req: Request, res: Response): Promise<void> {
+    const path_folder = path.resolve('logos')
+
     Credenciales(req.id_empresa);
+
     const id = req.params.id;
     const { estado, id_hora_extra, id_departamento } = req.body;
     console.log(estado, id_hora_extra, id_departamento);
@@ -252,6 +297,10 @@ class HorasExtrasPedidasControlador {
           id_vacaciones: null,
           id_hora_extra: id_hora_extra
         }
+        var f = new Date();
+        f.setUTCHours(f.getHours())
+        let fecha = f.toJSON();
+        fecha = fecha.split('T')[0];
 
         let data = {
           from: obj.correo,
@@ -268,13 +317,30 @@ class HorasExtrasPedidasControlador {
                     <li><b>Departamento</b>: ${obj.departamento} </li>
                     </ul>
                 <a href="${url}">Ir a verificar estado hora extra</a>`
+          ,
+          attachments: [
+            {
+              filename: 'cabecera_firma.jpg',
+              path: `${path_folder}/${cabecera_firma}`,
+              cid: 'cabeceraf' //same cid value as in the html img src
+            },
+            {
+              filename: 'pie_firma.jpg',
+              path: `${path_folder}/${pie_firma}`,
+              cid: 'pief' //same cid value as in the html img src
+            }]
         };
         console.log(data);
+        let port = 465;
+
+        if (puerto != null && puerto != '') {
+          port = parseInt(puerto);
+        }
         if (obj.hora_extra_mail === true && obj.hora_extra_noti === true) {
-          enviarMail(data);
+          enviarMail(data, servidor, port);
           res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
         } else if (obj.hora_extra_maill === true && obj.hora_extra_noti === false) {
-          enviarMail(data);
+          enviarMail(data, servidor, port);
           res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
         } else if (obj.hora_extra_mail === false && obj.hora_extra_noti === true) {
           res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });

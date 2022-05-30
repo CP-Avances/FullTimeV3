@@ -16,6 +16,7 @@ exports.horaExtraPedidasControlador = void 0;
 const database_1 = __importDefault(require("../../database"));
 const MetodosHorario_1 = require("../../libs/MetodosHorario");
 const settingsMail_1 = require("../../libs/settingsMail");
+const path_1 = __importDefault(require("path"));
 const nodemailer = require("nodemailer");
 class HorasExtrasPedidasControlador {
     ListarHorasExtrasPedidas(req, res) {
@@ -146,6 +147,7 @@ class HorasExtrasPedidasControlador {
     }
     SendMailNotifiHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, hora_extra_mail, hora_extra_noti } = req.body;
             const ultimo = yield database_1.default.query('SELECT id, estado FROM hora_extr_pedidos WHERE id_empl_cargo = $1 AND ' +
@@ -175,20 +177,49 @@ class HorasExtrasPedidasControlador {
                 var url = `${process.env.URL_DOMAIN}/ver-hora-extra`;
                 let id_departamento_autoriza = id_dep;
                 let id_empleado_autoriza = empleado;
+                var f = new Date();
+                f.setUTCHours(f.getHours());
+                let fecha = f.toJSON();
+                fecha = fecha.split('T')[0];
                 let data = {
                     to: correo,
                     from: settingsMail_1.email,
                     subject: 'Solicitud de Hora Extra',
-                    html: `<p><b>${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido}</b> con número de
+                    html: `
+        <img src="cid:cabeceraf" width="50%" height="50%"/>
+                
+        <p><b>${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido}</b> con número de
         cédula ${correoInfoPideHoraExtra.rows[0].cedula} solicita autorización de hora extra: </p>
-        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar hora extra</a>`
+        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar hora extra</a>
+        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+        <b>Gracias por la atención</b><br>
+        <b>Saludos cordiales,</b> <br><br>
+      </p>
+      <img src="cid:pief" width="50%" height="50%"/>
+        `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' //same cid value as in the html img src
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //same cid value as in the html img src
+                        }
+                    ]
                 };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
                 if (hora_extra_mail === true && hora_extra_noti === true) {
-                    (0, settingsMail_1.enviarMail)(data);
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                     res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
                 }
                 else if (hora_extra_mail === true && hora_extra_noti === false) {
-                    (0, settingsMail_1.enviarMail)(data);
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                     res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: nombreEstado });
                 }
                 else if (hora_extra_mail === false && hora_extra_noti === true) {
@@ -222,6 +253,7 @@ class HorasExtrasPedidasControlador {
     }
     ActualizarEstado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const id = req.params.id;
             const { estado, id_hora_extra, id_departamento } = req.body;
@@ -261,6 +293,10 @@ class HorasExtrasPedidasControlador {
                         id_vacaciones: null,
                         id_hora_extra: id_hora_extra
                     };
+                    var f = new Date();
+                    f.setUTCHours(f.getHours());
+                    let fecha = f.toJSON();
+                    fecha = fecha.split('T')[0];
                     let data = {
                         from: obj.correo,
                         to: ele.correo,
@@ -275,15 +311,31 @@ class HorasExtrasPedidasControlador {
                     <li><b>Sucursal</b>: ${obj.sucursal} </li>
                     <li><b>Departamento</b>: ${obj.departamento} </li>
                     </ul>
-                <a href="${url}">Ir a verificar estado hora extra</a>`
+                <a href="${url}">Ir a verificar estado hora extra</a>`,
+                        attachments: [
+                            {
+                                filename: 'cabecera_firma.jpg',
+                                path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                                cid: 'cabeceraf' //same cid value as in the html img src
+                            },
+                            {
+                                filename: 'pie_firma.jpg',
+                                path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                                cid: 'pief' //same cid value as in the html img src
+                            }
+                        ]
                     };
                     console.log(data);
+                    let port = 465;
+                    if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                        port = parseInt(settingsMail_1.puerto);
+                    }
                     if (obj.hora_extra_mail === true && obj.hora_extra_noti === true) {
-                        (0, settingsMail_1.enviarMail)(data);
+                        (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                         res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                     }
                     else if (obj.hora_extra_maill === true && obj.hora_extra_noti === false) {
-                        (0, settingsMail_1.enviarMail)(data);
+                        (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                         res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                     }
                     else if (obj.hora_extra_mail === false && obj.hora_extra_noti === true) {

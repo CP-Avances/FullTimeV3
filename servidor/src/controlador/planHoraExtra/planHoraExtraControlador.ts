@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { enviarMail, email, Credenciales } from '../../libs/settingsMail'
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail'
+import path from 'path';
 
 class PlanHoraExtraControlador {
 
@@ -155,7 +156,10 @@ class PlanHoraExtraControlador {
   }
 
   public async EnviarCorreoNotificacion(req: Request, res: Response): Promise<void> {
+    const path_folder = path.resolve('logos')
+
     Credenciales(req.id_empresa);
+
     let { id_empl_envia, id_empl_recive, mensaje } = req.body;
 
     var f = new Date();
@@ -178,7 +182,12 @@ class PlanHoraExtraControlador {
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
     };
-    enviarMail(data);
+    let port = 465;
+
+    if (puerto != null && puerto != '') {
+      port = parseInt(puerto);
+    }
+    enviarMail(data, servidor, port);
 
     res.jsonp({ message: 'Se envio notificacion y correo electrónico.' })
   }
@@ -221,7 +230,12 @@ class PlanHoraExtraControlador {
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
     };
-    enviarMail(data);
+    let port = 465;
+
+    if (puerto != null && puerto != '') {
+      port = parseInt(puerto);
+    }
+    enviarMail(data, servidor, port);
 
     res.jsonp({ message: 'Se envio notificacion y correo electrónico.' })
   }

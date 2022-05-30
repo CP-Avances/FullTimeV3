@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { enviarMail, email, nombre, logo_, pie_firma, Credenciales } from '../../libs/settingsMail'
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail'
 import path from 'path';
 
 class NotificacionTiempoRealControlador {
@@ -189,48 +189,68 @@ class NotificacionTiempoRealControlador {
    ** **                      MÉTODOS PARA ENVIOS DE COMUNICADOS                                ** ** 
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO
+  // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
   public async EnviarCorreoComunicado(req: Request, res: Response): Promise<void> {
-    const path_folder = path.resolve('logos')
+
+    const path_folder = path.resolve('logos');
+
     Credenciales(req.id_empresa);
+
     const { id_envia, correo, mensaje, asunto, hora } = req.body;
+
     const USUARIO_ENVIA = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
       'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
       'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
-      'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento', [id_envia]);
+      'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento',
+      [id_envia]);
+
     var f = new Date();
     f.setUTCHours(f.getHours())
     let fecha = f.toJSON();
     fecha = fecha.split('T')[0];
+
     let data = {
       to: correo,
       from: email,
       subject: asunto,
       html: `<body>
+                <img src="cid:cabeceraf" width="50%" height="50%"/>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
                   <b>Empresa:</b> ${nombre}<br>
                   <b>Asunto:</b> ${asunto} <br>
                   <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
+                  <b>Hora de envío:</b> Sistema Web <br>
                   <b>Fecha de envío:</b> ${fecha} <br> 
-                  <b>Hora de envío:</b> ${hora} <br><br>                   
+                  <b>Hora de envío:</b> ${hora} <br>                  
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                   <b>Gracias por la atención</b><br>
                   <b>Saludos cordiales,</b> <br><br>
                 </p>
-                <img src="cid:pief" width="75%" height="75%"/>
+                <img src="cid:pief" width="50%" height="50%"/>
             </body>
             `,
-      attachments: [{
-        filename: 'pie_firma.jpg',
-        path: `${path_folder}/${pie_firma}`,
-        cid: 'pief' //same cid value as in the html img src
-      }]
+      attachments: [
+        {
+          filename: 'cabecera_firma.jpg',
+          path: `${path_folder}/${cabecera_firma}`,
+          cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+        },
+        {
+          filename: 'pie_firma.jpg',
+          path: `${path_folder}/${pie_firma}`,
+          cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+        }]
     };
-    enviarMail(data);
+
+    let port = 465;
+    if (puerto != null && puerto != '') {
+      port = parseInt(puerto);
+    }
+    enviarMail(data, servidor, port);
     res.jsonp({ message: 'Mensaje enviado con éxito.' });
   }
 
@@ -240,11 +260,76 @@ class NotificacionTiempoRealControlador {
     var f = new Date();
     f.setUTCHours(f.getHours())
     let create_at = f.toJSON();
-    let tipo = 2; // Es el tipo de notificación - Comunicados
+    let tipo = 6; // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
     await pool.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, ' +
       'descripcion, tipo) VALUES($1, $2, $3, $4, $5)',
       [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
     res.jsonp({ message: 'Se envio notificacion y correo electrónico.' })
+  }
+
+  // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
+  public async EnviarCorreoComunicadoMovil(req: Request, res: Response) {
+
+    const path_folder = path.resolve('logos')
+
+    Credenciales(parseInt(req.params.id_empresa));
+
+    const { id_envia, correo, mensaje, asunto, hora } = req.body;
+
+    const USUARIO_ENVIA = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
+      'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
+      'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
+      'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento',
+      [id_envia]);
+
+    var f = new Date();
+    f.setUTCHours(f.getHours())
+    let fecha = f.toJSON();
+    fecha = fecha.split('T')[0];
+
+    let data = {
+      to: correo,
+      from: email,
+      subject: asunto,
+      html: `<body>
+                <img src="cid:cabeceraf" width="50%" height="50%"/>
+                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
+                  <b>Empresa:</b> ${nombre}<br>
+                  <b>Asunto:</b> ${asunto} <br>
+                  <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
+                  <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
+                  <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
+                  <b>Generado mediante:</b> Aplicación Móvil <br>
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                   
+                  <b>Mensaje:</b> ${mensaje} <br><br>
+                </p>
+                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                  <b>Gracias por la atención</b><br>
+                  <b>Saludos cordiales,</b> <br><br>
+                </p>
+                <img src="cid:pief" width="50%" height="50%"/>
+            </body>
+            `,
+      attachments: [
+        {
+          filename: 'cabecera_firma.jpg',
+          path: `${path_folder}/${cabecera_firma}`,
+          cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+        },
+        {
+          filename: 'pie_firma.jpg',
+          path: `${path_folder}/${pie_firma}`,
+          cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+        }]
+    };
+
+    let port = 465;
+    if (puerto != null && puerto != '') {
+      port = parseInt(puerto);
+    }
+    enviarMail(data, servidor, port);
+    return res.jsonp({ message: 'Mensaje enviado con éxito.' });
   }
 
 }

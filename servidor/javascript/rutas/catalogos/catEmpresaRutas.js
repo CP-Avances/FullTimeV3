@@ -25,9 +25,13 @@ class DepartamentoRutas {
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.EliminarRegistros);
         this.router.get('/buscar/datos/:id', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.ListarEmpresaId);
         this.router.get('/logo/codificado/:id_empresa', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.getImagenBase64);
+        this.router.get('/cabecera/codificado/:id_empresa', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.VerCabeceraCorreo);
+        this.router.get('/pie-firma/codificado/:id_empresa', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.VerPieCorreo);
         // CONSULTA USADA EN MÓDULO DE ALMUERZOS
         this.router.get('/logo/codificados/:id_empresa', catEmpresaControlador_1.default.getImagenBase64);
         this.router.put('/logo/:id_empresa/uploadImage', [verificarToken_1.TokenValidation, multipartMiddleware], catEmpresaControlador_1.default.ActualizarLogoEmpresa);
+        this.router.put('/cabecera/:id_empresa/uploadImage', [verificarToken_1.TokenValidation, multipartMiddleware], catEmpresaControlador_1.default.ActualizarCabeceraCorreo);
+        this.router.put('/pie-firma/:id_empresa/uploadImage', [verificarToken_1.TokenValidation, multipartMiddleware], catEmpresaControlador_1.default.ActualizarPieCorreo);
         this.router.put('/colores', [verificarToken_1.TokenValidation], catEmpresaControlador_1.default.ActualizarColores);
         this.router.put('/credenciales/:id_empresa', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.EditarPassword);
         this.router.put('/doble/seguridad', verificarToken_1.TokenValidation, catEmpresaControlador_1.default.ActualizarSeguridad);

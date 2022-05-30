@@ -24,6 +24,13 @@ class PermisosRutas {
         this.router.get('/un-permiso/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarUnPermisoInfo);
         this.router.post('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.CrearPermisos);
         this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.SendMailNotifiPermiso);
+
+
+        this.router.post('/mail-noti-permiso-movil/', PERMISOS_CONTROLADOR.SendMailNotifiPermiso2);
+
+
+
+
         this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
         this.router.get('/numPermiso/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerNumPermiso);
         this.router.get('/permisoContrato/:id_empl_contrato', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoContrato);

@@ -1,10 +1,11 @@
 // IMPORTAR LIBRERIAS
-import { email, enviarMail, Credenciales } from '../../libs/settingsMail';
+import { email, enviarMail, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail';
 import { Licencias } from '../../class/Licencia';
 import { Request, Response } from 'express';
 import pool from '../../database';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
+import path from 'path';
 
 interface IPayload {
   _id: number,
@@ -173,7 +174,8 @@ class LoginControlador {
   public async RestablecerContrasenia(req: Request, res: Response) {
     const correo = req.body.correo;
     const url_page = req.body.url_page;
-    Credenciales(1);
+    const path_folder = path.resolve('logos')
+    Credenciales(7);
     const correoValido = await pool.query('SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, ' +
       'u.contrasena FROM empleados AS e, usuarios AS u WHERE correo = $1 AND u.id_empleado = e.id', [correo]);
 
@@ -182,22 +184,54 @@ class LoginControlador {
     const token = jwt.sign({ _id: correoValido.rows[0].id }, process.env.TOKEN_SECRET_MAIL || 'llaveEmail',
       { expiresIn: 60 * 5, algorithm: 'HS512' });
     var url = url_page + '/confirmar-contrasenia';
+
+    // OBTENER HORA DEL SERVIDOR
+    var f = new Date();
+    f.setUTCHours(f.getHours())
+    let fecha = f.toJSON();
+    fecha = fecha.split('T')[0];
+
     // ESTRUCTURA DEL MENSAJE DE CORREO ELECTRÓNICO
     var data = {
       to: correoValido.rows[0].correo,
       from: email,
       template: 'forgot-password-email',
       subject: 'FullTime Recuperar contraseña!',
-      html: `<p>Hola <b>${correoValido.rows[0].nombre.split(' ')[0] + ' ' +
+      html: `
+      <img src="cid:cabeceraf" width="50%" height="50%"/>
+               
+      <p>Hola <b>${correoValido.rows[0].nombre.split(' ')[0] + ' ' +
         correoValido.rows[0].apellido.split(' ')[0]}</b>
        ingrese al siguiente link y registre una nueva contraseña: </p>
         <a href="${url}/${token}">
         ${url}/${token}
         </a>
-      `
+        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+        <b>Gracias por la atención</b><br>
+        <b>Saludos cordiales,</b> <br><br>
+      </p>
+        <img src="cid:pief" width="50%" height="50%"/>
+      `,
+      attachments: [
+        {
+          filename: 'cabecera_firma.jpg',
+          path: `${path_folder}/${cabecera_firma}`,
+          cid: 'cabeceraf' //same cid value as in the html img src
+        },
+        {
+          filename: 'pie_firma.jpg',
+          path: `${path_folder}/${pie_firma}`,
+          cid: 'pief' //same cid value as in the html img src
+        }]
     };
 
-    enviarMail(data);
+    let port = 465;
+
+    if (puerto != null && puerto != '') {
+      port = parseInt(puerto);
+    }
+
+    enviarMail(data, servidor, port);
 
     res.jsonp({ mail: 'si', message: 'Mail enviado' })
 

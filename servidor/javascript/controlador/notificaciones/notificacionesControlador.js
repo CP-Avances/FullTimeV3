@@ -203,7 +203,7 @@ class NotificacionTiempoRealControlador {
     /** ******************************************************************************************** **
      ** **                      MÉTODOS PARA ENVIOS DE COMUNICADOS                                ** **
      ** ******************************************************************************************** **/
-    // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO
+    // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
     EnviarCorreoComunicado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const path_folder = path_1.default.resolve('logos');
@@ -222,30 +222,43 @@ class NotificacionTiempoRealControlador {
                 from: settingsMail_1.email,
                 subject: asunto,
                 html: `<body>
+                <img src="cid:cabeceraf" width="50%" height="50%"/>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
                   <b>Empresa:</b> ${settingsMail_1.nombre}<br>
                   <b>Asunto:</b> ${asunto} <br>
                   <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
+                  <b>Hora de envío:</b> Sistema Web <br>
                   <b>Fecha de envío:</b> ${fecha} <br> 
-                  <b>Hora de envío:</b> ${hora} <br><br>                   
+                  <b>Hora de envío:</b> ${hora} <br>                  
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                   <b>Gracias por la atención</b><br>
                   <b>Saludos cordiales,</b> <br><br>
                 </p>
-                <img src="cid:pief" width="75%" height="75%"/>
+                <img src="cid:pief" width="50%" height="50%"/>
             </body>
             `,
-                attachments: [{
+                attachments: [
+                    {
+                        filename: 'cabecera_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                        cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                    },
+                    {
                         filename: 'pie_firma.jpg',
                         path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                        cid: 'pief' //same cid value as in the html img src
-                    }]
+                        cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                    }
+                ]
             };
-            (0, settingsMail_1.enviarMail)(data);
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
             res.jsonp({ message: 'Mensaje enviado con éxito.' });
         });
     }
@@ -256,10 +269,69 @@ class NotificacionTiempoRealControlador {
             var f = new Date();
             f.setUTCHours(f.getHours());
             let create_at = f.toJSON();
-            let tipo = 2; // Es el tipo de notificación - Comunicados
+            let tipo = 6; // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
             yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, ' +
                 'descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
             res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
+        });
+    }
+    // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
+    EnviarCorreoComunicadoMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
+            (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            const { id_envia, correo, mensaje, asunto, hora } = req.body;
+            const USUARIO_ENVIA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
+                'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
+                'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
+                'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento', [id_envia]);
+            var f = new Date();
+            f.setUTCHours(f.getHours());
+            let fecha = f.toJSON();
+            fecha = fecha.split('T')[0];
+            let data = {
+                to: correo,
+                from: settingsMail_1.email,
+                subject: asunto,
+                html: `<body>
+                <img src="cid:cabeceraf" width="50%" height="50%"/>
+                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
+                  <b>Empresa:</b> ${settingsMail_1.nombre}<br>
+                  <b>Asunto:</b> ${asunto} <br>
+                  <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
+                  <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
+                  <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
+                  <b>Generado mediante:</b> Aplicación Móvil <br>
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                   
+                  <b>Mensaje:</b> ${mensaje} <br><br>
+                </p>
+                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                  <b>Gracias por la atención</b><br>
+                  <b>Saludos cordiales,</b> <br><br>
+                </p>
+                <img src="cid:pief" width="50%" height="50%"/>
+            </body>
+            `,
+                attachments: [
+                    {
+                        filename: 'cabecera_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                        cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                    },
+                    {
+                        filename: 'pie_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                        cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                    }
+                ]
+            };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+            return res.jsonp({ message: 'Mensaje enviado con éxito.' });
         });
     }
 }

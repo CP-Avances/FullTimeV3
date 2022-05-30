@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PLAN_COMIDAS_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
+const path_1 = __importDefault(require("path"));
 class PlanComidasControlador {
     // CONSULTA DE SOLICITUDES DE SERVICIO DE ALIMENTACIÓN CON ESTADO PENDIENTE
     EncontrarSolicitaComidaNull(req, res) {
@@ -134,6 +135,7 @@ class PlanComidasControlador {
     // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA SOLICITUD DE COMIDA 
     EnviarCorreoComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
@@ -144,17 +146,42 @@ class PlanComidasControlador {
                 to: correo,
                 from: settingsMail_1.email,
                 subject: 'Solicitud de Servicio de Alimentación',
-                html: `<p><b>${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido}</b> con número de
+                html: `
+      <img src="cid:cabeceraf" width="50%" height="50%"/>
+      <p><b>${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido}</b> con número de
           cédula ${EMPLEADO_SOLICITA.rows[0].cedula} realizó o actualizó una solicitud de Servicio de Alimentación
           para el <b>${fecha}<b> a partir de las <b>${hora_inicio}<b> hasta las <b>${hora_fin}<b>. </p>
-          <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>`
+          <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>
+          <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+          <b>Gracias por la atención</b><br>
+          <b>Saludos cordiales,</b> <br><br>
+        </p>
+        <img src="cid:pief" width="50%" height="50%"/>
+  
+          `,
+                attachments: [
+                    {
+                        filename: 'cabecera_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                        cid: 'cabeceraf' //same cid value as in the html img src
+                    },
+                    {
+                        filename: 'pie_firma.jpg',
+                        path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                        cid: 'pief' //same cid value as in the html img src
+                    }
+                ]
             };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             if (comida_mail === true && comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (comida_mail === true && comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (comida_mail === false && comida_noti === true) {
@@ -168,6 +195,7 @@ class PlanComidasControlador {
     // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA ELIMINADO UNA SOLICITUD DE COMIDA 
     EnviarCorreoEliminarSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
@@ -183,12 +211,16 @@ class PlanComidasControlador {
           para el <b>${fecha}<b> a partir de las <b>${hora_inicio}<b> hasta las <b>${hora_fin}<b>. </p>
           <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>`
             };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             if (comida_mail === true && comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (comida_mail === true && comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (comida_mail === false && comida_noti === true) {
@@ -465,6 +497,7 @@ class PlanComidasControlador {
     /** ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA PLANIFICACIÓN DE COMIDA */
     EnviarCorreoPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
@@ -483,12 +516,16 @@ class PlanComidasControlador {
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>
           <a href="${url}">Ir a ver Planificación</a>`
             };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
@@ -502,6 +539,7 @@ class PlanComidasControlador {
     /** ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA PLANIFICACIÓN DE COMIDA */
     EnviarCorreoActualizaSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
@@ -520,12 +558,16 @@ class PlanComidasControlador {
         identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>
             <a href="${url}">Ir a ver Planificación</a>`
             };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
@@ -538,6 +580,7 @@ class PlanComidasControlador {
     }
     EnviarCorreoEliminaPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
@@ -554,12 +597,16 @@ class PlanComidasControlador {
       a usted <b>${EMPLEADO_PLAN.rows[0].nombre} ${EMPLEADO_PLAN.rows[0].apellido}</b> con cédula de 
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>`
             };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
@@ -572,6 +619,7 @@ class PlanComidasControlador {
     }
     EnviarCorreoEstadoSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin, estado } = req.body;
             const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
@@ -589,12 +637,16 @@ class PlanComidasControlador {
       a usted <b>${EMPLEADO_PLAN.rows[0].nombre} ${EMPLEADO_PLAN.rows[0].apellido}</b> con cédula de 
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>`
             };
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data);
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                 res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
             }
             else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {

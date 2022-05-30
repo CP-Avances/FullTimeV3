@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
 import { Credenciales, enviarMail } from '../../libs/settingsMail';
+import path from 'path';
 const nodemailer = require("nodemailer");
 
 class AutorizacionesControlador {
@@ -60,7 +61,10 @@ class AutorizacionesControlador {
     }
 
     public async ActualizarEstadoPermiso(req: Request, res: Response): Promise<void> {
-        Credenciales(req.id_empresa);
+        const path_folder = path.resolve('logos')
+
+    Credenciales(req.id_empresa);
+
 
         const id = req.params.id;
         const { id_documento, estado, id_permiso, id_departamento, id_empleado } = req.body;
@@ -116,10 +120,10 @@ class AutorizacionesControlador {
                 };
                 console.log(data);
                 if (ele.permiso_mail === true && ele.permiso_noti === true) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                 } else if (ele.permiso_mail === true && ele.permiso_noti === false) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                 } else if (ele.permiso_mail === false && ele.permiso_noti === true) {
                     res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
@@ -140,7 +144,10 @@ class AutorizacionesControlador {
     }
 
     public async ActualizarEstadoVacacion(req: Request, res: Response): Promise<void> {
-        Credenciales(req.id_empresa);
+        const path_folder = path.resolve('logos')
+
+    Credenciales(req.id_empresa);
+
         //const { id_documento, estado, id_vacaciones, id_departamento, id_empleado } = req.body;
         const { id_documento, estado, id_vacacion } = req.body;
 
@@ -197,10 +204,10 @@ class AutorizacionesControlador {
                 };
 
                 if (ele.vaca_mail === true && ele.vaca_noti === true) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                 } else if (ele.vaca_mail === true && ele.vaca_noti === false) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                 } else if (ele.vaca_mail === false && ele.vaca_noti === true) {
                     res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
@@ -213,7 +220,10 @@ class AutorizacionesControlador {
     }
 
     public async ActualizarEstadoHoraExtra(req: Request, res: Response): Promise<void> {
-        Credenciales(req.id_empresa);
+        const path_folder = path.resolve('logos')
+
+    Credenciales(req.id_empresa);
+
         const id = req.params.id_hora_extra;
         //const { id_documento, estado, id_hora_extra, id_departamento } = req.body;
         const { id_documento, estado } = req.body;
@@ -266,10 +276,10 @@ class AutorizacionesControlador {
                 };
 
                 if (ele.hora_extra_mail === true && ele.hora_extra_noti === true) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de las hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                 } else if (ele.hora_extra_mail === true && ele.hora_extra_noti === false) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de las hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                 } else if (ele.hora_extra_mail === false && ele.hora_extra_noti === true) {
                     res.json({ message: 'Estado de las hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
@@ -282,7 +292,10 @@ class AutorizacionesControlador {
     }
 
     public async ActualizarEstadoPlanificacion(req: Request, res: Response): Promise<void> {
-        Credenciales(req.id_empresa);
+        const path_folder = path.resolve('logos')
+
+    Credenciales(req.id_empresa);
+
         const id = req.params.id_plan_hora_extra;
         //const { id_documento, estado, id_hora_extra, id_departamento } = req.body;
         const { id_documento, estado } = req.body;
@@ -335,10 +348,10 @@ class AutorizacionesControlador {
                 };
 
                 if (ele.hora_extra_mail === true && ele.hora_extra_noti === true) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de las hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                 } else if (ele.hora_extra_mail === true && ele.hora_extra_noti === false) {
-                    enviarMail(data);
+                    enviarMail(data, servidor, port);
                     res.json({ message: 'Estado de las hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                 } else if (ele.hora_extra_mail === false && ele.hora_extra_noti === true) {
                     res.json({ message: 'Estado de las hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });

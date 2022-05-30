@@ -1,4 +1,4 @@
-import { email, enviarMail, Credenciales } from '../../libs/settingsMail';
+import { email, enviarMail, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail';
 import { Request, Response } from 'express';
 import pool from '../../database';
 import jwt from 'jsonwebtoken';
@@ -171,7 +171,12 @@ class UsuarioControlador {
         </a>
       `
     };
-    enviarMail(data);
+    let port = 465;
+
+    if (puerto != null && puerto != '') {
+      port = parseInt(puerto);
+    }
+    enviarMail(data, servidor, port);
     res.jsonp({ mail: 'si', message: 'Mail enviado.' })
   }
 
