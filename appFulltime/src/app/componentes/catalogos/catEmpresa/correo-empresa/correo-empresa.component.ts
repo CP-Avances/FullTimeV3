@@ -1,8 +1,11 @@
-import { Component, Inject, OnInit } from '@angular/core';
+// SECCIÓN DE LIBRERIAS
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ThemePalette } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { ThemePalette } from '@angular/material/core';
+
+// SECCIÓN DE SERVICIOS
 import { ToastrService } from 'ngx-toastr';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
@@ -11,82 +14,98 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
   templateUrl: './correo-empresa.component.html',
   styleUrls: ['./correo-empresa.component.css']
 })
+
 export class CorreoEmpresaComponent implements OnInit {
 
   hide1 = true;
   hide = true;
 
-  emailF = new FormControl({value: '', disabled: true}, [Validators.required, Validators.email])
-  passwordF = new FormControl('', Validators.required)
-  password_confirmF = new FormControl('', [Validators.requiredTrue])
+  emailF = new FormControl('', [Validators.email]);
+  puertoF = new FormControl('');
+  servidorF = new FormControl('');
+  passwordF = new FormControl('');
+  password_confirmF = new FormControl('');
 
   contrasenia: string = '';
   confirmar_contrasenia: string = '';
 
-  btnDisableGuardar: boolean = true;
+  btnDisableGuardar: boolean = false;
   dis_correo: boolean = false;
 
-  /**
-   * Variables progress spinner
-   */
-  color: ThemePalette = 'primary';
+  // VARIABLES PROGRESS SPINNER 
   mode: ProgressSpinnerMode = 'indeterminate';
+  color: ThemePalette = 'primary';
   value = 10;
   habilitarprogress: boolean = false;
 
   public ConfiguracionCorreoForm = new FormGroup({
     email: this.emailF,
+    puertoF: this.puertoF,
     passwordF: this.passwordF,
+    servidorF: this.servidorF,
     password_confirmF: this.password_confirmF
   })
 
   constructor(
     private restE: EmpresaService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<CorreoEmpresaComponent>,
+    public ventana: MatDialogRef<CorreoEmpresaComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
-    console.log(this.data);
-    this.emailF.patchValue(this.data.correo);
+    this.ConfiguracionCorreoForm.patchValue({
+      email: this.data.correo,
+      servidorF: this.data.servidor,
+      puertoF: this.data.puerto
+    })
   }
 
   GuardarConfiguracion(form) {
     this.habilitarprogress = true;
-    // console.log(form);
     let data = {
-      correo: form.email || this.data.correo, 
-      password_correo: form.passwordF
+      correo: form.email || this.data.correo,
+      password_correo: form.passwordF || this.data.password_correo,
+      servidor: form.servidorF || this.data.servidor,
+      puerto: form.puertoF || this.data.puerto
     }
-    console.log(data);
     this.restE.EditarCredenciales(this.data.id, data).subscribe(res => {
       this.habilitarprogress = false;
       this.toastr.success(res.message)
-      this.dialogRef.close({actualizar: true})
+      this.ventana.close({ actualizar: true })
     })
+
   }
 
   ValidacionContrasenia(e) {
-
     let especiales = [9, 13, 16, 17, 18, 19, 20, 27, 33, 32, 34, 35, 36, 37, 38, 39, 40, 44, 45, 46];
     let tecla_especial = false;
-
     for (var i in especiales) {
       if (e.keyCode == especiales[i]) {
         tecla_especial = true;
         break;
       }
     }
+    if (e.ctrlKey) {
+      if (e.key === 'v' || e.key === 'V') {
+        return false
+      }
+    }
 
     if (tecla_especial) return false;
 
-    if (e.keyCode === 8) { this.contrasenia = this.contrasenia.slice(0,-1) }
+    if (e.keyCode === 8) { this.contrasenia = this.contrasenia.slice(0, -1) }
     if (e.keyCode != 8) {
       this.contrasenia = this.contrasenia + e.key;
     }
-    // console.log(e.key,'>>>>',this.contrasenia);
-    if (this.confirmar_contrasenia !== '') {
+    
+    if (this.contrasenia.length === 0 && this.confirmar_contrasenia.length === 0) {
+      this.btnDisableGuardar = false;
+    } else {
+      this.btnDisableGuardar = true;
+    }
+
+    if (this.confirmar_contrasenia !== '' && this.confirmar_contrasenia.length != 0) {
       this.CompararContrasenia();
     }
   }
@@ -104,18 +123,26 @@ export class CorreoEmpresaComponent implements OnInit {
 
     if (tecla_especial) return false;
 
-    if (e.keyCode === 8) { this.confirmar_contrasenia = this.confirmar_contrasenia.slice(0,-1) }
+    if (e.keyCode === 8) { this.confirmar_contrasenia = this.confirmar_contrasenia.slice(0, -1) }
 
     if (e.keyCode != 8) {
       this.confirmar_contrasenia = this.confirmar_contrasenia + e.key;
     }
 
-    // console.log(e.key,'>>>>',this.contrasenia,' === ',this.confirmar_contrasenia);
-    this.CompararContrasenia();
+    if (this.contrasenia.length === 0 && this.confirmar_contrasenia.length === 0) {
+      this.btnDisableGuardar = false;
+    } else {
+      this.btnDisableGuardar = true;
+    }
+
+    if (this.contrasenia.length != 0) {
+      this.CompararContrasenia();
+    }
   }
 
   CompararContrasenia() {
-    if (this.contrasenia === this.confirmar_contrasenia) {
+    if (this.contrasenia === this.confirmar_contrasenia
+      && this.contrasenia != '' && this.confirmar_contrasenia != '') {
       this.toastr.success('Contraseñas iguales')
       this.btnDisableGuardar = false;
     } else {
@@ -128,14 +155,8 @@ export class CorreoEmpresaComponent implements OnInit {
     if (this.contrasenia != this.confirmar_contrasenia) {
       return 'Las contraseña no son iguales';
     }
-
     this.password_confirmF.setValidators(Validators.required)
-
     return '';
-  }
-
-  changeEstado() {
-    this.emailF.enabled ? this.emailF.disable() : this.emailF.enable()
   }
 
 }

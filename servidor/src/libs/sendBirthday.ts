@@ -1,5 +1,5 @@
 import pool from '../database';
-import { enviarMail, email, Credenciales } from './settingsMail';
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from './settingsMail';
 import path from 'path'
 
 // metodo para enviar los cumpleaños a una hora determinada, verificando a cada hora hasta que sean las 12 pm y se envie el correo
@@ -53,7 +53,13 @@ export const cumpleanios = function () {
                         }]
                     };
                     console.log(data)
-                    enviarMail(data);
+                    let port = 465;
+
+                    if (puerto != null && puerto != '') {
+                      port = parseInt(puerto);
+                    }
+                    
+                    enviarMail(data, servidor, port);
                 })
             }
         }

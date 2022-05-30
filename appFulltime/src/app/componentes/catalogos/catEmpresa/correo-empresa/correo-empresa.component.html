@@ -1,6 +1,6 @@
-<div class="d-flex bd-highlight barraTitulo">
+<div class="d-flex bd-highlight" id="titulo">
     <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center">Modificar Datos Empresa</h5>
+    <h5 class="w-100 bd-highlight align-self-center">CONFIGURACIÓN CORREO</h5>
 </div>
 <form [formGroup]="ConfiguracionCorreoForm">
     <div class="container" style="text-align: center">
@@ -11,20 +11,32 @@
         <div class="row">
             <div class="col">
                 <mat-form-field>
-                    <mat-label>Correo de la Empresa</mat-label>
-                    <input matInput placeholder="casapazmino@gmail.com" [formControl]="emailF" required>
-                    <mat-icon id="empre" matSuffix matTooltipPosition="right" (click)="changeEstado()"
-                        matTooltip="Editar nombre de correo electrónico">
-                        create</mat-icon>
+                    <mat-label>Correo Notificaciones</mat-label>
+                    <input matInput placeholder="casapazmino@gmail.com" [formControl]="emailF">
                     <mat-icon id="empre" matSuffix matTooltipPosition="right"
-                        matTooltip="Modificar nombre de la Empresa">
-                        help_outline</mat-icon>
+                        matTooltip="Actualizar cuenta de correo electrónico principal.">
+                        create</mat-icon>
                     <mat-error *ngIf="emailF.invalid">Ingresar un correo electrónico</mat-error>
                 </mat-form-field>
                 <mat-form-field>
+                    <mat-label>Servidor de Correo</mat-label>
+                    <input matInput placeholder="smpt.gmail.com" [formControl]="servidorF">
+                    <mat-icon id="empre" matSuffix matTooltipPosition="right"
+                        matTooltip="Actualizar servidor de correo electrónico principal.">
+                        create</mat-icon>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Puerto de Salida</mat-label>
+                    <input matInput placeholder="465" [formControl]="puertoF">
+                    <mat-icon id="empre" matSuffix matTooltipPosition="right"
+                        matTooltip="Actualizar puerto de salida de correo electrónico principal.">
+                        create</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field>
                     <mat-label>Contraseña</mat-label>
-                    <input matInput [type]="hide ? 'password' : 'text'" [formControl]="passwordF" 
-                        (keydown)="ValidacionContrasenia($event)" required>
+                    <input matInput [type]="hide ? 'password' : 'text'" [formControl]="passwordF"
+                        (keydown)="ValidacionContrasenia($event)">
                     <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
                         [attr.aria-pressed]="hide">
                         <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
@@ -32,15 +44,16 @@
                     <mat-error *ngIf="passwordF.invalid">Escriba contraseña</mat-error>
                 </mat-form-field>
                 <mat-form-field>
-                    <mat-label>Confrimar Contraseña</mat-label>
-                    <input matInput [type]="hide1 ? 'password' : 'text'" [formControl]="password_confirmF" 
-                        (keydown)="ValidacionConfirmarContrasenia($event)" required>
+                    <mat-label>Confirmar Contraseña</mat-label>
+                    <input matInput [type]="hide1 ? 'password' : 'text'" [formControl]="password_confirmF"
+                        (keydown)="ValidacionConfirmarContrasenia($event)">
                     <button mat-icon-button matSuffix (click)="hide1 = !hide1" [attr.aria-label]="'Hide password'"
                         [attr.aria-pressed]="hide1">
                         <mat-icon>{{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error *ngIf="password_confirmF.invalid">{{ObtenerErrorPasswordConfirm()}}</mat-error>
                 </mat-form-field>
+
             </div>
         </div>
     </div>
@@ -48,14 +61,10 @@
 <div class="d-flex flex-wrap justify-content-center">
     <input type="submit" class="btn btn-sm button" [disabled]="btnDisableGuardar" value="Guardar"
         (click)="GuardarConfiguracion(ConfiguracionCorreoForm.value)">
-    <input type="submit" class="btn btn-sm button" (click)="dialogRef.close({actualizar: false})" value="Salir">
+    <input type="submit" class="btn btn-sm button" (click)="ventana.close({actualizar: false})" value="Salir">
 </div>
 
 <div class="pantalla-progress" *ngIf="habilitarprogress">
-    <mat-progress-spinner
-        class="progress"
-        [color]="color"
-        [mode]="mode"
-        [value]="value">
+    <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">
     </mat-progress-spinner>
 </div>

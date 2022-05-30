@@ -36,7 +36,7 @@ export class ButtonAvisosComponent implements OnInit {
   LlamarNotificacionesAvisos(id: number) {
     this.timbresNoti.NotiTimbresRealTime(id).subscribe(res => {
       this.timbres_noti = res;
-      // console.log(this.timbres_noti, ' verificando vista de timbres ' + this.timbres_noti.message);
+       console.log(this.timbres_noti, ' verificando vista de timbres ' + this.timbres_noti.message);
       if (!this.timbres_noti.message) {
         if (this.timbres_noti.length > 0) {
           this.timbres_noti.forEach(obj => {

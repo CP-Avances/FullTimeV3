@@ -41,7 +41,7 @@ export class VerEmpresaComponent implements OnInit {
 
   constructor(
     public router: Router,
-    public vistaRegistrarDatos: MatDialog,
+    public ventana: MatDialog,
     public rest: EmpresaService,
     public restS: SucursalService,
     private toastr: ToastrService,
@@ -67,6 +67,7 @@ export class VerEmpresaComponent implements OnInit {
     this.datosEmpresa = [];
     this.rest.ConsultarDatosEmpresa(parseInt(this.idEmpresa)).subscribe(datos => {
       this.datosEmpresa = datos;
+      console.log('********************************', this.datosEmpresa)
       if (this.datosEmpresa[0].establecimiento === null || this.datosEmpresa[0].establecimiento === '' || this.datosEmpresa[0].establecimiento === undefined) {
         this.nombre_establecimiento = 'establecimientos';
       }
@@ -113,7 +114,7 @@ export class VerEmpresaComponent implements OnInit {
   /* Ventana para editar datos de dispositivo seleccionado */
   EditarDatosEmpresa(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarEmpresaComponent, { width: '800px', data: datosSeleccionados })
+    this.ventana.open(EditarEmpresaComponent, { width: '800px', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
         if (items.actualizar === true) {
           this.ObtenerSucursal();
@@ -125,7 +126,7 @@ export class VerEmpresaComponent implements OnInit {
 
   AbrirVentanaEditarSucursal(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
+    this.ventana.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
         if (items.actualizar === true) {
           this.ObtenerSucursal();
@@ -134,7 +135,7 @@ export class VerEmpresaComponent implements OnInit {
   }
 
   AbrirVentanaRegistrarSucursal() {
-    this.vistaRegistrarDatos.open(RegistrarSucursalesComponent, { width: '900px', data: parseInt(this.idEmpresa) })
+    this.ventana.open(RegistrarSucursalesComponent, { width: '900px', data: parseInt(this.idEmpresa) })
       .afterClosed().subscribe((items: any) => {
         if (items.actualizar === true) {
           this.ObtenerSucursal();
@@ -143,7 +144,7 @@ export class VerEmpresaComponent implements OnInit {
   }
 
   AbrirVentanaReportes(datos_empresa, ventana) {
-    this.vistaRegistrarDatos.open(ColoresEmpresaComponent, { width: '350', data: {datos: datos_empresa, ventana: ventana} })
+    this.ventana.open(ColoresEmpresaComponent, { width: '350', data: { datos: datos_empresa, ventana: ventana } })
       .afterClosed().subscribe((items: any) => {
         if (items.actualizar === true) {
           this.ObtenerSucursal();
@@ -154,7 +155,10 @@ export class VerEmpresaComponent implements OnInit {
   }
 
   EditarLogo() {
-    this.vistaRegistrarDatos.open(LogosComponent, { width: '500px', data: parseInt(this.idEmpresa) }).afterClosed()
+    this.ventana.open(LogosComponent, {
+      width: '500px',
+      data: { empresa: parseInt(this.idEmpresa), pagina: 'empresa' }
+    }).afterClosed()
       .subscribe((res: any) => {
         if (res.actualizar === true) {
           this.ObtenerLogotipo();
@@ -166,7 +170,7 @@ export class VerEmpresaComponent implements OnInit {
   }
 
   ConfigurarCorreoElectronico(info_empresa) {
-    this.vistaRegistrarDatos.open(CorreoEmpresaComponent, { width: '400px', data: info_empresa }).afterClosed()
+    this.ventana.open(CorreoEmpresaComponent, { width: '400px', data: info_empresa }).afterClosed()
       .subscribe(res => {
         console.log(res);
 
@@ -187,7 +191,7 @@ export class VerEmpresaComponent implements OnInit {
 
   /** Función para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -198,7 +202,7 @@ export class VerEmpresaComponent implements OnInit {
   }
 
   AbrirVentanaSeguridad(datosSeleccionados) {
-    this.vistaRegistrarDatos.open(TipoSeguridadComponent, { width: '300', data: datosSeleccionados })
+    this.ventana.open(TipoSeguridadComponent, { width: '300', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
         this.ObtenerSucursal();
         this.ObtenerLogotipo();

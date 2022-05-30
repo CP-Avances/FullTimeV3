@@ -67,8 +67,24 @@ export class EmpresaService {
     return this.http.get<any>(`${environment.url}/empresas/logo/codificado/${parseInt(id_empresa)}`)
   }
 
+  ObtenerCabeceraCorreo(id_empresa: string) {
+    return this.http.get<any>(`${environment.url}/empresas/cabecera/codificado/${parseInt(id_empresa)}`)
+  }
+
+  ObtenerPieCorreo(id_empresa: string) {
+    return this.http.get<any>(`${environment.url}/empresas/pie-firma/codificado/${parseInt(id_empresa)}`)
+  }
+
   EditarLogoEmpresa(id_empresa: number, formData) {
     return this.http.put<any>(`${environment.url}/empresas/logo/${id_empresa}/uploadImage`, formData);
+  }
+
+  EditarCabeceraCorreo(id_empresa: number, formData) {
+    return this.http.put<any>(`${environment.url}/empresas/cabecera/${id_empresa}/uploadImage`, formData);
+  }
+
+  EditarPieCorreo(id_empresa: number, formData) {
+    return this.http.put<any>(`${environment.url}/empresas/pie-firma/${id_empresa}/uploadImage`, formData);
   }
 
   EditarCredenciales(id_empresa: number, data: any) {

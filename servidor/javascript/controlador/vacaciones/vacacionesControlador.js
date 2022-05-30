@@ -16,6 +16,7 @@ exports.VACACIONES_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
 const CargarVacacion_1 = require("../../libs/CargarVacacion");
+const path_1 = __importDefault(require("path"));
 class VacacionesControlador {
     ListarVacaciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -97,6 +98,7 @@ class VacacionesControlador {
     }
     SendMailNotifiPermiso(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { idContrato, fec_inicio, fec_final, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, vaca_mail, vaca_noti } = req.body;
             const ultimo = yield database_1.default.query('SELECT * FROM vacaciones WHERE fec_inicio = $1 AND fec_final = $2  ORDER BY id DESC LIMIT 1', [fec_inicio, fec_final]);
@@ -110,17 +112,41 @@ class VacacionesControlador {
                     to: correo,
                     from: settingsMail_1.email,
                     subject: 'Solicitud de vacaciones',
-                    html: `<p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
+                    html: `
+        <img src="cid:cabeceraf" width="50%" height="50%"/>         
+        <p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
         cédula ${correoInfoPidePermiso.rows[0].cedula} solicita vacaciones desde la fecha ${fec_inicio.split("T")[0]}
         hasta ${fec_final.split("T")[0]} </p>
-        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar permiso</a>`
+        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar permiso</a>
+        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+        <b>Gracias por la atención</b><br>
+        <b>Saludos cordiales,</b> <br><br>
+      </p>
+      <img src="cid:pief" width="50%" height="50%"/>
+ `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' //same cid value as in the html img src
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //same cid value as in the html img src
+                        }
+                    ]
                 };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
                 if (vaca_mail === true && vaca_noti === true) {
-                    (0, settingsMail_1.enviarMail)(data);
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                     res.jsonp({ message: 'Vacaciones guardadas con éxito', notificacion: true, id_vacacion: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado });
                 }
                 else if (vaca_mail === true && vaca_noti === false) {
-                    (0, settingsMail_1.enviarMail)(data);
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                     res.jsonp({ message: 'Vacaciones guardadas con éxito', notificacion: false, id_vacacion: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado });
                 }
                 else if (vaca_mail === false && vaca_noti === true) {
@@ -173,6 +199,7 @@ class VacacionesControlador {
     }
     ActualizarEstado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
             (0, settingsMail_1.Credenciales)(req.id_empresa);
             const id = req.params.id;
             const { estado, id_vacacion, id_rece_emp, id_depa_send } = req.body;
@@ -206,11 +233,18 @@ class VacacionesControlador {
                     else if (estado === 4) {
                         estado_letras = 'Negado';
                     }
+                    var f = new Date();
+                    f.setUTCHours(f.getHours());
+                    let fecha = f.toJSON();
+                    fecha = fecha.split('T')[0];
                     let data = {
                         from: obj.correo,
                         to: ele.correo,
                         subject: 'Estado de solicitud de Vacaciones',
-                        html: `<p><b>${obj.nombre} ${obj.apellido}</b> jefe/a del departamento de <b>${obj.departamento}</b> con número de
+                        html: `
+          <img src="cid:cabeceraf" width="50%" height="50%"/>
+               
+          <p><b>${obj.nombre} ${obj.apellido}</b> jefe/a del departamento de <b>${obj.departamento}</b> con número de
                 cédula ${obj.cedula} a cambiado el estado de su solicitud de vacaciones a: <b>${estado_letras}</b></p>
                 <h4><b>Informacion de las vacaciones</b></h4>
                 <ul>
@@ -222,14 +256,35 @@ class VacacionesControlador {
                     <li><b>Fecha final </b>: ${ele.fec_final.toLocaleString().split(" ")[0]} </li>
                     <li><b>Fecha ingresa </b>: ${ele.fec_ingreso.toLocaleString().split(" ")[0]} </li>
                     </ul>
-                <a href="${url}">Ir a verificar estado vacaciones</a>`
+                <a href="${url}">Ir a verificar estado vacaciones</a>
+                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                <b>Gracias por la atención</b><br>
+                <b>Saludos cordiales,</b> <br><br>
+              </p>
+              <img src="cid:pief" width="50%" height="50%"/>
+         `, attachments: [
+                            {
+                                filename: 'cabecera_firma.jpg',
+                                path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                                cid: 'cabeceraf' //same cid value as in the html img src
+                            },
+                            {
+                                filename: 'pie_firma.jpg',
+                                path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                                cid: 'pief' //same cid value as in the html img src
+                            }
+                        ]
                     };
+                    let port = 465;
+                    if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                        port = parseInt(settingsMail_1.puerto);
+                    }
                     if (ele.vaca_mail === true && ele.vaca_noti === true) {
-                        (0, settingsMail_1.enviarMail)(data);
+                        (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                         res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                     }
                     else if (ele.vaca_mail === true && ele.vaca_noti === false) {
-                        (0, settingsMail_1.enviarMail)(data);
+                        (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                         res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                     }
                     else if (ele.vaca_mail === false && ele.vaca_noti === true) {

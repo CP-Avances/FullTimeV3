@@ -23,11 +23,11 @@ export class RealTimeService {
   ObtenerNotificacionesSend(id_empleado: number) {
     return this.http.get(`${environment.url}/noti-real-time/send/${id_empleado}`);
   }
-  
+
   ObtenerNotificacionesReceives(id_empleado: number) {
     return this.http.get(`${environment.url}/noti-real-time/receives/${id_empleado}`);
   }
-  
+
   ObtenerNotificacionesAllReceives(id_empleado: number) {
     return this.http.get(`${environment.url}/noti-real-time/all-receives/${id_empleado}`);
   }
@@ -37,7 +37,7 @@ export class RealTimeService {
   }
 
   PutVistaNotificacion(id_realtime: number) {
-    let data = {visto:true};
+    let data = { visto: true };
     return this.http.put(`${environment.url}/noti-real-time/vista/${id_realtime}`, data);
   }
 
@@ -48,6 +48,10 @@ export class RealTimeService {
   /*
     METODOS PARA CONFIG_NOTI
   */
+
+  /** ************************************************************************************ **
+   ** **                        MÉTODOS PARA CONFIG_NOTI                                ** ** 
+   ** ************************************************************************************ **/
 
   ObtenerConfigNotiEmpleado(id_empleado: number) {
     return this.http.get(`${environment.url}/noti-real-time/config/${id_empleado}`);
@@ -60,4 +64,18 @@ export class RealTimeService {
   ActualizarConfigNotiEmpl(id_empleado: number, datos: any) {
     return this.http.put(`${environment.url}/noti-real-time/config/noti-put/${id_empleado}`, datos);
   }
+
+
+  /** ************************************************************************************ **
+   ** **                 MÉTODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
+   ** ************************************************************************************ **/
+
+  EnviarCorreoComunicado(datos: any) {
+    return this.http.post(`${environment.url}/noti-real-time/mail-comunicado`, datos);
+  }
+
+  EnviarMensajeComunicado(data: any) {
+    return this.http.post<any>(`${environment.url}/noti-real-time/noti-comunicado/`, data);
+  }
+
 }

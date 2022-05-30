@@ -49,7 +49,6 @@ import { VerEmpleadoPermisoComponent } from './componentes/empleadoPermisos/ver-
 import { VerVacacionComponent } from './componentes/vacaciones/ver-vacacion/ver-vacacion.component';
 import { ListarVacacionesComponent } from './componentes/vacaciones/listar-vacaciones/listar-vacaciones.component';
 import { VerDocumentosComponent } from './componentes/documentos/ver-documentos/ver-documentos.component';
-import { SucListaNotiComponent } from './componentes/catalogos/catNotificaciones/suc-lista-noti/suc-lista-noti.component';
 import { VerDipositivoComponent } from './componentes/catalogos/catRelojes/ver-dipositivo/ver-dipositivo.component';
 import { ConfigurarCodigoComponent } from './componentes/configurar-codigo/configurar-codigo.component';
 import { VerRegimenComponent } from './componentes/catalogos/catRegimen/ver-regimen/ver-regimen.component';
@@ -58,11 +57,10 @@ import { ListaHorasExtrasComponent } from './componentes/catalogos/catHorasExtra
 import { VerHorasExtrasComponent } from './componentes/catalogos/catHorasExtras/ver-horas-extras/ver-horas-extras.component';
 import { VerEmpresaComponent } from './componentes/catalogos/catEmpresa/ver-empresa/ver-empresa.component';
 import { VerSucursalComponent } from './componentes/sucursales/ver-sucursal/ver-sucursal.component';
-import { VerBirthdayComponent } from './componentes/birthday/ver-birthday/ver-birthday.component';
 import { HoraExtraRealComponent } from './componentes/calculos/hora-extra-real/hora-extra-real.component';
 import { ListaEmplePlanHoraEComponent } from './componentes/horasExtras/planificacionHoraExtra/empleados-planificar/lista-emple-plan-hora-e.component';
 import { ListaPlanHoraExtraComponent } from './componentes/horasExtras/planificacionHoraExtra/lista-plan-hora-extra/lista-plan-hora-extra.component';
-import { RealtimeAvisosComponent } from './componentes/notificaciones/realtime-avisos/realtime-avisos.component';
+
 import { ListaPlanificacionesComponent } from './componentes/horasExtras/planificacionHoraExtra/lista-planificaciones/lista-planificaciones.component';
 import { PlanComidasComponent } from './componentes/planificacionComidas/plan-comidas/plan-comidas.component';
 import { ListarTipoAccionComponent } from './componentes/accionesPersonal/tipoAccionesPersonal/listar-tipo-accion/listar-tipo-accion.component';
@@ -92,7 +90,6 @@ import { DetalleHorarioEmpleadoComponent } from './componentes/rolEmpleado/detal
 import { HorariosEmpleadoComponent } from './componentes/rolEmpleado/horarios-empleado/horarios-empleado.component';
 import { VacacionesEmpleadoComponent } from './componentes/rolEmpleado/vacaciones-empleado/vacaciones-empleado.component';
 import { SolicitarPermisosEmpleadoComponent } from './componentes/rolEmpleado/solicitar-permisos-empleado/solicitar-permisos-empleado.component';
-import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
 import { VerDocumentacionComponent } from './componentes/rolEmpleado/ver-documentacion/ver-documentacion.component';
 import { ListaPedidoHoraExtraComponent } from './componentes/horasExtras/lista-pedido-hora-extra/lista-pedido-hora-extra.component';
 import { HoraExtraEmpleadoComponent } from './componentes/rolEmpleado/hora-extra-empleado/hora-extra-empleado.component';
@@ -153,6 +150,11 @@ import { ListarParametroComponent } from './componentes/parametrosGenerales/list
 import { VerParametroComponent } from './componentes/parametrosGenerales/ver-parametro/ver-parametro.component';
 import { ListarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/listar-coordenadas/listar-coordenadas.component';
 import { VerCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/ver-coordenadas/ver-coordenadas.component';
+import { ComunicadosComponent } from './componentes/administracionGeneral/comunicados/comunicados.component';
+import { RealtimeAvisosComponent } from './componentes/administracionGeneral/notificaciones/realtime-avisos/realtime-avisos.component';
+import { RealtimeNotificacionComponent } from './componentes/administracionGeneral/notificaciones/realtime-notificacion/realtime-notificacion.component';
+import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
+import { ConfiguracionComponent } from './componentes/administracionGeneral/correo/configuracion/configuracion.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -175,7 +177,6 @@ const routes: Routes = [
   { path: 'horario', component: PrincipalHorarioComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'registrarHorario', component: RegistroHorarioComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'horasExtras', component: HorasExtrasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-  { path: 'suc-notificaciones', component: SucListaNotiComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'feriados', component: RegistrarFeriadosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'listarFeriados', component: ListarFeriadosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'enrolados', component: PrincipalEnroladosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
@@ -228,6 +229,7 @@ const routes: Routes = [
   // PARAMETRIZACIÓN GENERAL
   { path: 'parametros', component: ListarParametroComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'mostrar/parametros/:id', component: VerParametroComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'configurarCorreo/:id', component: ConfiguracionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // UBICACIÓN GEOGRÁFICA
   { path: 'coordenadas', component: ListarCoordenadasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
@@ -286,6 +288,7 @@ const routes: Routes = [
   // NOTIFICACIONES
   { path: 'listaAllNotificaciones', component: AdministradorTodasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'listaNotifacionUsuario', component: PorUsuarioComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'comunicados', component: ComunicadosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // ROL MIXTO PARA LAS AUTORIZACIONES
   { path: 'lista-notificaciones', component: RealtimeNotificacionComponent, canActivate: [AuthGuard], data: { rolMix: 0 } },

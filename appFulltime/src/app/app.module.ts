@@ -31,7 +31,6 @@ import { HorasExtrasComponent } from './componentes/catalogos/catHorasExtras/reg
 import { RegimenComponent } from './componentes/catalogos/catRegimen/regimen/regimen.component';
 import { TipoComidasComponent } from './componentes/catalogos/catTipoComidas/tipo-comidas/tipo-comidas.component';
 import { RelojesComponent } from './componentes/catalogos/catRelojes/relojes/relojes.component';
-import { NotificacionesComponent } from './componentes/catalogos/catNotificaciones/notificaciones.component';
 import { ListarFeriadosComponent } from './componentes/catalogos/catFeriados/listar-feriados/listar-feriados.component';
 import { PrincipalDepartamentoComponent } from './componentes/catalogos/catDepartamentos/listar-departamento/principal-departamento.component';
 import { RegistroDepartamentoComponent } from './componentes/catalogos/catDepartamentos/registro-departamento/registro-departamento.component';
@@ -110,13 +109,11 @@ import { ListarVacacionesComponent } from './componentes/vacaciones/listar-vacac
 import { EstadoVacacionesComponent } from './componentes/vacaciones/estado-vacaciones/estado-vacaciones.component';
 import { VerVacacionComponent } from './componentes/vacaciones/ver-vacacion/ver-vacacion.component';
 import { EditarEstadoVacacionAutoriacionComponent } from './componentes/autorizaciones/editar-estado-vacacion-autoriacion/editar-estado-vacacion-autoriacion.component';
-import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
 import { SubirDocumentoComponent } from './componentes/documentos/subir-documento/subir-documento.component';
 import { EditarDocumentoComponent } from './componentes/documentos/editar-documento/editar-documento.component';
 import { VerDocumentosComponent } from './componentes/documentos/ver-documentos/ver-documentos.component';
 import { SettingsComponent } from './componentes/settings/settings.component';
 import { VacacionAutorizacionesComponent } from './componentes/autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
-import { SucListaNotiComponent } from './componentes/catalogos/catNotificaciones/suc-lista-noti/suc-lista-noti.component';
 import { PlanHoraExtraComponent } from './componentes/horasExtras/planificacionHoraExtra/plan-hora-extra/plan-hora-extra.component';
 import { ListaEmplePlanHoraEComponent } from './componentes/horasExtras/planificacionHoraExtra/empleados-planificar/lista-emple-plan-hora-e.component';
 import { ConfigurarAtrasosComponent } from './componentes/configurar-atrasos/configurar-atrasos.component';
@@ -142,9 +139,6 @@ import { EditarHorasExtrasComponent } from './componentes/catalogos/catHorasExtr
 import { VerHorasExtrasComponent } from './componentes/catalogos/catHorasExtras/ver-horas-extras/ver-horas-extras.component';
 import { VerSucursalComponent } from './componentes/sucursales/ver-sucursal/ver-sucursal.component';
 import { VerEmpresaComponent } from './componentes/catalogos/catEmpresa/ver-empresa/ver-empresa.component';
-import { RegistrarBirthdayComponent } from './componentes/birthday/registrar-birthday/registrar-birthday.component';
-import { EditarBirthdayComponent } from './componentes/birthday/editar-birthday/editar-birthday.component';
-import { VerBirthdayComponent } from './componentes/birthday/ver-birthday/ver-birthday.component';
 import { LogosComponent } from './componentes/catalogos/catEmpresa/logos/logos.component';
 import { HoraExtraRealComponent } from './componentes/calculos/hora-extra-real/hora-extra-real.component';
 
@@ -174,7 +168,7 @@ import { EditarVacacionesEmpleadoComponent } from './componentes/rolEmpleado/vac
 // Cambiar el local de la APP
 import localEsEC from '@angular/common/locales/es-EC'
 import { registerLocaleData } from '@angular/common'
-registerLocaleData( localEsEC )
+registerLocaleData(localEsEC)
 
 // PIE DE PÁGINA Y NAVEGABILIDAD
 import { FooterComponent } from './share/footer/footer.component';
@@ -210,8 +204,6 @@ import { AuthGuard } from "./guards/auth.guard";
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { TiempoAutorizadoComponent } from './componentes/horasExtras/tiempo-autorizado/tiempo-autorizado.component';
 import { ConfirmarDesactivadosComponent } from './componentes/empleado/datos-empleado/confirmar-desactivados/confirmar-desactivados.component';
-import { RealtimeAvisosComponent } from './componentes/notificaciones/realtime-avisos/realtime-avisos.component';
-import { EliminarRealtimeComponent } from './componentes/notificaciones/eliminar-realtime/eliminar-realtime.component';
 import { ListaPlanHoraExtraComponent } from './componentes/horasExtras/planificacionHoraExtra/lista-plan-hora-extra/lista-plan-hora-extra.component';
 import { PlanHoraExtraAutorizaComponent } from './componentes/autorizaciones/plan-hora-extra-autoriza/plan-hora-extra-autoriza.component';
 import { ColoresEmpresaComponent } from './componentes/catalogos/catEmpresa/colores-empresa/colores-empresa.component';
@@ -244,7 +236,6 @@ import { MetricaPermisosComponent } from './componentes/rolEmpleado/grafica-empl
 import { DetalleMenuComponent } from './componentes/catalogos/catTipoComidas/detalle-menu/detalle-menu.component';
 import { VistaMenuComponent } from './componentes/catalogos/catTipoComidas/vista-menu/vista-menu.component';
 import { EditarDetalleMenuComponent } from './componentes/catalogos/catTipoComidas/editar-detalle-menu/editar-detalle-menu.component';
-
 import { ConfigReportFirmasHorasExtrasComponent } from './componentes/reportes-Configuracion/config-report-firmas-horas-extras/config-report-firmas-horas-extras.component';
 import { SolicitaComidaComponent } from './componentes/planificacionComidas/solicita-comida/solicita-comida.component';
 import { AdministraComidaComponent } from './componentes/administra-comida/administra-comida.component';
@@ -308,6 +299,15 @@ import { CrearCoordenadasComponent } from './componentes/timbre-web/ubicacion-ge
 import { ListarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/listar-coordenadas/listar-coordenadas.component';
 import { EditarCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/editar-coordenadas/editar-coordenadas.component';
 import { VerCoordenadasComponent } from './componentes/timbre-web/ubicacion-geografica/ver-coordenadas/ver-coordenadas.component';
+import { ComunicadosComponent } from './componentes/administracionGeneral/comunicados/comunicados.component';
+import { RealtimeNotificacionComponent } from './componentes/administracionGeneral/notificaciones/realtime-notificacion/realtime-notificacion.component';
+import { RealtimeAvisosComponent } from './componentes/administracionGeneral/notificaciones/realtime-avisos/realtime-avisos.component';
+import { EliminarRealtimeComponent } from './componentes/administracionGeneral/notificaciones/eliminar-realtime/eliminar-realtime.component';
+import { RegistrarBirthdayComponent } from './componentes/administracionGeneral/birthday/registrar-birthday/registrar-birthday.component';
+import { EditarBirthdayComponent } from './componentes/administracionGeneral/birthday/editar-birthday/editar-birthday.component';
+import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
+import { ConfiguracionComponent } from './componentes/administracionGeneral/correo/configuracion/configuracion.component';
+import { EditarConfiguracionComponent } from './componentes/administracionGeneral/correo/editar-configuracion/editar-configuracion.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -336,7 +336,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     RegistroHorarioComponent,
     FooterComponent,
     HorasExtrasComponent,
-    NotificacionesComponent,
     ListarFeriadosComponent,
     PrincipalDepartamentoComponent,
     RegistroDepartamentoComponent,
@@ -432,7 +431,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     VerDocumentacionComponent,
     SettingsComponent,
     VacacionAutorizacionesComponent,
-    SucListaNotiComponent,
     ListaPedidoHoraExtraComponent,
     VerPedidoHoraExtraComponent,
     HoraExtraEmpleadoComponent,
@@ -558,6 +556,9 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ListarCoordenadasComponent,
     EditarCoordenadasComponent,
     VerCoordenadasComponent,
+    ComunicadosComponent,
+    ConfiguracionComponent,
+    EditarConfiguracionComponent,
 
   ],
 
@@ -573,7 +574,7 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ImageUploadModule.forRoot(),
     ScrollingModule,
     JwPaginationModule,
-    
+
     FiltrosModule,
     MaterialModule,
     ReportesModule

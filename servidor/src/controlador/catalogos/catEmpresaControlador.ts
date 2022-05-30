@@ -136,6 +136,106 @@ class EmpresaControlador {
         res.send({ imagen: codificado, nom_empresa: logo_name.rows[0].nombre, message: 'Logo actualizado' })
     }
 
+    // MÉTODO PARA CONSULTAR IMAGEN DE CABECERA DE CORREO
+    public async VerCabeceraCorreo(req: Request, res: Response): Promise<any> {
+
+        const file_name =
+            await pool.query('SELECT cabecera_firma FROM cg_empresa WHERE id = $1',
+                [req.params.id_empresa])
+                .then(result => {
+                    return result.rows[0];
+                });
+        const codificado = await ImagenBase64LogosEmpresas(file_name.cabecera_firma);
+        if (codificado === 0) {
+            res.status(200).jsonp({ imagen: 0 })
+        } else {
+            res.status(200).jsonp({ imagen: codificado })
+        }
+
+    }
+
+
+    public async ActualizarCabeceraCorreo(req: Request, res: Response): Promise<any> {
+
+        let list: any = req.files;
+        let logo = list.image[0].path.split("\\")[1];
+        let id = req.params.id_empresa;
+        console.log(logo, '====>', id);
+
+        const logo_name = await pool.query('SELECT cabecera_firma FROM cg_empresa WHERE id = $1', [id]);
+
+        if (logo_name.rowCount > 0) {
+            logo_name.rows.map(async (obj) => {
+                if (obj.cabecera_firma != null) {
+                    try {
+                        console.log(obj.cabecera_firma);
+                        let filePath = `servidor\\logos\\${obj.cabecera_firma}`;
+                        let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                        fs.unlinkSync(direccionCompleta);
+                        await pool.query('UPDATE cg_empresa SET cabecera_firma = $2 WHERE id = $1 ', [id, logo]);
+                    } catch (error) {
+                        await pool.query('UPDATE cg_empresa SET cabecera_firma = $2 WHERE id = $1 ', [id, logo]);
+                    }
+                } else {
+                    await pool.query('UPDATE cg_empresa SET cabecera_firma = $2 WHERE id = $1 ', [id, logo]);
+                }
+            });
+        }
+
+        const codificado = await ImagenBase64LogosEmpresas(logo);
+        res.send({ imagen: codificado, message: 'Cabecera de correo actualizada.' })
+    }
+
+
+    // MÉTODO PARA CONSULTAR IMAGEN DE PIE DE CORREO
+    public async VerPieCorreo(req: Request, res: Response): Promise<any> {
+
+        const file_name =
+            await pool.query('SELECT pie_firma FROM cg_empresa WHERE id = $1',
+                [req.params.id_empresa])
+                .then(result => {
+                    return result.rows[0];
+                });
+        const codificado = await ImagenBase64LogosEmpresas(file_name.pie_firma);
+        if (codificado === 0) {
+            res.status(200).jsonp({ imagen: 0 })
+        } else {
+            res.status(200).jsonp({ imagen: codificado })
+        }
+
+    }
+
+    public async ActualizarPieCorreo(req: Request, res: Response): Promise<any> {
+
+        let list: any = req.files;
+        let logo = list.image[0].path.split("\\")[1];
+        let id = req.params.id_empresa;
+        console.log(logo, '====>', id);
+
+        const logo_name = await pool.query('SELECT pie_firma FROM cg_empresa WHERE id = $1', [id]);
+
+        if (logo_name.rowCount > 0) {
+            logo_name.rows.map(async (obj) => {
+                if (obj.pie_firma != null) {
+                    try {
+                        console.log(obj.pie_firma);
+                        let filePath = `servidor\\logos\\${obj.pie_firma}`;
+                        let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                        fs.unlinkSync(direccionCompleta);
+                        await pool.query('UPDATE cg_empresa SET pie_firma = $2 WHERE id = $1 ', [id, logo]);
+                    } catch (error) {
+                        await pool.query('UPDATE cg_empresa SET pie_firma = $2 WHERE id = $1 ', [id, logo]);
+                    }
+                } else {
+                    await pool.query('UPDATE cg_empresa SET pie_firma = $2 WHERE id = $1 ', [id, logo]);
+                }
+            });
+        }
+
+        const codificado = await ImagenBase64LogosEmpresas(logo);
+        res.send({ imagen: codificado, message: 'Cabecera de correo actualizada.' })
+    }
+
     public async ActualizarColores(req: Request, res: Response): Promise<void> {
         const { color_p, color_s, id } = req.body;
         await pool.query('UPDATE cg_empresa SET color_p = $1, color_s = $2 WHERE id = $3',
@@ -158,13 +258,15 @@ class EmpresaControlador {
 
     public async EditarPassword(req: Request, res: Response): Promise<void> {
         const id = req.params.id_empresa
-        const { correo, password_correo } = req.body;
+        const { correo, password_correo, servidor, puerto } = req.body;
         console.log('Objeto ===== ', req.body);
 
-        await pool.query('UPDATE cg_empresa SET correo = $1, password_correo = $2 WHERE id = $3',
-            [correo, password_correo, id]);
+        await pool.query('UPDATE cg_empresa SET correo = $1, password_correo = $2, servidor = $3, puerto = $4 ' +
+            'WHERE id = $5',
+            [correo, password_correo, servidor, puerto, id]);
         res.status(200).jsonp({ message: 'Guardada la configuracion de credenciales' })
     }
+
 
     public async ActualizarAccionesTimbres(req: Request, res: Response): Promise<void> {
         try {

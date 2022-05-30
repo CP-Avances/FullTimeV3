@@ -16,6 +16,8 @@ exports.PERMISOS_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 const fs_1 = __importDefault(require("fs"));
 const nodemailer = require("nodemailer");
+const settingsMail_1 = require("../../libs/settingsMail");
+const path_1 = __importDefault(require("path"));
 class PermisosControlador {
     ListarPermisos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -130,6 +132,8 @@ class PermisosControlador {
     }
     SendMailNotifiPermiso(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            (0, settingsMail_1.Credenciales)(req.id_empresa);
+            const path_folder = path_1.default.resolve('logos');
             const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, permiso_mail, permiso_noti } = req.body;
             const ultimo = yield database_1.default.query('SELECT MAX(id) AS id, estado FROM permisos ' +
                 'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado', [fec_creacion, id_tipo_permiso, id_empl_contrato]);
@@ -139,15 +143,20 @@ class PermisosControlador {
                 'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
                 '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
                 'ORDER BY cargo DESC', [id_empl_contrato]);
-            const email = process.env.EMAIL;
+            /*const email = process.env.EMAIL;
             const pass = process.env.PASSWORD;
+    
             let smtpTransport = nodemailer.createTransport({
                 service: 'Gmail',
                 auth: {
                     user: email,
                     pass: pass
                 }
-            });
+            });*/
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
             // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
             // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
             if (estado === true) {
@@ -156,32 +165,144 @@ class PermisosControlador {
                 let id_empleado_autoriza = empleado;
                 let data = {
                     to: correo,
-                    from: email,
+                    from: settingsMail_1.email,
                     subject: 'Solicitud de permiso',
-                    html: `<p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
+                    html: `
+                <img src="cid:cabeceraf" width="50%" height="50%"/>
+                <p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
                 cédula ${correoInfoPidePermiso.rows[0].cedula} solicita autorización de permiso: </p>
-                <a href="${url}/${ultimo.rows[0].id}">Ir a verificar permisos</a>`
+                <a href="${url}/${ultimo.rows[0].id}">Ir a verificar permisos</a>
+                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                <b>Gracias por la atención</b><br>
+                <b>Saludos cordiales,</b> <br><br>
+              </p>
+              <img src="cid:pief" width="50%" height="50%"/>`,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' //same cid value as in the html img src
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //same cid value as in the html img src
+                        }
+                    ]
                 };
                 if (permiso_mail === true && permiso_noti === true) {
-                    smtpTransport.sendMail(data, (error, info) => __awaiter(this, void 0, void 0, function* () {
-                        if (error) {
-                            console.log(error);
-                        }
-                        else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    }));
+                    /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
+                          if (error) {
+                              console.log(error);
+                          } else {
+                              console.log('Email sent: ' + info.response);
+                          }
+                      });*/
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                     res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
                 }
                 else if (permiso_mail === true && permiso_noti === false) {
-                    smtpTransport.sendMail(data, (error, info) => __awaiter(this, void 0, void 0, function* () {
-                        if (error) {
-                            console.log(error);
+                    /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
+                          if (error) {
+                              console.log(error);
+                          } else {
+                              console.log('Email sent: ' + info.response);
+                          }
+                      });*/
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
+                }
+                else if (permiso_mail === false && permiso_noti === true) {
+                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
+                }
+                else if (permiso_mail === false && permiso_noti === false) {
+                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
+                }
+            }
+        });
+    }
+    SendMailNotifiPermiso2(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const path_folder = path_1.default.resolve('logos');
+            (0, settingsMail_1.Credenciales)(7);
+            const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, permiso_mail, permiso_noti } = req.body;
+            const ultimo = yield database_1.default.query('SELECT MAX(id) AS id, estado FROM permisos ' +
+                'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado', [fec_creacion, id_tipo_permiso, id_empl_contrato]);
+            const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
+                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo ' +
+                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr ' +
+                'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+                '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
+                'ORDER BY cargo DESC', [id_empl_contrato]);
+            /*const email = process.env.EMAIL;
+            const pass = process.env.PASSWORD;
+    
+            let smtpTransport = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: email,
+                    pass: pass
+                }
+            });*/
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            console.log(' ver estado ----------', estado);
+            // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
+            // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
+            if (estado === 1) {
+                // var url = `${process.env.URL_DOMAIN}/ver-permiso`;
+                let id_departamento_autoriza = id_dep;
+                let id_empleado_autoriza = empleado;
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: 'Solicitud de permiso',
+                    html: `
+                <img src="cid:cabeceraf" width="50%" height="50%"/>
+                <p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
+                cédula ${correoInfoPidePermiso.rows[0].cedula} solicita autorización de permiso: </p>
+                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                <b>Gracias por la atención</b><br>
+                <b>Saludos cordiales,</b> <br><br>
+              </p>
+              <img src="cid:pief" width="50%" height="50%"/>`,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' //same cid value as in the html img src
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //same cid value as in the html img src
                         }
-                        else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    }));
+                    ]
+                };
+                console.log(' ver permiso ----------', permiso_mail);
+                if (permiso_mail === true && permiso_noti === true) {
+                    /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
+                          if (error) {
+                              console.log(error);
+                          } else {
+                              console.log('Email sent: ' + info.response);
+                          }
+                      });*/
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                    console.log(' ver permiso ----------', ultimo.rows[0].id);
+                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
+                }
+                else if (permiso_mail === true && permiso_noti === false) {
+                    /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
+                          if (error) {
+                              console.log(error);
+                          } else {
+                              console.log('Email sent: ' + info.response);
+                          }
+                      });*/
+                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
                     res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
                 }
                 else if (permiso_mail === false && permiso_noti === true) {

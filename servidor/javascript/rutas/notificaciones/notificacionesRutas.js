@@ -24,6 +24,12 @@ class NotificacionTiempoRealRutas {
         this.router.get('/config/:id', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ObtenerConfigEmpleado);
         this.router.post('/config/', verificarToken_1.TokenValidation, notificacionesControlador_1.default.CrearConfiguracion);
         this.router.put('/config/noti-put/:id', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ActualizarConfigEmpleado);
+        // RUTA DE ACCESO A DATOS DE COMUNICADOS
+        this.router.post('/mail-comunicado/', verificarToken_1.TokenValidation, notificacionesControlador_1.default.EnviarCorreoComunicado);
+        this.router.post('/noti-comunicado/', verificarToken_1.TokenValidation, notificacionesControlador_1.default.EnviarNotificacionComunicado);
+        // RUTA DE ACCESO A DATOS DE COMUNICADOS APLICACION MÓVIL
+        this.router.post('/mail-comunicado-movil/:id_empresa/', notificacionesControlador_1.default.EnviarCorreoComunicadoMovil);
+        this.router.post('/noti-comunicado-movil/', notificacionesControlador_1.default.EnviarNotificacionComunicado);
     }
 }
 const NOTIFICACION_TIEMPO_REAL_RUTAS = new NotificacionTiempoRealRutas();

@@ -184,7 +184,11 @@ class UsuarioControlador {
         </a>
       `
             };
-            (0, settingsMail_1.enviarMail)(data);
+            let port = 465;
+            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                port = parseInt(settingsMail_1.puerto);
+            }
+            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
             res.jsonp({ mail: 'si', message: 'Mail enviado.' });
         });
     }
