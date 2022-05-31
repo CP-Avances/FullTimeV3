@@ -83,7 +83,12 @@ const Credenciales = function (id_empresa, correo = process.env.EMAIL, password 
         exports.cabecera_firma = credenciales.cabecera_firma;
         exports.servidor = credenciales.servidor;
         exports.puerto = credenciales.puerto;
-        // console.log('Credenciales === ', credenciales);
+        if (exports.cabecera_firma === null || exports.cabecera_firma === '') {
+            exports.cabecera_firma = 'cabecera_firma.png';
+        }
+        if (exports.pie_firma === null || exports.pie_firma === '') {
+            exports.pie_firma = 'pie_firma.png';
+        }
         return;
     });
 };

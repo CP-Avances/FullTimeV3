@@ -26,7 +26,7 @@ class PermisosRutas {
         this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.SendMailNotifiPermiso);
 
 
-        this.router.post('/mail-noti-permiso-movil/', PERMISOS_CONTROLADOR.SendMailNotifiPermiso2);
+        this.router.post('/mail-noti-permiso-movil/:id_empresa', PERMISOS_CONTROLADOR.EnviarCorreoPermisoMovil);
 
 
 
