@@ -79,7 +79,15 @@ export const Credenciales =
     cabecera_firma = credenciales.cabecera_firma;
     servidor = credenciales.servidor;
     puerto = credenciales.puerto;
-    // console.log('Credenciales === ', credenciales);
+
+    if (cabecera_firma === null || cabecera_firma === '') {
+      cabecera_firma = 'cabecera_firma.png';
+    }
+
+    if (pie_firma === null || pie_firma === '') {
+      pie_firma = 'pie_firma.png';
+    }
+
     return
 
   }

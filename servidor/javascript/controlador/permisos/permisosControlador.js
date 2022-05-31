@@ -221,96 +221,87 @@ class PermisosControlador {
             }
         });
     }
-    SendMailNotifiPermiso2(req, res) {
+    // ENVIO DE CORREO AL CREAR UN PERMISO
+    EnviarCorreoPermisoMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(7);
-            const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, permiso_mail, permiso_noti } = req.body;
+            (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            const { fec_creacion, id_tipo_permiso, id_empl_contrato, estado, id_dep, nombre, correo, hora, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso } = req.body;
             const ultimo = yield database_1.default.query('SELECT MAX(id) AS id, estado FROM permisos ' +
                 'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado', [fec_creacion, id_tipo_permiso, id_empl_contrato]);
             const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
-                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo ' +
-                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr ' +
+                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
+                'd.nombre AS departamento ' +
+                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
+                'cg_departamentos AS d ' +
                 'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
                 '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
-                'ORDER BY cargo DESC', [id_empl_contrato]);
-            /*const email = process.env.EMAIL;
-            const pass = process.env.PASSWORD;
-    
-            let smtpTransport = nodemailer.createTransport({
-                service: 'Gmail',
-                auth: {
-                    user: email,
-                    pass: pass
-                }
-            });*/
+                'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC', [id_empl_contrato]);
             let port = 465;
             if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
                 port = parseInt(settingsMail_1.puerto);
             }
-            console.log(' ver estado ----------', estado);
             // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
             // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
-            if (estado === 1) {
-                // var url = `${process.env.URL_DOMAIN}/ver-permiso`;
-                let id_departamento_autoriza = id_dep;
-                let id_empleado_autoriza = empleado;
+            if (estado === true) {
+                var f = new Date();
+                f.setUTCHours(f.getHours());
+                let fecha = f.toJSON();
+                fecha = fecha.split('T')[0];
                 let data = {
                     to: correo,
                     from: settingsMail_1.email,
                     subject: 'Solicitud de permiso',
                     html: `
-                <img src="cid:cabeceraf" width="50%" height="50%"/>
-                <p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
-                cédula ${correoInfoPidePermiso.rows[0].cedula} solicita autorización de permiso: </p>
-                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                <b>Gracias por la atención</b><br>
-                <b>Saludos cordiales,</b> <br><br>
-              </p>
-              <img src="cid:pief" width="50%" height="50%"/>`,
+                        <body>
+                            <div style="text-align: center;">
+                                <img style="width:50%; height:50%;" src="cid:cabeceraf"/>
+                            </div>
+                            <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                            <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                <b>Empresa:</b> ${nombre} <br>   
+                                <b>Asunto:</b> Solicitud de permiso <br> 
+                                <b>Colaborador que envía:</b> ${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido} <br>
+                                <b>Número de Cédula:</b> ${correoInfoPidePermiso.rows[0].cedula} <br>
+                                <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
+                                <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
+                                <b>Generado mediante:</b> Aplicación Móvil <br>
+                                <b>Fecha de envío:</b> ${fecha} <br> 
+                                <b>Hora de envío:</b> ${hora} <br><br> 
+                            </p>
+                            <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                            <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                <b>Motivo:</b> ${tipo_permiso} <br>   
+                                <b>Fecha de Solicitud:</b> ${solicitud} <br> 
+                                <b>Desde:</b> ${desde} ${h_inicio} <br>
+                                <b>Hasta:</b> ${hasta} ${h_fin} <br>
+                                <b>Observación:</b> ${observacion} <br>
+                                <b>Días permiso:</b> ${dias_permiso} <br>
+                                <b>Horas permiso:</b> ${horas_permiso} <br>
+                                <b>Estado:</b> ${estado_p} <br>
+                            </p>
+                            <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                                <b>Gracias por la atención</b><br>
+                                <b>Saludos cordiales,</b> <br><br>
+                            </p>
+                            <img src="cid:pief" style="width:50%; height:50%;"/>
+                         </body>
+                     `,
                     attachments: [
                         {
                             filename: 'cabecera_firma.jpg',
                             path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                            cid: 'cabeceraf' //same cid value as in the html img src
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
                         },
                         {
                             filename: 'pie_firma.jpg',
                             path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                            cid: 'pief' //same cid value as in the html img src
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
                         }
                     ]
                 };
-                console.log(' ver permiso ----------', permiso_mail);
-                if (permiso_mail === true && permiso_noti === true) {
-                    /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
-                          if (error) {
-                              console.log(error);
-                          } else {
-                              console.log('Email sent: ' + info.response);
-                          }
-                      });*/
-                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                    console.log(' ver permiso ----------', ultimo.rows[0].id);
-                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-                }
-                else if (permiso_mail === true && permiso_noti === false) {
-                    /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
-                          if (error) {
-                              console.log(error);
-                          } else {
-                              console.log('Email sent: ' + info.response);
-                          }
-                      });*/
-                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-                }
-                else if (permiso_mail === false && permiso_noti === true) {
-                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-                }
-                else if (permiso_mail === false && permiso_noti === false) {
-                    res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-                }
+                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                res.jsonp({ message: 'PERMISO REGISTRADO.' });
             }
         });
     }
