@@ -188,7 +188,17 @@ class UsuarioControlador {
             if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
                 port = parseInt(settingsMail_1.puerto);
             }
-            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+            var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+            corr.sendMail(data, function (error, info) {
+                if (error) {
+                    console.log('Email error: ' + error);
+                    return res.jsonp({ message: 'error' });
+                }
+                else {
+                    console.log('Email sent: ' + info.response);
+                    return res.jsonp({ message: 'ok' });
+                }
+            });
             res.jsonp({ mail: 'si', message: 'Mail enviado.' });
         });
     }

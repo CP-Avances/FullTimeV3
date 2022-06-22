@@ -33,7 +33,7 @@ export class RealTimeService {
   }
 
   IngresarNotificacionEmpleado(datos: any) {
-    return this.http.post(`${environment.url}/noti-real-time`, datos);
+    return this.http.post<any>(`${environment.url}/noti-real-time`, datos);
   }
 
   PutVistaNotificacion(id_realtime: number) {
@@ -71,7 +71,7 @@ export class RealTimeService {
    ** ************************************************************************************ **/
 
   EnviarCorreoComunicado(datos: any) {
-    return this.http.post(`${environment.url}/noti-real-time/mail-comunicado`, datos);
+    return this.http.post<any>(`${environment.url}/noti-real-time/mail-comunicado`, datos);
   }
 
   EnviarMensajeComunicado(data: any) {

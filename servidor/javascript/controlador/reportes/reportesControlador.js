@@ -112,8 +112,8 @@ class ReportesControlador {
             const { id_empleado } = req.params;
             const { fechaInicio, fechaFinal } = req.body;
             const FECHAS = yield database_1.default.query('select pg.id, pg.codigo, pg.id_empl_cargo, pg.id_det_horario, pg.fec_horario, pg.fec_hora_horario, pg.tipo_entr_salida, pg.fec_hora_timbre, pg.id_horario' +
-                'from plan_general pg ' +
-                'where pg.codigo = $3 and ' +
+                'FROM plan_general pg ' +
+                'WHERE pg.codigo = $3 and ' +
                 '( pg.fec_hora_horario::date between $1 and $2 ) ' +
                 'order by fec_hora_horario;', [fechaInicio, fechaFinal, id_empleado]);
             console.log("m: ", (FECHAS.rows));

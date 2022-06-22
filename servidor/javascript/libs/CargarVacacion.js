@@ -49,7 +49,8 @@ function ConsultarVacacion(id_vacacion) {
 }
 function ConsultarPerido(id_peri_vacacion) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield database_1.default.query('SELECT dia_vacacion AS dias, horas_vacaciones AS horas, min_vacaciones AS min FROM peri_vacaciones WHERE id = $1 AND pv.estado = 1', [id_peri_vacacion])
+        return yield database_1.default.query(`SELECT dia_vacacion AS dias, horas_vacaciones AS horas, min_vacaciones AS min 
+        FROM peri_vacaciones WHERE id = $1`, [id_peri_vacacion])
             .then(result => {
             return result.rows[0];
         });
@@ -57,7 +58,9 @@ function ConsultarPerido(id_peri_vacacion) {
 }
 function HorasTrabaja(id_periodo) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield database_1.default.query('SELECT ca.hora_trabaja FROM peri_vacaciones AS pv, empl_contratos AS co, empl_cargos AS ca WHERE pv.id = $1 AND pv.estado = 1 AND pv.id_empl_contrato = co.id AND co.id = ca.id_empl_contrato', [id_periodo]).then(result => {
+        return yield database_1.default.query('SELECT ca.hora_trabaja ' +
+            'FROM peri_vacaciones AS pv, empl_contratos AS co, empl_cargos AS ca ' +
+            'WHERE pv.id = $1 AND pv.id_empl_contrato = co.id AND co.id = ca.id_empl_contrato', [id_periodo]).then(result => {
             return result.rows[0].hora_trabaja;
         });
     });

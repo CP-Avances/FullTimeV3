@@ -69,26 +69,26 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
       this.restPermiso.BuscarPermisoCodigo(datos[0].codigo).subscribe(datos => {
         this.permisosTotales = datos;
       }, err => {
-        return this.validacionesService.RedireccionarEstadisticas(err.error) 
+        return this.validacionesService.RedireccionarEstadisticas(err.error)
       })
     });
   }
 
-  /* Ventana para registrar permisos del empleado */
+  // VENTANA PARA REGISTRAR PERMISOS DEL EMPLEADO 
   AbrirVentanaPermiso(): void {
-    this.restEmpleado.BuscarIDContrato(parseInt(this.idEmpleado)).subscribe(datos => {
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.idContrato = datos;
-
+      console.log("idContrato ", this.idContrato[0].max)
       this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
         this.idCargo = datos;
-
+        console.log("idcontrato ", this.idCargo[0].max)
         this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
           this.idPerVacacion = datos;
-
+          console.log("idPerVaca ", this.idPerVacacion[0].id)
           this.vistaRegistrarDatos.open(RegistroEmpleadoPermisoComponent,
             {
               width: '1200px',
-              data: { idEmpleado: this.idEmpleado, idContrato: this.idContrato[this.idContrato.length - 1].id, idPerVacacion: this.idPerVacacion[0].id, idCargo: this.idCargo[0].max }
+              data: { idEmpleado: this.idEmpleado, idContrato: this.idContrato[0].max, idPerVacacion: this.idPerVacacion[0].id, idCargo: this.idCargo[0].max }
             }).afterClosed().subscribe(item => {
               this.obtenerPermisos(parseInt(this.idEmpleado));
             });

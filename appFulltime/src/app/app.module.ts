@@ -209,7 +209,7 @@ import { PlanHoraExtraAutorizaComponent } from './componentes/autorizaciones/pla
 import { ColoresEmpresaComponent } from './componentes/catalogos/catEmpresa/colores-empresa/colores-empresa.component';
 import { AyudaComponent } from './share/ayuda/ayuda.component';
 
-import { CorreoEmpresaComponent } from './componentes/catalogos/catEmpresa/correo-empresa/correo-empresa.component';
+import { CorreoEmpresaComponent } from './componentes/administracionGeneral/correo/correo-empresa/correo-empresa.component';
 import { ListaPlanificacionesComponent } from './componentes/horasExtras/planificacionHoraExtra/lista-planificaciones/lista-planificaciones.component';
 import { EditarPlanHoraExtraComponent } from './componentes/horasExtras/planificacionHoraExtra/editar-plan-hora-extra/editar-plan-hora-extra.component';
 import { ListaArchivosComponent } from './componentes/documentos/lista-archivos/lista-archivos.component';
@@ -307,7 +307,6 @@ import { RegistrarBirthdayComponent } from './componentes/administracionGeneral/
 import { EditarBirthdayComponent } from './componentes/administracionGeneral/birthday/editar-birthday/editar-birthday.component';
 import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
 import { ConfiguracionComponent } from './componentes/administracionGeneral/correo/configuracion/configuracion.component';
-import { EditarConfiguracionComponent } from './componentes/administracionGeneral/correo/editar-configuracion/editar-configuracion.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -558,7 +557,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     VerCoordenadasComponent,
     ComunicadosComponent,
     ConfiguracionComponent,
-    EditarConfiguracionComponent,
 
   ],
 

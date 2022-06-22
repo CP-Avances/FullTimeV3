@@ -35,8 +35,8 @@ export class CorreoEmpresaComponent implements OnInit {
   // VARIABLES PROGRESS SPINNER 
   mode: ProgressSpinnerMode = 'indeterminate';
   color: ThemePalette = 'primary';
-  value = 10;
   habilitarprogress: boolean = false;
+  value = 10;
 
   public ConfiguracionCorreoForm = new FormGroup({
     email: this.emailF,
@@ -56,8 +56,8 @@ export class CorreoEmpresaComponent implements OnInit {
   ngOnInit(): void {
     this.ConfiguracionCorreoForm.patchValue({
       email: this.data.correo,
+      puertoF: this.data.puerto,
       servidorF: this.data.servidor,
-      puertoF: this.data.puerto
     })
   }
 
@@ -98,7 +98,7 @@ export class CorreoEmpresaComponent implements OnInit {
     if (e.keyCode != 8) {
       this.contrasenia = this.contrasenia + e.key;
     }
-    
+
     if (this.contrasenia.length === 0 && this.confirmar_contrasenia.length === 0) {
       this.btnDisableGuardar = false;
     } else {
@@ -157,6 +157,26 @@ export class CorreoEmpresaComponent implements OnInit {
     }
     this.password_confirmF.setValidators(Validators.required)
     return '';
+  }
+
+  // MÉTODO PARA VALIDAR INGRESO DE NÚMEROS
+  IngresarSoloNumeros(evt) {
+    if (window.event) {
+      var keynum = evt.keyCode;
+    }
+    else {
+      keynum = evt.which;
+    }
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
+    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
+      return true;
+    }
+    else {
+      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
+        timeOut: 6000,
+      })
+      return false;
+    }
   }
 
 }

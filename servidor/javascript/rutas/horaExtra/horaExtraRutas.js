@@ -20,6 +20,7 @@ class HorasExtrasPedidasRutas {
         this.router.get('/lista/:id_user', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerlistaHora);
         this.router.post('/', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.CrearHoraExtraPedida);
         this.router.post('/mail-noti/', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.SendMailNotifiHoraExtra);
+        this.router.post('/mail-noti-horas-extras-movil/:id_empresa', horaExtraControlador_1.default.EnviarCorreoHoraExtraMovil);
         this.router.get('/datosSolicitud/:id_emple_hora', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerSolicitudHoraExtra);
         this.router.put('/:id/estado', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ActualizarEstado);
         this.router.put('/:id/hora-extra-solicitada', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.EditarHoraExtra);

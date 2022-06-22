@@ -13,7 +13,7 @@
                 <mat-form-field>
                     <mat-label>Correo Notificaciones</mat-label>
                     <input matInput placeholder="casapazmino@gmail.com" [formControl]="emailF">
-                    <mat-icon id="empre" matSuffix matTooltipPosition="right"
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Actualizar cuenta de correo electrónico principal.">
                         create</mat-icon>
                     <mat-error *ngIf="emailF.invalid">Ingresar un correo electrónico</mat-error>
@@ -21,14 +21,14 @@
                 <mat-form-field>
                     <mat-label>Servidor de Correo</mat-label>
                     <input matInput placeholder="smpt.gmail.com" [formControl]="servidorF">
-                    <mat-icon id="empre" matSuffix matTooltipPosition="right"
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Actualizar servidor de correo electrónico principal.">
                         create</mat-icon>
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Puerto de Salida</mat-label>
-                    <input matInput placeholder="465" [formControl]="puertoF">
-                    <mat-icon id="empre" matSuffix matTooltipPosition="right"
+                    <input matInput placeholder="465" [formControl]="puertoF" (keypress)="IngresarSoloNumeros($event)">
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Actualizar puerto de salida de correo electrónico principal.">
                         create</mat-icon>
                 </mat-form-field>
@@ -53,7 +53,6 @@
                     </button>
                     <mat-error *ngIf="password_confirmF.invalid">{{ObtenerErrorPasswordConfirm()}}</mat-error>
                 </mat-form-field>
-
             </div>
         </div>
     </div>

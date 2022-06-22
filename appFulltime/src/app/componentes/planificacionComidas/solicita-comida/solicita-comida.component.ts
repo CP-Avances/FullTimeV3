@@ -10,6 +10,7 @@ import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/t
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-solicita-comida',
@@ -60,6 +61,7 @@ export class SolicitaComidaComponent implements OnInit {
     private toastr: ToastrService,
     private rest: TipoComidasService,
     public restE: EmpleadoService,
+    public validar: ValidacionesService,
     public restPlan: PlanComidasService,
     public restUsuario: UsuarioService,
     public dialogRef: MatDialogRef<SolicitaComidaComponent>,
@@ -159,7 +161,8 @@ export class SolicitaComidaComponent implements OnInit {
       hora_inicio: form.horaInicioForm,
       hora_fin: form.horaFinForm,
       extra: form.extraForm,
-      verificar: 'NO'
+      verificar: 'NO',
+      id_departamento: parseInt(localStorage.getItem('departamento'))
     };
 
     let datosDuplicados = {
@@ -173,11 +176,12 @@ export class SolicitaComidaComponent implements OnInit {
         timeOut: 6000,
       })
     }, error => {
-      this.restPlan.CrearSolicitudComida(datosPlanComida).subscribe(response => {
-        this.EnviarNotificaciones(form.fechaPlanificacionForm);
-        this.toastr.success('Operación Exitosa', 'Servicio de Alimentación Registrado.', {
+      this.restPlan.CrearSolicitudComida(datosPlanComida).subscribe(alimentacion => {
+        this.SendEmailsEmpleados(alimentacion);
+        this.NotificarPlanificacion(alimentacion);
+        this.toastr.success('Operación Exitosa', 'Solicitud registrada.', {
           timeOut: 6000,
-        })
+        });
         this.CerrarRegistroPlanificacion();
       });
     });
@@ -201,63 +205,102 @@ export class SolicitaComidaComponent implements OnInit {
   }
 
 
-  jefes: any = [];
-  envios: any = [];
-  EnviarNotificaciones(fecha) {
-    this.restPlan.obtenerJefes(this.departamento).subscribe(data => {
-      this.jefes = [];
-      this.jefes = data;
-      this.jefes.map(obj => {
-        let datosCorreo = {
-          id_usua_solicita: this.data.idEmpleado,
-          correo: obj.correo,
-          comida_mail: obj.comida_mail,
-          comida_noti: obj.comida_noti
-        }
-        this.restPlan.EnviarCorreo(datosCorreo).subscribe(envio => {
-          this.envios = [];
-          this.envios = envio;
-          console.log('datos envio', this.envios.notificacion);
-          if (this.envios.notificacion === true) {
-            this.NotificarPlanificacion(this.data.idEmpleado, obj.empleado, fecha);
-          }
-        });
-      })
-    });
+  NotificarPlanificacion(alimentacion: any) {
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
+    let desde = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+    let inicio = moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm');
+    let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
+
+    let mensaje = {
+      id_empl_envia: this.data.idEmpleado,
+      id_empl_recive: '',
+      tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
+      mensaje: 'Ha solicitado un servicio de alimentación desde ' +
+        desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
+        ' horario de ' + inicio + ' a ' + final,
+    }
+
+    alimentacion.EmpleadosSendNotiEmail.forEach(e => {
+      mensaje.id_empl_recive = e.empleado;
+      if (e.comida_noti) {
+        this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
+          console.log(res.message);
+        })
+      }
+    })
+
   }
 
-  NotificarPlanificacion(empleado_envia: any, empleado_recive: any, fecha) {
-    let mensaje = {
-      id_empl_envia: empleado_envia,
-      id_empl_recive: empleado_recive,
-      mensaje: 'Solicitó Alimentación ' + ' para ' + moment(fecha).format('YYYY-MM-DD')
-    }
-    console.log(mensaje);
-    this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
-      console.log(res.message);
+  SendEmailsEmpleados(alimentacion: any) {
+
+    console.log('ver lista', alimentacion)
+
+    var cont = 0;
+    var correo_usuarios = '';
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
+    let solicitud = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+
+    alimentacion.EmpleadosSendNotiEmail.forEach(e => {
+
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE ALIMENTACIÓN
+      if (e.comida_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
+          }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
+
+      if (cont === alimentacion.EmpleadosSendNotiEmail.length) {
+        let datosServicioCreado = {
+          fec_solicitud: solicitud + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY'),
+          inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
+          final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),
+          id_comida: alimentacion.id_comida,
+          observacion: alimentacion.observacion,
+          id_usua_solicita: alimentacion.id_empleado,
+          extra: alimentacion.extra,
+          correo: correo_usuarios,
+          id: alimentacion.id,
+          solicitado_por: this.empleados[0].nombre + ' ' + this.empleados[0].apellido
+        }
+        if (correo_usuarios != '') {
+          this.restPlan.EnviarCorreo(datosServicioCreado).subscribe(
+            resp => {
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
     })
   }
 
+
   IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    this.validar.IngresarSoloLetras(e);
   }
 
 }

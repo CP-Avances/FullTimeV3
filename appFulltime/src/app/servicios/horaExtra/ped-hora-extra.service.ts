@@ -55,7 +55,7 @@ export class PedHoraExtraService {
   }
 
   SendMailNoti(datos: any) {
-    return this.http.post(`${environment.url}/horas-extras-pedidas/mail-noti`, datos);
+    return this.http.post<any>(`${environment.url}/horas-extras-pedidas/mail-noti`, datos);
   }
 
   EliminarHoraExtra(id_hora_extra: number) {

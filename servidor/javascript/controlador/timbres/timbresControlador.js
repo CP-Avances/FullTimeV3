@@ -16,11 +16,16 @@ exports.timbresControlador = void 0;
 const database_1 = __importDefault(require("../../database"));
 // import { ContarHoras } from '../../libs/contarHoras'
 class TimbresControlador {
-    ObtenerRealTimeTimbresEmpleado(req, res) {
+    ObtenerAvisosColaborador(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empleado } = req.params;
             console.log('OBTENER REAL TIME TIMBRES EMPLEADO: Id empleado = ', id_empleado);
-            const TIMBRES_NOTIFICACION = yield database_1.default.query('SELECT * FROM realtime_timbres WHERE id_receives_empl = $1 ORDER BY create_at DESC LIMIT 5', [id_empleado])
+            const TIMBRES_NOTIFICACION = yield database_1.default.query(`
+            SELECT id, to_char(create_at, \'yyyy-MM-dd HH24:mi:ss\') AS create_at, id_send_empl, visto, 
+            descripcion, id_timbre, tipo
+            FROM realtime_timbres WHERE id_receives_empl = $1 
+            ORDER BY create_at DESC LIMIT 5
+            `, [id_empleado])
                 .then((result) => __awaiter(this, void 0, void 0, function* () {
                 if (result.rowCount > 0) {
                     return yield Promise.all(result.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {

@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PLAN_COMIDAS_CONTROLADOR = void 0;
-const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
+const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
 class PlanComidasControlador {
     // CONSULTA DE SOLICITUDES DE SERVICIO DE ALIMENTACIÓN CON ESTADO PENDIENTE
@@ -71,10 +71,59 @@ class PlanComidasControlador {
     // CONSULTA PARA REGISTRAR DATOS DE SOLICITUD DE COMIDA
     CrearSolicitaComida(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar } = req.body;
-            yield database_1.default.query('INSERT INTO solicita_comidas (id_empleado, fecha, id_comida, observacion, fec_comida, ' +
-                'hora_inicio, hora_fin, extra, verificar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar]);
-            res.jsonp({ message: 'Solicitud de alimentación ha sido guardada con éxito' });
+            try {
+                const { id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar, id_departamento } = req.body;
+                const response = yield database_1.default.query('INSERT INTO solicita_comidas (id_empleado, fecha, id_comida, observacion, fec_comida, ' +
+                    'hora_inicio, hora_fin, extra, verificar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar]);
+                const [objetoAlimento] = response.rows;
+                if (!objetoAlimento)
+                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
+                const alimento = objetoAlimento;
+                const JefesDepartamentos = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, ' +
+                    'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, ' +
+                    'e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, c.comida_mail, c.comida_noti ' +
+                    'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+                    'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
+                    'WHERE da.id_departamento = $1 AND ' +
+                    'da.id_empl_cargo = ecr.id AND ' +
+                    'da.id_departamento = cg.id AND ' +
+                    'da.estado = true AND ' +
+                    'cg.id_sucursal = s.id AND ' +
+                    'ecr.id_empl_contrato = ecn.id AND ' +
+                    'ecn.id_empleado = e.id AND ' +
+                    'e.id = c.id_empleado', [id_departamento]).then(result => { return result.rows; });
+                console.log(JefesDepartamentos);
+                if (JefesDepartamentos.length === 0)
+                    return res.status(400)
+                        .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+                const [obj] = JefesDepartamentos;
+                let depa_padre = obj.depa_padre;
+                let JefeDepaPadre;
+                if (depa_padre !== null) {
+                    do {
+                        JefeDepaPadre = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
+                            'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
+                            'ecn.id AS contrato, e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname, e.cedula, e.correo, c.comida_mail, ' +
+                            'c.comida_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+                            'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
+                            'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
+                            'da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
+                            'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre]);
+                        depa_padre = JefeDepaPadre.rows[0].depa_padre;
+                        JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                    } while (depa_padre !== null);
+                    alimento.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(alimento);
+                }
+                else {
+                    alimento.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(alimento);
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
         });
     }
     BuscarSolEmpleadoFechasActualizar(req, res) {
@@ -132,102 +181,68 @@ class PlanComidasControlador {
             res.status(404).jsonp({ text: 'Registro no encontrado' });
         });
     }
-    // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA SOLICITUD DE COMIDA 
-    EnviarCorreoComidas(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
-            const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
-                'FROM empleados AS e WHERE e.id = $1', [id_usua_solicita]);
-            console.log(EMPLEADO_SOLICITA.rows);
-            var url = `${process.env.URL_DOMAIN}/verEmpleado`;
-            let data = {
-                to: correo,
-                from: settingsMail_1.email,
-                subject: 'Solicitud de Servicio de Alimentación',
-                html: `
-      <img src="cid:cabeceraf" width="50%" height="50%"/>
-      <p><b>${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido}</b> con número de
-          cédula ${EMPLEADO_SOLICITA.rows[0].cedula} realizó o actualizó una solicitud de Servicio de Alimentación
-          para el <b>${fecha}<b> a partir de las <b>${hora_inicio}<b> hasta las <b>${hora_fin}<b>. </p>
-          <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>
-          <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-          <b>Gracias por la atención</b><br>
-          <b>Saludos cordiales,</b> <br><br>
-        </p>
-        <img src="cid:pief" width="50%" height="50%"/>
-  
-          `,
-                attachments: [
-                    {
-                        filename: 'cabecera_firma.jpg',
-                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                        cid: 'cabeceraf' //same cid value as in the html img src
-                    },
-                    {
-                        filename: 'pie_firma.jpg',
-                        path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                        cid: 'pief' //same cid value as in the html img src
-                    }
-                ]
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
-            }
-            if (comida_mail === true && comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (comida_mail === true && comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-            else if (comida_mail === false && comida_noti === true) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (comida_mail === false && comida_noti === false) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-        });
-    }
     // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA ELIMINADO UNA SOLICITUD DE COMIDA 
     EnviarCorreoEliminarSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
-            const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
-                'FROM empleados AS e WHERE e.id = $1', [id_usua_solicita]);
-            console.log(EMPLEADO_SOLICITA.rows);
-            var url = `${process.env.URL_DOMAIN}/verEmpleado`;
-            let data = {
-                to: correo,
-                from: settingsMail_1.email,
-                subject: 'Eliminar Solicitud de Servicio de Alimentación',
-                html: `<p><b>${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido}</b> con número de
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { id_usua_solicita, correo, comida_mail, comida_noti, fecha, hora_inicio, hora_fin } = req.body;
+                const EMPLEADO_SOLICITA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
+                    'FROM empleados AS e WHERE e.id = $1', [id_usua_solicita]);
+                console.log(EMPLEADO_SOLICITA.rows);
+                var url = `${process.env.URL_DOMAIN}/verEmpleado`;
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: 'Eliminar Solicitud de Servicio de Alimentación',
+                    html: `<p><b>${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido}</b> con número de
           cédula ${EMPLEADO_SOLICITA.rows[0].cedula} eliminó su solicitud de Servicio de Alimentación
           para el <b>${fecha}<b> a partir de las <b>${hora_inicio}<b> hasta las <b>${hora_fin}<b>. </p>
           <a href="${url}/${id_usua_solicita}">Ir a ver solicitud</a>`
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
+                if (comida_mail === true && comida_noti === true) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (comida_mail === true && comida_noti === false) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
+                else if (comida_mail === false && comida_noti === true) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (comida_mail === false && comida_noti === false) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
             }
-            if (comida_mail === true && comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (comida_mail === true && comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-            else if (comida_mail === false && comida_noti === true) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (comida_mail === false && comida_noti === false) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
             }
         });
     }
@@ -298,10 +313,24 @@ class PlanComidasControlador {
     // CONSULTA PARA CREAR UNA PLANIFICACIÓN
     CrearPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, fec_inicio, fec_final } = req.body;
-            yield database_1.default.query('INSERT INTO plan_comidas (fecha, id_comida, observacion, fec_comida, ' +
-                'hora_inicio, hora_fin, extra, fec_inicio, fec_final) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, fec_inicio, fec_final]);
-            res.jsonp({ message: 'Planificación del almuerzo ha sido guardada con éxito' });
+            try {
+                const { fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, fec_inicio, fec_final } = req.body;
+                const response = yield database_1.default.query(`
+        INSERT INTO plan_comidas (fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, 
+          fec_inicio, fec_final) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *
+        `, [fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, fec_inicio, fec_final]);
+                const [planAlimentacion] = response.rows;
+                if (!planAlimentacion) {
+                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
+                }
+                else {
+                    return res.status(200).jsonp(planAlimentacion);
+                }
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
         });
     }
     ObtenerUltimaPlanificacion(req, res) {
@@ -482,178 +511,540 @@ class PlanComidasControlador {
             }
         });
     }
-    /** NOTIFICACIONES DE SOLICITUDES Y PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN*/
-    EnviarNotificacionPlanComida(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let { id_empl_envia, id_empl_recive, mensaje } = req.body;
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let create_at = f.toJSON();
-            let tipo = 1; // Es el tipo de notificación
-            yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
-            res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
-        });
-    }
-    /** ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA PLANIFICACIÓN DE COMIDA */
-    EnviarCorreoPlanComidas(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
-            const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
-                'c.comida_noti FROM empleados AS e, config_noti AS c ' +
-                'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
-            const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
-                'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
-            var url = `${process.env.URL_DOMAIN}/almuerzosEmpleado`;
-            let data = {
-                to: EMPLEADO_PLAN.rows[0].correo,
-                from: settingsMail_1.email,
-                subject: 'Planificación de Servicio de Alimentación',
-                html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha realizado o actualizado una
-      Planificación de Servicio de Alimentación desde el <b>${fecha_inicio}</b> hasta el <b>${fecha_fin}</b> a partir de las <b>${hora_inicio}</b> hasta las <b>${hora_fin}</b>, 
-      a usted <b>${EMPLEADO_PLAN.rows[0].nombre} ${EMPLEADO_PLAN.rows[0].apellido}</b> con cédula de 
-      identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>
-          <a href="${url}">Ir a ver Planificación</a>`
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
-            }
-            if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-        });
-    }
     /** ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA PLANIFICACIÓN DE COMIDA */
     EnviarCorreoActualizaSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin } = req.body;
-            const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
-                'c.comida_noti FROM empleados AS e, config_noti AS c ' +
-                'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
-            const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
-                'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
-            var url = `${process.env.URL_DOMAIN}/almuerzosEmpleado`;
-            let data = {
-                to: EMPLEADO_PLAN.rows[0].correo,
-                from: settingsMail_1.email,
-                subject: 'Actualización de Servicio de Alimentación',
-                html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha actualizado los
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin } = req.body;
+                const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
+                    'c.comida_noti FROM empleados AS e, config_noti AS c ' +
+                    'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
+                const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
+                    'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
+                var url = `${process.env.URL_DOMAIN}/almuerzosEmpleado`;
+                let data = {
+                    to: EMPLEADO_PLAN.rows[0].correo,
+                    from: settingsMail_1.email,
+                    subject: 'Actualización de Servicio de Alimentación',
+                    html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha actualizado los
         datos de su Solicitud de Servicio de Alimentación para el <b>${fecha_inicio}</b> a partir de las <b>${hora_inicio}</b> hasta las <b>${hora_fin}</b>, 
         a usted <b>${EMPLEADO_PLAN.rows[0].nombre} ${EMPLEADO_PLAN.rows[0].apellido}</b> con cédula de 
         identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>
             <a href="${url}">Ir a ver Planificación</a>`
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
+                if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
             }
-            if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
             }
         });
     }
     EnviarCorreoEliminaPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
-            const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
-                'c.comida_noti FROM empleados AS e, config_noti AS c ' +
-                'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
-            const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
-                'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
-            let data = {
-                to: EMPLEADO_PLAN.rows[0].correo,
-                from: settingsMail_1.email,
-                subject: 'Eliminar Planificación de Servicio de Alimentación',
-                html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha eliminado la
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { id_usua_plan, id_usu_admin, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
+                const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
+                    'c.comida_noti FROM empleados AS e, config_noti AS c ' +
+                    'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
+                const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
+                    'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
+                let data = {
+                    to: EMPLEADO_PLAN.rows[0].correo,
+                    from: settingsMail_1.email,
+                    subject: 'Eliminar Planificación de Servicio de Alimentación',
+                    html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha eliminado la
       Planificación de Servicio de Alimentación del <b>${fecha_inicio}</b> hasta el <b>${fecha_fin}</b> a partir de las <b>${hora_inicio}</b> hasta las <b>${hora_fin}</b>, 
       a usted <b>${EMPLEADO_PLAN.rows[0].nombre} ${EMPLEADO_PLAN.rows[0].apellido}</b> con cédula de 
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>`
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
+                if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
             }
-            if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
-            }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
             }
         });
     }
     EnviarCorreoEstadoSolComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin, estado } = req.body;
-            const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
-                'c.comida_noti FROM empleados AS e, config_noti AS c ' +
-                'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
-            const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
-                'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
-            var url = `${process.env.URL_DOMAIN}/almuerzosEmpleado`;
-            let data = {
-                to: EMPLEADO_PLAN.rows[0].correo,
-                from: settingsMail_1.email,
-                subject: 'Aprobación Solicitud de Servicio de Alimentación',
-                html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha ${estado}
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { id_usua_plan, id_usu_admin, fecha_inicio, hora_inicio, hora_fin, estado } = req.body;
+                const EMPLEADO_PLAN = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.correo, c.comida_mail, ' +
+                    'c.comida_noti FROM empleados AS e, config_noti AS c ' +
+                    'WHERE e.id = $1 AND e.id = c.id_empleado', [id_usua_plan]);
+                const EMPLEADO_ADMIN = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula ' +
+                    'FROM empleados AS e WHERE e.id = $1', [id_usu_admin]);
+                var url = `${process.env.URL_DOMAIN}/almuerzosEmpleado`;
+                let data = {
+                    to: EMPLEADO_PLAN.rows[0].correo,
+                    from: settingsMail_1.email,
+                    subject: 'Aprobación Solicitud de Servicio de Alimentación',
+                    html: `<p><b>${EMPLEADO_ADMIN.rows[0].nombre} ${EMPLEADO_ADMIN.rows[0].apellido}</b> ha ${estado}
       su Solicitud de Servicio de Alimentación para el <b>${fecha_inicio}</b> en horario de las <b>${hora_inicio}</b> hasta <b>${hora_fin}</b>, 
       a usted <b>${EMPLEADO_PLAN.rows[0].nombre} ${EMPLEADO_PLAN.rows[0].apellido}</b> con cédula de 
       identidad <b>${EMPLEADO_PLAN.rows[0].cedula}</b>. </p>`
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
+                if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
+                    var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                    corr.sendMail(data, function (error, info) {
+                        if (error) {
+                            console.log('Email error: ' + error);
+                            return res.jsonp({ message: 'error' });
+                        }
+                        else {
+                            console.log('Email sent: ' + info.response);
+                            return res.jsonp({ message: 'ok' });
+                        }
+                    });
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+                }
+                else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
+                    res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+                }
             }
-            if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
             }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === true && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+        });
+    }
+    /** ********************************************************************************************** **
+     ** *              ENVIO DE NOTIFICACIONES DE SERVICIOS DE ALIMENTACIÓN                          * **
+     ** ********************************************************************************************** **/
+    // NOTIFICACIONES DE SOLICITUDES Y PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN
+    EnviarNotificacionComidas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
+            var f = new Date();
+            f.setUTCHours(f.getHours());
+            let create_at = f.toJSON();
+            yield database_1.default.query(`
+      INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
+      VALUES($1, $2, $3, $4, $5)
+      `, [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+            res.jsonp({ message: 'Notificación enviada con éxito.' });
+        });
+    }
+    /** ******************************************************************************************** **
+     ** *            MÉTODO ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE ALIMENTACIÓN             * **
+     ** ******************************************************************************************** **/
+    // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA SOLICITUD DE COMIDA MEDIANTE APP WEB
+    EnviarCorreoComidas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
+            if (datos === 'ok') {
+                const { id_usua_solicita, correo, fec_solicitud, id_comida, inicio, final, observacion, extra, solicitado_por } = req.body;
+                var tipo_servicio = 'Extra';
+                if (extra === false) {
+                    tipo_servicio = 'Normal';
+                }
+                const EMPLEADO_SOLICITA = yield database_1.default.query(`
+          SELECT e.correo, e.nombre, e.apellido, e.cedula, ecr.id_departamento, ecr.id_sucursal, 
+            ecr.id AS cargo, tc.cargo AS tipo_cargo, d.nombre AS departamento 
+          FROM empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, cg_departamentos AS d 
+          WHERE (SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id 
+          AND tc.id = ecr.cargo AND d.id = ecr.id_departamento AND e.id = $1 ORDER BY cargo DESC
+        `, [id_usua_solicita]);
+                const SERVICIO_SOLICITADO = yield database_1.default.query(`
+          SELECT tc.nombre AS servicio, ctc.nombre AS menu, ctc.hora_inicio, ctc.hora_fin, 
+            dm.nombre AS comida, dm.valor, dm.observacion 
+          FROM tipo_comida AS tc, cg_tipo_comidas AS ctc, detalle_menu AS dm 
+          WHERE tc.id = ctc.tipo_comida AND ctc.id = dm.id_menu AND dm.id = $1
+        `, [id_comida]);
+                console.log(EMPLEADO_SOLICITA.rows);
+                var url = `${process.env.URL_DOMAIN}/listaSolicitaComida`;
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: 'SOLICITUD DE SERVICIO DE ALIMENTACION',
+                    html: `
+                   <body>
+                       <div style="text-align: center;">
+                           <img width="50%" height="50%" src="cid:cabeceraf"/>
+                       </div>
+                       <br>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           El presente correo es para informar que se ha creado la siguiente solicitud de servicio de alimentación: <br>  
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                           <b>Asunto:</b> Solicitud de servicio de alimentación <br> 
+                           <b>Colaborador que envía:</b> ${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido} <br>
+                           <b>Número de Cédula:</b> ${EMPLEADO_SOLICITA.rows[0].cedula} <br>
+                           <b>Cargo:</b> ${EMPLEADO_SOLICITA.rows[0].tipo_cargo} <br>
+                           <b>Departamento:</b> ${EMPLEADO_SOLICITA.rows[0].departamento} <br>
+                           <b>Generado mediante:</b> Aplicación Web <br>
+                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Motivo:</b> ${observacion} <br>   
+                           <b>Fecha de Solicitud:</b> ${fec_solicitud} <br> 
+                           <b>Servicio:</b> ${SERVICIO_SOLICITADO.rows[0].servicio} <br>
+                           <b>Menú:</b> ${SERVICIO_SOLICITADO.rows[0].menu} - ${SERVICIO_SOLICITADO.rows[0].comida} <br>
+                           <b>Detalle del servicio:</b> ${SERVICIO_SOLICITADO.rows[0].observacion} <br>
+                           <b>Servicio desde:</b> ${inicio} <br>
+                           <b>Servicio hasta:</b> ${final} <br>
+                           <b>Tipo de servicio:</b> ${tipo_servicio} <br>
+                           <b>Estado:</b> Pendiente <br><br>
+                           <a href="${url}">Dar clic en el siguiente enlace para revisar solicitud de servicio de alimentación.</a> <br><br>
+                           <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                       </p>
+                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Gracias por la atención</b><br>
+                           <b>Saludos cordiales,</b> <br><br>
+                       </p>
+                       <img src="cid:pief" width="50%" height="50%"/>
+                    </body>
+                `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
             }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === true) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: true });
+            else {
+                res.jsonp({ message: 'Ups !!! algo salio mal. No fue posible enviar correo electrónico.' });
             }
-            else if (EMPLEADO_PLAN.rows[0].comida_mail === false && EMPLEADO_PLAN.rows[0].comida_noti === false) {
-                res.jsonp({ message: 'Solicitud se notificó con éxito', notificacion: false });
+        });
+    }
+    // MÉTODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
+    EnviarCorreoComidasMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { id_usua_solicita, correo, fec_solicitud, id_comida, inicio, final, observacion, extra, solicitado_por } = req.body;
+                var tipo_servicio = 'Extra';
+                if (extra === false) {
+                    tipo_servicio = 'Normal';
+                }
+                const EMPLEADO_SOLICITA = yield database_1.default.query(`
+          SELECT e.correo, e.nombre, e.apellido, e.cedula, ecr.id_departamento, ecr.id_sucursal, 
+            ecr.id AS cargo, tc.cargo AS tipo_cargo, d.nombre AS departamento 
+          FROM empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, cg_departamentos AS d
+          WHERE (SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id 
+          AND tc.id = ecr.cargo AND d.id = ecr.id_departamento AND e.id = $1 ORDER BY cargo DESC
+        `, [id_usua_solicita]);
+                const SERVICIO_SOLICITADO = yield database_1.default.query(`
+          SELECT tc.nombre AS servicio, ctc.nombre AS menu, ctc.hora_inicio, ctc.hora_fin, 
+            dm.nombre AS comida, dm.valor, dm.observacion 
+          FROM tipo_comida AS tc, cg_tipo_comidas AS ctc, detalle_menu AS dm 
+          WHERE tc.id = ctc.tipo_comida AND ctc.id = dm.id_menu AND dm.id = $1
+        `, [id_comida]);
+                console.log(EMPLEADO_SOLICITA.rows);
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: 'SOLICITUD DE SERVICIO DE ALIMENTACION',
+                    html: `
+                   <body>
+                       <div style="text-align: center;">
+                           <img width="50%" height="50%" src="cid:cabeceraf"/>
+                       </div>
+                       <br>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           El presente correo es para informar que se ha creado la siguiente solicitud de servicio de alimentación: <br>  
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                           <b>Asunto:</b> Solicitud de servicio de alimentación <br> 
+                           <b>Colaborador que envía:</b> ${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido} <br>
+                           <b>Número de Cédula:</b> ${EMPLEADO_SOLICITA.rows[0].cedula} <br>
+                           <b>Cargo:</b> ${EMPLEADO_SOLICITA.rows[0].tipo_cargo} <br>
+                           <b>Departamento:</b> ${EMPLEADO_SOLICITA.rows[0].departamento} <br>
+                           <b>Generado mediante:</b> Aplicación Móvil <br>
+                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Motivo:</b> ${observacion} <br>   
+                           <b>Fecha de Solicitud:</b> ${fec_solicitud} <br> 
+                           <b>Servicio:</b> ${SERVICIO_SOLICITADO.rows[0].servicio} <br>
+                           <b>Menú:</b> ${SERVICIO_SOLICITADO.rows[0].menu} - ${SERVICIO_SOLICITADO.rows[0].comida} <br>
+                           <b>Detalle del servicio:</b> ${SERVICIO_SOLICITADO.rows[0].observacion} <br>
+                           <b>Servicio desde:</b> ${inicio} <br>
+                           <b>Servicio hasta:</b> ${final} <br>
+                           <b>Tipo de servicio:</b> ${tipo_servicio} <br>
+                           <b>Estado:</b> Pendiente <br><br>
+                           <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                       </p>
+                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Gracias por la atención</b><br>
+                           <b>Saludos cordiales,</b> <br><br>
+                       </p>
+                       <img src="cid:pief" width="50%" height="50%"/>
+                    </body>
+                `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups !!! algo salio mal. No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
+    /** ************************************************************************************************ **
+     ** **    METODOS DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIOS DE ALIMENTACION    ** **
+     ** ************************************************************************************************ **/
+    // ENVIAR CORREO ELECTRÓNICO DE PLANIFICACIÓN DE COMIDA APLICACION WEB
+    EnviarCorreoPlanComidas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
+            if (datos === 'ok') {
+                const { id_envia, desde, hasta, inicio, final, correo, id_comida, observacion, extra, nombres } = req.body;
+                var tipo_servicio = 'Extra';
+                if (extra === false) {
+                    tipo_servicio = 'Normal';
+                }
+                const Envia = yield database_1.default.query(`
+        SELECT da.nombre, da.apellido, da.cedula, da.correo, 
+        (SELECT tc.cargo FROM tipo_cargo AS tc WHERE tc.id = ec.cargo) AS tipo_cargo,
+        (SELECT cd.nombre FROM cg_departamentos AS cd WHERE cd.id = ec.id_departamento) AS departamento
+        FROM datos_actuales_empleado AS da, empl_cargos AS ec
+        WHERE da.id = $1 AND ec.id = da.id_cargo
+      `, [id_envia]).then(resultado => { return resultado.rows[0]; });
+                const SERVICIO_SOLICITADO = yield database_1.default.query(`
+            SELECT tc.nombre AS servicio, ctc.nombre AS menu, ctc.hora_inicio, ctc.hora_fin, 
+              dm.nombre AS comida, dm.valor, dm.observacion 
+            FROM tipo_comida AS tc, cg_tipo_comidas AS ctc, detalle_menu AS dm 
+            WHERE tc.id = ctc.tipo_comida AND ctc.id = dm.id_menu AND dm.id = $1
+          `, [id_comida]);
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: 'PLANIFICACION DE SERVICIO DE ALIMENTACION',
+                    html: `
+                   <body>
+                       <div style="text-align: center;">
+                           <img width="50%" height="50%" src="cid:cabeceraf"/>
+                       </div>
+                       <br>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           El presente correo es para informar que se ha creado la siguiente planificaciòn de servicio de alimentación: <br>  
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL COLABORADOR QUE REALIZA PLANIFICACIÓN DE ALIMENTACIÓN</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                           <b>Asunto:</b> Solicitud de servicio de alimentación <br> 
+                           <b>Colaborador que envía:</b> ${Envia.rows[0].nombre} ${Envia.rows[0].apellido} <br>
+                           <b>Número de Cédula:</b> ${Envia.rows[0].cedula} <br>
+                           <b>Cargo:</b> ${Envia.rows[0].tipo_cargo} <br>
+                           <b>Departamento:</b> ${Envia.rows[0].departamento} <br>
+                           <b>Generado mediante:</b> Aplicación Web <br>
+                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA PLANIFICACIÓN</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Motivo:</b> ${observacion} <br>   
+                           <b>Fecha de Planificación:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                           <b>Desde:</b> ${desde} <br>
+                           <b>Hasta:</b> ${hasta} <br>
+                           <b>Horario:</b> ${inicio} a ${final} <br>
+                           <b>Servicio:</b> ${SERVICIO_SOLICITADO.rows[0].servicio} <br>
+                           <b>Menú:</b> ${SERVICIO_SOLICITADO.rows[0].menu} - ${SERVICIO_SOLICITADO.rows[0].comida} <br>
+                           <b>Detalle del servicio:</b> ${SERVICIO_SOLICITADO.rows[0].observacion} <br>
+                           <b>Servicio desde:</b> ${inicio} <br>
+                           <b>Servicio hasta:</b> ${final} <br>
+                           <b>Tipo de servicio:</b> ${tipo_servicio} <br>
+                           <b>Colabores que cuenta con planificación de servicio de alimentación:</b>
+                       </p>
+                       <div style="text-align: center;"> 
+                       <table border=2 cellpadding=10 cellspacing=0 style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px;">
+                         <tr>
+                           <th><h5>COLABORADOR</h5></th> 
+                           <th><h5>CÉDULA</h5></th> 
+                         </tr>            
+                         ${nombres} 
+                      </table>
+                   </div>
+                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Gracias por la atención</b><br>
+                           <b>Saludos cordiales,</b> <br><br>
+                       </p>
+                       <img src="cid:pief" width="50%" height="50%"/>
+                    </body>
+                `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups!!! algo salio mal. No fue posible enviar correo electrónico.' });
             }
         });
     }

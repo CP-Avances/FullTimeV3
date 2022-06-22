@@ -81,7 +81,7 @@ export class PermisosService {
   }
 
   SendMailNoti(datos: any) {
-    return this.http.post(`${environment.url}/empleadoPermiso/mail-noti`, datos);
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/mail-noti`, datos);
   }
 
   BuscarPermisoCodigo(codigo: any) {

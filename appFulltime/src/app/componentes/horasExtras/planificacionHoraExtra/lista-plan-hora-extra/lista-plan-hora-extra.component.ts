@@ -53,23 +53,23 @@ export class ListaPlanHoraExtraComponent implements OnInit {
   filtroCedulaO: '';
   filtroEmpleado = '';
 
-  // Habilitar o Deshabilitar el icono de autorización individual
+  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true;
 
-  // Items de paginación de la tabla
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
 
-  // Items de paginación de la tabla Observacion
+  // ITEMS DE PAGINACIÓN DE LA TABLA OBSERVACION
   tamanio_pagina_O: number = 5;
   numero_pagina_O: number = 1;
   pageSizeOptions_O = [5, 10, 20, 50];
 
-  // Habilitar o deshabilitar selector de empleados
+  // HABILITAR O DESHABILITAR SELECTOR DE EMPLEADOS
   Habilitar: boolean = true;
 
-  // Habilitar o deshabilitar lista de empleados con observaciones
+  // HABILITAR O DESHABILITAR LISTA DE EMPLEADOS CON OBSERVACIONES
   HabilitarObservacion: boolean = true;
   HabilitarAutoriza: boolean = true;
   HabilitarPlan: boolean = true;
@@ -189,14 +189,14 @@ export class ListaPlanHoraExtraComponent implements OnInit {
     return numSelected === numRows;
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. 
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
       this.horas_extras_plan.forEach(row => this.selectionUno.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // La etiqueta de la casilla de verificación en la fila pasada
   checkboxLabel(row?: HoraExtraPlanElemento): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;

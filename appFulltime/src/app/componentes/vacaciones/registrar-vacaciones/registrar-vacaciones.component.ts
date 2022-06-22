@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 
 interface Estado {
   id: number,
@@ -39,6 +40,10 @@ export class RegistrarVacacionesComponent implements OnInit {
   empleados: any = [];
   calcular = false;
   FechaActual: any;
+
+  // DATOS DEL EMPLEADO LOGUEADO
+  empleadoLogueado: any = [];
+  idEmpleado: number;
 
   nombreEmpleado = new FormControl('', [Validators.required]);
   fechaInicio = new FormControl('', Validators.required);
@@ -71,9 +76,12 @@ export class RegistrarVacacionesComponent implements OnInit {
     private restV: VacacionesService,
     private toastr: ToastrService,
     private realTime: RealTimeService,
+    public restAutoriza: AutorizacionService,
     public dialogRef: MatDialogRef<RegistrarVacacionesComponent>,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
-  ) { }
+  ) {
+    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     console.log(this.datoEmpleado);
@@ -84,6 +92,16 @@ export class RegistrarVacacionesComponent implements OnInit {
     this.VacacionesForm.patchValue({
       estadoForm: 1
     });
+
+    this.ObtenerEmpleadoLogueado(this.idEmpleado);
+  }
+
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
+  ObtenerEmpleadoLogueado(idemploy: any) {
+    this.empleadoLogueado = [];
+    this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
+      this.empleadoLogueado = data;
+    })
   }
 
   fechasTotales: any = [];
@@ -261,62 +279,12 @@ export class RegistrarVacacionesComponent implements OnInit {
       codigo: this.empleados[0].codigo
     };
     console.log(datosVacaciones);
-    this.restV.RegistrarVacaciones(datosVacaciones).subscribe(response => {
-      this.arrayNivelesDepa = response;
-      console.log('respuesta', this.arrayNivelesDepa)
-      this.arrayNivelesDepa.forEach(obj => {
-        let dataVacacionCreada = {
-          fec_inicio: datosVacaciones.fec_inicio,
-          fec_final: datosVacaciones.fec_final,
-          idContrato: this.datoEmpleado.idContrato,
-          id: obj.id,
-          estado: obj.estado,
-          id_dep: obj.id_dep,
-          depa_padre: obj.depa_padre,
-          nivel: obj.nivel,
-          id_suc: obj.id_suc,
-          departamento: obj.departamento,
-          sucursal: obj.sucursal,
-          cargo: obj.cargo,
-          contrato: obj.contrato,
-          empleado: obj.empleado,
-          nombre: obj.nombre,
-          apellido: obj.apellido,
-          cedula: obj.cedula,
-          correo: obj.correo,
-          vaca_mail: obj.vaca_mail,
-          vaca_noti: obj.vaca_noti
-        }
+    this.restV.RegistrarVacaciones(datosVacaciones).subscribe(vacacion => {
 
-        this.restV.SendMailNoti(dataVacacionCreada).subscribe(res => {
-          console.log(response);
-          this.responseVacacion = res
-          var f = new Date();
-          let notificacion = {
-            id: null,
-            id_send_empl: this.datoEmpleado.idEmpleado,
-            id_receives_empl: this.responseVacacion.id_empleado_autoriza,
-            id_receives_depa: this.responseVacacion.id_departamento_autoriza,
-            estado: this.responseVacacion.estado,
-            create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-            id_permiso: null,
-            id_vacaciones: this.responseVacacion.id_vacacion,
-            id_hora_extra: null,
-          }
-          this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
-            console.log(resN);
-            this.NotifiRes = resN;
-            notificacion.id = this.NotifiRes._id;
-            if (this.NotifiRes._id > 0 && this.responseVacacion.notificacion === true) {
-              this.restV.sendNotiRealTime(notificacion);
-            }
-          });
-
-        })
-
-      });
-
-      this.toastr.success('Operación Exitosa', 'Vacaciones del Empleado registradas', {
+      this.IngresarAutorizacion(vacacion);
+      this.EnviarNotificacion(vacacion);
+      this.SendEmailsEmpleados(vacacion);
+      this.toastr.success('Operación Exitosa', 'Solicitud registrada.', {
         timeOut: 6000,
       })
       this.CerrarVentanaRegistroVacaciones();
@@ -354,6 +322,135 @@ export class RegistrarVacacionesComponent implements OnInit {
       })
       return false;
     }
+  }
+
+  SendEmailsEmpleados(vacacion: any) {
+
+    console.log('ver vacaciones..   ', vacacion)
+
+    var cont = 0;
+    var correo_usuarios = '';
+
+    vacacion.EmpleadosSendNotiEmail.forEach(e => {
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE VACACIÓN
+      let desde = moment.weekdays(moment(vacacion.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacacion.fec_inicio).day()).slice(1);
+      let hasta = moment.weekdays(moment(vacacion.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacacion.fec_final).day()).slice(1);
+
+      // CAPTURANDO ESTADO DE LA SOLICITUD DE VACACIÓN
+      if (vacacion.estado === 1) {
+        var estado_v = 'Pendiente';
+      }
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
+      if (e.vaca_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
+          }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
+
+      // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
+      if (cont === vacacion.EmpleadosSendNotiEmail.length) {
+        let datosVacacionCreada = {
+          desde: desde + ' ' + moment(vacacion.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(vacacion.fec_final).format('DD/MM/YYYY'),
+          idContrato: this.datoEmpleado.idContratoActual,
+          estado_v: estado_v,
+          id_dep: e.id_dep, // VERIFICAR
+          id_suc: e.id_suc, // VERIFICAR
+          correo: correo_usuarios,
+          id: vacacion.id,
+          solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido
+        }
+        if (correo_usuarios != '') {
+          this.restV.SendMailNoti(datosVacacionCreada).subscribe(
+            resp => {
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
+    })
+  }
+
+  EnviarNotificacion(vacaciones: any) {
+
+    let desde = moment.weekdays(moment(vacaciones.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
+
+    var f = new Date();
+    let notificacion = {
+      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_receives_empl: '',
+      id_receives_depa: '',
+      estado: 'Pendiente',
+      create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
+      id_permiso: null,
+      id_vacaciones: vacaciones.id,
+      id_hora_extra: null,
+      mensaje: 'Ha realizado una solicitud de vacaciones desde ' +
+        desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
+    }
+
+    vacaciones.EmpleadosSendNotiEmail.forEach(e => {
+
+      notificacion.id_receives_depa = e.id_dep;
+      notificacion.id_receives_empl = e.empleado;
+
+      if (e.vaca_noti) {
+        this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
+          resp => {
+            console.log('ver data de notificacion', resp.respuesta)
+            this.restV.sendNotiRealTime(resp.respuesta);
+          },
+          err => {
+            this.toastr.error(err.error.message, '', {
+              timeOut: 6000,
+            });
+          },
+          () => { },
+        )
+      }
+    })
+  }
+
+  IngresarAutorizacion(vacacion: any) {
+    // ARREGLO DE DATOS PARA INGRESAR UNA AUTORIZACIÓN
+    let newAutorizaciones = {
+      orden: 1, // ORDEN DE LA AUTORIZACIÓN 
+      estado: 1, // ESTADO PENDIENTE
+      id_departamento: parseInt(localStorage.getItem('departamento')),
+      id_permiso: null,
+      id_vacacion: vacacion.id,
+      id_hora_extra: null,
+      id_documento: '',
+      id_plan_hora_extra: null,
+    }
+    this.restAutoriza.postAutorizacionesRest(newAutorizaciones).subscribe(res => {
+    }, error => { })
   }
 
 }

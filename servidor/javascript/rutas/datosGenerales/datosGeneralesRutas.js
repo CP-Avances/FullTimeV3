@@ -14,6 +14,8 @@ class CiudadRutas {
     configuracion() {
         this.router.get('/empleadoAutoriza/:empleado_id', verificarToken_1.TokenValidation, datosGeneralesControlador_1.default.ListarDatosEmpleadoAutoriza);
         this.router.get('/info_actual', verificarToken_1.TokenValidation, datosGeneralesControlador_1.default.ListarDatosActualesEmpleado);
+        // METODO DE ACCESO A CONSULTA DE DATOS DE COLABORADORES ACTIVOS E INACTIVOS
+        this.router.get('/informacion-general/:estado', verificarToken_1.TokenValidation, datosGeneralesControlador_1.default.DatosGenerales);
         /** INICIO RUTAS PARA ACCEDER A CONSULTAS PARA FILTRAR INFORMACIÓN */
         this.router.get('/filtros/sucursal/:id', verificarToken_1.TokenValidation, datosGeneralesControlador_1.default.ListarEmpleadoSucursal);
         this.router.get('/filtros/sucursal/departamento/:id_sucursal/:id_departamento', verificarToken_1.TokenValidation, datosGeneralesControlador_1.default.ListarEmpleadoSucuDepa);

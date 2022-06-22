@@ -47,7 +47,7 @@ export class PlanComidasService {
 
   /** ENVIAR CORREO A CADA JEFE */
   EnviarCorreo(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-noti`, datos);
+    return this.http.post<any>(`${environment.url}/planComidas/mail-noti`, datos);
   }
 
   EnviarCorreoEliminarSol(datos: any) {
@@ -56,7 +56,7 @@ export class PlanComidasService {
 
   /** PLANIFICACIÓN DE COMIDAS */
   CrearPlanComidas(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/`, datos);
+    return this.http.post<any>(`${environment.url}/planComidas/`, datos);
   }
 
   ObtenerUltimaPlanificacion() {
@@ -109,7 +109,7 @@ export class PlanComidasService {
   }
 
   EnviarCorreoPlan(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-plan`, datos);
+    return this.http.post<any>(`${environment.url}/planComidas/mail-plan-comida`, datos);
   }
 
   EnviarCorreoEliminaPlan(datos: any) {

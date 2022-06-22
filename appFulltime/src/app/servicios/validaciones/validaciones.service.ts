@@ -36,8 +36,8 @@ export class ValidacionesService {
 
   RedireccionarHomeAdmin(error) {
     const { access, message, text, url } = error;
-    console.log(error);
-    console.log(access, message);
+    console.log('validar error ', error);
+    console.log('validar error 2 ', access + ' ', message + ' ', text + ' ', url);
 
     if (access === false) {
       this.toastr.error(message)
@@ -49,9 +49,9 @@ export class ValidacionesService {
       this.router.navigate(['/home']);
       // this.router.navigate(['/home', { relativeTo: this.route, skipLocationChange: false }]);
     }
-    if (text) {
+   /* if (text) {
       this.toastr.error(text)
-    }
+    }*/
   }
 
   RedireccionarMixto(error) {

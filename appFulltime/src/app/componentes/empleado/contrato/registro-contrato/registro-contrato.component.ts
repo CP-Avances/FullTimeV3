@@ -1,9 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as moment from 'moment';
 
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
@@ -27,41 +27,41 @@ export class RegistroContratoComponent implements OnInit {
   habilitarSeleccion: boolean = true;
   habilitarContrato: boolean = false;
 
-  // Datos Régimen
+  // DATOS RÉGIMEN
   regimenLaboral: any = [];
   empleados: any = [];
   seleccionarRegimen;
 
-  // Control de campos y validaciones del formulario
-  idEmpleadoF = new FormControl('', [Validators.required]);
-  idRegimenF = new FormControl('', [Validators.required]);
-  fechaIngresoF = new FormControl('', [Validators.required]);
-  fechaSalidaF = new FormControl('');
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   controlVacacionesF = new FormControl('', [Validators.required]);
   controlAsistenciaF = new FormControl('', [Validators.required]);
   nombreContratoF = new FormControl('');
+  fechaIngresoF = new FormControl('', [Validators.required]);
+  fechaSalidaF = new FormControl('');
   archivoForm = new FormControl('');
-  tipoF = new FormControl('');
+  idEmpleadoF = new FormControl('', [Validators.required]);
+  idRegimenF = new FormControl('', [Validators.required]);
   contratoF = new FormControl('', [Validators.minLength(3)]);
+  tipoF = new FormControl('');
 
-  // Asignación de validaciones a inputs del formulario
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
   public ContratoForm = new FormGroup({
-    idEmpleadoForm: this.idEmpleadoF,
-    idRegimenForm: this.idRegimenF,
-    fechaIngresoForm: this.fechaIngresoF,
-    fechaSalidaForm: this.fechaSalidaF,
     controlVacacionesForm: this.controlVacacionesF,
     controlAsistenciaForm: this.controlAsistenciaF,
     nombreContratoForm: this.nombreContratoF,
+    fechaIngresoForm: this.fechaIngresoF,
+    fechaSalidaForm: this.fechaSalidaF,
+    idEmpleadoForm: this.idEmpleadoF,
+    idRegimenForm: this.idRegimenF,
+    contratoForm: this.contratoF,
     tipoForm: this.tipoF,
-    contratoForm: this.contratoF
   });
 
   constructor(
     private rest: EmpleadoService,
     private restR: RegimenService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegistroContratoComponent>,
+    public ventana: MatDialogRef<RegistroContratoComponent>,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
   ) { }
 
@@ -295,7 +295,7 @@ export class RegistroContratoComponent implements OnInit {
 
   CerrarVentanaRegistroContrato() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
     //window.location.reload();
   }
 

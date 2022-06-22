@@ -16,7 +16,7 @@ export class PlanHoraExtraService {
   }
 
   CrearPlanificacionHoraExtra(data: any) {
-    return this.http.post(`${environment.url}/planificacionHoraExtra`, data);
+    return this.http.post<any>(`${environment.url}/planificacionHoraExtra`, data);
   }
 
   ActualizarPlanHoraExtra(id: number, datos: any) {
@@ -55,9 +55,39 @@ export class PlanHoraExtraService {
     return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/aviso/`, data);
   }
 
-  EnviarMensajePlanificacion(data: any) {
-    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/planifica/`, data);
+
+
+
+
+  /** *************************************************************************************************** **
+   ** *                 ENVIO DE CORREO ELECTRONICO DE PLANIFICACIÓN DE HORAS EXTRAS                    * ** 
+   ****************************************************************************************************** **/
+
+  // CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
+  EnviarCorreoPlanificacion(data: any) {
+    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/correo-planifica/`, data);
   }
+
+
+  /** *************************************************************************************************** **
+   ** *                 ENVIO DE NOTIFICACIONES DE PLANIFICACIÓN DE HORAS EXTRAS                    * ** 
+   ****************************************************************************************************** **/
+
+  // CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
+  EnviarNotiPlanificacion(data: any) {
+    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/noti-planifica`, data);
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   BuscarDatosAutorizacion(id_hora_extra: number) {
     return this.http.get(`${environment.url}/planificacionHoraExtra/datosAutorizacion/${id_hora_extra}`);
@@ -65,7 +95,7 @@ export class PlanHoraExtraService {
 
   // TABLA plan_hora_extra_empleado
   CrearPlanHoraExtraEmpleado(data: any) {
-    return this.http.post(`${environment.url}/planificacionHoraExtra/hora_extra_empleado`, data);
+    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/hora_extra_empleado`, data);
   }
 
   BuscarPlanEmpleados(id_plan_hora: number) {

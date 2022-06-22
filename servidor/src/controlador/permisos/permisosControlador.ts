@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import pool from '../../database';
 import fs from 'fs';
 const nodemailer = require("nodemailer");
-import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail'
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales, fechaHora } from '../../libs/settingsMail'
 import path from 'path';
+import { QueryResult } from 'pg';
 
 class PermisosControlador {
 
@@ -74,196 +75,130 @@ class PermisosControlador {
         }
     }
 
-    public async CrearPermisos(req: Request, res: Response): Promise<void> {
-        const { fec_creacion, descripcion, fec_inicio, fec_final, dia, hora_numero, legalizado, estado,
-            dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, num_permiso, docu_nombre,
-            id_empl_cargo, hora_salida, hora_ingreso, codigo, depa_user_loggin } = req.body;
-        await pool.query('INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, ' +
-            'hora_numero, legalizado, estado, dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, ' +
-            'num_permiso, docu_nombre, id_empl_cargo, hora_salida, hora_ingreso, codigo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, ' +
-            '$13, $14, $15, $16, $17, $18)', [fec_creacion, descripcion, fec_inicio, fec_final, dia, hora_numero, legalizado,
-            estado, dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, num_permiso, docu_nombre,
-            id_empl_cargo, hora_salida, hora_ingreso, codigo]);
+    public async CrearPermisos(req: Request, res: Response): Promise<Response> {
 
-        const JefesDepartamentos = await pool.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
-            'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
-            'ecn.id AS contrato, e.id AS empleado, e.nombre, e.apellido, e.cedula, e.correo, c.permiso_mail, ' +
-            'c.permiso_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+        const { fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
+            id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
+            docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo,
+            depa_user_loggin } = req.body;
+
+        const response: QueryResult = await pool.query(
+            'INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, ' +
+            'dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, ' +
+            'docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) ' +
+            'VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 ) ' +
+            'RETURNING * ',
+            [fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
+                id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
+                docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
+
+        const [objetoPermiso] = response.rows;
+
+        if (!objetoPermiso) return res.status(404).jsonp({ message: 'Solicitud no registrada.' })
+
+        const permiso = objetoPermiso
+        console.log(permiso);
+        console.log(req.query);
+
+        const JefesDepartamentos = await pool.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, ' +
+            'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, ' +
+            'e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, ' +
+            'c.permiso_mail, c.permiso_noti ' +
+            'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
             'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
-            'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
-            'da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
-            'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_user_loggin]);
-        let depa_padre = JefesDepartamentos.rows[0].depa_padre;
+            'WHERE da.id_departamento = $1 AND ' +
+            'da.id_empl_cargo = ecr.id AND ' +
+            'da.id_departamento = cg.id AND ' +
+            'da.estado = true AND ' +
+            'cg.id_sucursal = s.id AND ' +
+            'ecr.id_empl_contrato = ecn.id AND ' +
+            'ecn.id_empleado = e.id AND ' +
+            'e.id = c.id_empleado',
+            [depa_user_loggin]).then(result => { return result.rows });
+
+        if (JefesDepartamentos.length === 0) return res.status(400)
+            .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+
+        const [obj] = JefesDepartamentos;
+        let depa_padre = obj.depa_padre;
         let JefeDepaPadre;
 
         if (depa_padre !== null) {
             do {
                 JefeDepaPadre = await pool.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
-                    'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
-                    'ecn.id AS contrato, e.id AS empleado, e.nombre, e.apellido, e.cedula, e.correo, c.permiso_mail, ' +
-                    'c.permiso_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+                    'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ' +
+                    'ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, ' +
+                    '(e.nombre || \' \' || e.apellido) as fullname, e.cedula, e.correo, c.permiso_mail, ' +
+                    'c.permiso_noti ' +
+                    'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
                     'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
-                    'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
+                    'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND ' +
+                    'da.id_departamento = cg.id AND ' +
                     'da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
-                    'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre])
+                    'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre]);
+
                 depa_padre = JefeDepaPadre.rows[0].depa_padre;
-                JefesDepartamentos.rows.push(JefeDepaPadre.rows[0]);
+
+                JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+
             } while (depa_padre !== null);
+            permiso.EmpleadosSendNotiEmail = JefesDepartamentos
+            return res.status(200).jsonp(permiso);
 
-            res.jsonp(JefesDepartamentos.rows);
         } else {
-            res.jsonp(JefesDepartamentos.rows);
+            permiso.EmpleadosSendNotiEmail = JefesDepartamentos
+            return res.status(200).jsonp(permiso);
         }
 
     }
 
+    /** ********************************************************************************************* **
+     ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * ** 
+     ** ********************************************************************************************* **/
+
+    // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO DESDE APLICACIÓN WEB
     public async SendMailNotifiPermiso(req: Request, res: Response): Promise<void> {
-        Credenciales(req.id_empresa);
-        const path_folder = path.resolve('logos')
-        const { fec_creacion, id_tipo_permiso, id_empl_contrato, id, estado, id_dep, depa_padre, nivel,
-            id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo,
-            permiso_mail, permiso_noti } = req.body;
-        const ultimo = await pool.query('SELECT MAX(id) AS id, estado FROM permisos ' +
-            'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado',
-            [fec_creacion, id_tipo_permiso, id_empl_contrato]);
-        const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
-            'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo ' +
-            'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr ' +
-            'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
-            '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
-            'ORDER BY cargo DESC', [id_empl_contrato]);
 
-        /*const email = process.env.EMAIL;
-        const pass = process.env.PASSWORD;
-
-        let smtpTransport = nodemailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: email,
-                pass: pass
-            }
-        });*/
-        let port = 465;
-
-        if (puerto != null && puerto != '') {
-            port = parseInt(puerto);
-        }
-        // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
-        // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
-        if (estado === true) {
-            var url = `${process.env.URL_DOMAIN}/ver-permiso`;
-            let id_departamento_autoriza = id_dep;
-            let id_empleado_autoriza = empleado;
-            let data = {
-                to: correo,
-                from: email,
-                subject: 'Solicitud de permiso',
-                html: `
-                <img src="cid:cabeceraf" width="50%" height="50%"/>
-                <p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
-                cédula ${correoInfoPidePermiso.rows[0].cedula} solicita autorización de permiso: </p>
-                <a href="${url}/${ultimo.rows[0].id}">Ir a verificar permisos</a>
-                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                <b>Gracias por la atención</b><br>
-                <b>Saludos cordiales,</b> <br><br>
-              </p>
-              <img src="cid:pief" width="50%" height="50%"/>`
-                ,
-                attachments: [
-                    {
-                        filename: 'cabecera_firma.jpg',
-                        path: `${path_folder}/${cabecera_firma}`,
-                        cid: 'cabeceraf' //same cid value as in the html img src
-                    },
-                    {
-                        filename: 'pie_firma.jpg',
-                        path: `${path_folder}/${pie_firma}`,
-                        cid: 'pief' //same cid value as in the html img src
-                    }]
-            };
-            if (permiso_mail === true && permiso_noti === true) {
-                /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
-                      if (error) {
-                          console.log(error);
-                      } else {
-                          console.log('Email sent: ' + info.response);
-                      }
-                  });*/
-
-                enviarMail(data, servidor, port);
-
-                res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-            } else if (permiso_mail === true && permiso_noti === false) {
-                /*  smtpTransport.sendMail(data, async (error: any, info: any) => {
-                      if (error) {
-                          console.log(error);
-                      } else {
-                          console.log('Email sent: ' + info.response);
-                      }
-                  });*/
-
-
-
-                enviarMail(data, servidor, port);
-
-
-                res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-            } else if (permiso_mail === false && permiso_noti === true) {
-                res.jsonp({ message: 'Permiso se registró con éxito', notificacion: true, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-            } else if (permiso_mail === false && permiso_noti === false) {
-                res.jsonp({ message: 'Permiso se registró con éxito', notificacion: false, id: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado: ultimo.rows[0].estado });
-            }
-        }
-    }
-
-
-    // ENVIO DE CORREO AL CREAR UN PERMISO
-
-    public async EnviarCorreoPermisoMovil(req: Request, res: Response): Promise<void> {
+        var tiempo = fechaHora();
 
         const path_folder = path.resolve('logos');
 
-        Credenciales(parseInt(req.params.id_empresa));
+        var datos = await Credenciales(req.id_empresa);
 
-        const { fec_creacion, id_tipo_permiso, id_empl_contrato, estado, id_dep, nombre, correo,
-            hora, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso,
-            dias_permiso, horas_permiso } = req.body;
+        if (datos === 'ok') {
 
-        const ultimo = await pool.query('SELECT MAX(id) AS id, estado FROM permisos ' +
-            'WHERE fec_creacion = $1 AND id_tipo_permiso = $2 AND id_empl_contrato = $3 GROUP BY estado',
-            [fec_creacion, id_tipo_permiso, id_empl_contrato]);
+            const { id_empl_contrato, id_dep, correo, id_suc, desde, hasta, h_inicio, h_fin,
+                observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso,
+                solicitado_por, id } = req.body;
 
-        const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
-            'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
-            'd.nombre AS departamento ' +
-            'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
-            'cg_departamentos AS d ' +
-            'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
-            '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo where empl_id = e.id ) = ecr.id ' +
-            'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC', [id_empl_contrato]);
+            const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
+                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
+                'd.nombre AS departamento ' +
+                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
+                'cg_departamentos AS d ' +
+                'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+                '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id ) = ecr.id ' +
+                'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC',
+                [id_empl_contrato]);
 
-        let port = 465;
-        if (puerto != null && puerto != '') {
-            port = parseInt(puerto);
-        }
+            // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
+            // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
 
-        // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
-        // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
-        if (estado === true) {
-            var f = new Date();
-            f.setUTCHours(f.getHours())
-            let fecha = f.toJSON();
-            fecha = fecha.split('T')[0];
+            var url = `${process.env.URL_DOMAIN}/ver-permiso`;
 
             let data = {
                 to: correo,
                 from: email,
-                subject: 'Solicitud de permiso',
+                subject: 'SOLICITUD DE PERMISO',
                 html: `
                         <body>
                             <div style="text-align: center;">
-                                <img style="width:50%; height:50%;" src="cid:cabeceraf"/>
+                                <img width="50%" height="50%" src="cid:cabeceraf"/>
                             </div>
+                            <br>
+                            <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                El presente correo es para informar que se ha creado la siguiente solicitud de permiso: <br>  
+                            </p>
                             <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
                             <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                                 <b>Empresa:</b> ${nombre} <br>   
@@ -272,28 +207,30 @@ class PermisosControlador {
                                 <b>Número de Cédula:</b> ${correoInfoPidePermiso.rows[0].cedula} <br>
                                 <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
                                 <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
-                                <b>Generado mediante:</b> Aplicación Móvil <br>
-                                <b>Fecha de envío:</b> ${fecha} <br> 
-                                <b>Hora de envío:</b> ${hora} <br><br> 
+                                <b>Generado mediante:</b> Aplicación Web <br>
+                                <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                                <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
                             </p>
                             <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
-                            <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                                <b>Motivo:</b> ${tipo_permiso} <br>   
-                                <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                                <b>Desde:</b> ${desde} ${h_inicio} <br>
-                                <b>Hasta:</b> ${hasta} ${h_fin} <br>
-                                <b>Observación:</b> ${observacion} <br>
-                                <b>Días permiso:</b> ${dias_permiso} <br>
-                                <b>Horas permiso:</b> ${horas_permiso} <br>
-                                <b>Estado:</b> ${estado_p} <br>
-                            </p>
-                            <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                                <b>Gracias por la atención</b><br>
-                                <b>Saludos cordiales,</b> <br><br>
-                            </p>
-                            <img src="cid:pief" style="width:50%; height:50%;"/>
-                         </body>
-                     `,
+                                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                    <b>Motivo:</b> ${tipo_permiso} <br>   
+                                    <b>Fecha de Solicitud:</b> ${solicitud} <br> 
+                                    <b>Desde:</b> ${desde} ${h_inicio} <br>
+                                    <b>Hasta:</b> ${hasta} ${h_fin} <br>
+                                    <b>Observación:</b> ${observacion} <br>
+                                    <b>Días permiso:</b> ${dias_permiso} <br>
+                                    <b>Horas permiso:</b> ${horas_permiso} <br>
+                                    <b>Estado:</b> ${estado_p} <br><br>
+                                    <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de permiso.</a> <br><br>
+                                    <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                                </p>
+                                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                                    <b>Gracias por la atención</b><br>
+                                    <b>Saludos cordiales,</b> <br><br>
+                                </p>
+                                <img src="cid:pief" width="50%" height="50%"/>
+                        </body>
+                    `,
                 attachments: [
                     {
                         filename: 'cabecera_firma.jpg',
@@ -306,8 +243,121 @@ class PermisosControlador {
                         cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
                     }]
             };
-            enviarMail(data, servidor, port);
-            res.jsonp({ message: 'PERMISO REGISTRADO.' });
+
+            var corr = enviarMail(servidor, parseInt(puerto));
+            corr.sendMail(data, function (error: any, info: any) {
+                if (error) {
+                    console.log('Email error: ' + error);
+                    return res.jsonp({ message: 'error' });
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    return res.jsonp({ message: 'ok' });
+                }
+            });
+        }
+        else {
+            res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+        }
+    }
+
+    // ENVIO DE CORREO AL CREAR UN PERMISO MEDIANTE APLICACIÓN MÓVIL
+
+    public async EnviarCorreoPermisoMovil(req: Request, res: Response): Promise<void> {
+
+        var tiempo = fechaHora();
+
+        const path_folder = path.resolve('logos');
+
+        var datos = await Credenciales(parseInt(req.params.id_empresa));
+
+        if (datos === 'ok') {
+            const { id_empl_contrato, id_dep, correo,
+                id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso,
+                dias_permiso, horas_permiso, solicitado_por } = req.body;
+
+            const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
+                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
+                'd.nombre AS departamento ' +
+                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
+                'cg_departamentos AS d ' +
+                'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+                '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id ) = ecr.id ' +
+                'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC',
+                [id_empl_contrato]);
+
+            // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
+            // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
+
+            let data = {
+                to: correo,
+                from: email,
+                subject: 'SOLICITUD DE PERMISO',
+                html: `
+                           <body>
+                               <div style="text-align: center;">
+                                   <img width="50%" height="50%" src="cid:cabeceraf"/>
+                               </div>
+                               <br>
+                               <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                   El presente correo es para informar que se ha creado la siguiente solicitud de permiso: <br>  
+                               </p>
+                               <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                               <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                   <b>Empresa:</b> ${nombre} <br>   
+                                   <b>Asunto:</b> Solicitud de permiso <br> 
+                                   <b>Colaborador que envía:</b> ${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido} <br>
+                                   <b>Número de Cédula:</b> ${correoInfoPidePermiso.rows[0].cedula} <br>
+                                   <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
+                                   <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
+                                   <b>Generado mediante:</b> Aplicación Móvil <br>
+                                   <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                                   <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                               </p>
+                               <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                               <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                                   <b>Motivo:</b> ${tipo_permiso} <br>   
+                                   <b>Fecha de Solicitud:</b> ${solicitud} <br> 
+                                   <b>Desde:</b> ${desde} ${h_inicio} <br>
+                                   <b>Hasta:</b> ${hasta} ${h_fin} <br>
+                                   <b>Observación:</b> ${observacion} <br>
+                                   <b>Días permiso:</b> ${dias_permiso} <br>
+                                   <b>Horas permiso:</b> ${horas_permiso} <br>
+                                   <b>Estado:</b> ${estado_p} <br><br>
+                                   <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                               </p>
+                               <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                                   <b>Gracias por la atención</b><br>
+                                   <b>Saludos cordiales,</b> <br><br>
+                               </p>
+                               <img src="cid:pief" width="50%" height="50%"/>
+                            </body>
+                        `,
+                attachments: [
+                    {
+                        filename: 'cabecera_firma.jpg',
+                        path: `${path_folder}/${cabecera_firma}`,
+                        cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                    },
+                    {
+                        filename: 'pie_firma.jpg',
+                        path: `${path_folder}/${pie_firma}`,
+                        cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                    }]
+            };
+
+            var corr = enviarMail(servidor, parseInt(puerto));
+            corr.sendMail(data, function (error: any, info: any) {
+                if (error) {
+                    console.log('Email error: ' + error);
+                    return res.jsonp({ message: 'error' });
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    return res.jsonp({ message: 'ok' });
+                }
+            });
+        }
+        else {
+            res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
         }
 
     }

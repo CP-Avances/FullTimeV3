@@ -13,18 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VACACIONES_CONTROLADOR = void 0;
-const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
 const CargarVacacion_1 = require("../../libs/CargarVacacion");
+const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
 class VacacionesControlador {
     ListarVacaciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const VACACIONES = yield database_1.default.query('SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, ' +
-                'v.dia_laborable, v.legalizado, v.id, v.id_peri_vacacion, v.id_empl_cargo, e.id AS id_empl_solicita, ' +
-                'e.nombre, e.apellido FROM vacaciones AS v, peri_vacaciones AS p, empl_contratos AS c, ' +
-                'empleados AS e WHERE v.id_peri_vacacion = p.id AND ' +
-                'p.estado = 1 AND p.id_empl_contrato = c.id AND c.id_empleado = e.id  AND (v.estado = 1 OR v.estado = 2) ORDER BY id DESC');
+            const VACACIONES = yield database_1.default.query(`
+    SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, 
+    v.id, v.id_peri_vacacion, v.id_empl_cargo, e.id AS id_empl_solicita, e.nombre, e.apellido 
+	  FROM vacaciones AS v, datos_empleado_cargo AS dc, empleados AS e   
+	  WHERE dc.cargo_id = v.id_empl_cargo AND dc.empl_id = e.id  
+	  AND (v.estado = 1 OR v.estado = 2) ORDER BY id DESC
+    `);
             if (VACACIONES.rowCount > 0) {
                 return res.jsonp(VACACIONES.rows);
             }
@@ -35,10 +37,13 @@ class VacacionesControlador {
     }
     ListarVacacionesAutorizadas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const VACACIONES = yield database_1.default.query('SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, ' +
-                'v.dia_laborable, v.legalizado, v.id, v.id_peri_vacacion, v.id_empl_cargo, e.id AS id_empl_solicita, e.nombre, e.apellido FROM vacaciones AS v, ' +
-                'peri_vacaciones AS p, empl_contratos AS c, empleados AS e WHERE v.id_peri_vacacion = p.id AND ' +
-                'p.estado = 1 AND p.id_empl_contrato = c.id AND c.id_empleado = e.id  AND (v.estado = 3 OR v.estado = 4) ORDER BY id DESC');
+            const VACACIONES = yield database_1.default.query(`
+    SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, 
+    v.id, v.id_peri_vacacion, v.id_empl_cargo, e.id AS id_empl_solicita, e.nombre, e.apellido 
+	  FROM vacaciones AS v, datos_empleado_cargo AS dc, empleados AS e   
+	  WHERE dc.cargo_id = v.id_empl_cargo AND dc.empl_id = e.id  
+	  AND (v.estado = 3 OR v.estado = 4) ORDER BY id DESC
+    `);
             if (VACACIONES.rowCount > 0) {
                 return res.jsonp(VACACIONES.rows);
             }
@@ -50,7 +55,12 @@ class VacacionesControlador {
     ListarUnaVacacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            const VACACIONES = yield database_1.default.query('SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, v.id, v.id_peri_vacacion, v.id_empl_cargo, pv.id_empl_contrato AS id_contrato, ec.id_empleado FROM vacaciones AS v, peri_vacaciones AS pv, empl_contratos AS ec WHERE v.id = $1 AND pv.estado = 1 AND v.id_peri_vacacion = pv.id AND ec.id = pv.id_empl_contrato', [id]);
+            const VACACIONES = yield database_1.default.query(`
+    SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, 
+    v.id, v.id_peri_vacacion, v.id_empl_cargo, pv.id_empl_contrato AS id_contrato, ec.id_empleado 
+    FROM vacaciones AS v, peri_vacaciones AS pv, empl_contratos AS ec 
+    WHERE v.id = $1 AND v.id_peri_vacacion = pv.id AND ec.id = pv.id_empl_contrato
+    `, [id]);
             if (VACACIONES.rowCount > 0) {
                 return res.jsonp(VACACIONES.rows);
             }
@@ -61,107 +71,266 @@ class VacacionesControlador {
     }
     CrearVacaciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { fec_inicio, fec_final, fec_ingreso, estado, dia_libre, dia_laborable, legalizado, id_peri_vacacion, depa_user_loggin, id_empl_cargo, codigo } = req.body;
-            yield database_1.default.query('INSERT INTO vacaciones (fec_inicio, fec_final, fec_ingreso, estado, dia_libre, ' +
-                'dia_laborable, legalizado, id_peri_vacacion, id_empl_cargo, codigo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)', [fec_inicio, fec_final, fec_ingreso, estado, dia_libre, dia_laborable, legalizado, id_peri_vacacion, id_empl_cargo, codigo]);
-            console.log('******************', depa_user_loggin);
-            const JefesDepartamentos = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
-                'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
-                'ecn.id AS contrato, e.id AS empleado, e.nombre, e.apellido, e.cedula, e.correo, c.vaca_mail, ' +
-                'c.vaca_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
-                'sucursales AS s, empl_contratos AS ecn, empleados AS e, config_noti AS c ' +
-                'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
-                'cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id AND ' +
-                'e.id = c.id_empleado', [depa_user_loggin]);
-            console.log('******************', JefesDepartamentos.rows[0]);
-            let depa_padre = JefesDepartamentos.rows[0].depa_padre;
-            let JefeDepaPadre;
-            if (depa_padre !== null) {
-                console.log('******************', depa_padre);
-                do {
-                    JefeDepaPadre = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, e.nombre, e.apellido, e.cedula, e.correo, c.vaca_mail, c.vaca_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, empleados AS e, config_noti AS c WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre]);
-                    console.log(JefeDepaPadre.rows.length);
-                    if (JefeDepaPadre.rows.length > 0) {
+            try {
+                const { fec_inicio, fec_final, fec_ingreso, estado, dia_libre, dia_laborable, legalizado, id_peri_vacacion, depa_user_loggin, id_empl_cargo, codigo } = req.body;
+                const response = yield database_1.default.query('INSERT INTO vacaciones (fec_inicio, fec_final, ' +
+                    'fec_ingreso, estado, dia_libre, dia_laborable, legalizado, id_peri_vacacion, id_empl_cargo, codigo) ' +
+                    'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *', [fec_inicio, fec_final, fec_ingreso, estado, dia_libre, dia_laborable, legalizado, id_peri_vacacion,
+                    id_empl_cargo, codigo]);
+                const [objetoVacacion] = response.rows;
+                if (!objetoVacacion)
+                    return res.status(400)
+                        .jsonp({ message: 'Upps !!! algo salio mal. Solicitud de vacación no ingresada' });
+                console.log('******************', depa_user_loggin);
+                const vacacion = objetoVacacion;
+                const JefesDepartamentos = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, ' +
+                    'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, ' +
+                    'e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, ' +
+                    'c.vaca_mail, c.vaca_noti ' +
+                    'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+                    'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
+                    'WHERE da.id_departamento = $1 AND ' +
+                    'da.id_empl_cargo = ecr.id AND ' +
+                    'da.id_departamento = cg.id AND ' +
+                    'da.estado = true AND ' +
+                    'cg.id_sucursal = s.id AND ' +
+                    'ecr.id_empl_contrato = ecn.id AND ' +
+                    'ecn.id_empleado = e.id AND ' +
+                    'e.id = c.id_empleado', [depa_user_loggin]).then(result => { return result.rows; });
+                console.log('******************', JefesDepartamentos);
+                if (JefesDepartamentos.length === 0)
+                    return res.status(400)
+                        .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+                const [obj] = JefesDepartamentos;
+                let depa_padre = obj.depa_padre;
+                let JefeDepaPadre;
+                if (depa_padre !== null) {
+                    console.log('******************', depa_padre);
+                    do {
+                        JefeDepaPadre = yield database_1.default.query(`
+        SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
+        cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
+        e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, c.vaca_mail, c.vaca_noti
+        FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+        sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+        WHERE da.id_departamento = $1 AND 
+        da.id_empl_cargo = ecr.id AND 
+        da.id_departamento = cg.id AND 
+        da.estado = true AND 
+        cg.id_sucursal = s.id AND 
+        ecr.id_empl_contrato = ecn.id AND 
+        ecn.id_empleado = e.id AND 
+        e.id = c.id_empleado `, [depa_padre]);
+                        console.log(JefeDepaPadre.rows.length);
                         depa_padre = JefeDepaPadre.rows[0].depa_padre;
-                        JefesDepartamentos.rows.push(JefeDepaPadre.rows[0]);
-                    }
-                    else {
-                        depa_padre = null;
-                    }
-                } while (depa_padre !== null || JefeDepaPadre.rows.length !== 0);
-                res.jsonp(JefesDepartamentos.rows);
+                        JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                    } while (depa_padre !== null);
+                    vacacion.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(vacacion);
+                }
+                else {
+                    vacacion.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(vacacion);
+                }
             }
-            else {
-                res.jsonp(JefesDepartamentos.rows);
+            catch (error) {
+                console.log(error);
+                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
             }
         });
     }
-    SendMailNotifiPermiso(req, res) {
+    /** ********************************************************************************************** **
+     **                MÉTODOS DE ENVIO DE CORREOS DE SOLICITUDES DE VACACIONES                        **
+     ** ********************************************************************************************** **/
+    // MÉTODO DE ENVIO DE CORREO DESDE APLICACIÓN WEB
+    SendMailNotifiVacacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { idContrato, fec_inicio, fec_final, id, estado, id_dep, depa_padre, nivel, id_suc, departamento, sucursal, cargo, contrato, empleado, nombre, apellido, cedula, correo, vaca_mail, vaca_noti } = req.body;
-            const ultimo = yield database_1.default.query('SELECT * FROM vacaciones WHERE fec_inicio = $1 AND fec_final = $2  ORDER BY id DESC LIMIT 1', [fec_inicio, fec_final]);
-            const correoInfoPidePermiso = yield database_1.default.query('SELECT e.correo, e.nombre, e.apellido, e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ecn.id = ecr.id_empl_contrato ORDER BY cargo DESC', [idContrato]);
-            // obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
-            if (estado === true) {
+            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
+            if (datos === 'ok') {
+                const { idContrato, desde, hasta, id_dep, id_suc, estado_v, correo, solicitado_por, id } = req.body;
+                const correoInfoPideVacacion = yield database_1.default.query('SELECT e.correo, e.nombre, e.apellido, e.cedula, ' +
+                    'ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
+                    'd.nombre AS departamento ' +
+                    'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
+                    'cg_departamentos AS d ' +
+                    'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+                    '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id ' +
+                    'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ' +
+                    'ORDER BY cargo DESC', [idContrato]);
+                // obj.id_dep === correoInfoPideVacacion.rows[0].id_departamento && obj.id_suc === correoInfoPideVacacion.rows[0].id_sucursal
                 var url = `${process.env.URL_DOMAIN}/ver-vacacion`;
-                let id_departamento_autoriza = id_dep;
-                let id_empleado_autoriza = empleado;
                 let data = {
                     to: correo,
                     from: settingsMail_1.email,
-                    subject: 'Solicitud de vacaciones',
+                    subject: 'SOLICITUD DE VACACIÓN',
                     html: `
-        <img src="cid:cabeceraf" width="50%" height="50%"/>         
-        <p><b>${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido}</b> con número de
-        cédula ${correoInfoPidePermiso.rows[0].cedula} solicita vacaciones desde la fecha ${fec_inicio.split("T")[0]}
-        hasta ${fec_final.split("T")[0]} </p>
-        <a href="${url}/${ultimo.rows[0].id}">Ir a verificar permiso</a>
-        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-        <b>Gracias por la atención</b><br>
-        <b>Saludos cordiales,</b> <br><br>
-      </p>
-      <img src="cid:pief" width="50%" height="50%"/>
- `,
+               <body>
+                   <div style="text-align: center;">
+                       <img width="50%" height="50%" src="cid:cabeceraf"/>
+                   </div>
+                   <br>
+                   <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                       El presente correo es para informar que se ha creado la siguiente solicitud de vacaciones: <br>  
+                   </p>
+                   <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                   <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                       <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                       <b>Asunto:</b> Solicitud de vacación <br> 
+                       <b>Colaborador que envía:</b> ${correoInfoPideVacacion.rows[0].nombre} ${correoInfoPideVacacion.rows[0].apellido} <br>
+                       <b>Número de Cédula:</b> ${correoInfoPideVacacion.rows[0].cedula} <br>
+                       <b>Cargo:</b> ${correoInfoPideVacacion.rows[0].tipo_cargo} <br>
+                       <b>Departamento:</b> ${correoInfoPideVacacion.rows[0].departamento} <br>
+                       <b>Generado mediante:</b> Aplicación Web <br>
+                       <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                   </p>
+                   <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                   <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                       <b>Motivo:</b> Vacaciones <br>   
+                       <b>Fecha de Solicitud:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Desde:</b> ${desde} <br>
+                       <b>Hasta:</b> ${hasta} <br>
+                       <b>Estado:</b> ${estado_v} <br><br>
+                       <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de vacaciones.</a> <br><br>                           
+                       <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                   </p>
+                   <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                       <b>Gracias por la atención</b><br>
+                       <b>Saludos cordiales,</b> <br><br>
+                   </p>
+                   <img src="cid:pief" width="50%" height="50%"/>
+                </body>
+            `,
                     attachments: [
                         {
                             filename: 'cabecera_firma.jpg',
                             path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                            cid: 'cabeceraf' //same cid value as in the html img src
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
                         },
                         {
                             filename: 'pie_firma.jpg',
                             path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                            cid: 'pief' //same cid value as in the html img src
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
                         }
                     ]
                 };
-                let port = 465;
-                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                    port = parseInt(settingsMail_1.puerto);
-                }
-                if (vaca_mail === true && vaca_noti === true) {
-                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                    res.jsonp({ message: 'Vacaciones guardadas con éxito', notificacion: true, id_vacacion: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado });
-                }
-                else if (vaca_mail === true && vaca_noti === false) {
-                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-                    res.jsonp({ message: 'Vacaciones guardadas con éxito', notificacion: false, id_vacacion: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado });
-                }
-                else if (vaca_mail === false && vaca_noti === true) {
-                    res.jsonp({ message: 'Vacaciones guardadas con éxito', notificacion: true, id_vacacion: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado });
-                }
-                else if (vaca_mail === false && vaca_noti === false) {
-                    res.jsonp({ message: 'Vacaciones guardadas con éxito', notificacion: false, id_vacacion: ultimo.rows[0].id, id_departamento_autoriza, id_empleado_autoriza, estado });
-                }
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
+    // MÉTODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MOVIL
+    EnviarCorreoVacacionesMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { idContrato, desde, hasta, id_dep, id_suc, estado_v, correo, solicitado_por } = req.body;
+                const correoInfoPideVacacion = yield database_1.default.query('SELECT e.correo, e.nombre, e.apellido, e.cedula, ' +
+                    'ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
+                    'd.nombre AS departamento ' +
+                    'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
+                    'cg_departamentos AS d ' +
+                    'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
+                    '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id ' +
+                    'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ' +
+                    'ORDER BY cargo DESC', [idContrato]);
+                // obj.id_dep === correoInfoPideVacacion.rows[0].id_departamento && obj.id_suc === correoInfoPideVacacion.rows[0].id_sucursal
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: 'SOLICITUD DE VACACIÓN',
+                    html: `
+                 <body>
+                     <div style="text-align: center;">
+                         <img width="50%" height="50%" src="cid:cabeceraf"/>
+                     </div>
+                     <br>
+                     <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                         El presente correo es para informar que se ha creado la siguiente solicitud de vacaciones: <br>  
+                     </p>
+                     <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                     <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                         <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                         <b>Asunto:</b> Solicitud de vacación <br> 
+                         <b>Colaborador que envía:</b> ${correoInfoPideVacacion.rows[0].nombre} ${correoInfoPideVacacion.rows[0].apellido} <br>
+                         <b>Número de Cédula:</b> ${correoInfoPideVacacion.rows[0].cedula} <br>
+                         <b>Cargo:</b> ${correoInfoPideVacacion.rows[0].tipo_cargo} <br>
+                         <b>Departamento:</b> ${correoInfoPideVacacion.rows[0].departamento} <br>
+                         <b>Generado mediante:</b> Aplicación Móvil <br>
+                         <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                         <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                     </p>
+                     <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                     <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                         <b>Motivo:</b> Vacaciones <br>   
+                         <b>Fecha de Solicitud:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                         <b>Desde:</b> ${desde} <br>
+                         <b>Hasta:</b> ${hasta} <br>
+                         <b>Estado:</b> ${estado_v} <br><br>
+                         <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                     </p>
+                     <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                         <b>Gracias por la atención</b><br>
+                         <b>Saludos cordiales,</b> <br><br>
+                     </p>
+                     <img src="cid:pief" width="50%" height="50%"/>
+                  </body>
+              `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
             }
         });
     }
     VacacionesIdPeriodo(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const VACACIONES = yield database_1.default.query('SELECT v.fec_inicio, v.fec_final, fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, v.id, v.id_peri_vacacion FROM vacaciones AS v, peri_vacaciones AS p WHERE v.id_peri_vacacion = p.id AND p.estado = 1 AND p.id = $1 ORDER BY p.fec_final ASC', [id]);
+            const VACACIONES = yield database_1.default.query(`
+    SELECT v.fec_inicio, v.fec_final, fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, 
+    v.id, v.id_peri_vacacion 
+    FROM vacaciones AS v, peri_vacaciones AS p 
+    WHERE v.id_peri_vacacion = p.id AND p.id = $1 ORDER BY v.fec_inicio DESC
+    `, [id]);
             if (VACACIONES.rowCount > 0) {
                 return res.jsonp(VACACIONES.rows);
             }
@@ -205,8 +374,17 @@ class VacacionesControlador {
             const { estado, id_vacacion, id_rece_emp, id_depa_send } = req.body;
             yield database_1.default.query('UPDATE vacaciones SET estado = $1 WHERE id = $2', [estado, id]);
             console.log(estado, id_vacacion, id_rece_emp, id_depa_send);
-            const JefeDepartamento = yield database_1.default.query('SELECT da.id, cg.id AS id_dep, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, e.nombre, e.cedula, e.correo, e.apellido FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, empleados AS e WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id', [id_depa_send]);
-            const InfoVacacionesReenviarEstadoEmpleado = yield database_1.default.query('SELECT v.id, v.estado, v.fec_inicio, v.fec_final, v.fec_ingreso, e.id AS id_empleado, e.cedula, e.nombre, e.apellido, e.correo, co.vaca_mail, co.vaca_noti FROM vacaciones AS v, peri_vacaciones AS pv, empl_contratos AS c, empleados AS e, config_noti AS co WHERE v.id = $1 AND v.id_peri_vacacion = pv.id AND pv.estado = 1 AND c.id = pv.id_empl_contrato AND co.id_empleado = e.id AND e.id = $2', [id_vacacion, id_rece_emp]);
+            const JefeDepartamento = yield database_1.default.query(`SELECT da.id, cg.id AS id_dep, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, 
+      ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, e.nombre, e.cedula, e.correo, e.apellido 
+      FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, 
+      empl_contratos AS ecn, empleados AS e 
+      WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND 
+      cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id`, [id_depa_send]);
+            const InfoVacacionesReenviarEstadoEmpleado = yield database_1.default.query(`SELECT v.id, v.estado, v.fec_inicio, v.fec_final, v.fec_ingreso, e.id AS id_empleado, e.cedula, 
+      e.nombre, e.apellido, e.correo, co.vaca_mail, co.vaca_noti 
+      FROM vacaciones AS v, peri_vacaciones AS pv, empl_contratos AS c, empleados AS e, 
+      config_noti AS co WHERE v.id = $1 AND v.id_peri_vacacion = pv.id AND c.id = pv.id_empl_contrato AND 
+      co.id_empleado = e.id AND e.id = $2`, [id_vacacion, id_rece_emp]);
             if (3 === estado) {
                 (0, CargarVacacion_1.RestarPeriodoVacacionAutorizada)(parseInt(id));
             }
@@ -280,11 +458,31 @@ class VacacionesControlador {
                         port = parseInt(settingsMail_1.puerto);
                     }
                     if (ele.vaca_mail === true && ele.vaca_noti === true) {
-                        (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                        var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                        corr.sendMail(data, function (error, info) {
+                            if (error) {
+                                console.log('Email error: ' + error);
+                                return res.jsonp({ message: 'error' });
+                            }
+                            else {
+                                console.log('Email sent: ' + info.response);
+                                return res.jsonp({ message: 'ok' });
+                            }
+                        });
                         res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
                     }
                     else if (ele.vaca_mail === true && ele.vaca_noti === false) {
-                        (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                        var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                        corr.sendMail(data, function (error, info) {
+                            if (error) {
+                                console.log('Email error: ' + error);
+                                return res.jsonp({ message: 'error' });
+                            }
+                            else {
+                                console.log('Email sent: ' + info.response);
+                                return res.jsonp({ message: 'ok' });
+                            }
+                        });
                         res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
                     }
                     else if (ele.vaca_mail === false && ele.vaca_noti === true) {

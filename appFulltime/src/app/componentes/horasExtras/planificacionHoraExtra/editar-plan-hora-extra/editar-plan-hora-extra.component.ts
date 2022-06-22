@@ -202,7 +202,8 @@ export class EditarPlanHoraExtraComponent implements OnInit {
       id_empl_recive: id_empleado_recibe,
       mensaje: 'Planificación actualizada \n' + inicio + ' - ' + fin
     }
-    this.restPE.EnviarMensajePlanificacion(mensaje).subscribe(res => {
+    // no sirve cambiar
+    this.restPE.EnviarCorreoPlanificacion(mensaje).subscribe(res => {
       console.log(res.message);
     }, err => {
       const { access, message } = err.error.message;

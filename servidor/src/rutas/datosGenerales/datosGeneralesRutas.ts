@@ -13,6 +13,10 @@ class CiudadRutas {
         this.router.get('/empleadoAutoriza/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosEmpleadoAutoriza);
         this.router.get('/info_actual', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosActualesEmpleado);
 
+        // METODO DE ACCESO A CONSULTA DE DATOS DE COLABORADORES ACTIVOS E INACTIVOS
+        this.router.get('/informacion-general/:estado', TokenValidation, DATOS_GENERALES_CONTROLADOR.DatosGenerales);
+
+
         /** INICIO RUTAS PARA ACCEDER A CONSULTAS PARA FILTRAR INFORMACIÓN */
         this.router.get('/filtros/sucursal/:id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarEmpleadoSucursal);
         this.router.get('/filtros/sucursal/departamento/:id_sucursal/:id_departamento', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarEmpleadoSucuDepa);

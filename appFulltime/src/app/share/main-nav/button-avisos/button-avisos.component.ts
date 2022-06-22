@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TimbresService } from '../../../servicios/timbres/timbres.service';
 import { LoginService } from '../../../servicios/login/login.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-button-avisos',
@@ -8,7 +9,7 @@ import { LoginService } from '../../../servicios/login/login.service';
   styleUrls: ['../main-nav.component.css']
 })
 export class ButtonAvisosComponent implements OnInit {
-  
+
   estadoTimbres: boolean = true;
   num_timbre_false: number = 0;
   timbres_noti: any = [];
@@ -34,12 +35,14 @@ export class ButtonAvisosComponent implements OnInit {
   mensaje_inicio: string = '';
   mensaje_fin: string = '';
   LlamarNotificacionesAvisos(id: number) {
-    this.timbresNoti.NotiTimbresRealTime(id).subscribe(res => {
+    this.timbresNoti.EnviarNotiRealTime(id).subscribe(res => {
       this.timbres_noti = res;
-       console.log(this.timbres_noti, ' verificando vista de timbres ' + this.timbres_noti.message);
+      console.log(this.timbres_noti, ' verificando vista de timbres ' + this.timbres_noti.message);
       if (!this.timbres_noti.message) {
         if (this.timbres_noti.length > 0) {
           this.timbres_noti.forEach(obj => {
+            obj.create_at = moment(obj.create_at).format('DD/MM/YYYY') + ' ' + moment(obj.create_at).format('HH:mm:ss')
+            
             if (obj.visto === false) {
               this.num_timbre_false = this.num_timbre_false + 1;
               this.estadoTimbres = false;
@@ -49,6 +52,7 @@ export class ButtonAvisosComponent implements OnInit {
               this.mensaje_inicio = obj.descripcion.split(' ')[0] + ' ' + obj.descripcion.split(' ')[1] + ' ' + obj.descripcion.split(' ')[2] + ' ' + obj.descripcion.split(' ')[3];
               this.mensaje_fin = obj.descripcion.split(' ')[4] + ' ' + obj.descripcion.split(' ')[5] + ' ' + obj.descripcion.split(' ')[6];
             }
+
           });
         }
       }
@@ -57,7 +61,8 @@ export class ButtonAvisosComponent implements OnInit {
     });
   }
 
-  CambiarVistaTimbres(id_realtime: number) {
+
+  ActualizarVista(id_realtime: number) {
     this.timbresNoti.PutVistaTimbre(id_realtime).subscribe(res => {
       console.log(res);
     }, err => {

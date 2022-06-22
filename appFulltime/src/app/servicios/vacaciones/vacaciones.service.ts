@@ -59,7 +59,7 @@ export class VacacionesService {
   }
 
   SendMailNoti(datos: any) {
-    return this.http.post(`${environment.url}/vacaciones/mail-noti`, datos);
+    return this.http.post<any>(`${environment.url}/vacaciones/mail-noti`, datos);
   }
 
   EliminarVacacion(id_vacacion: number) {

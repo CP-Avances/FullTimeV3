@@ -191,7 +191,8 @@ export class PlanHoraExtraAutorizaComponent implements OnInit {
       mensaje: 'Horas Extras realizadas Autorizadas'
     }
     //console.log(mensaje);
-    this.restPlanH.EnviarMensajePlanificacion(mensaje).subscribe(res => {
+    //// no sirve cambiar
+    this.restPlanH.EnviarCorreoPlanificacion(mensaje).subscribe(res => {
       console.log(res.message);
       this.toastr.success(res.message,'', {
         timeOut: 6000,

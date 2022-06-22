@@ -1,197 +1,532 @@
+import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
+import { Validators, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormControl, FormGroup } from '@angular/forms';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatRadioChange } from '@angular/material/radio';
+import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { SelectionModel } from '@angular/cdk/collections';
-import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import * as moment from 'moment';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+moment.locale('es');
 
-// Servicios Filtros de búsqueda
-import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
-import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
-
-import { PlanificacionComidasComponent } from '../planificacion-comidas/planificacion-comidas.component';
+import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { PlanHoraExtraComponent } from 'src/app/componentes/horasExtras/planificacionHoraExtra/plan-hora-extra/plan-hora-extra.component';
 
-export interface EmpleadoElemento {
-  id: number;
-  nombre: string;
-  apellido: string;
-  codigo: number;
-}
+import { ITableEmpleados } from 'src/app/model/reportes.model';
 
 @Component({
   selector: 'app-plan-comidas',
   templateUrl: './plan-comidas.component.html',
   styleUrls: ['./plan-comidas.component.css']
 })
+
 export class PlanComidasComponent implements OnInit {
 
-  Lista_empleados: any = [];
-
-  // items de paginacion de la tabla
-  tamanio_pagina: number = 5;
-  numero_pagina: number = 1;
-  pageSizeOptions = [5, 10, 20, 50];
-
-  /**
-  * Variables Tabla de datos
-  */
-  dataSource: any;
-  filtroEmpleados = '';
-  idEmpleadoLogueado: any;
-
-  /**FILTROS DE BÚSQUEDA */
-  sucursalF = new FormControl('');
-  depaF = new FormControl('');
-  cargosF = new FormControl('');
-  laboralF = new FormControl('');
-  // Formulario de Búsquedas
-  public busquedasForm = new FormGroup({
-    sucursalForm: this.sucursalF,
-    depaForm: this.depaF,
-    cargosForm: this.cargosF,
-    laboralForm: this.laboralF,
-  });
-
-  /**BÚSQUEDA INMEDIATA */
-  // Datos del Formulario de búsqueda
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
-  nombre = new FormControl('', [Validators.minLength(2)]);
-  departamentoF = new FormControl('', [Validators.minLength(2)]);
-  regimenF = new FormControl('', [Validators.minLength(2)]);
-  cargoF = new FormControl('', [Validators.minLength(2)]);
+  nombre_emp = new FormControl('', [Validators.minLength(2)]);
+  nombre_dep = new FormControl('', [Validators.minLength(2)]);
+  nombre_suc = new FormControl('', [Validators.minLength(2)]);
+  seleccion = new FormControl('');
 
-  // Datos de filtros de búsqueda
-  filtroCodigo: number;
-  filtroCedula = '';
-  filtroEmpleado = '';
-  filtroDepartamento = '';
-  filtroRegimen = '';
-  filtroCargo = '';
+  filtroNombreSuc_: string = '';
+
+  filtroNombreDep_: string = '';
+
+  filtroCodigo_: number;
+  filtroCedula_: string = '';
+  filtroNombreEmp_: string = '';
+
+  habilitado: any;
+
+  public _booleanOptions: FormCriteriosBusqueda = {
+    bool_suc: false,
+    bool_dep: false,
+    bool_emp: false,
+  };
+
+  public check: checkOptions[];
 
   constructor(
-
-    /** FILTROS DE BÚSQUEDA */
-    public restSucur: SucursalService,
-    public restDepa: DepartamentosService,
-    public restCargo: EmplCargosService,
-    public restRegimen: RegimenService,
     public restD: DatosGeneralesService,
-    private vistaFlotante: MatDialog,
+    public restR: ReportesService,
+    public router: Router,
+    public ventana: MatDialog,
+    public informacion: DatosGeneralesService,
     private toastr: ToastrService,
-  ) {
-    this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
-  }
+  ) { }
 
   ngOnInit(): void {
-    this.ObtenerEmpleados();
-    //FILTROS DE BÚSQUEDA
-    this.ListarSucursales();
-    this.ListarDepartamentos();
-    this.ListarCargos();
-    this.ListarRegimen();
+    this.check = this.restR.checkOptions(3);
+    this.BuscarInformacion();
   }
 
-  ManejarPagina(e: PageEvent) {
-    this.tamanio_pagina = e.pageSize;
-    this.numero_pagina = e.pageIndex + 1;
+  ngOnDestroy() {
+    this.restR.GuardarCheckOpcion(0);
+    this.restR.DefaultFormCriterios();
+    this.restR.DefaultValoresFiltros();
+    sessionStorage.removeItem('plan_alimentacion');
   }
 
-  ObtenerEmpleados() {
-    this.Lista_empleados = [];
-    this.restD.ListarInformacionActual().subscribe(data => {
-      this.Lista_empleados = data;
-      console.log('datos_actuales', this.Lista_empleados)
-    });
-  }
+  BuscarInformacion() {
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.filtroEmpleados = filterValue.trim().toLowerCase();
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
+    sessionStorage.removeItem('plan_alimentacion');
+    this.informacion.ObtenerInformacion().subscribe((res: any[]) => {
+      sessionStorage.setItem('plan_alimentacion', JSON.stringify(res))
 
-  /* Ventana para ingresar planificación de comidas */
-  AbrirVentanaPlanificacion(empleado): void {
-    console.log(empleado);
-    this.vistaFlotante.open(PlanificacionComidasComponent, {
-      width: '600px',
-      data: { idEmpleado: empleado, modo: 'individual' }
-    }).afterClosed().subscribe(item => {
-      this.ObtenerEmpleados();
-    });
-  }
+      res.forEach(obj => {
+        this.sucursales.push({
+          id: obj.id_suc,
+          nombre: obj.name_suc
+        })
+      })
 
-  selectionUno = new SelectionModel<EmpleadoElemento>(true, []);
-  btnCheckHabilitar: boolean = false;
-  auto_individual: boolean = true;
-  HabilitarSeleccion() {
-    if (this.btnCheckHabilitar === false) {
-      this.btnCheckHabilitar = true;
-      this.auto_individual = false;
-    } else if (this.btnCheckHabilitar === true) {
-      this.btnCheckHabilitar = false;
-      this.auto_individual = true;
-    }
-  }
+      res.forEach(obj => {
+        obj.departamentos.forEach(ele => {
+          this.departamentos.push({
+            id: ele.id_depa,
+            nombre: ele.name_dep
+          })
+        })
+      })
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
-  isAllSelected() {
-    const numSelected = this.selectionUno.selected.length;
-    const numRows = this.Lista_empleados.length;
-    return numSelected === numRows;
-  }
+      res.forEach(obj => {
+        obj.departamentos.forEach(ele => {
+          ele.empleado.forEach(r => {
+            let elemento = {
+              id: r.id,
+              nombre: r.name_empleado,
+              codigo: r.codigo,
+              cedula: r.cedula,
+              correo: r.correo,
+              id_cargo: r.id_cargo,
+              id_contrato: r.id_contrato
+            }
+            this.empleados.push(elemento)
+          })
+        })
+      })
+      console.log('SUCURSALES', this.sucursales);
+      console.log('DEPARTAMENTOS', this.departamentos);
+      console.log('EMPLEADOS', this.empleados);
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
-  masterToggle() {
-    this.isAllSelected() ?
-      this.selectionUno.clear() :
-      this.Lista_empleados.forEach(row => this.selectionUno.select(row));
-  }
-
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
-  checkboxLabel(row?: EmpleadoElemento): string {
-    if (!row) {
-      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
-    }
-    return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
-  }
-
-  PlanificacionVarios() {
-    let EmpleadosSeleccionados;
-    EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
-      return {
-        id: obj.id,
-        empleado: obj.nombre + ' ' + obj.apellido,
-        codigo: obj.codigo
-      }
+    }, err => {
+      this.toastr.error(err.error.message)
     })
-    if (EmpleadosSeleccionados.length > 0) {
+  }
 
-      /* Ventana para ingresar planificación de comidas */
-      this.vistaFlotante.open(PlanificacionComidasComponent, {
-        width: '600px',
-        data: { servicios: EmpleadosSeleccionados, modo: 'multiple' }
-      }).afterClosed().subscribe(item => {
-        this.ObtenerEmpleados();
-        this.LimpiarCampos();
-        this.LimpiarBusquedas();
-        this.btnCheckHabilitar = false;
+  // MÉTODO PARA MOSTRAR DATOS DE BUSQUEDA
+  opcion: number;
+  activar_boton: boolean = false;
+  activar_seleccion: boolean = true;
+  BuscarPorTipo(e: MatRadioChange) {
+    console.log('CHECK ', e.value);
+    this.opcion = e.value;
+    this.activar_boton = true;
+    switch (this.opcion) {
+      case 1:
+        this._booleanOptions.bool_suc = true;
+        this._booleanOptions.bool_dep = false;
+        this._booleanOptions.bool_emp = false;
+        this.activar_seleccion = true;
+        this.plan_multiple = false;
         this.auto_individual = true;
-        this.selectionUno.clear();
+        break;
+      case 2:
+        this._booleanOptions.bool_suc = false;
+        this._booleanOptions.bool_dep = true;
+        this._booleanOptions.bool_emp = false;
+        this.activar_seleccion = true;
+        this.plan_multiple = false;
+        this.auto_individual = true;
+        break;
+      case 3:
+        this._booleanOptions.bool_suc = false;
+        this._booleanOptions.bool_dep = false;
+        this._booleanOptions.bool_emp = true;
+        this.activar_seleccion = true;
+        this.plan_multiple = false;
+        this.auto_individual = true;
+        break;
+      default:
+        this._booleanOptions.bool_suc = false;
+        this._booleanOptions.bool_dep = false;
+        this._booleanOptions.bool_emp = false;
+        this.activar_seleccion = true;
+        this.plan_multiple = false;
+        this.auto_individual = true;
+        break;
+    }
+    this.restR.GuardarFormCriteriosBusqueda(this._booleanOptions);
+    this.restR.GuardarCheckOpcion(this.opcion)
+
+  }
+
+  // MÉTODO PARA FILTRAR DATOS DE BÚSQUEDA
+  Filtrar(e, orden: number) {
+    switch (orden) {
+      case 1: this.restR.setFiltroNombreSuc(e); break;
+      case 2: this.restR.setFiltroNombreDep(e); break;
+      case 3: this.restR.setFiltroCodigo(e); break;
+      case 4: this.restR.setFiltroCedula(e); break;
+      case 5: this.restR.setFiltroNombreEmp(e); break;
+      default:
+        break;
+    }
+  }
+
+  departamentos: any = [];
+  sucursales: any = [];
+  respuesta: any[];
+  empleados: any = [];
+
+  selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
+  selectionDep = new SelectionModel<ITableEmpleados>(true, []);
+  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
+  pageSizeOptions_suc = [5, 10, 20, 50];
+  tamanio_pagina_suc: number = 5;
+  numero_pagina_suc: number = 1;
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA DEPARTAMENTO
+  pageSizeOptions_dep = [5, 10, 20, 50];
+  tamanio_pagina_dep: number = 5;
+  numero_pagina_dep: number = 1;
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
+  pageSizeOptions_emp = [5, 10, 20, 50];
+  tamanio_pagina_emp: number = 5;
+  numero_pagina_emp: number = 1;
+
+  get filtroNombreSuc() { return this.restR.filtroNombreSuc }
+
+  get filtroNombreDep() { return this.restR.filtroNombreDep }
+
+  get filtroNombreEmp() { return this.restR.filtroNombreEmp };
+  get filtroCodigo() { return this.restR.filtroCodigo };
+  get filtroCedula() { return this.restR.filtroCedula };
+
+
+  /** ************************************************************************************** **
+   ** **                   METODOS DE SELECCION DE DATOS DE USUARIOS                      ** **
+   ** ************************************************************************************** **/
+
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  isAllSelectedSuc() {
+    const numSelected = this.selectionSuc.selected.length;
+    return numSelected === this.sucursales.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  masterToggleSuc() {
+    this.isAllSelectedSuc() ?
+      this.selectionSuc.clear() :
+      this.sucursales.forEach(row => this.selectionSuc.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  checkboxLabelSuc(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedSuc() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionSuc.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  isAllSelectedDep() {
+    const numSelected = this.selectionDep.selected.length;
+    return numSelected === this.departamentos.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  masterToggleDep() {
+    this.isAllSelectedDep() ?
+      this.selectionDep.clear() :
+      this.departamentos.forEach(row => this.selectionDep.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  checkboxLabelDep(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedDep() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionDep.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  isAllSelectedEmp() {
+    const numSelected = this.selectionEmp.selected.length;
+    return numSelected === this.empleados.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  masterToggleEmp() {
+    this.isAllSelectedEmp() ?
+      this.selectionEmp.clear() :
+      this.empleados.forEach(row => this.selectionEmp.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  checkboxLabelEmp(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  ManejarPaginaResultados(e: PageEvent) {
+    if (this._booleanOptions.bool_suc === true) {
+      this.tamanio_pagina_suc = e.pageSize;
+      this.numero_pagina_suc = e.pageIndex + 1;
+    } else if (this._booleanOptions.bool_dep === true) {
+      this.tamanio_pagina_dep = e.pageSize;
+      this.numero_pagina_dep = e.pageIndex + 1;
+    } else if (this._booleanOptions.bool_emp === true) {
+      this.tamanio_pagina_emp = e.pageSize;
+      this.numero_pagina_emp = e.pageIndex + 1;
+    }
+  }
+
+  ModelarSucursal(id: number) {
+    let usuarios: any = [];
+    let respuesta = JSON.parse(sessionStorage.getItem('plan_alimentacion'))
+    if (id === 0) {
+      respuesta.forEach((obj: any) => {
+        this.selectionSuc.selected.find(obj1 => {
+          if (obj.id_suc === obj1.id) {
+            obj.departamentos.forEach((obj2: any) => {
+              obj2.empleado.forEach((obj3: any) => {
+                usuarios.push(obj3)
+              })
+            })
+          }
+        })
+      })
+    }
+    else {
+      respuesta.forEach((obj: any) => {
+        if (obj.id_suc === id) {
+          obj.departamentos.forEach((obj2: any) => {
+            obj2.empleado.forEach((obj3: any) => {
+              usuarios.push(obj3)
+            })
+          })
+        }
+      })
+    }
+
+    this.PlanificarMultiple(usuarios);
+  }
+
+  ModelarDepartamentos(id: number) {
+    let usuarios: any = [];
+    let respuesta = JSON.parse(sessionStorage.getItem('plan_alimentacion'))
+
+    if (id === 0) {
+      respuesta.forEach((obj: any) => {
+        obj.departamentos.forEach((obj1: any) => {
+          this.selectionDep.selected.find(obj2 => {
+            if (obj1.id_depa === obj2.id) {
+              obj1.empleado.forEach((obj3: any) => {
+                usuarios.push(obj3)
+              })
+            }
+          })
+        })
+      })
+    }
+    else {
+      respuesta.forEach((obj: any) => {
+        obj.departamentos.forEach((obj1: any) => {
+          if (obj1.id_depa === id) {
+            obj1.empleado.forEach((obj3: any) => {
+              usuarios.push(obj3)
+            })
+          }
+        })
+      })
+    }
+
+    this.PlanificarMultiple(usuarios);
+  }
+
+  ModelarEmpleados() {
+    let respuesta: any = [];
+    this.empleados.forEach((obj: any) => {
+      this.selectionEmp.selected.find(obj1 => {
+        if (obj1.id === obj.id) {
+          respuesta.push(obj)
+        }
+      })
+    })
+    this.PlanificarMultiple(respuesta);
+  }
+
+  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
+  auto_individual: boolean = true;
+
+  // METODO PARA ABRIR FORMULARIO DE INGRESO DE PLANIFICACION DE HE
+  Planificar(seleccionados: any) {
+    this.ventana.open(
+      PlanHoraExtraComponent,
+      {
+        width: '800px',
+        data: { planifica: seleccionados, actualizar: false }
+      })
+      .afterClosed().subscribe(item => {
+        this.auto_individual = true;
+        this.LimpiarFormulario();
+      });
+  }
+
+  // METODO DE VALIDACION DE SELECCION MULTIPLE
+  PlanificarMultiple(data: any) {
+    if (data.length > 0) {
+      this.Planificar(data);
+    }
+    else {
+      this.toastr.warning('No ha seleccionado usuarios.', '', {
+        timeOut: 6000,
       });
     }
   }
 
+  // METODO PARA TOMAR DATOS SELECCIONADOS
+  GuardarRegistros(id: number) {
+    if (this.opcion === 1) {
+      this.ModelarSucursal(id);
+    }
+    else if (this.opcion === 2) {
+      this.ModelarDepartamentos(id);
+    }
+    else {
+      this.ModelarEmpleados();
+    }
+  }
+
+  // METODO PARA LIMPIAR FORMULARIOS
+  LimpiarFormulario() {
+    if (this._booleanOptions.bool_emp === true) {
+
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+
+      this._booleanOptions.bool_emp = false;
+      this._booleanOptions.bool_tab = false;
+      this._booleanOptions.bool_inc = false;
+
+      this.selectionEmp.clear();
+    }
+
+    if (this._booleanOptions.bool_dep) {
+      this.nombre_dep.reset();
+      this._booleanOptions.bool_dep = false;
+      this.selectionDep.clear();
+    }
+
+    if (this._booleanOptions.bool_suc) {
+      this.nombre_suc.reset();
+      this._booleanOptions.bool_suc = false;
+      this.selectionSuc.clear();
+    }
+
+    this.seleccion.reset();
+    this.activar_boton = false;
+  }
+
+  // METODO PARA ACTIVAR SELECCION MULTIPLE
+  plan_multiple: boolean = false;
+  HabilitarSeleccion() {
+    this.plan_multiple = true;
+    this.auto_individual = false;
+    this.activar_seleccion = false;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* applyFilter(event: Event) {
+     const filterValue = (event.target as HTMLInputElement).value;
+     this.filtroEmpleados = filterValue.trim().toLowerCase();
+     this.dataSource.filter = filterValue.trim().toLowerCase();
+   }
+ */
+
+  /* PlanificacionVarios() {
+     let EmpleadosSeleccionados;
+     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
+       return {
+         id: obj.id,
+         empleado: obj.nombre + ' ' + obj.apellido,
+         codigo: obj.codigo
+       }
+     })
+     if (EmpleadosSeleccionados.length > 0) {
+ 
+       // Ventana para ingresar planificación de comidas 
+       this.vistaFlotante.open(PlanificacionComidasComponent, {
+         width: '600px',
+         data: { servicios: EmpleadosSeleccionados, modo: 'multiple' }
+       }).afterClosed().subscribe(item => {
+         this.ObtenerEmpleados();
+         this.LimpiarCampos();
+         this.LimpiarBusquedas();
+         this.btnCheckHabilitar = false;
+         this.auto_individual = true;
+         this.selectionUno.clear();
+       });
+     }
+   }
+ */
+
+  // VALIDACIONES DE INGRESO DE LETRAS 
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -215,7 +550,7 @@ export class PlanComidasComponent implements OnInit {
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
       return true;
     }
@@ -227,369 +562,7 @@ export class PlanComidasComponent implements OnInit {
     }
   }
 
-  LimpiarCampos() {
-    this.codigo.reset();
-    this.cedula.reset();
-    this.nombre.reset();
-    this.departamentoF.reset();
-    this.regimenF.reset();
-    this.cargoF.reset();
-    this.filtroEmpleado = '';
-  }
 
-  /*FILTROS DE BÚSQUEDA*/
-  sucursales: any = [];
-  ListarSucursales() {
-    this.sucursales = [];
-    this.restSucur.getSucursalesRest().subscribe(res => {
-      this.sucursales = res;
-    });
-  }
-
-  departamentos: any = [];
-  ListarDepartamentos() {
-    this.departamentos = [];
-    this.restDepa.ConsultarDepartamentos().subscribe(res => {
-      this.departamentos = res;
-    });
-  }
-
-  cargos: any = [];
-  ListarCargos() {
-    this.cargos = [];
-    this.restCargo.ObtenerTipoCargos().subscribe(res => {
-      this.cargos = res;
-    });
-  }
-
-  regimen: any = [];
-  ListarRegimen() {
-    this.regimen = [];
-    this.restRegimen.ConsultarRegimen().subscribe(res => {
-      this.regimen = res;
-    });
-  }
-
-  LimpiarBusquedas() {
-    this.busquedasForm.patchValue(
-      {
-        laboralForm: '',
-        depaForm: '',
-        cargosForm: '',
-        sucursalForm: ''
-      })
-    this.ObtenerEmpleados();
-    this.ListarSucursales();
-    this.ListarDepartamentos();
-    this.ListarCargos();
-    this.ListarRegimen();
-  }
-
-  LimpiarCampos1() {
-    this.busquedasForm.patchValue(
-      {
-        laboralForm: '',
-        depaForm: '',
-        cargosForm: ''
-      })
-  }
-
-  LimpiarCampos2() {
-    this.busquedasForm.patchValue(
-      {
-        depaForm: '',
-        cargosForm: ''
-      })
-  }
-
-  LimpiarCampos3() {
-    this.busquedasForm.patchValue(
-      { cargosForm: '' })
-  }
-
-
-  FiltrarSucursal(form) {
-    this.departamentos = [];
-    this.restDepa.BuscarDepartamentoSucursal(form.sucursalForm).subscribe(res => {
-      this.departamentos = res;
-    });
-    this.cargos = [];
-    this.restCargo.ObtenerCargoSucursal(form.sucursalForm).subscribe(res => {
-      this.cargos = res;
-    }, error => {
-      this.toastr.info('La sucursal seleccionada no cuenta con cargos registrados.', 'Verificar la Información', {
-        timeOut: 3000,
-      })
-    });
-    this.regimen = [];
-    this.restRegimen.ConsultarRegimenSucursal(form.sucursalForm).subscribe(res => {
-      this.regimen = res;
-    });
-    this.LimpiarCampos1();
-  }
-
-  FiltrarRegimen(form) {
-    this.cargos = [];
-    this.restCargo.ObtenerCargoRegimen(form.laboralForm).subscribe(res => {
-      this.cargos = res;
-    }, error => {
-      this.toastr.info('El regimen seleccionado no cuenta con cargos registrados.', 'Verificar la Información', {
-        timeOut: 3000,
-      })
-    });
-    this.departamentos = [];
-    this.restDepa.BuscarDepartamentoRegimen(form.laboralForm).subscribe(res => {
-      this.departamentos = res;
-    });
-    this.LimpiarCampos2();
-  }
-
-  FiltrarDepartamento(form) {
-    this.cargos = [];
-    this.restCargo.ObtenerCargoDepartamento(form.depaForm).subscribe(res => {
-      this.cargos = res;
-    }, error => {
-      this.toastr.info('El departamento seleccionado no cuenta con cargos registrados.', 'Verificar la Información', {
-        timeOut: 3000,
-      })
-    });
-    this.LimpiarCampos3();
-  }
-
-  VerInformacionSucursal(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucursal(form.sucursalForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuDepa(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuDepa(form.sucursalForm, form.depaForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuDepaRegimen(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuDepaRegimen(form.sucursalForm, form.depaForm, form.laboralForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuCargo(form.sucursalForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuRegimen(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuRegimen(form.sucursalForm, form.laboralForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuRegimenCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuRegimenCargo(form.sucursalForm, form.laboralForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuDepaCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuDepaCargo(form.sucursalForm, form.depaForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionSucuDepaCargoRegimen(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosSucuRegimenDepartamentoCargo(form.sucursalForm, form.depaForm, form.laboralForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionDepartamento(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosDepartamento(form.depaForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionDepaCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosDepaCargo(form.depaForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionDepaRegimen(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosDepaRegimen(form.depaForm, form.laboralForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionDepaRegimenCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosDepaRegimenCargo(form.depaForm, form.laboralForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionRegimen(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosRegimen(form.laboralForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionRegimenCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosRegimenCargo(form.laboralForm, form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerInformacionCargo(form) {
-    this.Lista_empleados = [];
-    this.restD.VerDatosCargo(form.cargosForm).subscribe(res => {
-      this.Lista_empleados = res;
-    }, error => {
-      this.toastr.error('Ningún dato coincide con los criterios de búsqueda indicados.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    });
-  }
-
-  VerificarBusquedas(form) {
-    console.log('form', form.depaForm, form.sucursalForm, form.cargosForm, form.laboralForm)
-    if (form.sucursalForm === '' && form.depaForm === '' &&
-      form.laboralForm === '' && form.cargosForm === '') {
-      this.toastr.info('Ingresar un criterio de búsqueda.', 'Verficar Información', {
-        timeOut: 6000,
-      })
-    }
-    else if (form.sucursalForm != '' && form.depaForm === '' &&
-      form.laboralForm === '' && form.cargosForm === '') {
-      this.VerInformacionSucursal(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm != '' &&
-      form.laboralForm === '' && form.cargosForm === '') {
-      this.VerInformacionSucuDepa(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm != '' &&
-      form.laboralForm != '' && form.cargosForm === '') {
-      this.VerInformacionSucuDepaRegimen(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm != '' &&
-      form.laboralForm === '' && form.cargosForm != '') {
-      this.VerInformacionSucuDepaCargo(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm === '' &&
-      form.laboralForm === '' && form.cargosForm != '') {
-      this.VerInformacionSucuCargo(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm === '' &&
-      form.laboralForm != '' && form.cargosForm === '') {
-      this.VerInformacionSucuRegimen(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm === '' &&
-      form.laboralForm != '' && form.cargosForm != '') {
-      this.VerInformacionSucuRegimenCargo(form);
-    }
-    else if (form.sucursalForm != '' && form.depaForm != '' &&
-      form.laboralForm != '' && form.cargosForm != '') {
-      this.VerInformacionSucuDepaCargoRegimen(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm != '' &&
-      form.laboralForm === '' && form.cargosForm === '') {
-      this.VerInformacionDepartamento(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm != '' &&
-      form.laboralForm === '' && form.cargosForm != '') {
-      this.VerInformacionDepaCargo(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm != '' &&
-      form.laboralForm != '' && form.cargosForm === '') {
-      this.VerInformacionDepaRegimen(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm != '' &&
-      form.laboralForm != '' && form.cargosForm != '') {
-      this.VerInformacionDepaRegimenCargo(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm === '' &&
-      form.laboralForm != '' && form.cargosForm === '') {
-      this.VerInformacionRegimen(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm === '' &&
-      form.laboralForm != '' && form.cargosForm != '') {
-      this.VerInformacionRegimenCargo(form);
-    }
-    else if (form.sucursalForm === '' && form.depaForm === '' &&
-      form.laboralForm === '' && form.cargosForm != '') {
-      this.VerInformacionCargo(form);
-    }
-  }
 
 
 }

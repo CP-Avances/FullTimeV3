@@ -49,7 +49,7 @@
                             <label id="datosF">Correo:</label>
                             <label>{{e.correo_empresa}}</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-start">
+                        <div class="caja1 d-flex justify-content-around">
                             <label id="datosF">Representante:</label>
                             <label>{{e.representante}}</label>
                         </div>
@@ -84,11 +84,11 @@
                             <label id="datosF">Hasta:</label>
                             <label>{{e.dias_cambio}} días antes de la fecha</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-around text-center" *ngIf="!cambiosTodos">
-                            <label>Puede realizar cambios en solicitudes autorizadas</label>
+                        <div class="d-flex justify-content-around text-center" *ngIf="!cambiosTodos">
+                            <label>Las solicitudes se autorizaran sin restriciones.</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-around text-center" *ngIf="!sinCambios">
-                            <label>No realizar cambios en solicitudes autorizadas</label>
+                        <div class="d-flex justify-content-around text-center" *ngIf="!sinCambios">
+                            <label>Las solicitudes se autorizaran sin restriciones.</label>
                         </div>
                         <br>
                         <div class="d-flex justify-content-around text-center">

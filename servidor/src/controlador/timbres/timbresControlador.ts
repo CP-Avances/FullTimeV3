@@ -4,10 +4,17 @@ import { Request, Response } from 'express';
 
 class TimbresControlador {
 
-    public async ObtenerRealTimeTimbresEmpleado(req: Request, res: Response) {
+    public async ObtenerAvisosColaborador(req: Request, res: Response) {
         const { id_empleado } = req.params
         console.log('OBTENER REAL TIME TIMBRES EMPLEADO: Id empleado = ', id_empleado);
-        const TIMBRES_NOTIFICACION = await pool.query('SELECT * FROM realtime_timbres WHERE id_receives_empl = $1 ORDER BY create_at DESC LIMIT 5', [id_empleado])
+        const TIMBRES_NOTIFICACION = await pool.query(
+            `
+            SELECT id, to_char(create_at, \'yyyy-MM-dd HH24:mi:ss\') AS create_at, id_send_empl, visto, 
+            descripcion, id_timbre, tipo
+            FROM realtime_timbres WHERE id_receives_empl = $1 
+            ORDER BY create_at DESC LIMIT 5
+            `,
+            [id_empleado])
             .then(async (result) => {
 
                 if (result.rowCount > 0) {

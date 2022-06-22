@@ -24,26 +24,31 @@ class ReportesAsistenciaControlador {
     DatosGenerales(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let estado = req.params.estado;
-            console.log('Estado: ', estado);
-            let suc = yield database_1.default.query('SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id')
+            // CONSULTA DE BUSQUEDA DE SUCURSALES
+            let suc = yield database_1.default.query(`
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
+            `)
                 .then(result => { return result.rows; });
             if (suc.length === 0)
-                return res.status(404).jsonp({ message: 'No tiene sucursales registrados' });
-            let departamentos = yield Promise.all(suc.map((ele) => __awaiter(this, void 0, void 0, function* () {
-                ele.departamentos = yield database_1.default.query('SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d ' +
-                    'WHERE d.id_sucursal = $1', [ele.id_suc])
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+            let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
+                dep.departamentos = yield database_1.default.query(`
+                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
+                WHERE d.id_sucursal = $1
+                `, [dep.id_suc])
                     .then(result => {
                     return result.rows.filter(obj => {
                         return obj.name_dep != 'Ninguno';
                     });
                 });
-                return ele;
+                return dep;
             })));
             let depa = departamentos.filter(obj => {
                 return obj.departamentos.length > 0;
             });
             if (depa.length === 0)
-                return res.status(404).jsonp({ message: 'No tiene departamentos registrados' });
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 obj.departamentos = yield Promise.all(obj.departamentos.map((ele) => __awaiter(this, void 0, void 0, function* () {
                     if (estado === '1') {
@@ -688,8 +693,8 @@ const BuscarTimbresSinAccionesDeEntrada = function (fec_inicio, fec_final, codig
                 var f_inicio = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg - (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00'));
                 var f_final = o.fecha + ' ' + (0, SubMetodosGraficas_1.SegundosToHHMM)(hora_seg);
                 // console.log( f_inicio, ' || ', f_final, ' || ', codigo);
-                const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) from timbres where fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') ' +
-                    'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') and id_empleado = ' + codigo + ' order by fec_hora_timbre';
+                const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) FROM timbres WHERE fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') ' +
+                    'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') AND id_empleado = ' + codigo + ' ORDER BY fec_hora_timbre';
                 return yield database_1.default.query(query).then(res => { return res.rows; });
             })));
             return timbres.filter(o => {

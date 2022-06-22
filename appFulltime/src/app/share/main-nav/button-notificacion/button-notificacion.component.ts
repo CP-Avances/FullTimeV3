@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { SettingsComponent } from "src/app/componentes/settings/settings.component";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-button-notificacion',
@@ -32,9 +33,9 @@ export class ButtonNotificacionComponent implements OnInit {
 
       this.socket.on('enviar_notification', (data) => {
         if (parseInt(data.id_receives_empl) === this.id_empleado_logueado) {
-          // console.log(data);
+          console.log('data_notificacion **** ', data);
           this.realTime.ObtenerUnaNotificaciones(data.id).subscribe(res => {
-            // console.log(res);
+             console.log('res_notificacion **** ', res);
             this.estadoNotificacion = false;
             if (this.noti_real_time.length < 5) {
               this.noti_real_time.unshift(res[0]);
@@ -69,11 +70,13 @@ export class ButtonNotificacionComponent implements OnInit {
   confRes: any = [];
   LlamarNotificaciones(id: number) {
     this.realTime.ObtenerNotificacionesReceives(id).subscribe(res => {
+     // console.log('res_notificacion **** ', res);
       this.noti_real_time = res;
-      // console.log(this.noti_real_time);
+      console.log(this.noti_real_time);
       if (!this.noti_real_time.text) {
         if (this.noti_real_time.length > 0) {
           this.noti_real_time.forEach(obj => {
+            obj.create_at = moment(obj.create_at).format('DD/MM/YYYY') + ' ' + moment(obj.create_at).format('HH:mm:ss')
             if (obj.visto === false) {
               this.num_noti_false = this.num_noti_false + 1;
               this.estadoNotificacion = false
@@ -85,7 +88,7 @@ export class ButtonNotificacionComponent implements OnInit {
       console.log(err);
     });
     this.realTime.ObtenerConfigNotiEmpleado(id).subscribe(res => {
-      // console.log(res);
+       console.log(res);
       this.confRes = res;
       if (!this.confRes.text) {
         if (res[0].vaca_noti === false || res[0].permiso_noti === false || res[0].hora_extra_noti === false) {
