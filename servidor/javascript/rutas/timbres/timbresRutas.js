@@ -12,7 +12,7 @@ class TimbresRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/noti-timbres/:id_empleado', verificarToken_1.TokenValidation, timbresControlador_1.default.ObtenerRealTimeTimbresEmpleado);
+        this.router.get('/noti-timbres/:id_empleado', verificarToken_1.TokenValidation, timbresControlador_1.default.ObtenerAvisosColaborador);
         this.router.get('/noti-timbres/avisos/:id_empleado', verificarToken_1.TokenValidation, timbresControlador_1.default.ObtenerAvisosTimbresEmpleado);
         this.router.put('/noti-timbres/vista/:id_noti_timbre', verificarToken_1.TokenValidation, timbresControlador_1.default.ActualizarVista);
         this.router.put('/eliminar-multiples/avisos', verificarToken_1.TokenValidation, timbresControlador_1.default.EliminarMultiplesAvisos);

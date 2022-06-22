@@ -2,21 +2,18 @@
 
 td { padding-top: 10px; text-align: center; }
 
-
-
 table { width: 100%; font-size: 14px;}
 
+.mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+}
 
-
-mat-icon { cursor: pointer;}
+mat-icon { cursor: pointer; }
 
 #SelectCheck {
     cursor: pointer;
     margin-left: 10px;
 }
-
-#icono { color: white; }
-
 
 #menu { color: green; font-size: 20px; text-align: center; cursor: pointer; }
 

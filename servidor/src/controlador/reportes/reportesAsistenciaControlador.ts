@@ -13,29 +13,36 @@ class ReportesAsistenciaControlador {
      */
     public async DatosGenerales(req: Request, res: Response) {
         let estado = req.params.estado;
-        console.log('Estado: ', estado);
 
-        let suc = await pool.query('SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id')
+        // CONSULTA DE BUSQUEDA DE SUCURSALES
+        let suc = await pool.query(
+            `
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
+            `)
             .then(result => { return result.rows });
 
-        if (suc.length === 0) return res.status(404).jsonp({ message: 'No tiene sucursales registrados' })
+        if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
 
-        let departamentos = await Promise.all(suc.map(async (ele: any) => {
-            ele.departamentos = await pool.query('SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d ' +
-                'WHERE d.id_sucursal = $1', [ele.id_suc])
+        let departamentos = await Promise.all(suc.map(async (dep: any) => {
+            dep.departamentos = await pool.query(
+                `
+                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
+                WHERE d.id_sucursal = $1
+                `, [dep.id_suc])
                 .then(result => {
                     return result.rows.filter(obj => {
-                        return obj.name_dep != 'Ninguno'
+                        return obj.name_dep != 'Ninguno';
                     })
                 });
-            return ele
+            return dep;
         }));
 
         let depa = departamentos.filter(obj => {
             return obj.departamentos.length > 0
         });
 
-        if (depa.length === 0) return res.status(404).jsonp({ message: 'No tiene departamentos registrados' })
+        if (depa.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' })
 
         let lista = await Promise.all(depa.map(async (obj: any) => {
             obj.departamentos = await Promise.all(obj.departamentos.map(async (ele: any) => {
@@ -51,8 +58,10 @@ class ReportesAsistenciaControlador {
                         'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
                         'codigo = e.codigo) ' +
                         'AND e.id = cn.id_empleado ' +
-                        'AND co.id_regimen = r.id AND e.estado = $2', [ele.id_depa, estado])
+                        'AND co.id_regimen = r.id AND e.estado = $2',
+                        [ele.id_depa, estado])
                         .then(result => { return result.rows })
+
                 } else {
                     ele.empleado = await pool.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) ' +
                         'name_empleado, e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail, ' +
@@ -825,8 +834,8 @@ const BuscarTimbresSinAccionesDeEntrada = async function (fec_inicio: string, fe
             var f_inicio = o.fecha + ' ' + SegundosToHHMM(hora_seg - HHMMtoSegundos('02:00:00'));
             var f_final = o.fecha + ' ' + SegundosToHHMM(hora_seg);
             // console.log( f_inicio, ' || ', f_final, ' || ', codigo);
-            const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) from timbres where fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') ' +
-                'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') and id_empleado = ' + codigo + ' order by fec_hora_timbre'
+            const query = 'SELECT CAST(fec_hora_timbre AS VARCHAR) FROM timbres WHERE fec_hora_timbre >= TO_TIMESTAMP(\'' + f_inicio + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') ' +
+                'and fec_hora_timbre <= TO_TIMESTAMP(\'' + f_final + '\'' + ', \'YYYY-MM-DD HH:MI:SS\') AND id_empleado = ' + codigo + ' ORDER BY fec_hora_timbre'
             return await pool.query(query).then(res => { return res.rows })
         }));
 

@@ -319,8 +319,8 @@ export class MainNavComponent implements OnInit {
               { name: 'Configurar HoraExtra', url: '/listaHorasExtras' },
               { name: 'Planificar Hora Extra', url: '/planificaHoraExtra' },
               { name: 'Listar Planificación', url: '/listadoPlanificaciones' },
-              { name: 'Aprobación HE Planificada', url: '/horas-extras-solicitadas' },
-              { name: 'Aprobación HE Solicitada', url: '/planificacionesHorasExtras' },
+              { name: 'Aprobación HE Planificada', url: '/planificacionesHorasExtras' },
+              { name: 'Aprobación HE Solicitada', url: '/horas-extras-solicitadas' },
             ]
           },
           {

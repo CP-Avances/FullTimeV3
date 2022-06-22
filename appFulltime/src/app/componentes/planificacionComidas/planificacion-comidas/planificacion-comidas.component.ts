@@ -1,16 +1,18 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import * as moment from 'moment';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import * as moment from 'moment';
 
-import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
+import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
+import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-planificacion-comidas',
@@ -18,39 +20,39 @@ import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHora
   styleUrls: ['./planificacion-comidas.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
 
 export class PlanificacionComidasComponent implements OnInit {
 
-  idComidaF = new FormControl('', Validators.required);
-  idEmpleadoF = new FormControl('');
-  fechaF = new FormControl('', [Validators.required]);
   observacionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
   fechaInicioF = new FormControl('', Validators.required);
-  fechaFinF = new FormControl('', Validators.required);
   horaInicioF = new FormControl('', Validators.required);
+  idEmpleadoF = new FormControl('');
+  idComidaF = new FormControl('', Validators.required);
+  fechaFinF = new FormControl('', Validators.required);
   horaFinF = new FormControl('', Validators.required);
-  tipoF = new FormControl('', Validators.required);;
   platosF = new FormControl('', Validators.required);;
+  fechaF = new FormControl('', [Validators.required]);
   extraF = new FormControl('', [Validators.required]);
+  tipoF = new FormControl('', Validators.required);;
 
-  // asignar los campos en un formulario en grupo
+  // ASIGNAR LOS CAMPOS DEL FORMULARIO EN GRUPO
   public PlanificacionComidasForm = new FormGroup({
-    idComidaForm: this.idComidaF,
-    idEmpleadoForm: this.idEmpleadoF,
-    fechaForm: this.fechaF,
     observacionForm: this.observacionF,
     fechaInicioForm: this.fechaInicioF,
-    fechaFinForm: this.fechaFinF,
+    idEmpleadoForm: this.idEmpleadoF,
     horaInicioForm: this.horaInicioF,
+    idComidaForm: this.idComidaF,
+    fechaFinForm: this.fechaFinF,
     horaFinForm: this.horaFinF,
-    tipoForm: this.tipoF,
     platosForm: this.platosF,
-    extraForm: this.extraF
+    fechaForm: this.fechaF,
+    extraForm: this.extraF,
+    tipoForm: this.tipoF,
   });
 
   tipoComidas: any = [];
@@ -60,12 +62,14 @@ export class PlanificacionComidasComponent implements OnInit {
 
   constructor(
     private toastr: ToastrService,
+    private restP: ParametrosService,
     private rest: TipoComidasService,
     public restE: EmpleadoService,
     public restH: EmpleadoHorariosService,
+    public validar: ValidacionesService,
     public restPlan: PlanComidasService,
-    public restUsuario: UsuarioService,
     public dialogRef: MatDialogRef<PlanificacionComidasComponent>,
+    public restUsuario: UsuarioService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
@@ -76,6 +80,7 @@ export class PlanificacionComidasComponent implements OnInit {
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
     this.MostrarDatos();
+    this.BuscarParametro();
     this.ObtenerServicios();
   }
 
@@ -108,12 +113,12 @@ export class PlanificacionComidasComponent implements OnInit {
     })
   }
 
-  // Al seleccionar un tipo de servicio se muestra la lista de menús registrados
+  // AL SELECCIONAR UN TIPO DE SERVICIO SE MUESTRA LA LISTA DE MENÚS REGISTRADOS
   ObtenerPlatosComidas(form) {
-    this.idComidaF.reset();
-    this.platosF.reset();
     this.horaInicioF.reset();
+    this.idComidaF.reset();
     this.horaFinF.reset();
+    this.platosF.reset();
     this.tipoComidas = [];
     this.rest.ConsultarUnServicio(form.tipoForm).subscribe(datos => {
       this.tipoComidas = datos;
@@ -126,9 +131,9 @@ export class PlanificacionComidasComponent implements OnInit {
 
   detalle: any = [];
   ObtenerDetalleMenu(form) {
-    this.platosF.reset();
     this.horaInicioF.reset();
     this.horaFinF.reset();
+    this.platosF.reset();
     this.detalle = [];
     this.rest.ConsultarUnDetalleMenu(form.idComidaForm).subscribe(datos => {
       this.detalle = datos;
@@ -160,15 +165,15 @@ export class PlanificacionComidasComponent implements OnInit {
   contadorFechas: number = 0;
   InsertarPlanificacion(form) {
     let datosPlanComida = {
-      fecha: form.fechaForm,
-      id_comida: form.platosForm,
       observacion: form.observacionForm,
-      fec_comida: form.fechaInicioForm,
-      hora_inicio: form.horaInicioForm,
-      hora_fin: form.horaFinForm,
-      extra: form.extraForm,
       fec_inicio: form.fechaInicioForm,
+      hora_inicio: form.horaInicioForm,
+      fec_comida: form.fechaInicioForm,
+      id_comida: form.platosForm,
       fec_final: form.fechaFinForm,
+      hora_fin: form.horaFinForm,
+      fecha: form.fechaForm,
+      extra: form.extraForm,
     };
     if (Date.parse(form.fechaInicioForm) <= Date.parse(form.fechaFinForm)) {
       if (this.data.modo === "multiple") {
@@ -224,68 +229,55 @@ export class PlanificacionComidasComponent implements OnInit {
   PlanificacionIndividual(form, datosPlanComida) {
     // CREACIÓN DE LA PLANIFICACIÓN PARA UN EMPLEADO
     this.restPlan.CrearPlanComidas(datosPlanComida).subscribe(plan => {
-      // CONSULTAMOS EL ID DE LA ÚLTIMA PLANIFICACIÓN CREADA
-      this.restPlan.ObtenerUltimaPlanificacion().subscribe(res => {
-        console.log('ultima planificacion', res[0].ultimo);
-        // INDICAMOS A QUE EMPLEADO SE LE REALIZA UNA PLANIFICACIÓN
-        this.inicioDate = moment(form.fechaInicioForm).format('MM-DD-YYYY');
-        this.finDate = moment(form.fechaFinForm).format('MM-DD-YYYY');
-        this.fechasHorario = []; // Array que contiene todas las fechas del mes indicado
-        // Inicializar datos de fecha
-        var start = new Date(this.inicioDate);
-        var end = new Date(this.finDate);
-        // Lógica para obtener el nombre de cada uno de los día del periodo indicado
-        while (start <= end) {
-          /* console.log(moment(start).format('dddd DD/MM/YYYY'), form.lunesForm)
-           if (moment(start).format('dddd') === 'lunes' && form.lunesForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }
-           if (moment(start).format('dddd') === 'martes' && form.martesForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }
-           if (moment(start).format('dddd') === 'miércoles' && form.miercolesForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }
-           if (moment(start).format('dddd') === 'jueves' && form.juevesForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }
-           if (moment(start).format('dddd') === 'viernes' && form.viernesForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }
-           if (moment(start).format('dddd') === 'sábado' && form.sabadoForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }
-           if (moment(start).format('dddd') === 'domingo' && form.domingoForm === false) {
-             this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-           }*/
-          this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-          var newDate = start.setDate(start.getDate() + 1);
-          start = new Date(newDate);
-        }
-        this.contadorFechas = 0;
-        console.log('fechas', this.fechasHorario);
-        this.fechasHorario.map(obj => {
-          let datosPlanEmpleado = {
-            codigo: this.empleados[0].codigo,
-            id_empleado: this.data.idEmpleado,
-            id_plan_comida: res[0].ultimo,
-            fecha: obj,
-            hora_inicio: form.horaInicioForm,
-            hora_fin: form.horaFinForm,
-            consumido: false
+      console.log('ultima planificacion', plan);
+
+   /*   // INDICAMOS A QUE EMPLEADO SE LE REALIZA UNA PLANIFICACIÓN
+      this.inicioDate = moment(form.fechaInicioForm).format('MM-DD-YYYY');
+      this.finDate = moment(form.fechaFinForm).format('MM-DD-YYYY');
+
+      this.fechasHorario = []; // ARRAY QUE CONTIENE TODAS LAS FECHAS DEL MES INDICADO
+
+      // INICIALIZAR DATOS DE FECHA
+      var start = new Date(this.inicioDate);
+      var end = new Date(this.finDate);
+
+      // LÓGICA PARA OBTENER TODAS LAS FECHAS DEL MES
+      while (start <= end) {
+        this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
+        var newDate = start.setDate(start.getDate() + 1);
+        start = new Date(newDate);
+      }
+
+      this.contadorFechas = 0;
+      console.log('fechas', this.fechasHorario);
+
+      // DATOS DE PLANIFICACION DE SERVICIO DE ALIMENTACION AL USUARIO
+      let planEmpleado = {
+        codigo: this.empleados[0].codigo,
+        id_empleado: this.data.idEmpleado,
+        id_plan_comida: plan.id,
+        fecha: '',
+        hora_inicio: form.horaInicioForm,
+        hora_fin: form.horaFinForm,
+        consumido: false
+      }
+
+      // REGISTRAR PLANIFICACION DEL USUARIO
+      this.fechasHorario.map(obj => {
+        planEmpleado.fecha = obj;
+
+        this.restPlan.CrearPlanComidasEmpleado(planEmpleado).subscribe(res => {
+          this.contadorFechas = this.contadorFechas + 1;
+
+          if (this.contadorFechas === this.fechasHorario.length) {
+            this.EnviarNotificaciones(form.fechaInicioForm, form.fechaFinForm, form.horaInicioForm, form.horaFinForm, this.empleado_envia, this.empleado_recibe);
+            this.toastr.success('Operación Exitosa', 'Servicio de Alimentación Registrado.', {
+              timeOut: 6000,
+            })
+            this.CerrarRegistroPlanificacion();
           }
-          this.restPlan.CrearPlanComidasEmpleado(datosPlanEmpleado).subscribe(res => {
-            this.contadorFechas = this.contadorFechas + 1;
-            if (this.contadorFechas === this.fechasHorario.length) {
-              this.EnviarNotificaciones(form.fechaInicioForm, form.fechaFinForm, form.horaInicioForm, form.horaFinForm, this.empleado_envia, this.empleado_recibe);
-              this.toastr.success('Operación Exitosa', 'Servicio de Alimentación Registrado.', {
-                timeOut: 6000,
-              })
-              this.CerrarRegistroPlanificacion();
-            }
-          });
-        })
-      });
+        });
+      })*/
     });
   }
 
@@ -515,12 +507,17 @@ export class PlanificacionComidasComponent implements OnInit {
       this.envios = envio;
       console.log('datos envio', this.envios.notificacion);
       if (this.envios.notificacion === true) {
-        this.NotificarPlanificacion(empleado_envia, empleado_recibe, fecha_plan_inicio, fecha_plan_fin);
+        this.NotificarPlanificacion1(empleado_envia, empleado_recibe, fecha_plan_inicio, fecha_plan_fin);
       }
     });
   }
 
-  NotificarPlanificacion(empleado_envia: any, empleado_recive: any, fecha_inicio, fecha_fin) {
+
+
+
+
+
+  NotificarPlanificacion1(empleado_envia: any, empleado_recive: any, fecha_inicio, fecha_fin) {
     let mensaje = {
       id_empl_envia: empleado_envia,
       id_empl_recive: empleado_recive,
@@ -534,25 +531,106 @@ export class PlanificacionComidasComponent implements OnInit {
 
 
   IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
+    this.validar.IngresarSoloLetras(e);
+  }
+
+  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
+  EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
+
+    // DATOS DE ESTRUCTURA DEL CORREO
+    let DataCorreo = {
+      observacion: datos.descripcion,
+      id_comida: datos.id,
+      id_envia: this.idEmpleadoLogueado,
+      nombres: usuario,
+      correo: cuenta_correo,
+      inicio: h_inicio,
+      extra: datos.extra,
+      desde: desde + ' ' + moment(datos.fecha_desdde).format('DD/MM/YYYY'),
+      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      final: h_fin,
+    }
+
+    console.log('DATOS A ENVIARSE POR CORREO', DataCorreo);
+    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    this.restPlan.EnviarCorreoPlan(DataCorreo).subscribe(res => {
+      if (res.message === 'ok') {
+        this.toastr.success('Correo de planificación enviado exitosamente.', '', {
+          timeOut: 6000,
+        });
       }
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de planificación.', {
+          timeOut: 6000,
+        });
+      }
+      console.log(res.message);
+
+    }, err => {
+      const { access, message } = err.error.message;
+      if (access === false) {
+        this.toastr.error(message)
+        this.dialogRef.close();
+      }
+    })
+  }
+
+
+  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
+  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
+    let mensaje = {
+      //id_empl_envia: this.id_user_loggin,
+      id_empl_recive: id_empleado_recibe,
+      tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
+      mensaje: 'Planificación de horas extras desde ' +
+        desde + ' ' + moment(datos.fecha_desdde).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
+        ' horario de ' + h_inicio + ' a ' + h_fin,
     }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
+      console.log(res.message);
+    }, err => {
+      const { access, message } = err.error.message;
+      if (access === false) {
+        this.toastr.error(message)
+        this.dialogRef.close();
+      }
+    })
+  }
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE CORREOS
+  correos: number;
+  BuscarParametro() {
+    // id_tipo_parametro LIMITE DE CORREOS = 24
+    let datos = [];
+    this.restP.ListarDetalleParametros(24).subscribe(
+      res => {
+        datos = res;
+        if (datos.length != 0) {
+          this.correos = parseInt(datos[0].descripcion)
+        }
+        else {
+          this.correos = 0
+        }
+      });
+  }
+
+  // MÉTODO PARA CONTAR CORREOS A ENVIARSE
+  cont_correo: number = 0;
+  info_correo: string = '';
+  ContarCorreos(data: any) {
+    this.cont_correo = 0;
+    this.info_correo = '';
+    data.forEach((obj: any) => {
+      this.cont_correo = this.cont_correo + 1
+      if (this.info_correo === '') {
+        this.info_correo = obj.correo;
+      }
+      else {
+        this.info_correo = this.info_correo + ', ' + obj.correo;
+      }
+    })
+    console.log('ver correos -----------', this.info_correo)
   }
 
 }

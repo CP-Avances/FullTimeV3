@@ -208,7 +208,7 @@ export class VerVacacionComponent implements OnInit {
       this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
         var fecha_inicio = moment(this.datoSolicitud[0].fec_inicio);
         // MÉTODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
-        console.log(fecha_inicio.diff(this.fechaActual, 'days'), ' dias de diferencia');
+        console.log(fecha_inicio.diff(this.fechaActual, 'days'), ' dias de diferencia ' + res[0].dias_cambio);
         if (res[0].cambios === true) {
           if (res[0].cambios === 0) {
             this.habilitarActualizar = false;
@@ -216,14 +216,14 @@ export class VerVacacionComponent implements OnInit {
           else {
             var dias = fecha_inicio.diff(this.fechaActual, 'days');
             if (dias >= res[0].dias_cambio) {
-              this.habilitarActualizar = false;
+              this.habilitarActualizar = true;
             }
             else {
-              this.habilitarActualizar = true;
+              this.habilitarActualizar = false;
             }
           }
         } else {
-          this.habilitarActualizar = true;
+          this.habilitarActualizar = false;
         }
       });
     })

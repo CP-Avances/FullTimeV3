@@ -177,10 +177,6 @@ export class LoginComponent implements OnInit {
       }
       else {
 
-
-
-
-
         localStorage.setItem('token', datos.token);
         localStorage.setItem('usuario', datos.usuario);
         localStorage.setItem('rol', datos.rol);
@@ -189,6 +185,7 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('sucursal', datos.sucursal);
         localStorage.setItem('departamento', datos.departamento);
         localStorage.setItem('ultimoCargo', datos.cargo);
+        localStorage.setItem('ultimoContrato', datos.id_contrato);
         localStorage.setItem('autoriza', datos.estado);
         localStorage.setItem('bool_timbres', datos.acciones_timbres);
         localStorage.setItem('ip', datos.ip_adress);

@@ -99,7 +99,11 @@ function MetodoNorificacionEntradas(orden, fecha, num_dia, fechaDate) {
 }
 function EmpleadosSinTimbreEntrada(fecha, arrayIdsEmpleadosActivos) {
     return __awaiter(this, void 0, void 0, function* () {
-        let IdsEmpleadosConTimbres = yield database_1.default.query('SELECT DISTINCT e.id FROM empleados AS e, timbres AS t WHERE e.codigo::int = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\' AND accion in (\'E\', \'EoS\') ORDER BY id', [fecha])
+        let IdsEmpleadosConTimbres = yield database_1.default.query(`
+        SELECT DISTINCT e.id FROM empleados AS e, timbres AS t 
+        WHERE e.codigo::int = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || 
+        '%' AND accion in ('E', 'EoS') ORDER BY id
+        `, [fecha])
             .then(result => {
             return result.rows.map(obj => {
                 return obj.id;
@@ -114,7 +118,11 @@ function EmpleadosSinTimbreEntrada(fecha, arrayIdsEmpleadosActivos) {
 }
 function EmpleadosSinTimbreSalida(fecha, arrayIdsEmpleadosActivos) {
     return __awaiter(this, void 0, void 0, function* () {
-        let IdsEmpleadosConTimbres = yield database_1.default.query('SELECT DISTINCT e.id FROM empleados AS e, timbres AS t WHERE e.codigo = t.id_empleado AND e.estado = 1 AND CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\' AND accion in (\'S\', \'EoS\') ORDER BY id', [fecha])
+        let IdsEmpleadosConTimbres = yield database_1.default.query(`
+        SELECT DISTINCT e.id FROM empleados AS e, timbres AS t 
+        WHERE e.codigo::int = t.id_empleado AND e.estado = 1 AND 
+            CAST(t.fec_hora_timbre AS VARCHAR) LIKE $1 || '%' AND accion in ('S', 'EoS') ORDER BY id
+        `, [fecha])
             .then(result => {
             return result.rows.map(obj => {
                 return obj.id;

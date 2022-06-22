@@ -19,7 +19,8 @@ class VacacionesRutas {
         this.router.get('/one/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarUnaVacacion);
         this.router.post('/', verificarToken_1.TokenValidation, vacacionesControlador_1.default.CrearVacaciones);
         this.router.post('/fechasFeriado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerFechasFeriado);
-        this.router.post('/mail-noti/', verificarToken_1.TokenValidation, vacacionesControlador_1.default.SendMailNotifiPermiso);
+        this.router.post('/mail-noti/', verificarToken_1.TokenValidation, vacacionesControlador_1.default.SendMailNotifiVacacion);
+        this.router.post('/mail-noti-vacacion-movil/:id_empresa', vacacionesControlador_1.default.EnviarCorreoVacacionesMovil);
         this.router.put('/:id/estado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ActualizarEstado);
         this.router.put('/:id/vacacion-solicitada', verificarToken_1.TokenValidation, vacacionesControlador_1.default.EditarVacaciones);
         this.router.get('/datosSolicitud/:id_emple_vacacion', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerSolicitudVacaciones);

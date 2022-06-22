@@ -10,12 +10,12 @@ import * as moment from 'moment';
 // INVOCACIÓN A LOS SERVICIOS
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 
 interface opcionesDiasHoras {
   valor: string;
@@ -50,6 +50,10 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   ];
 
   permiso: any = [];
+
+  // DATOS DEL EMPLEADO LOGUEADO
+  empleadoLogueado: any = [];
+  idEmpleado: number;
 
   // USADO PARA IMPRIMIR DATOS
   datosPermiso: any = [];
@@ -129,12 +133,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     private toastr: ToastrService,
     private restP: PermisosService,
     private restH: EmpleadoHorariosService,
-    public restAutoriza: AutorizacionService,
-    public dialogRef: MatDialogRef<RegistroEmpleadoPermisoComponent>,
-    public validar: ValidacionesService,
     public restE: EmpleadoService,
+    public validar: ValidacionesService,
+    public ventana: MatDialogRef<RegistroEmpleadoPermisoComponent>,
+    public restAutoriza: AutorizacionService,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any,
-  ) { }
+  ) {
+    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     var f = moment();
@@ -147,6 +153,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.ObtenerTiposPermiso();
     this.ImprimirNumeroPermiso();
     this.ObtenerEmpleado(this.datoEmpleado.idEmpleado);
+    this.ObtenerEmpleadoLogueado(this.idEmpleado);
   }
 
   empleado: any = [];
@@ -155,6 +162,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.empleado = [];
     this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
       this.empleado = data;
+    })
+  }
+
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
+  ObtenerEmpleadoLogueado(idemploy: any) {
+    this.empleadoLogueado = [];
+    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+      this.empleadoLogueado = data;
     })
   }
 
@@ -186,7 +201,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       const { access, message } = err.error.message;
       if (access === false) {
         this.toastr.error(message)
-        this.dialogRef.close();
+        this.ventana.close();
       }
     })
   }
@@ -241,9 +256,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       });
     }
   }
-
-
-
 
   // MÉTODO DE VALIDACIONES DE FECHA DE SALIDA
   dSalida: any;
@@ -359,7 +371,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
                 /*   const { access, message } = err.error.message;
                    if (access === false) {
                      this.toastr.error(message)
-                     this.dialogRef.close();
+                     this.ventana.close();
                    }*/
               })
             }
@@ -787,74 +799,21 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         }
       }
       else {
-        this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
+        this.restP.IngresarEmpleadoPermisos(datos).subscribe(permiso => {
           this.toastr.success('Operación Exitosa', 'Permiso registrado', {
             timeOut: 6000,
           });
-          this.arrayNivelesDepa = response;
-          this.LimpiarCampos();
-          this.arrayNivelesDepa.forEach(obj => {
-            let datosPermisoCreado = {
-              fec_creacion: datos.fec_creacion,
-              id_tipo_permiso: datos.id_tipo_permiso,
-              id_empl_contrato: datos.id_empl_contrato,
-              id: obj.id,
-              estado: obj.estado,
-              id_dep: obj.id_dep,
-              depa_padre: obj.depa_padre,
-              nivel: obj.nivel,
-              id_suc: obj.id_suc,
-              departamento: obj.departamento,
-              sucursal: obj.sucursal,
-              cargo: obj.cargo,
-              contrato: obj.contrato,
-              empleado: obj.empleado,
-              nombre: obj.nombre,
-              apellido: obj.apellido,
-              cedula: obj.cedula,
-              correo: obj.correo,
-              permiso_mail: obj.permiso_mail,
-              permiso_noti: obj.permiso_noti
-            }
-            this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
-              this.idPermisoRes = res;
-              console.log(this.idPermisoRes);
-              this.ImprimirNumeroPermiso();
-              var f = new Date();
-              let notificacion = {
-                id: null,
-                id_send_empl: this.datoEmpleado.idEmpleado,
-                id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
-                id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
-                estado: this.idPermisoRes.estado,
-                create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-                id_permiso: this.idPermisoRes.id,
-                id_vacaciones: null,
-                id_hora_extra: null
-              }
-              this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
-                console.log(resN);
-                this.NotifiRes = resN;
-                notificacion.id = this.NotifiRes._id;
-                if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
-                  this.restP.sendNotiRealTime(notificacion);
-                }
-              });
-
-              this.IngresarAutorizacion(this.idPermisoRes.id);
-            });
-          }, err => {
-            const { access, message } = err.error.message;
-            if (access === false) {
-              this.toastr.error(message)
-              this.dialogRef.close();
-            }
-          });
+          this.ImprimirNumeroPermiso();
+          console.log('ver datos de permiso......', permiso)
+          this.SendEmailsEmpleados(permiso);
+          this.IngresarAutorizacion(permiso);
+          this.EnviarNotificacion(permiso);
+          this.CerrarVentanaPermiso();
         }, err => {
           const { access, message } = err.error.message;
           if (access === false) {
             this.toastr.error(message)
-            this.dialogRef.close();
+            this.ventana.close();
           }
         });
       }
@@ -862,63 +821,16 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   Informacion(datos) {
-    this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
-      this.toastr.success('Operación Exitosa', 'Permiso registrado', {
+    this.restP.IngresarEmpleadoPermisos(datos).subscribe(permiso => {
+      this.toastr.success('Operación Exitosa.', 'Permiso registrado.', {
         timeOut: 6000,
       });
-      this.arrayNivelesDepa = response;
-      this.LimpiarCampos();
-      this.arrayNivelesDepa.forEach(obj => {
-        let datosPermisoCreado = {
-          fec_creacion: datos.fec_creacion,
-          id_tipo_permiso: datos.id_tipo_permiso,
-          id_empl_contrato: datos.id_empl_contrato,
-          id: obj.id,
-          estado: obj.estado,
-          id_dep: obj.id_dep,
-          depa_padre: obj.depa_padre,
-          nivel: obj.nivel,
-          id_suc: obj.id_suc,
-          departamento: obj.departamento,
-          sucursal: obj.sucursal,
-          cargo: obj.cargo,
-          contrato: obj.contrato,
-          empleado: obj.empleado,
-          nombre: obj.nombre,
-          apellido: obj.apellido,
-          cedula: obj.cedula,
-          correo: obj.correo,
-          permiso_mail: obj.permiso_mail,
-          permiso_noti: obj.permiso_noti
-        }
-        this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
-          this.idPermisoRes = res;
-          console.log(this.idPermisoRes);
-          this.SubirRespaldo(this.idPermisoRes.id)
-          this.ImprimirNumeroPermiso();
-          var f = new Date();
-          let notificacion = {
-            id: null,
-            id_send_empl: this.datoEmpleado.idEmpleado,
-            id_receives_empl: this.idPermisoRes.id_empleado_autoriza,
-            id_receives_depa: this.idPermisoRes.id_departamento_autoriza,
-            estado: this.idPermisoRes.estado,
-            create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-            id_permiso: this.idPermisoRes.id,
-            id_vacaciones: null,
-            id_hora_extra: null
-          }
-          this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
-            console.log(resN);
-            this.NotifiRes = resN;
-            notificacion.id = this.NotifiRes._id;
-            if (this.NotifiRes._id > 0 && this.idPermisoRes.notificacion === true) {
-              this.restP.sendNotiRealTime(notificacion);
-            }
-          });
-          this.IngresarAutorizacion(this.idPermisoRes.id);
-        });
-      });
+      this.ImprimirNumeroPermiso();
+      this.SubirRespaldo(permiso);
+      this.SendEmailsEmpleados(permiso);
+      this.IngresarAutorizacion(permiso);
+      this.EnviarNotificacion(permiso);
+      this.CerrarVentanaPermiso();
     });
   }
 
@@ -947,7 +859,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   CerrarVentanaPermiso() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
   /* ********************************************************************************** *
@@ -966,7 +878,8 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     }
   }
 
-  SubirRespaldo(id: number) {
+  SubirRespaldo(permiso: any) {
+    var id = permiso.id;
     let formData = new FormData();
     console.log("tamaño", this.archivoSubido[0].size);
     for (var i = 0; i < this.archivoSubido.length; i++) {
@@ -982,7 +895,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       const { access, message } = err.error.message;
       if (access === false) {
         this.toastr.error(message)
-        this.dialogRef.close();
+        this.ventana.close();
       }
     });
   }
@@ -1041,13 +954,13 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     }
   }
 
-  IngresarAutorizacion(id_permiso: number) {
+  IngresarAutorizacion(permiso: any) {
     // ARREGLO DE DATOS PARA INGRESAR UNA AUTORIZACIÓN
     let newAutorizaciones = {
       orden: 1, // ORDEN DE LA AUTORIZACIÓN 
       estado: 1, // ESTADO PENDIENTE
       id_departamento: parseInt(localStorage.getItem('departamento')),
-      id_permiso: id_permiso,
+      id_permiso: permiso.id,
       id_vacacion: null,
       id_hora_extra: null,
       id_documento: '',
@@ -1056,4 +969,158 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.restAutoriza.postAutorizacionesRest(newAutorizaciones).subscribe(res => {
     }, error => { })
   }
+
+
+  SendEmailsEmpleados(permiso: any) {
+
+    console.log('entra correo')
+    var cont = 0;
+    var correo_usuarios = '';
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    let solicitud = moment.weekdays(moment(permiso.fec_creacion).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_creacion).day()).slice(1);
+    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+
+    // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
+    if (permiso.estado === 1) {
+      var estado_p = 'Pendiente';
+    }
+
+    // LEYENDO DATOS DE TIPO DE PERMISO
+    var tipo_permiso = '';
+    this.tipoPermisos.filter(o => {
+      if (o.id === permiso.id_tipo_permiso) {
+        tipo_permiso = o.descripcion
+      }
+      return tipo_permiso;
+    })
+
+    // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
+    permiso.EmpleadosSendNotiEmail.forEach(e => {
+
+      console.log('for each', e)
+
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
+      if (e.permiso_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
+          }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
+
+      console.log('contadores', permiso.EmpleadosSendNotiEmail.length + ' cont ' + cont)
+
+      if (cont === permiso.EmpleadosSendNotiEmail.length) {
+
+        console.log('data entra correo usuarios', correo_usuarios)
+
+        let datosPermisoCreado = {
+          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
+          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
+          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
+          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
+          id_empl_contrato: permiso.id_empl_contrato,
+          horas_permiso: permiso.hora_numero,
+          observacion: permiso.descripcion,
+          tipo_permiso: tipo_permiso,
+          dias_permiso: permiso.dia,
+          estado_p: estado_p,
+          id_dep: e.id_dep,
+          id_suc: e.id_suc,
+          correo: correo_usuarios,
+          id: permiso.id,
+          solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido
+        }
+        if (correo_usuarios != '') {
+          console.log('data entra enviar correo')
+
+          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+            resp => {
+              console.log('data entra enviar correo', resp)
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
+    })
+
+  }
+
+  EnviarNotificacion(permiso: any) {
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+    let h_inicio = moment(permiso.hora_salida, 'HH:mm').format('HH:mm');
+    let h_fin = moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm');
+
+    if (h_inicio === '00:00') {
+      h_inicio = '';
+    }
+
+    if (h_fin === '00:00') {
+      h_fin = '';
+    }
+
+    var f = new Date();
+    let notificacion = {
+      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_receives_empl: '',
+      id_receives_depa: '',
+      estado: 'Pendiente',
+      create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
+      id_permiso: permiso.id,
+      id_vacaciones: null,
+      id_hora_extra: null,
+      mensaje: 'Ha realizado una solicitud de permiso desde ' +
+        desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
+        hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
+    }
+
+    permiso.EmpleadosSendNotiEmail.forEach(e => {
+
+      notificacion.id_receives_depa = e.id_dep;
+      notificacion.id_receives_empl = e.empleado;
+
+      if (e.permiso_noti) {
+        this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
+          resp => {
+            console.log('ver data de notificacion', resp.respuesta)
+            this.restP.sendNotiRealTime(resp.respuesta);
+          },
+          err => {
+            this.toastr.error(err.error.message, '', {
+              timeOut: 6000,
+            });
+          },
+          () => { },
+        )
+      }
+    })
+  }
+
 }

@@ -43,10 +43,13 @@ function AniosEmpleado(idEmpleado) {
         var f = new Date();
         f.setUTCHours(f.getHours());
         let anioHoy = f.toJSON().split("-")[0];
-        let anioInicio = yield database_1.default.query('SELECT pv.fec_inicio FROM empl_contratos co, peri_vacaciones pv WHERE co.id_empleado = $1 AND pv.estado = 1 AND pv.id_empl_contrato = co.id ORDER BY pv.fec_inicio ASC limit 1', [idEmpleado]).then(result => {
+        let anioInicio = yield database_1.default.query(`SELECT pv.fec_inicio FROM empl_contratos co, peri_vacaciones pv 
+    WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id ORDER BY pv.fec_inicio ASC limit 1`, [idEmpleado]).then(result => {
             return JSON.stringify(result.rows[0].fec_inicio);
         });
-        let anioPresente = yield database_1.default.query('SELECT pv.fec_final FROM empl_contratos co, peri_vacaciones pv WHERE co.id_empleado = $1 AND pv.estado = 1 AND pv.id_empl_contrato = co.id AND CAST(pv.fec_final AS VARCHAR) like $2 || \'%\'', [idEmpleado, anioHoy]).then(result => {
+        let anioPresente = yield database_1.default.query(`SELECT pv.fec_final FROM empl_contratos co, peri_vacaciones pv 
+        WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id AND 
+        CAST(pv.fec_final AS VARCHAR) like $2 || \'%\'`, [idEmpleado, anioHoy]).then(result => {
             return JSON.stringify(result.rows[0].fec_final);
         });
         const total = parseInt(anioPresente.slice(1, 5)) - parseInt(anioInicio.slice(1, 5));
@@ -90,7 +93,11 @@ function PeriVacacionHoy(fechaHoy) {
     return __awaiter(this, void 0, void 0, function* () {
         // consulta para q devuelva los periodos de vacaciones q finalizan el dia de hoy ******* y si esta o no activo el empleado ===> Activo = 1; Inactivo = 2;
         // let expira_peri_hoy = await pool.query('select pv.id, pv.id_empl_contrato, pv.dia_vacacion, pv.dia_antiguedad, pv.fec_inicio, pv.fec_final, pv.dia_perdido, pv.horas_vacaciones, pv.min_vacaciones, co.id_regimen from peri_vacaciones pv, empl_contratos co, empleados e where CAST(pv.fec_final AS VARCHAR) like $1 || \'%\' AND pv.estado = 1 AND co.id = pv.id_empl_contrato AND co.id_empleado = e.id AND e.estado = 1', [fechaHoy]);    
-        let expira_peri_hoy = yield database_1.default.query('select pv.id, pv.id_empl_contrato, pv.dia_vacacion, pv.dia_antiguedad, pv.fec_final, pv.dia_perdido, pv.horas_vacaciones, pv.min_vacaciones, co.id_regimen from peri_vacaciones pv, empl_contratos co, empleados e where CAST(pv.fec_final AS VARCHAR) like $1 || \'%\' AND pv.estado = 1 AND co.id = pv.id_empl_contrato AND co.id_empleado = e.id AND e.estado = 1', [fechaHoy]);
+        let expira_peri_hoy = yield database_1.default.query(`SELECT pv.id, pv.id_empl_contrato, pv.dia_vacacion, pv.dia_antiguedad, pv.fec_final, pv.dia_perdido, 
+    pv.horas_vacaciones, pv.min_vacaciones, co.id_regimen 
+    FROM peri_vacaciones pv, empl_contratos co, empleados e 
+    WHERE CAST(pv.fec_final AS VARCHAR) like $1 || \'%\' AND co.id = pv.id_empl_contrato AND 
+    co.id_empleado = e.id AND e.estado = 1`, [fechaHoy]);
         return expira_peri_hoy.rows;
     });
 }
@@ -129,7 +136,10 @@ const beforeFiveDays = function () {
         const diaIncrementado = sumaDias(date, 5).toLocaleDateString().split("T")[0];
         console.log(diaIncrementado);
         if (hora === HORA_ENVIO_AVISO_CINCO_DIAS) {
-            const avisoVacacion = yield database_1.default.query('SELECT pv.fec_inicio, pv.fec_final, e.nombre, e.apellido, e.correo FROM peri_vacaciones AS pv, empl_contratos AS ec, empleados AS e WHERE pv.estado = 1 AND pv.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND pv.fec_inicio = $1', [diaIncrementado]);
+            const avisoVacacion = yield database_1.default.query(`SELECT pv.fec_inicio, pv.fec_final, e.nombre, e.apellido, e.correo 
+            FROM peri_vacaciones AS pv, empl_contratos AS ec, empleados AS e 
+            WHERE pv.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
+            pv.fec_inicio = $1`, [diaIncrementado]);
             console.log(avisoVacacion.rows);
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
@@ -151,7 +161,7 @@ const beforeFiveDays = function () {
                     if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
                         port = parseInt(settingsMail_1.puerto);
                     }
-                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                    (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, port);
                 });
             }
         }
@@ -165,7 +175,10 @@ const beforeTwoDays = function () {
         const hora = date.getHours();
         const diaIncrementado = sumaDias(date, 2).toLocaleDateString().split("T")[0];
         if (hora === HORA_ENVIO_AVISO_DOS_DIAS) {
-            const avisoVacacion = yield database_1.default.query('SELECT pv.fec_inicio, pv.fec_final, e.nombre, e.apellido, e.correo FROM peri_vacaciones AS pv, empl_contratos AS ec, empleados AS e WHERE pv.estado = 1 AND pv.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND pv.fec_inicio = $1', [diaIncrementado]);
+            const avisoVacacion = yield database_1.default.query(`SELECT pv.fec_inicio, pv.fec_final, e.nombre, e.apellido, e.correo 
+                FROM peri_vacaciones AS pv, empl_contratos AS ec, empleados AS e 
+                WHERE pv.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
+                pv.fec_inicio = $1`, [diaIncrementado]);
             console.log(avisoVacacion.rows);
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
@@ -187,7 +200,7 @@ const beforeTwoDays = function () {
                     if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
                         port = parseInt(settingsMail_1.puerto);
                     }
-                    (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+                    (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, port);
                 });
             }
         }

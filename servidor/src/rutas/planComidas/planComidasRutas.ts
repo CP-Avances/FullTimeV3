@@ -39,7 +39,8 @@ class DepartamentoRutas {
         this.router.post('/duplicidad/plan', TokenValidation, PLAN_COMIDAS_CONTROLADOR.BuscarPlanComidaEmpleadoFechas);
         this.router.post('/duplicidad/solicitud', TokenValidation, PLAN_COMIDAS_CONTROLADOR.BuscarSolEmpleadoFechasActualizar);
 
-        this.router.post('/mail-plan/', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarCorreoPlanComidas);
+
+
         this.router.post('/mail-plan/eliminar-plan', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarCorreoEliminaPlanComidas);
         this.router.post('/mail-solicita/', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarCorreoEstadoSolComidas);
         this.router.post('/mail-solicitud/actualizacion', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarCorreoActualizaSolComidas);
@@ -58,7 +59,26 @@ class DepartamentoRutas {
         this.router.post('/tipo_comida', TokenValidation, PLAN_COMIDAS_CONTROLADOR.CrearTipoComidas);
         this.router.get('/tipo_comida', TokenValidation, PLAN_COMIDAS_CONTROLADOR.ListarTipoComidas);
         this.router.get('/tipo_comida/ultimo', TokenValidation, PLAN_COMIDAS_CONTROLADOR.VerUltimoTipoComidas);
-        this.router.post('/send/planifica/', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarNotificacionPlanComida);
+
+
+        /** ************************************************************************************************ **
+         ** *                     NOTIFICACIONES DE SERVICIOS DE ALIMENTACIÓN                             ** **
+         ** ************************************************************************************************ **/
+
+        this.router.post('/send/planifica/', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarNotificacionComidas);
+
+
+        /** ************************************************************************************************ **
+         ** *                     ENVIO DE CORREO DE SERVICIOS DE ALIMENTACION                            ** **
+         ** ************************************************************************************************ **/
+
+        // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIO DE ALIMENTACION APP WEB
+        this.router.post('/mail-plan-comida/', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarCorreoPlanComidas);
+        // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIO DE ALIMENTACION APP MOVIL
+        this.router.post('/mail-noti-solicitud-comida-movil/:id_empresa', PLAN_COMIDAS_CONTROLADOR.EnviarCorreoComidasMovil);
+
+
+
     }
 }
 

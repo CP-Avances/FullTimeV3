@@ -49,10 +49,10 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.restP.ConsultarPlanificaciones().subscribe(response => {
       this.listaPlan = response;
     }, err => {
-      this.toastr.info('No se ha encontrado registro de Planificación de Hora Extra', '', {
+      this.toastr.info('No se ha encontrado registro.', '', {
         timeOut: 10000,
       })
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validacionesService.RedireccionarHomeAdmin(err.error)
     });
   }
 

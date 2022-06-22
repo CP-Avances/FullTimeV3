@@ -15,7 +15,7 @@ export class TimbresService {
    * Metodo para traer las notificaciones de atrasos o salidas antes solo vienen 5 notificaciones
    * @param id_empleado Id del empleado loggeado
    */
-  NotiTimbresRealTime(id_empleado: number) {
+  EnviarNotiRealTime(id_empleado: number) {
     return this.http.get(`${environment.url}/timbres/noti-timbres/${id_empleado}`);
   }
 

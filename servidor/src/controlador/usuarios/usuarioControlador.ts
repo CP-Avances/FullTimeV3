@@ -176,7 +176,17 @@ class UsuarioControlador {
     if (puerto != null && puerto != '') {
       port = parseInt(puerto);
     }
-    enviarMail(data, servidor, port);
+     var corr = enviarMail(servidor, parseInt(puerto));
+                corr.sendMail(data, function (error: any, info: any) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+
     res.jsonp({ mail: 'si', message: 'Mail enviado.' })
   }
 

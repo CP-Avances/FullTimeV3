@@ -50,10 +50,12 @@ class NotificacionTiempoRealControlador {
     ListaNotificacionesRecibidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_receive;
-            const REAL_TIME_NOTIFICACION = yield database_1.default.query('SELECT r.id, r.id_send_empl, r.id_receives_empl, ' +
-                'r.id_receives_depa, r.estado, r.create_at, r.id_permiso, r.id_vacaciones, r.id_hora_extra, r.visto, ' +
-                'e.nombre, e.apellido FROM realtime_noti AS r, empleados AS e ' +
-                'WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC', [id])
+            const REAL_TIME_NOTIFICACION = yield database_1.default.query(`
+        SELECT r.id, r.id_send_empl, r.id_receives_empl, r.id_receives_depa, r.estado, r.create_at, 
+          r.id_permiso, r.id_vacaciones, r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido 
+        FROM realtime_noti AS r, empleados AS e 
+        WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC
+      `, [id])
                 .then(result => {
                 return result.rows.map(obj => {
                     console.log(obj);
@@ -68,7 +70,7 @@ class NotificacionTiempoRealControlador {
                         id_vacaciones: obj.id_vacaciones,
                         id_hora_extra: obj.id_hora_extra,
                         visto: obj.visto,
-                        comunicado: obj.comunicado,
+                        mensaje: obj.mensaje,
                         empleado: obj.nombre + ' ' + obj.apellido
                     };
                 });
@@ -86,11 +88,15 @@ class NotificacionTiempoRealControlador {
             const id = req.params.id_receive;
             console.log(id);
             if (id != 'NaN') {
-                const REAL_TIME_NOTIFICACION = yield database_1.default.query('SELECT r.id, r.id_send_empl, r.id_receives_empl, ' +
-                    'r.id_receives_depa, r.estado, r.create_at, r.id_permiso, r.id_vacaciones, r.id_hora_extra, r.visto, ' +
-                    'e.nombre, e.apellido FROM realtime_noti AS r, empleados AS e ' +
-                    'WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC LIMIT 5', [id]);
+                const REAL_TIME_NOTIFICACION = yield database_1.default.query(`
+          SELECT r.id, r.id_send_empl, r.id_receives_empl, 
+            r.id_receives_depa, r.estado, to_char(r.create_at, \'yyyy-MM-dd HH:mi:ss\') AS create_at, 
+            r.id_permiso, r.id_vacaciones, r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido 
+          FROM realtime_noti AS r, empleados AS e 
+          WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC LIMIT 5
+      `, [id]);
                 if (REAL_TIME_NOTIFICACION.rowCount > 0) {
+                    console.log('notifica', REAL_TIME_NOTIFICACION.rows);
                     return res.jsonp(REAL_TIME_NOTIFICACION.rows);
                 }
                 else {
@@ -107,7 +113,7 @@ class NotificacionTiempoRealControlador {
             const id = req.params.id;
             const REAL_TIME_NOTIFICACION_VACACIONES = yield database_1.default.query('SELECT r.id, r.id_send_empl, ' +
                 'r.id_receives_empl, r.id_receives_depa, r.estado, r.create_at, r.id_permiso, r.id_vacaciones, ' +
-                'r.id_hora_extra, r.visto, e.nombre, e.apellido FROM realtime_noti AS r, empleados AS e ' +
+                'r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido FROM realtime_noti AS r, empleados AS e ' +
                 'WHERE r.id = $1 AND e.id = r.id_send_empl', [id]);
             if (REAL_TIME_NOTIFICACION_VACACIONES.rowCount > 0) {
                 return res.jsonp(REAL_TIME_NOTIFICACION_VACACIONES.rows);
@@ -118,15 +124,28 @@ class NotificacionTiempoRealControlador {
         });
     }
     // MÉTODO PARA CREAR NOTIFICACIONES
-    create(req, res) {
+    CrearNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones, id_hora_extra } = req.body;
-            yield database_1.default.query('INSERT INTO realtime_noti (id_send_empl, id_receives_empl, id_receives_depa, ' +
-                'estado, create_at, id_permiso, id_vacaciones, id_hora_extra) ' +
-                'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
-                id_hora_extra]);
-            const REAL_TIME_NOTIFICACION = yield database_1.default.query('SELECT id FROM realtime_noti ORDER BY id DESC LIMIT 1');
-            res.jsonp({ message: 'Notificacion guardada', _id: REAL_TIME_NOTIFICACION.rows[0].id });
+            try {
+                console.log('entra validar notificacion');
+                const { id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones, id_hora_extra, mensaje } = req.body;
+                const response = yield database_1.default.query(`
+          INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
+            id_permiso, id_vacaciones, id_hora_extra, mensaje ) 
+          VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING * 
+      `, [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
+                    id_hora_extra, mensaje]);
+                const [notificiacion] = response.rows;
+                if (!notificiacion)
+                    return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+                return res.status(200)
+                    .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
         });
     }
     ActualizarVista(req, res) {
@@ -206,23 +225,27 @@ class NotificacionTiempoRealControlador {
     // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
     EnviarCorreoComunicado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            const { id_envia, correo, mensaje, asunto, hora } = req.body;
-            const USUARIO_ENVIA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
-                'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
-                'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
-                'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento', [id_envia]);
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let fecha = f.toJSON();
-            fecha = fecha.split('T')[0];
-            let data = {
-                to: correo,
-                from: settingsMail_1.email,
-                subject: asunto,
-                html: `<body>
-                <img src="cid:cabeceraf" width="50%" height="50%"/>
+            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
+            const { id_envia, correo, mensaje, asunto } = req.body;
+            if (datos === 'ok') {
+                const USUARIO_ENVIA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
+                    'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
+                    'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
+                    'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento', [id_envia]);
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: asunto,
+                    html: `<body>
+                <div style="text-align: center;">
+                  <img width="50%" height="50%" src="cid:cabeceraf"/>
+                </div>
+                <br>
+                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                  El presente correo es para informar el siguiente comunicado: <br>  
+                </p>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
                   <b>Empresa:</b> ${settingsMail_1.nombre}<br>
                   <b>Asunto:</b> ${asunto} <br>
@@ -230,8 +253,8 @@ class NotificacionTiempoRealControlador {
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
                   <b>Hora de envío:</b> Sistema Web <br>
-                  <b>Fecha de envío:</b> ${fecha} <br> 
-                  <b>Hora de envío:</b> ${hora} <br>                  
+                  <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                  <b>Hora de envío:</b> ${tiempo.hora} <br><br>                  
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
@@ -241,60 +264,74 @@ class NotificacionTiempoRealControlador {
                 <img src="cid:pief" width="50%" height="50%"/>
             </body>
             `,
-                attachments: [
-                    {
-                        filename: 'cabecera_firma.jpg',
-                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                        cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
-                    },
-                    {
-                        filename: 'pie_firma.jpg',
-                        path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                        cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
                     }
-                ]
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
             }
-            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-            res.jsonp({ message: 'Mensaje enviado con éxito.' });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
         });
     }
     // NOTIFICACIÓN DE COMUNICADOS
     EnviarNotificacionComunicado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let { id_empl_envia, id_empl_recive, mensaje } = req.body;
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let create_at = f.toJSON();
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
             let tipo = 6; // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
-            yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, ' +
-                'descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
-            res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
+            yield database_1.default.query(`
+        INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
+        VALUES($1, $2, $3, $4, $5)
+      `, [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+            res.jsonp({ message: 'Comunicado enviado exitosamente.' });
         });
     }
     // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
     EnviarCorreoComunicadoMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
-            const { id_envia, correo, mensaje, asunto, hora } = req.body;
-            const USUARIO_ENVIA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
-                'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
-                'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
-                'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento', [id_envia]);
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let fecha = f.toJSON();
-            fecha = fecha.split('T')[0];
-            let data = {
-                to: correo,
-                from: settingsMail_1.email,
-                subject: asunto,
-                html: `<body>
-                <img src="cid:cabeceraf" width="50%" height="50%"/>
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            const { id_envia, correo, mensaje, asunto } = req.body;
+            if (datos === 'ok') {
+                const USUARIO_ENVIA = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
+                    'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
+                    'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
+                    'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento', [id_envia]);
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: asunto,
+                    html: `<body>
+                <div style="text-align: center;">
+                  <img width="50%" height="50%" src="cid:cabeceraf"/>
+                </div>
+                <br>
+                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                  El presente correo es para informar el siguiente comunicado: <br>  
+                </p>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
                   <b>Empresa:</b> ${settingsMail_1.nombre}<br>
                   <b>Asunto:</b> ${asunto} <br>
@@ -302,8 +339,8 @@ class NotificacionTiempoRealControlador {
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
                   <b>Generado mediante:</b> Aplicación Móvil <br>
-                  <b>Fecha de envío:</b> ${fecha} <br> 
-                  <b>Hora de envío:</b> ${hora} <br><br>                   
+                  <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                  <b>Hora de envío:</b> ${tiempo.hora} <br><br>                   
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
@@ -313,25 +350,34 @@ class NotificacionTiempoRealControlador {
                 <img src="cid:pief" width="50%" height="50%"/>
             </body>
             `,
-                attachments: [
-                    {
-                        filename: 'cabecera_firma.jpg',
-                        path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                        cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
-                    },
-                    {
-                        filename: 'pie_firma.jpg',
-                        path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                        cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
                     }
-                ]
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
             }
-            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-            return res.jsonp({ message: 'Mensaje enviado con éxito.' });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
         });
     }
 }

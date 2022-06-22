@@ -1,15 +1,14 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import * as moment from 'moment';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import * as moment from 'moment';
 
-import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { PlanHoraExtraService } from 'src/app/servicios/planHoraExtra/plan-hora-extra.service';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 interface Estado {
@@ -23,11 +22,12 @@ interface Estado {
   styleUrls: ['./plan-hora-extra.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
+
 export class PlanHoraExtraComponent implements OnInit {
 
   estados: Estado[] = [
@@ -37,12 +37,12 @@ export class PlanHoraExtraComponent implements OnInit {
     { id: 4, nombre: 'Negado' },
   ];
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   fechaSolicitudF = new FormControl('', [Validators.required]);
   descripcionF = new FormControl('', [Validators.required]);
   fechaInicioF = new FormControl('', [Validators.required]);
-  FechaFinF = new FormControl('', [Validators.required]);
   horaInicioF = new FormControl('');
+  fechaFinF = new FormControl('', [Validators.required]);
   horaFinF = new FormControl('', [Validators.required]);
   horasF = new FormControl('', [Validators.required]);
 
@@ -50,8 +50,8 @@ export class PlanHoraExtraComponent implements OnInit {
     fechaSolicitudForm: this.fechaSolicitudF,
     descripcionForm: this.descripcionF,
     fechaInicioForm: this.fechaInicioF,
-    FechaFinForm: this.FechaFinF,
     horaInicioForm: this.horaInicioF,
+    fechaFinForm: this.fechaFinF,
     horaFinForm: this.horaFinF,
     horasForm: this.horasF,
   });
@@ -61,13 +61,12 @@ export class PlanHoraExtraComponent implements OnInit {
   id_cargo_loggin: number;
 
   constructor(
-    private rest: TipoPermisosService,
-    private restPE: PlanHoraExtraService,
-    public restCargo: EmplCargosService,
     public restEmpleado: EmpleadoService,
+    public ventana: MatDialogRef<PlanHoraExtraComponent>,
+    public validar: ValidacionesService,
+    private restPE: PlanHoraExtraService,
     private toastr: ToastrService,
-    private realTime: RealTimeService,
-    public dialogRef: MatDialogRef<PlanHoraExtraComponent>,
+    private restP: ParametrosService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
@@ -82,174 +81,201 @@ export class PlanHoraExtraComponent implements OnInit {
       fechaSolicitudForm: this.FechaActual,
       estadoForm: 1
     });
-    console.log('datos', this.data)
+
+    this.BuscarParametro();
   }
 
-  HoraExtraResponse: any;
-  NotifiRes: any;
-  arrayNivelesDepa: any = [];
-
-  datosSeleccionados: any = [];
-  insertarPlanificacion(form1) {
-    this.datosSeleccionados = [];
-    this.datosSeleccionados = this.data.planifica;
-    let dataPlanHoraExtra = {
-      id_empl_planifica: this.id_user_loggin,
-      fecha_desde: form1.fechaInicioForm,
-      fecha_hasta: form1.FechaFinForm,
-      hora_inicio: form1.horaInicioForm,
-      hora_fin: form1.horaFinForm,
-      descripcion: form1.descripcionForm,
-      horas_totales: form1.horasForm,
+  // METODO DE VALIDACION DE INGRESO CORRECTO DE FECHAS
+  ValidarFechas(form: any) {
+    if (Date.parse(form.fechaInicioForm) <= Date.parse(form.fechaFinForm)) {
+      this.InsertarPlanificacion(form);
     }
-    this.restPE.CrearPlanificacionHoraExtra(dataPlanHoraExtra).subscribe(response => {
-      let dataPlanHoraExtraEmpleado = {
-        id_plan_hora: 0,
-        id_empl_realiza: this.data.planifica.id,
-        estado: 1,
-        observacion: false,
-        codigo: this.data.planifica.codigo,
-        id_empl_cargo: this.data.planifica.id_cargo,
-        id_empl_contrato: this.data.planifica.id_contrato
-      }
+    else {
+      this.toastr.info('Las fechas no se encuentran registradas correctamente.', 'VERIFICAR FECHAS', {
+        timeOut: 6000,
+      })
+    }
+  }
 
-      if (this.datosSeleccionados.length != undefined) {
-        this.restPE.ConsultarUltimoPlanHora().subscribe(data => {
-          this.data.planifica.map(obj => {
-            dataPlanHoraExtraEmpleado.id_empl_realiza = obj.id;
-            dataPlanHoraExtraEmpleado.id_empl_cargo = obj.id_cargo;
-            dataPlanHoraExtraEmpleado.id_empl_contrato = obj.id_contrato;
-            dataPlanHoraExtraEmpleado.codigo = obj.codigo;
-            console.log('codigo', obj.codigo)
-            dataPlanHoraExtraEmpleado.id_plan_hora = data[0].id_plan_hora;
-
-              this.restPE.CrearPlanHoraExtraEmpleado(dataPlanHoraExtraEmpleado).subscribe(response => {
-                this.NotificarPlanificacion(form1.fechaInicioForm.format('DD/MM'), form1.FechaFinForm.format('DD/MM'), obj.id)
-              }, err => {
-                const { access, message } = err.error.message;
-                if (access === false) {
-                  this.toastr.error(message)
-                  this.dialogRef.close();
-                }
-              })
-
-          })
-
-        }, err => {
-          const { access, message } = err.error.message;
-          if (access === false) {
-            this.toastr.error(message)
-            this.dialogRef.close();
-          }
-        })
+  // METODO PARA VALIDAR NUMERO DE CORREOS
+  ValidarProceso(form: any) {
+    if (this.data.planifica.length != undefined) {
+      this.ContarCorreos(this.data.planifica);
+      if (this.cont_correo <= this.correos) {
+        this.ValidarFechas(form);
       }
       else {
-        this.restPE.ConsultarUltimoPlanHora().subscribe(data => {
-          dataPlanHoraExtraEmpleado.id_plan_hora = data[0].id_plan_hora;
-          this.restPE.CrearPlanHoraExtraEmpleado(dataPlanHoraExtraEmpleado).subscribe(response => {
-            this.NotificarPlanificacion(form1.fechaInicioForm.format('DD/MM'), form1.FechaFinForm.format('DD/MM'), this.data.planifica.id)
-          }, err => {
-            const { access, message } = err.error.message;
-            if (access === false) {
-              this.toastr.error(message)
-              this.dialogRef.close();
-            }
-          })
-        }, err => {
-          const { access, message } = err.error.message;
-          if (access === false) {
-            this.toastr.error(message)
-            this.dialogRef.close();
-          }
-        })
+        this.toastr.warning('Trata de enviar correo de un total de ' + this.cont_correo + ' colaboradores, sin embargo solo tiene permitido enviar un total de ' + this.correos + ' correos.', 'ACCIÓN NO PERMITIDA.', {
+          timeOut: 6000,
+        });
       }
-    }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        this.toastr.error(message)
-        this.dialogRef.close();
+    }
+    else {
+      this.ValidarFechas(form);
+    }
+  }
+
+  // METODO DE PLANIFICACION DE HORAS EXTRAS
+  InsertarPlanificacion(form: any) {
+    // DATOS DE PLANIFICACIÓN
+    let planificacion = {
+      id_empl_planifica: this.id_user_loggin,
+      horas_totales: form.horasForm,
+      fecha_desde: form.fechaInicioForm,
+      hora_inicio: form.horaInicioForm,
+      descripcion: form.descripcionForm,
+      fecha_hasta: form.fechaFinForm,
+      hora_fin: form.horaFinForm,
+    }
+
+    // INSERCIÓN DE PLANIFICACIÓN
+    this.restPE.CrearPlanificacionHoraExtra(planificacion).subscribe(res => {
+
+      if (res.message != 'error') {
+        var plan = res.info;
+
+        // LECTURA DE DATOS DE USUARIO
+        let usuario = '<tr><th>' + this.data.planifica.nombre +
+          '</th><th>' + this.data.planifica.cedula + '</th></tr>';
+        let cuenta_correo = this.data.planifica.correo;
+
+        // LECTURA DE DATOS DE LA PLANIFICACIÓN
+        let desde = moment.weekdays(moment(plan.fecha_desde).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fecha_desde).day()).slice(1);
+        let hasta = moment.weekdays(moment(plan.fecha_hasta).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fecha_hasta).day()).slice(1);
+        let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
+        let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+
+        // DATOS DE ASIGNACIÓN DE PLANIFICACIÓN A EMPLEADOS
+        let planEmpleado = {
+          estado: 1,
+          codigo: this.data.planifica.codigo,
+          observacion: false,
+          id_plan_hora: plan.id,
+          id_empl_cargo: this.data.planifica.id_cargo,
+          id_empl_realiza: this.data.planifica.id,
+          id_empl_contrato: this.data.planifica.id_contrato
+        }
+
+        // VALIDAR SI LA PLANIFICACIÓN ES DE VARIOS USUARIOS
+        if (this.data.planifica.length != undefined) {
+          this.CrearPlanSeleccionados(plan, planEmpleado, desde, hasta, h_inicio, h_fin);
+        }
+        else {
+          this.CrearPlanificacion(plan, planEmpleado, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
+        }
+      }
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'Proceso no registrado.', {
+          timeOut: 6000,
+        });
+        this.CerrarVentana();
       }
     })
-
-    if (this.datosSeleccionados.length != undefined) {
-      this.toastr.success('Operación Exitosa', 'Se registra un total de ' + this.datosSeleccionados.length + ' planificaciones de horas extras.', {
-        timeOut: 6000,
-      });
-    }
-    else {
-      this.toastr.success('Operación Exitosa', 'Horas Extras planificadas', {
-        timeOut: 10000,
-      });
-    }
-    this.dialogRef.close();
-    
   }
 
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
+  // CREAR PLANIFICACION DE USUARIOS SELECCIONADOS
+  CrearPlanSeleccionados(plan: any, planEmpleado: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
+    var usuario = '';
+    var cont = 0;
+    var contPlan = 0;
+    this.data.planifica.map(obj => {
+
+      // LECTURA DE NOMBRES DE USUARIOS
+      usuario = usuario + '<tr><th>' + obj.nombre + '</th><th>' + obj.cedula + '</th></tr>';
+
+      // LECTURA DE DATOS DE TODOS LOS USUARIOS SELECCIONADOS
+      planEmpleado.id_empl_contrato = obj.id_contrato;
+      planEmpleado.id_empl_realiza = obj.id;
+      planEmpleado.id_empl_cargo = obj.id_cargo;
+      planEmpleado.id_plan_hora = plan.id;
+      planEmpleado.codigo = obj.codigo;
+
+      // INSERTAR PLANIFICACIÓN POR EMPLEADO
+      this.restPE.CrearPlanHoraExtraEmpleado(planEmpleado).subscribe(response => {
+
+        if (response.message != 'error') {
+          // ENVIAR NOTIFICACION DE PLANIFICACION HE
+          this.NotificarPlanificacion(plan, desde, hasta, h_inicio, h_fin, obj.id)
+
+          // CONTAR DATOS PROCESADOS
+          cont = cont + 1;
+          contPlan = contPlan + 1;
+
+          // SI TODOS LOS DATOS HAN SIDO PROCESADOS ENVIAR CORREO
+          if (cont === this.data.planifica.length) {
+            this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
+            this.MostrarMensaje(contPlan);
+          }
+        } else {
+          // CONTAR DATOS PROCESADOS
+          cont = cont + 1;
+
+          // SI TODOS LOS DATOS HAN SIDO PROCESADOS ENVIAR CORREO
+          if (cont === this.data.planifica.length) {
+            this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
+            this.MostrarMensaje(contPlan);
+          }
+        }
+      });
+    });
+  }
+
+  // MÉTODO PARA MOSTRAR MENSAJE PARA SELECCION MULTIPLE
+  MostrarMensaje(contador: any) {
+    this.toastr.success('Se registra planificación a ' + contador + ' colaboradores.', 'Planificación de Horas Extras.', {
+      timeOut: 6000,
+    });
+    this.CerrarVentana();
+  }
+
+  // CREAR PLANIFICACIÓN DE UN SOLO USUARIO
+  CrearPlanificacion(plan: any, planEmpleado: any, cuenta_correo: any, usuarios: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
+    this.restPE.CrearPlanHoraExtraEmpleado(planEmpleado).subscribe(response => {
+
+      if (response.message != 'error') {
+        this.NotificarPlanificacion(plan, desde, hasta, h_inicio, h_fin, this.data.planifica.id)
+
+        this.EnviarCorreo(plan, cuenta_correo, usuarios, desde, hasta, h_inicio, h_fin);
+
+        this.toastr.success('', 'Planificación de Horas Extras registrada.', {
+          timeOut: 6000,
+        });
+        this.CerrarVentana();
       }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'Proceso no registrado.', {
+          timeOut: 6000,
+        });
+        this.CerrarVentana();
+      }
+    })
   }
 
-  IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
-  }
-
+  // METODO PARA CALCULAR HORAS SOLICITADAS
   CalcularTiempo(form) {
+    // LIMPIAR CAMPO NÚMERO DE HORAS
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
+
+    // VALIDAR HORAS INGRESDAS
     if (form.horaInicioForm != '' && form.horaFinForm != '') {
-      console.log('revisando horas', form.horaInicioForm, form.horaFinForm)
-      var hora1 = (String(form.horaInicioForm) + ':00').split(":"),
-        hora2 = (String(form.horaFinForm) + ':00').split(":"),
-        t1 = new Date(),
-        t2 = new Date();
-      t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
-      t2.setHours(parseInt(hora2[0]), parseInt(hora2[1]), parseInt(hora2[2]));
-      //Aquí hago la resta
-      t1.setHours(t2.getHours() - t1.getHours(), t2.getMinutes() - t1.getMinutes(), t2.getSeconds() - t1.getSeconds());
-      if (t1.getHours() < 10 && t1.getMinutes() < 10) {
-        var tiempoTotal: string = '0' + t1.getHours() + ':' + '0' + t1.getMinutes();
-        this.PedirHoraExtraForm.patchValue({ horasForm: tiempoTotal })
+
+      //FORMATO DE HORAS
+      var inicio = moment.duration(moment(form.horaInicioForm, 'HH:mm:ss').format('HH:mm:ss'));
+      var fin = moment.duration(moment(form.horaFinForm, 'HH:mm:ss').format('HH:mm:ss'));
+      // RESTAR HORAS
+      var resta = fin.subtract(inicio);
+      var horas = String(resta.hours());
+      var minutos = String(resta.minutes());
+
+      if (resta.hours() < 10) {
+        horas = '0' + resta.hours();
       }
-      else if (t1.getHours() < 10) {
-        var tiempoTotal: string = '0' + t1.getHours() + ':' + t1.getMinutes();
-        this.PedirHoraExtraForm.patchValue({ horasForm: tiempoTotal })
+      if (resta.minutes() < 10) {
+        minutos = '0' + resta.minutes();
       }
-      else if (t1.getMinutes() < 10) {
-        var tiempoTotal: string = t1.getHours() + ':' + '0' + t1.getMinutes();
-        this.PedirHoraExtraForm.patchValue({ horasForm: tiempoTotal })
-      }
+      // COLOCAR FORMATO DE HORAS EN FORMULARIO
+      var tiempoTotal: string = horas + ':' + minutos;
+      this.PedirHoraExtraForm.patchValue({ horasForm: tiempoTotal })
     }
     else {
       this.toastr.info('Debe ingresar la hora de inicio y la hora de fin de actividades.', 'VERIFICAR', {
@@ -258,25 +284,103 @@ export class PlanHoraExtraComponent implements OnInit {
     }
   }
 
-  NotificarPlanificacion(inicio, fin, id_empleado_recibe) {
+  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
+  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.id_user_loggin,
-      id_empl_recive: id_empleado_recibe,
-      mensaje: 'Puede realizar horas extras \n' + inicio + ' - ' + fin
+      id_empl_recive: recibe,
+      tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
+      mensaje: 'Planificación de horas extras desde ' +
+        desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
+        ' horario de ' + h_inicio + ' a ' + h_fin,
     }
-    this.restPE.EnviarMensajePlanificacion(mensaje).subscribe(res => {
-      console.log(res.message);
-    }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        this.toastr.error(message)
-        this.dialogRef.close();
+    this.restPE.EnviarNotiPlanificacion(mensaje).subscribe(res => {
+    });
+  }
+
+  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
+  EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
+
+    // DATOS DE ESTRUCTURA DEL CORREO
+    let DataCorreo = {
+      id_empl_envia: this.id_user_loggin,
+      observacion: datos.descripcion,
+      correos: cuenta_correo,
+      nombres: usuario,
+      inicio: h_inicio,
+      desde: desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY'),
+      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      horas: moment(datos.horas_totales, 'HH:mm').format('HH:mm'),
+      fin: h_fin,
+    }
+
+    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
+    this.restPE.EnviarCorreoPlanificacion(DataCorreo).subscribe(res => {
+      if (res.message === 'ok') {
+        this.toastr.success('Correo de planificación enviado exitosamente.', '', {
+          timeOut: 6000,
+        });
+      }
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de planificación.', {
+          timeOut: 6000,
+        });
       }
     })
   }
 
+  // METODO DE BUSQUEDA DE NUMERO PERMITIDO DE CORREOS
+  correos: number;
+  BuscarParametro() {
+    // id_tipo_parametro LIMITE DE CORREOS = 24
+    let datos = [];
+    this.restP.ListarDetalleParametros(24).subscribe(
+      res => {
+        datos = res;
+        if (datos.length != 0) {
+          this.correos = parseInt(datos[0].descripcion)
+        }
+        else {
+          this.correos = 0
+        }
+      });
+  }
+
+  // METODO PARA CONTAR NUMERO DE CORREOS A ENVIAR
+  cont_correo: number = 0;
+  info_correo: string = '';
+  ContarCorreos(data: any) {
+    this.cont_correo = 0;
+    this.info_correo = '';
+    data.forEach((obj: any) => {
+      this.cont_correo = this.cont_correo + 1
+      if (this.info_correo === '') {
+        this.info_correo = obj.correo;
+      }
+      else {
+        this.info_correo = this.info_correo + ', ' + obj.correo;
+      }
+    })
+  }
+
+  // METODOS DE VALIDACION DE INGRESO DE LETRAS Y NUMEROS
+  IngresarSoloLetras(e) {
+    this.validar.IngresarSoloLetras(e);
+  }
+
+  IngresarSoloNumeros(evt) {
+    this.validar.IngresarSoloNumeros(evt);
+  }
+
+  // METODOS DE LIMIEZA DE FORMULARIOS Y CERRAR COMPONENTE
   LimpiarCampoHoras() {
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
+  }
+
+  CerrarVentana() {
+    this.PedirHoraExtraForm.reset();
+    this.ventana.close();
   }
 
 }

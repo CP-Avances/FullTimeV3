@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 // SECCIÓN DE COMPONENTES
-import { CorreoEmpresaComponent } from 'src/app/componentes/catalogos/catEmpresa/correo-empresa/correo-empresa.component';
+import { CorreoEmpresaComponent } from 'src/app/componentes/administracionGeneral/correo/correo-empresa/correo-empresa.component';
 import { LogosComponent } from 'src/app/componentes/catalogos/catEmpresa/logos/logos.component';
 
 @Component({

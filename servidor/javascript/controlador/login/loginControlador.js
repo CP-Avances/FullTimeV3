@@ -36,10 +36,17 @@ class LoginControlador {
                 const USUARIO = yield database_1.default.query('SELECT id, usuario, id_rol, id_empleado ' +
                     'FROM accesoUsuarios($1, $2)', [nombre_usuario, pass]);
                 // BÚSQUEDA DE DATOS DEL EMPLEADO
-                const SUC_DEP = yield database_1.default.query('SELECT c.id_departamento, c.id_sucursal, s.id_empresa, ' +
-                    'c.id AS id_cargo, cg_e.acciones_timbres, cg_e.public_key ' +
-                    'FROM empl_contratos AS e, empl_cargos AS c, sucursales AS s, cg_empresa AS cg_e ' +
-                    'WHERE e.id_empleado = $1 AND c.id_empl_contrato = e.id AND c.id_sucursal = s.id AND ' +
+                const SUC_DEP = yield database_1.default.query('SELECT e.id as id_contrato, c.hora_trabaja, ' +
+                    'c.id_departamento, c.id_sucursal, s.id_empresa, c.id AS id_cargo, cg_e.acciones_timbres, ' +
+                    'cg_e.public_key, (SELECT id FROM peri_vacaciones pv WHERE pv.codigo = empl.codigo::int ' +
+                    'ORDER BY pv.fec_inicio DESC LIMIT 1 ) as id_peri_vacacion, ' +
+                    '(SELECT nombre FROM cg_departamentos cd WHERE cd.id = c.id_departamento ) AS ndepartamento ' +
+                    'FROM empl_contratos AS e, empl_cargos AS c, sucursales AS s, cg_empresa AS cg_e, ' +
+                    'empleados AS empl ' +
+                    'WHERE e.id_empleado = $1 AND e.id_empleado = empl.id AND ' +
+                    '(SELECT id_contrato FROM datos_actuales_empleado WHERE id = e.id_empleado) = e.id AND ' +
+                    '(SELECT id_cargo FROM datos_actuales_empleado WHERE id = e.id_empleado) = c.id AND ' +
+                    'c.id_sucursal = s.id AND ' +
                     's.id_empresa = cg_e.id ORDER BY c.fec_inicio DESC LIMIT 1', [USUARIO.rows[0].id_empleado]);
                 if (SUC_DEP.rowCount > 0) {
                     const { public_key } = SUC_DEP.rows[0];
@@ -90,7 +97,7 @@ class LoginControlador {
                 const [modulos] = yield database_1.default.query('SELECT * FROM funciones LIMIT 1').
                     then(result => { return result.rows; });
                 if (SUC_DEP.rowCount > 0) {
-                    const { id_cargo, id_departamento, acciones_timbres, id_sucursal, id_empresa, public_key: licencia } = SUC_DEP.rows[0];
+                    const { id_contrato, id_cargo, id_departamento, acciones_timbres, id_sucursal, id_empresa, public_key: licencia } = SUC_DEP.rows[0];
                     const AUTORIZA = yield database_1.default.query('SELECT estado FROM depa_autorizaciones ' +
                         'WHERE id_empl_cargo = $1 AND id_departamento = $2', [id_cargo, id_departamento]);
                     if (AUTORIZA.rowCount > 0) {
@@ -99,25 +106,27 @@ class LoginControlador {
                             _licencia: licencia, codigo: codigo, _id: id, _id_empleado: id_empleado, rol: id_rol,
                             _dep: id_departamento, _web_access: web_access, _acc_tim: acciones_timbres, _suc: id_sucursal,
                             _empresa: id_empresa, estado: autoriza_est, cargo: id_cargo, ip_adress: ip_cliente,
-                            modulos: modulos
+                            modulos: modulos, id_contrato: id_contrato
                         }, process.env.TOKEN_SECRET || 'llaveSecreta', { expiresIn: 60 * 60 * 23, algorithm: 'HS512' });
                         return res.status(200).jsonp({
                             caducidad_licencia, token, usuario: user, rol: id_rol, empleado: id_empleado,
                             departamento: id_departamento, acciones_timbres: acciones_timbres, sucursal: id_sucursal,
                             empresa: id_empresa, cargo: id_cargo, estado: autoriza_est, ip_adress: ip_cliente,
-                            modulos: modulos
+                            modulos: modulos, id_contrato: id_contrato
                         });
                     }
                     else {
                         const token = jsonwebtoken_1.default.sign({
                             _licencia: licencia, codigo: codigo, _id: id, _id_empleado: id_empleado, rol: id_rol,
                             _dep: id_departamento, _web_access: web_access, _acc_tim: acciones_timbres, _suc: id_sucursal,
-                            _empresa: id_empresa, estado: false, cargo: id_cargo, ip_adress: ip_cliente, modulos: modulos
+                            _empresa: id_empresa, estado: false, cargo: id_cargo, ip_adress: ip_cliente, modulos: modulos,
+                            id_contrato: id_contrato
                         }, process.env.TOKEN_SECRET || 'llaveSecreta', { expiresIn: 60 * 60 * 23, algorithm: 'HS512' });
                         return res.status(200).jsonp({
                             caducidad_licencia, token, usuario: user, rol: id_rol, empleado: id_empleado,
                             departamento: id_departamento, acciones_timbres: acciones_timbres, sucursal: id_sucursal,
-                            empresa: id_empresa, cargo: id_cargo, estado: false, ip_adress: ip_cliente, modulos: modulos
+                            empresa: id_empresa, cargo: id_cargo, estado: false, ip_adress: ip_cliente, modulos: modulos,
+                            id_contrato: id_contrato
                         });
                     }
                 }
@@ -213,7 +222,17 @@ class LoginControlador {
             if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
                 port = parseInt(settingsMail_1.puerto);
             }
-            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
+            var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+            corr.sendMail(data, function (error, info) {
+                if (error) {
+                    console.log('Email error: ' + error);
+                    return res.jsonp({ message: 'error' });
+                }
+                else {
+                    console.log('Email sent: ' + info.response);
+                    return res.jsonp({ message: 'ok' });
+                }
+            });
             res.jsonp({ mail: 'si', message: 'Mail enviado' });
         });
     }

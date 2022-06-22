@@ -1,23 +1,21 @@
-// SECCIÓN DE LIBRERIAS
-import { Component, OnInit } from '@angular/core';
+// LIBRERIAS
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
-import { ToastrService } from 'ngx-toastr';
-import * as moment from 'moment';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
+import { Component, OnInit } from '@angular/core';
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatRadioChange } from '@angular/material/radio';
+import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 
 // IMPORTAR MODELOS
 import { ITableEmpleados } from 'src/app/model/reportes.model';
+
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ReportesAsistenciasService } from 'src/app/servicios/reportes/reportes-asistencias.service';
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 export interface EmpleadoElemento {
   id_recibe: number;
@@ -34,26 +32,25 @@ export interface EmpleadoElemento {
   templateUrl: './comunicados.component.html',
   styleUrls: ['./comunicados.component.css']
 })
+
 export class ComunicadosComponent implements OnInit {
 
-
-
-
+  // FORMULARIO FILTROS DE BUSQUEDA
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
+  seleccion = new FormControl('');
   nombre_emp = new FormControl('', [Validators.minLength(2)]);
   nombre_dep = new FormControl('', [Validators.minLength(2)]);
   nombre_suc = new FormControl('', [Validators.minLength(2)]);
-  seleccion = new FormControl('');
 
   filtroNombreSuc_: string = '';
-
   filtroNombreDep_: string = '';
 
   filtroCodigo_: number;
   filtroCedula_: string = '';
   filtroNombreEmp_: string = '';
 
+  idEmpleado: number;
 
   public _booleanOptions: FormCriteriosBusqueda = {
     bool_suc: false,
@@ -63,9 +60,7 @@ export class ComunicadosComponent implements OnInit {
 
   public check: checkOptions[];
 
-
-  idEmpleado: number;
-
+  // FORMULARIO DE MENSAJE DE COMUNICADO
   tituloF = new FormControl('', [Validators.required]);
   mensajeF = new FormControl('', [Validators.required]);
 
@@ -74,18 +69,14 @@ export class ComunicadosComponent implements OnInit {
     mensajeForm: this.mensajeF,
   })
 
-  id_empresa: number = parseInt(localStorage.getItem("empresa"));
-
   constructor(
-    private restB: BirthdayService,
     private toastr: ToastrService,
     private realTime: RealTimeService,
-    private reporteService: ReportesService,
-    private validacionService: ValidacionesService,
-
-    private R_asistencias: ReportesAsistenciasService,
-
+    private restR: ReportesService,
+    private validar: ValidacionesService,
+    private data: ReportesAsistenciasService,
     private restP: ParametrosService,
+
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -93,20 +84,12 @@ export class ComunicadosComponent implements OnInit {
   ngOnInit(): void {
 
     this.BuscarParametro();
-    this.check = this.reporteService.checkOptions(3);
+    this.check = this.restR.checkOptions(3);
     console.log('CHECK ', this.check);
 
-
-
-
-
-
-
-
-
-    sessionStorage.removeItem('reporte_timbres_multiple');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
-      sessionStorage.setItem('reporte_timbres_multiple', JSON.stringify(res))
+    sessionStorage.removeItem('comunicado');
+    this.data.Departamentos().subscribe((res: any[]) => {
+      sessionStorage.setItem('comunicado', JSON.stringify(res))
 
       res.forEach(obj => {
         this.sucursales.push({
@@ -146,38 +129,19 @@ export class ComunicadosComponent implements OnInit {
       console.log('SUCURSALES', this.sucursales);
       console.log('DEPARTAMENTOS', this.departamentos);
       console.log('EMPLEADOS', this.empleados);
-      // console.log('TABULADO',this.tabulado);
-      // console.log('INCOMPLETOS',this.incompletos);
 
     }, err => {
       this.toastr.error(err.error.message)
     })
-
-
   }
 
-  InsertarMensajeBirthday(form) {
-    let dataMensaje = {
-      id_empresa: this.id_empresa,
-      titulo: form.tituloForm,
-      link: form.linkForm,
-      mensaje: form.mensajeForm
-    }
-    console.log(dataMensaje);
-
-    this.restB.CrearBirthday(dataMensaje).subscribe(res => {
-      console.log(res);
-    })
-
-  }
 
   ngOnDestroy() {
-    this.reporteService.GuardarCheckOpcion(0);
-    this.reporteService.DefaultFormCriterios();
-    this.reporteService.DefaultValoresFiltros();
+    this.restR.GuardarCheckOpcion(0);
+    this.restR.DefaultFormCriterios();
+    this.restR.DefaultValoresFiltros();
     console.log('Componenete destruido');
   }
-
 
   opcion: number;
   BuscarPorTipo(e: MatRadioChange) {
@@ -199,53 +163,32 @@ export class ComunicadosComponent implements OnInit {
         this._booleanOptions.bool_dep = false;
         this._booleanOptions.bool_emp = true;
         break;
-      case 4:
-        this._booleanOptions.bool_suc = false;
-        this._booleanOptions.bool_dep = false;
-        this._booleanOptions.bool_emp = false;
-        break;
-      case 5:
-        this._booleanOptions.bool_suc = false;
-        this._booleanOptions.bool_dep = false;
-        this._booleanOptions.bool_emp = false;
-        break;
       default:
         this._booleanOptions.bool_suc = false;
         this._booleanOptions.bool_dep = false;
         this._booleanOptions.bool_emp = false;
         break;
     }
-    this.reporteService.GuardarFormCriteriosBusqueda(this._booleanOptions);
-    this.reporteService.GuardarCheckOpcion(this.opcion)
-
+    this.restR.GuardarFormCriteriosBusqueda(this._booleanOptions);
+    this.restR.GuardarCheckOpcion(this.opcion)
   }
 
   Filtrar(e, orden: number) {
     switch (orden) {
-      case 1: this.reporteService.setFiltroNombreSuc(e); break;
-      case 2: this.reporteService.setFiltroNombreDep(e); break;
-      case 3: this.reporteService.setFiltroCodigo(e); break;
-      case 4: this.reporteService.setFiltroCedula(e); break;
-      case 5: this.reporteService.setFiltroNombreEmp(e); break;
+      case 1: this.restR.setFiltroNombreSuc(e); break;
+      case 2: this.restR.setFiltroNombreDep(e); break;
+      case 3: this.restR.setFiltroCodigo(e); break;
+      case 4: this.restR.setFiltroCedula(e); break;
+      case 5: this.restR.setFiltroNombreEmp(e); break;
       default:
         break;
     }
-  }
-
-  IngresarSoloLetras(e) {
-    return this.validacionService.IngresarSoloLetras(e);
-  }
-
-  IngresarSoloNumeros(evt) {
-    return this.validacionService.IngresarSoloNumeros(evt);
   }
 
   departamentos: any = [];
   sucursales: any = [];
   respuesta: any[];
   empleados: any = [];
-
-
 
   selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
   selectionDep = new SelectionModel<ITableEmpleados>(true, []);
@@ -255,47 +198,45 @@ export class ComunicadosComponent implements OnInit {
   pageSizeOptions_suc = [5, 10, 20, 50];
   tamanio_pagina_suc: number = 5;
   numero_pagina_suc: number = 1;
+
   // ITEMS DE PAGINACIÓN DE LA TABLA DEPARTAMENTO
   pageSizeOptions_dep = [5, 10, 20, 50];
   tamanio_pagina_dep: number = 5;
   numero_pagina_dep: number = 1;
+  
   // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
   pageSizeOptions_emp = [5, 10, 20, 50];
   tamanio_pagina_emp: number = 5;
   numero_pagina_emp: number = 1;
 
 
-  get filtroNombreSuc() { return this.reporteService.filtroNombreSuc }
+  get filtroNombreSuc() { return this.restR.filtroNombreSuc }
 
-  get filtroNombreDep() { return this.reporteService.filtroNombreDep }
+  get filtroNombreDep() { return this.restR.filtroNombreDep }
 
-  get filtroNombreEmp() { return this.reporteService.filtroNombreEmp };
-  get filtroCodigo() { return this.reporteService.filtroCodigo };
-  get filtroCedula() { return this.reporteService.filtroCedula };
+  get filtroNombreEmp() { return this.restR.filtroNombreEmp };
+  get filtroCodigo() { return this.restR.filtroCodigo };
+  get filtroCedula() { return this.restR.filtroCedula };
 
 
-  /*****************************************************************************
-  * 
-  * 
-  * Varios Metodos Complementarios al funcionamiento. 
-  * 
-  * 
-  **************************************************************************/
+  /** ************************************************************************************** **
+   ** **                   METODOS DE SELECCION DE DATOS DE USUARIOS                      ** **
+   ** ************************************************************************************** **/
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelectedSuc() {
     const numSelected = this.selectionSuc.selected.length;
     return numSelected === this.sucursales.length
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggleSuc() {
     this.isAllSelectedSuc() ?
       this.selectionSuc.clear() :
       this.sucursales.forEach(row => this.selectionSuc.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabelSuc(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedSuc() ? 'select' : 'deselect'} all`;
@@ -303,20 +244,20 @@ export class ComunicadosComponent implements OnInit {
     return `${this.selectionSuc.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelectedDep() {
     const numSelected = this.selectionDep.selected.length;
     return numSelected === this.departamentos.length
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggleDep() {
     this.isAllSelectedDep() ?
       this.selectionDep.clear() :
       this.departamentos.forEach(row => this.selectionDep.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabelDep(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedDep() ? 'select' : 'deselect'} all`;
@@ -324,20 +265,20 @@ export class ComunicadosComponent implements OnInit {
     return `${this.selectionDep.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelectedEmp() {
     const numSelected = this.selectionEmp.selected.length;
     return numSelected === this.empleados.length
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggleEmp() {
     this.isAllSelectedEmp() ?
       this.selectionEmp.clear() :
       this.empleados.forEach(row => this.selectionEmp.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabelEmp(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
@@ -358,11 +299,9 @@ export class ComunicadosComponent implements OnInit {
     }
   }
 
-
-
   ModelarSucursal(form) {
     let usuarios: any = [];
-    let respuesta = JSON.parse(sessionStorage.getItem('reporte_timbres_multiple'))
+    let respuesta = JSON.parse(sessionStorage.getItem('comunicado'))
     respuesta.forEach((obj: any) => {
       this.selectionSuc.selected.find(obj1 => {
         if (obj.id_suc === obj1.id) {
@@ -376,7 +315,6 @@ export class ComunicadosComponent implements OnInit {
         }
       })
     })
-
     this.EnviarNotificaciones(usuarios, form);
   }
 
@@ -394,7 +332,7 @@ export class ComunicadosComponent implements OnInit {
 
   ModelarDepartamentos(form) {
     let usuarios: any = [];
-    let respuesta = JSON.parse(sessionStorage.getItem('reporte_timbres_multiple'))
+    let respuesta = JSON.parse(sessionStorage.getItem('comunicado'))
     respuesta.forEach((obj: any) => {
       obj.departamentos.forEach((obj1: any) => {
         this.selectionDep.selected.find(obj2 => {
@@ -411,46 +349,38 @@ export class ComunicadosComponent implements OnInit {
     this.EnviarNotificaciones(usuarios, form);
   }
 
+  // VALIDACIONES PARA ENVIO DE CORREOS
   cont: number = 0;
   EnviarNotificaciones(data: any, form) {
-    var f = moment();
-    var hora = f.format('HH:mm:ss');
-
     if (data.length > 0) {
-
       this.ContarCorreos(data);
       if (this.cont_correo <= this.correos) {
         this.cont = 0;
         data.forEach((obj: any) => {
-          let datosCorreo = {
-            id_envia: this.idEmpleado,
-            correo: obj.correo,
-            mensaje: form.mensajeForm,
-            asunto: form.tituloForm,
-            hora: hora
-          }
-          if (obj.comunicado_mail === true) {
-            this.realTime.EnviarCorreoComunicado(datosCorreo).subscribe(envio => {
-              this.cont = this.cont + 1;
-              this.envios = [];
-              this.envios = envio;
-              if (obj.comunicado_noti === true) {
-                this.NotificarPlanificacion(this.idEmpleado, obj.id, form);
-              }
-              if (this.cont === data.length) {
-                this.toastr.success('Mensaje enviado exitosamente.', '', {
-                  timeOut: 6000,
-                });
-                this.LimpiarFormulario();
-                this.BuscarParametro();
-              }
-            });
-          }
 
+          this.cont = this.cont + 1;
+
+          if (obj.comunicado_noti === true) {
+            this.NotificarPlanificacion(this.idEmpleado, obj.id, form);
+          }
+          if (this.cont === data.length) {
+            if (this.info_correo === '') {
+              this.toastr.success('Mensaje enviado exitosamente.', '', {
+                timeOut: 6000,
+              });
+            }
+            else {
+              this.EnviarCorreo(this.info_correo, form);
+            }
+            this.LimpiarFormulario();
+            this.BuscarParametro();
+          }
         })
       }
       else {
-        this.toastr.warning('Trata de enviar un total de ' + this.cont_correo + ' correos, sin embargo solo tiene permitido enviar un total de ' + this.correos + ' correos.', 'ACCIÓN NO PERMITIDA.', {
+        this.toastr.warning('Trata de enviar un total de ' + this.cont_correo +
+          ' correos, sin embargo solo tiene permitido enviar un total de ' + this.correos +
+          ' correos.', 'ACCIÓN NO PERMITIDA.', {
           timeOut: 6000,
         });
       }
@@ -460,10 +390,9 @@ export class ComunicadosComponent implements OnInit {
         timeOut: 6000,
       });
     }
-
-
   }
 
+  // METODO PARA CONTAR NUMERO DE CORREOS A ENVIARSE
   cont_correo: number = 0;
   info_correo: string = '';
   ContarCorreos(data: any) {
@@ -476,54 +405,41 @@ export class ComunicadosComponent implements OnInit {
           this.info_correo = obj.correo;
         }
         else {
-          this.info_correo = this.info_correo + '; ' + obj.correo;
+          this.info_correo = this.info_correo + ', ' + obj.correo;
         }
-
       }
     })
-
-    console.log('ver correos -----------', this.info_correo)
   }
 
-
-
-  jefes: any = [];
-  envios: any = [];
-
-
+  // MÉTODO PARA NOTIFICACION DE COMUNICADO
   NotificarPlanificacion(empleado_envia: any, empleado_recive: any, form) {
     let mensaje = {
       id_empl_envia: empleado_envia,
       id_empl_recive: empleado_recive,
       mensaje: form.tituloForm + '; ' + form.mensajeForm
     }
-    console.log(mensaje);
     this.realTime.EnviarMensajeComunicado(mensaje).subscribe(res => {
-      console.log(res.message);
     })
   }
 
-
-
+  // METODO PARA TOMAR DATOS SELECCIONADOS
   GuardarRegistros(form) {
-    // console.log('ver seleccion', this.opcion)
     if (this.opcion === 1) {
       this.ModelarSucursal(form);
-      // this.AbrirVentanaBusqueda();
     }
     else if (this.opcion === 2) {
       this.ModelarDepartamentos(form);
-      // this.AbrirVentanaBusqueda();
     }
     else {
       this.ModelarEmpleados(form);
-      // this.AbrirVentanaBusqueda();
     }
   }
 
+  // METODO PARA LIMPIAR FORMULARIOS
   LimpiarFormulario() {
     this.comunicadoForm.reset();
-    if (this._booleanOptions.bool_emp === true || this._booleanOptions.bool_tab === true || this._booleanOptions.bool_inc === true) {
+    if (this._booleanOptions.bool_emp === true || this._booleanOptions.bool_tab === true ||
+      this._booleanOptions.bool_inc === true) {
       this.codigo.reset();
       this.cedula.reset();
       this.nombre_emp.reset();
@@ -542,15 +458,10 @@ export class ComunicadosComponent implements OnInit {
     this.seleccion.reset();
   }
 
-
-
-
-
-
-
+  // MÉTODO PARA LEER NUMERO DE OCRREOS PERMITIDOS
   correos: number;
   BuscarParametro() {
-    // id_tipo_parametro PARA RANGO DE UBICACIÓN = 22
+    // id_tipo_parametro LIMITE DE CORREO = 24
     let datos = [];
     this.restP.ListarDetalleParametros(24).subscribe(
       res => {
@@ -562,6 +473,36 @@ export class ComunicadosComponent implements OnInit {
           this.correos = 0
         }
       });
+  }
+
+  // MÉTODO USADO PARA ENVIAR COMUNICADO POR CORREO
+  EnviarCorreo(correos, form) {
+    let datosCorreo = {
+      id_envia: this.idEmpleado,
+      correo: correos,
+      mensaje: form.mensajeForm,
+      asunto: form.tituloForm,
+    }
+    this.realTime.EnviarCorreoComunicado(datosCorreo).subscribe(envio => {
+      if (envio.message === 'ok') {
+        this.toastr.success('Mensaje enviado exitosamente.', '', {
+          timeOut: 6000,
+        });
+      }
+      else {
+        this.toastr.warning('Ups !!! algo salio mal', 'No fue posible enviar correo electrónico.', {
+          timeOut: 6000,
+        });
+      }
+    });
+  }
+
+  IngresarSoloLetras(e) {
+    return this.validar.IngresarSoloLetras(e);
+  }
+
+  IngresarSoloNumeros(evt) {
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
 }

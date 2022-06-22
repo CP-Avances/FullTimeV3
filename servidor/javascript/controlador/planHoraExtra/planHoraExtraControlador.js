@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PLAN_HORA_EXTRA_CONTROLADOR = void 0;
-const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
+const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
 class PlanHoraExtraControlador {
     ListarPlanificacion(req, res) {
@@ -88,14 +88,32 @@ class PlanHoraExtraControlador {
             }
         });
     }
+    /** ************************************************************************************************* **
+     ** **                METODOS PARA CREACION DE PLANIFICACION DE HORAS EXTRAS                       ** **
+     ** ************************************************************************************************* **/
+    // CREACION DE PLANIFICACION DE HORAS EXTRAS
     CrearPlanHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_empl_planifica, fecha_desde, fecha_hasta, hora_inicio, hora_fin, descripcion, horas_totales } = req.body;
-            yield database_1.default.query('INSERT INTO plan_hora_extra (id_empl_planifica, fecha_desde, ' +
-                'fecha_hasta, hora_inicio, hora_fin, descripcion, horas_totales) ' +
-                'VALUES ($1, $2, $3, $4, $5, $6, $7)', [id_empl_planifica, fecha_desde, fecha_hasta,
-                hora_inicio, hora_fin, descripcion, horas_totales]);
-            res.jsonp({ message: 'Planificacion registrada' });
+            try {
+                const { id_empl_planifica, fecha_desde, fecha_hasta, hora_inicio, hora_fin, descripcion, horas_totales } = req.body;
+                const response = yield database_1.default.query(`
+      INSERT INTO plan_hora_extra (id_empl_planifica, fecha_desde, fecha_hasta, hora_inicio, hora_fin, 
+        descripcion, horas_totales) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+      `, [id_empl_planifica, fecha_desde, fecha_hasta,
+                    hora_inicio, hora_fin, descripcion, horas_totales]);
+                const [planHoraExtra] = response.rows;
+                if (!planHoraExtra) {
+                    return res.status(404).jsonp({ message: 'error' });
+                }
+                else {
+                    return res.status(200).jsonp({ message: 'ok', info: planHoraExtra });
+                }
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
         });
     }
     ActualizarPlanHoraExtra(req, res) {
@@ -124,15 +142,28 @@ class PlanHoraExtraControlador {
             }
         });
     }
-    // PLANIFICACIÓN DE CADA EMPLEADO --- TABLA plan_hora_extra_empleado
+    /** ************************************************************************************************* **
+     ** **                  METODOS DE PLANIFICACION DE HORAS EXTRAS POR USUARIO                       ** **
+     ** ************************************************************************************************* **/
+    // CREAR PLANIFICACION DE HE POR USUARIO
     CrearPlanHoraExtraEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado, codigo } = req.body;
-            yield database_1.default.query('INSERT INTO plan_hora_extra_empleado (id_plan_hora, id_empl_realiza, observacion, ' +
-                'id_empl_cargo, id_empl_contrato, estado, codigo) ' +
-                'VALUES ($1, $2, $3, $4, $5, $6, $7)', [id_plan_hora, id_empl_realiza, observacion, id_empl_cargo,
-                id_empl_contrato, estado, codigo]);
-            res.jsonp({ message: 'Planificacion registrada' });
+            try {
+                const { id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado, codigo } = req.body;
+                const response = yield database_1.default.query(`
+          INSERT INTO plan_hora_extra_empleado (id_plan_hora, id_empl_realiza, observacion, 
+            id_empl_cargo, id_empl_contrato, estado, codigo)
+          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+        `, [id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado, codigo]);
+                const [planEmpleado] = response.rows;
+                if (!planEmpleado)
+                    return res.status(400).jsonp({ message: 'Error' });
+                return res.status(200).jsonp({ message: 'Planificación registrada con éxito.', info: planEmpleado });
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
         });
     }
     ListarPlanEmpleados(req, res) {
@@ -175,32 +206,48 @@ class PlanHoraExtraControlador {
     }
     EnviarCorreoNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            let { id_empl_envia, id_empl_recive, mensaje } = req.body;
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let create_at = f.toJSON();
-            let tipo = 1; // es el tipo de aviso 
-            // console.log(id_empl_envia, id_empl_recive, create_at, mensaje, tipo);
-            yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
-            const Envia = yield database_1.default.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_envia]).then(resultado => { return resultado.rows[0]; });
-            const Recibe = yield database_1.default.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_recive]).then(resultado => { return resultado.rows[0]; });
-            let data = {
-                // from: Envia.correo,
-                from: settingsMail_1.email,
-                to: Recibe.correo,
-                subject: 'Justificacion Hora Extra',
-                html: `<p><h4><b>${Envia.nombre} ${Envia.apellido}</b> </h4> escribe: <b>${mensaje}</b> 
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                let { id_empl_envia, id_empl_recive, mensaje } = req.body;
+                var f = new Date();
+                f.setUTCHours(f.getHours());
+                let create_at = f.toJSON();
+                let tipo = 1; // es el tipo de aviso 
+                // console.log(id_empl_envia, id_empl_recive, create_at, mensaje, tipo);
+                yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+                const Envia = yield database_1.default.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_envia]).then(resultado => { return resultado.rows[0]; });
+                const Recibe = yield database_1.default.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_recive]).then(resultado => { return resultado.rows[0]; });
+                let data = {
+                    // from: Envia.correo,
+                    from: settingsMail_1.email,
+                    to: Recibe.correo,
+                    subject: 'Justificacion Hora Extra',
+                    html: `<p><h4><b>${Envia.nombre} ${Envia.apellido}</b> </h4> escribe: <b>${mensaje}</b> 
             <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
             `
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+                };
+                let port = 465;
+                if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
+                    port = parseInt(settingsMail_1.puerto);
+                }
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+                res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
             }
-            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-            res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
         });
     }
     ObtenerDatosAutorizacion(req, res) {
@@ -218,34 +265,128 @@ class PlanHoraExtraControlador {
             }
         });
     }
+    /** ********************************************************************************************* **
+     ** *             ENVIO DE CORREOS ELECTRONICOS DE PLANIFICACIÓN DE HORAS EXTRAS                  **
+     ** ********************************************************************************************* **/
+    // MÉTODO ENVIO CORREO DESDE APLICACIÓN WEB CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
     EnviarCorreoPlanificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, settingsMail_1.Credenciales)(req.id_empresa);
-            let { id_empl_envia, id_empl_recive, mensaje } = req.body;
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let create_at = f.toJSON();
-            let tipo = 1; // es el tipo de aviso 
-            // console.log(id_empl_envia, id_empl_recive, create_at, mensaje, tipo);
-            yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
-            const Envia = yield database_1.default.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_envia]).then(resultado => { return resultado.rows[0]; });
-            const Recibe = yield database_1.default.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_recive]).then(resultado => { return resultado.rows[0]; });
-            console.log(Envia.correo, 'djjj', Recibe.correo);
-            let data = {
-                // from: Envia.correo,
-                from: settingsMail_1.email,
-                to: Recibe.correo,
-                subject: 'Planificación de Horas Extras',
-                html: `<p><h4><b>${Envia.nombre} ${Envia.apellido}</b> </h4> escribe: <b>${mensaje}</b> 
-            <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
-            `
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
+            if (datos === 'ok') {
+                const { id_empl_envia, correos, nombres, observacion, desde, hasta, inicio, fin, horas } = req.body;
+                const Envia = yield database_1.default.query(`
+        SELECT da.nombre, da.apellido, da.cedula, da.correo, 
+        (SELECT tc.cargo FROM tipo_cargo AS tc WHERE tc.id = ec.cargo) AS tipo_cargo,
+        (SELECT cd.nombre FROM cg_departamentos AS cd WHERE cd.id = ec.id_departamento) AS departamento
+        FROM datos_actuales_empleado AS da, empl_cargos AS ec
+        WHERE da.id = $1 AND ec.id = da.id_cargo
+      `, [id_empl_envia]).then(resultado => { return resultado.rows[0]; });
+                let data = {
+                    from: settingsMail_1.email,
+                    to: correos,
+                    subject: 'PLANIFICACION DE HORAS EXTRAS',
+                    html: `
+               <body>
+                   <div style="text-align: center;">
+                       <img width="50%" height="50%" src="cid:cabeceraf"/>
+                   </div>
+                   <br>
+                   <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                       El presente correo es para informar que se ha creado la siguiente planificación de horas extras: <br>  
+                   </p>
+                   <h3 style="font-family: Arial; text-align: center;">DATOS DEL COLABORADOR QUE REALIZA PLANIFICACIÓN HORAS EXTRAS</h3>
+                   <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                       <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                       <b>Asunto:</b> Planificación de realización de horas extras <br> 
+                       <b>Colaborador que envía:</b> ${Envia.nombre} ${Envia.apellido} <br>
+                       <b>Número de Cédula:</b> ${Envia.cedula} <br>
+                       <b>Cargo:</b> ${Envia.tipo_cargo} <br>
+                       <b>Departamento:</b> ${Envia.departamento} <br>
+                       <b>Generado mediante:</b> Aplicación Web <br>
+                       <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                   </p>
+                   <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA PLANIFICACIÓN DE HORAS EXTRAS</h3>
+                   <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                       <b>Motivo:</b> ${observacion} <br>   
+                       <b>Fecha de Planificación:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Desde:</b> ${desde} <br>
+                       <b>Hasta:</b> ${hasta} <br>
+                       <b>Horario:</b> ${inicio} a ${fin} <br>
+                       <b>Número de horas planificadas:</b> ${horas} <br>
+                       <b>Colabores que cuenta con planificación de horas extras:</b>
+                  </p>
+                  <div style="text-align: center;"> 
+                      <table border=2 cellpadding=10 cellspacing=0 style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px;">
+                        <tr>
+                          <th><h5>COLABORADOR</h5></th> 
+                          <th><h5>CÉDULA</h5></th> 
+                        </tr>            
+                        ${nombres} 
+                     </table>
+                  </div>
+                   <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                       <b>Gracias por la atención</b> <br>
+                       <b>Saludos cordiales,</b> <br><br>
+                   </p>
+                   <img src="cid:pief" width="50%" height="50%"/>                 
+                </body>
+            `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
             }
-            (0, settingsMail_1.enviarMail)(data, settingsMail_1.servidor, port);
-            res.jsonp({ message: 'Se envio notificacion y correo electrónico.' });
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
+    /** ********************************************************************************************* **
+     ** *             ENVIO DE NOTIFICACIONES DE PLANIFICACIÓN DE HORAS EXTRAS                      * **
+     ** ********************************************************************************************* **/
+    // ENVIO DE NOTIFICACION DE PLANIFICACION DE HORAS EXTRAS
+    EnviarNotiPlanHE(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                var tiempo = (0, settingsMail_1.fechaHora)();
+                const { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
+                let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
+                const response = yield database_1.default.query(`
+      INSERT INTO realtime_timbres (create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
+      VALUES($1, $2, $3, $4, $5) RETURNING *
+      `, [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+                const [notificiacion] = response.rows;
+                if (!notificiacion)
+                    return res.status(400).jsonp({ message: 'error' });
+                return res.status(200).jsonp({ message: 'ok' });
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
         });
     }
 }

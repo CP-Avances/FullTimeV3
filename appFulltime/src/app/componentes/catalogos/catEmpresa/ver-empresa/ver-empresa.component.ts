@@ -14,7 +14,7 @@ import { LogosComponent } from 'src/app/componentes/catalogos/catEmpresa/logos/l
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service'
 import { KardexService } from 'src/app/servicios/reportes/kardex.service';
-import { CorreoEmpresaComponent } from '../correo-empresa/correo-empresa.component';
+import { CorreoEmpresaComponent } from '../../../administracionGeneral/correo/correo-empresa/correo-empresa.component';
 import { TipoSeguridadComponent } from '../tipo-seguridad/tipo-seguridad.component';
 
 @Component({

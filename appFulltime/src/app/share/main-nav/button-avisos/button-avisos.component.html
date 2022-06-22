@@ -9,46 +9,14 @@
     <div *ngIf="timbres_noti.message !== 'No se encuentran registros'">
         <div *ngFor="let n of timbres_noti">
 
-            <!-- Avisos ya vistos -->
-            <div *ngIf="loginService.getEstado() && n.visto == true && n.descripcion.split(' ')[0] === 'Alimentación'"
-                style="background: rgb(226, 226, 226)" [routerLink]="['/listaPlanComida']">
-                <a mat-menu-item type="submit" class="noti_menu">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{mensaje_inicio}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{mensaje_fin}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>Fecha:</b> {{n.create_at.split('T')[0]}}
-                            <b>Hora:</b> {{n.create_at.slice(11,16)}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-            </div>
-
-            <div *ngIf="loginService.getEstado() && n.visto == true && n.descripcion.split(' ')[0] != 'Alimentación'"
-                style="background: rgb(226, 226, 226)" [routerLink]="['/listaSolicitaComida']">
-                <a mat-menu-item type="submit" class="noti_menu">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>Fecha:</b> {{n.create_at.split('T')[0]}}
-                            <b>Hora:</b> {{n.create_at.slice(11,16)}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-            </div>
-
             <!-- Forma de aviso para 'Te falta timbre de entrada' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Te falta timbre de entrada'"
                 style="background: rgba(255, 25, 25, 0.7);">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
                         <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
+                        <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split('T')[0]}}
                             <b>Hora:</b> {{n.create_at.slice(11,16)}}
                         </li>
@@ -59,11 +27,11 @@
             <!-- Forma de aviso para 'Te falta timbre de salida' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Te falta timbre de salida'"
                 style="background: rgba(255, 25, 25, 0.7);">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
                         <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
+                        <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split('T')[0]}}
                             <b>Hora:</b> {{n.create_at.slice(11,16)}}
                         </li>
@@ -74,11 +42,11 @@
             <!-- Forma de aviso para 'Salio antes al almuerzo' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Salio antes al almuerzo'"
                 style="background: rgba(230, 16, 37, 0.7);">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
                         <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
+                        <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split('T')[0]}}
                             <b>Hora:</b> {{n.create_at.slice(11,16)}}
                         </li>
@@ -89,11 +57,11 @@
             <!-- Forma de aviso para 'Se tomo mucho tiempo de almuerzo' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Se tomo mucho tiempo de almuerzo'"
                 style="background: rgba(230, 16, 37, 0.7);">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
                         <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
+                        <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split('T')[0]}}
                             <b>Hora:</b> {{n.create_at.slice(11,16)}}
                         </li>
@@ -104,11 +72,11 @@
             <!-- Forma de aviso para 'Llego atrasado al trabajo' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Llego atrasado al trabajo'"
                 style="background: rgba(235, 89, 11, 0.7);">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
                         <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
+                        <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split('T')[0]}}
                             <b>Hora:</b> {{n.create_at.slice(11,16)}}
                         </li>
@@ -119,27 +87,11 @@
             <!-- Forma de aviso para 'Salio antes al trabajo' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Salio antes al trabajo'"
                 style="background: rgba(235, 89, 11, 0.7);">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
                         <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>Fecha:</b> {{n.create_at.split('T')[0]}}
-                            <b>Hora:</b> {{n.create_at.slice(11,16)}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-            </div>
-            <!-- Mensaje de la planificacion -->
-            <div *ngIf="loginService.getEstado() && n.visto == false && n.tipo === 1 && n.descripcion.split(' ')[0] === 'Alimentación'"
-                style="background: rgba(17, 199, 151, 0.7)" [routerLink]="['/listaPlanComida']">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{mensaje_inicio}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{mensaje_fin}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
+                        <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split('T')[0]}}
                             <b>Hora:</b> {{n.create_at.slice(11,16)}}
                         </li>
@@ -148,15 +100,92 @@
                 </a>
             </div>
 
-            <div *ngIf="n.visto == false && n.tipo === 1 && n.descripcion.split(' ')[0] != 'Alimentación'"
-                style="background: rgba(17, 199, 151, 0.7)" [routerLink]="['/listaSolicitaComida']">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)">
+            <!-- NOTIFICACIÓN DE SOLICITUD DE ALIMENTACION -->
+            <div *ngIf="n.visto === false && n.tipo === 1" style="background: rgba(37, 226, 176, 0.7)"
+                [routerLink]="['/listaPlanComida']">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>Fecha:</b> {{n.create_at.split('T')[0]}}
-                            <b>Hora:</b> {{n.create_at.slice(11,16)}}
+                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.empleado}}</li>
+                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            para el {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('horario')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
+                        </li>
+                    </ul>
+                    <mat-divider class="divider"></mat-divider>
+                </a>
+            </div>
+
+            <!-- AVISOS YA VISTOS NOTIFICACIÓN DE SOLICITUD DE ALIMENTACION-->
+            <div *ngIf="n.visto === true && n.tipo === 1" style="background: rgb(226, 226, 226)"
+                [routerLink]="['/listaPlanComida']">
+                <a mat-menu-item type="submit" class="noti_menu">
+                    <ul style="list-style: none; margin-left: -15%;">
+                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.empleado}}</li>
+                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            para el {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('horario')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
+                        </li>
+                    </ul>
+                    <mat-divider class="divider"></mat-divider>
+                </a>
+            </div>
+
+            <!-- NOTIFICACIONES DE PLANIFICACIÓN DE HORAS EXTRAS -->
+            <div *ngIf="n.visto === false && n.tipo === 10" style="background: rgba(131, 176, 243, 0.7)"
+                [routerLink]="['/listaSolicitaComida']">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
+                    <ul style="list-style: none; margin-left: -15%;">
+                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
+                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            {{n.descripcion.split('desde')[1].split('hasta')[0]}}<b> a </b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            de')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
+                        </li>
+                    </ul>
+                    <mat-divider class="divider"></mat-divider>
+                </a>
+            </div>
+
+            <!-- NOTIFICACIONES VISTAS DE PLANIFICACIÓN DE HORAS EXTRAS -->
+            <div *ngIf="n.visto === true && n.tipo === 10" style="background: rgb(226, 226, 226)"
+                [routerLink]="['/listaSolicitaComida']">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
+                    <ul style="list-style: none; margin-left: -15%;">
+                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
+                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            {{n.descripcion.split('desde')[1].split('hasta')[0]}}<b> a </b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            de')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>
@@ -164,15 +193,31 @@
             </div>
 
             <!-- MENSAJE DE COMUNICADOS -->
-            <div *ngIf="n.visto == false && n.tipo === 2" style="background: rgba(17, 199, 151, 0.7)">
-                <a mat-menu-item type="submit" class="noti_menu" (click)="CambiarVistaTimbres(n.id)"
+            <div *ngIf="n.visto === false && n.tipo === 6" style="background: rgba(241, 197, 239, 0.7)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)"
                     [routerLink]="['/lista-avisos']">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.empleado}}</b></li>
-                        <li style="font-size: 13px; margin-top: -13%;"><b>{{n.descripcion.split(';')[0] }}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>Fecha:</b> {{n.create_at.split('T')[0]}}
-                            <b>Hora:</b> {{n.create_at.slice(11,16)}}
+                        <li style="font-size: 12px;"><b>Enviado por: {{n.empleado}}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split(';')[0] }}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
+                        </li>
+                    </ul>
+                    <mat-divider class="divider"></mat-divider>
+                </a>
+            </div>
+
+            <!-- MENSAJE DE COMUNICADOS VISTOS-->
+            <div *ngIf="n.visto === true && n.tipo === 6" style="background: rgb(226, 226, 226)">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)"
+                    [routerLink]="['/lista-avisos']">
+                    <ul style="list-style: none; margin-left: -15%;">
+                        <li style="font-size: 12px;"><b>Enviado por: {{n.empleado}}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split(';')[0] }}</b></li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>

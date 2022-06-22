@@ -22,6 +22,13 @@ export class DatosGeneralesService {
     return this.http.get(`${environment.url}/generalidades/info_actual`);
   }
 
+  // CONSULTA DE INFORMACIÓN GENERAL DEL COLABORADOR
+  ObtenerInformacion() {
+    const estado = 1; // 1 = activo 
+    return this.http.get<any>(`${environment.url}/generalidades/informacion-general/${estado}`);
+  }
+
+
   /** INICIO CONSULTAS PARA FILTRAR INFORMACIÓN */
   VerDatosSucursal(id_sucursal: number) {
     return this.http.get(`${environment.url}/generalidades/filtros/sucursal/${id_sucursal}`);
