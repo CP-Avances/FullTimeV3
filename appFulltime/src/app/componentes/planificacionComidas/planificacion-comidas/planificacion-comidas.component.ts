@@ -9,9 +9,9 @@ import * as moment from 'moment';
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
 import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
@@ -67,8 +67,8 @@ export class PlanificacionComidasComponent implements OnInit {
     public restE: EmpleadoService,
     public restH: EmpleadoHorariosService,
     public validar: ValidacionesService,
+    public ventana: MatDialogRef<PlanificacionComidasComponent>,
     public restPlan: PlanComidasService,
-    public dialogRef: MatDialogRef<PlanificacionComidasComponent>,
     public restUsuario: UsuarioService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -76,7 +76,7 @@ export class PlanificacionComidasComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('datos', this.data, this.data.servicios)
+    console.log('datos', this.data, this.data.servicios + ' ' + this.data.servicios.length)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
     this.MostrarDatos();
@@ -84,27 +84,17 @@ export class PlanificacionComidasComponent implements OnInit {
     this.ObtenerServicios();
   }
 
-  verNombre: boolean = false;
   descripcion: string;
-  empleado_recibe: number;
-  empleado_envia: number;
+
+  // METODO PARA COLOCAR FECHA ACTUAL EN EL FORMULARIO
   MostrarDatos() {
     this.PlanificacionComidasForm.patchValue({
       fechaForm: this.FechaActual,
       extraForm: 'false'
     });
-    this.restUsuario.BuscarDatosUser(parseInt(this.idEmpleadoLogueado)).subscribe(data => {
-      if (this.data.modo === 'individual') {
-        this.ObtenerEmpleados(this.data.idEmpleado);
-        this.empleado_envia = this.idEmpleadoLogueado;
-        this.empleado_recibe = this.data.idEmpleado;
-      }
-      else {
-        this.empleado_envia = this.idEmpleadoLogueado;
-      }
-    });
   }
 
+  // METODO PARA OBTENER LISTA DE SERVICIOS
   servicios: any = [];
   ObtenerServicios() {
     this.servicios = [];
@@ -123,12 +113,13 @@ export class PlanificacionComidasComponent implements OnInit {
     this.rest.ConsultarUnServicio(form.tipoForm).subscribe(datos => {
       this.tipoComidas = datos;
     }, error => {
-      this.toastr.info('Verificar la información.', 'No existen registrados Menús para esta tipo de servicio.', {
+      this.toastr.info('Verificar la información.', 'No se han encontrado registros.', {
         timeOut: 6000,
       })
     })
   }
 
+  // METODO PARA OBTENER DETALLES DE ALIMENTACION
   detalle: any = [];
   ObtenerDetalleMenu(form) {
     this.horaInicioF.reset();
@@ -137,37 +128,30 @@ export class PlanificacionComidasComponent implements OnInit {
     this.detalle = [];
     this.rest.ConsultarUnDetalleMenu(form.idComidaForm).subscribe(datos => {
       this.detalle = datos;
-      console.log('servicio', this.detalle)
       this.PlanificacionComidasForm.patchValue({
         horaInicioForm: this.detalle[0].hora_inicio,
         horaFinForm: this.detalle[0].hora_fin
       })
     }, error => {
-      this.toastr.info('Verificar la información.', 'No existen registros de Alimentación para este Menú.', {
+      this.toastr.info('Verificar la información.', 'No se han encontrado registros.', {
         timeOut: 6000,
       })
     })
   }
 
-  // MÉTODO PARA OBTENER LA INFORMACIÓN DEL EMPLEADO
-  ObtenerEmpleados(idemploy: any) {
-    this.empleados = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
-      this.empleados = data;
-      console.log(this.empleados)
-    })
-  }
-
+  // METODO QUE REALIZA VALIDACIONES ANTES DEL REGISTRO
   fechasHorario: any = [];
   inicioDate: any;
   finDate: any;
   contador: number = 0;
   contadorFechas: number = 0;
   InsertarPlanificacion(form) {
+
+    // DATOS DE PLANIFICACION
     let datosPlanComida = {
       observacion: form.observacionForm,
-      fec_inicio: form.fechaInicioForm,
       hora_inicio: form.horaInicioForm,
+      fec_inicio: form.fechaInicioForm,
       fec_comida: form.fechaInicioForm,
       id_comida: form.platosForm,
       fec_final: form.fechaFinForm,
@@ -175,379 +159,382 @@ export class PlanificacionComidasComponent implements OnInit {
       fecha: form.fechaForm,
       extra: form.extraForm,
     };
-    if (Date.parse(form.fechaInicioForm) <= Date.parse(form.fechaFinForm)) {
-      if (this.data.modo === "multiple") {
-        //this.PlanificarMultiple(form, datosPlanComida);
-        this.VerificarDuplicidadMultiple(form, datosPlanComida);
 
+    // METODO PARA VALIDAR FECHAS INGRESADAS
+    if (Date.parse(form.fechaInicioForm) <= Date.parse(form.fechaFinForm)) {
+
+      // MÉTODO PARA VALIDAR REGISTRO INDIVIDUAL O MULTIPLE
+      if (this.data.servicios.length != undefined) {
+        this.ContarCorreos(this.data.servicios);
+        if (this.cont_correo <= this.correos) {
+          this.VerificarDuplicidadMultiple(form, datosPlanComida);
+        }
+        else {
+          this.toastr.warning('Trata de enviar correo de un total de ' + this.cont_correo + ' colaboradores, sin embargo solo tiene permitido enviar un total de ' + this.correos + ' correos.', 'ACCIÓN NO PERMITIDA.', {
+            timeOut: 6000,
+          });
+        }
       }
       else {
         this.VerificarDuplicidadIndividual(form, datosPlanComida);
       }
     }
     else {
-      this.toastr.info('La fecha de final de la planificación debe ser posterior a la fecha de inicio de la planificación.', '', {
+      this.toastr.info('Las fechas no se han ingresado de manera correcta.', 'Verificar fechas registradas.', {
         timeOut: 6000,
       })
     }
   }
 
-  VerificarDuplicidadIndividual(form, datosPlanComida) {
+  // METODO PARA VALIDAR REGISTROS EXISTENTES
+  VerificarDuplicidadIndividual(form: any, datosPlanComida: any) {
+    // DATOS DEL USUARIO
     let datosDuplicados = {
-      id: this.data.idEmpleado,
+      id: this.data.servicios.id,
+      fecha_fin: form.fechaFinForm,
       fecha_inicio: form.fechaInicioForm,
-      fecha_fin: form.fechaFinForm
     }
+    // MÉTODO QUE VALIDA SI EXISTE UN REGISTRO EN LAS FECHAS INDICADAS
     this.restPlan.BuscarDuplicadosFechas(datosDuplicados).subscribe(plan => {
-      console.log('datos fechas', plan)
-      this.toastr.info(this.empleados[0].nombre + ' ' + this.empleados[0].apellido + ' ya tiene registrada una planificación de alimentación en las fechas ingresadas.', '', {
+      this.toastr.info(this.data.servicios.nombre + ' ya tiene registrada una planificación de alimentación en las fechas ingresadas.', '', {
         timeOut: 6000,
       })
     }, error => {
+      // SI NO EXISTE PLANIFICACION VALIDAR HORARIO
       this.VerificarHorarioEmpleado(form, datosPlanComida);
-      console.log('datos fechas entra',)
     });
   }
 
+  // METODO PARA VALIDAR PLANIFICACION HORARIA DEL USUARIO
   VerificarHorarioEmpleado(form, datosPlanComida) {
+    // DATOS DE FCEHAS INGRESADAS
     let datosHorario = {
       fechaInicio: form.fechaInicioForm,
       fechaFinal: form.fechaFinForm
     }
-    this.restH.BuscarHorarioFechas(parseInt(this.empleados[0].codigo), datosHorario).subscribe(plan => {
-      console.log('datos fechas', plan)
+    // METODO PARA BUSCAR PLANIFICACION HORARIA
+    this.restH.BuscarHorarioFechas(parseInt(this.data.servicios.codigo), datosHorario).subscribe(plan => {
+      // REGISTRAR PLANIFICACIÓN 
       this.PlanificacionIndividual(form, datosPlanComida);
     }, error => {
-      this.toastr.info(this.empleados[0].nombre + ' ' + this.empleados[0].apellido + ' no tiene registro de horario laboral en las fechas indicadas.', '', {
+      this.toastr.info(this.data.servicios.nombre + ' no tiene registro de horario laboral (planificación) en las fechas indicadas.', '', {
         timeOut: 6000,
       })
-      console.log('datos fechas entra',)
     });
   }
 
-
-  PlanificacionIndividual(form, datosPlanComida) {
+  // METODO PARA GUARDAR DATOS DE PLANIFICACIÓN DE ALIMENTACIÓN 
+  PlanificacionIndividual(form: any, datosPlanComida: any) {
     // CREACIÓN DE LA PLANIFICACIÓN PARA UN EMPLEADO
-    this.restPlan.CrearPlanComidas(datosPlanComida).subscribe(plan => {
-      console.log('ultima planificacion', plan);
+    this.restPlan.CrearPlanComidas(datosPlanComida).subscribe(res => {
 
-   /*   // INDICAMOS A QUE EMPLEADO SE LE REALIZA UNA PLANIFICACIÓN
-      this.inicioDate = moment(form.fechaInicioForm).format('MM-DD-YYYY');
-      this.finDate = moment(form.fechaFinForm).format('MM-DD-YYYY');
+      if (res.message != 'error') {
+        var plan = res.info;
+        console.log('ver plan ', plan)
+        // INDICAMOS A QUE EMPLEADO SE LE REALIZA UNA PLANIFICACIÓN
+        this.inicioDate = moment(form.fechaInicioForm).format('MM-DD-YYYY');
+        this.finDate = moment(form.fechaFinForm).format('MM-DD-YYYY');
 
-      this.fechasHorario = []; // ARRAY QUE CONTIENE TODAS LAS FECHAS DEL MES INDICADO
+        this.fechasHorario = []; // ARRAY QUE CONTIENE TODAS LAS FECHAS DEL MES INDICADO
 
-      // INICIALIZAR DATOS DE FECHA
-      var start = new Date(this.inicioDate);
-      var end = new Date(this.finDate);
+        // INICIALIZAR DATOS DE FECHA
+        var start = new Date(this.inicioDate);
+        var end = new Date(this.finDate);
 
-      // LÓGICA PARA OBTENER TODAS LAS FECHAS DEL MES
-      while (start <= end) {
-        this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-        var newDate = start.setDate(start.getDate() + 1);
-        start = new Date(newDate);
+        // LÓGICA PARA OBTENER TODAS LAS FECHAS DEL MES
+        while (start <= end) {
+          this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
+          var newDate = start.setDate(start.getDate() + 1);
+          start = new Date(newDate);
+        }
+
+        this.contadorFechas = 0;
+
+        // DATOS DE PLANIFICACION DE SERVICIO DE ALIMENTACION AL USUARIO
+        let planEmpleado = {
+          codigo: this.data.servicios.codigo,
+          id_empleado: this.data.servicios.id,
+          id_plan_comida: plan.id,
+          fecha: '',
+          hora_inicio: form.horaInicioForm,
+          hora_fin: form.horaFinForm,
+          consumido: false
+        }
+
+        // LECTURA DE DATOS DE USUARIO
+        let usuario = '<tr><th>' + this.data.servicios.nombre +
+          '</th><th>' + this.data.servicios.cedula + '</th></tr>';
+        let cuenta_correo = this.data.servicios.correo;
+
+        // LECTURA DE DATOS DE LA PLANIFICACIÓN
+        let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
+        let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
+        let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
+        let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+
+        // REGISTRAR PLANIFICACION DEL USUARIO
+        this.fechasHorario.map(obj => {
+          planEmpleado.fecha = obj;
+
+          // METODO PARA PLANIFICAR ALIMENTACION DEL USUARIO
+          this.restPlan.CrearPlanComidasEmpleado(planEmpleado).subscribe(empl => {
+            this.contadorFechas = this.contadorFechas + 1;
+
+            // SI TODO LOS DATOS HAN SIDO LEIDOS SE ENVIA NOTIFICACIONES
+            if (this.contadorFechas === this.fechasHorario.length) {
+              this.NotificarPlanificacion(plan, desde, hasta, h_inicio, h_fin, this.data.servicios.id);
+              this.EnviarCorreo(plan, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
+              this.toastr.success('Planificación Servicio de Alimentación registrada.', '', {
+                timeOut: 6000,
+              })
+              this.CerrarRegistroPlanificacion();
+            }
+          });
+        })
       }
-
-      this.contadorFechas = 0;
-      console.log('fechas', this.fechasHorario);
-
-      // DATOS DE PLANIFICACION DE SERVICIO DE ALIMENTACION AL USUARIO
-      let planEmpleado = {
-        codigo: this.empleados[0].codigo,
-        id_empleado: this.data.idEmpleado,
-        id_plan_comida: plan.id,
-        fecha: '',
-        hora_inicio: form.horaInicioForm,
-        hora_fin: form.horaFinForm,
-        consumido: false
-      }
-
-      // REGISTRAR PLANIFICACION DEL USUARIO
-      this.fechasHorario.map(obj => {
-        planEmpleado.fecha = obj;
-
-        this.restPlan.CrearPlanComidasEmpleado(planEmpleado).subscribe(res => {
-          this.contadorFechas = this.contadorFechas + 1;
-
-          if (this.contadorFechas === this.fechasHorario.length) {
-            this.EnviarNotificaciones(form.fechaInicioForm, form.fechaFinForm, form.horaInicioForm, form.horaFinForm, this.empleado_envia, this.empleado_recibe);
-            this.toastr.success('Operación Exitosa', 'Servicio de Alimentación Registrado.', {
-              timeOut: 6000,
-            })
-            this.CerrarRegistroPlanificacion();
-          }
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'Proceso no registrado.', {
+          timeOut: 6000,
         });
-      })*/
+        this.CerrarRegistroPlanificacion();
+      }
     });
   }
 
+  // MÉTODO PARA INGRESAR PLANIFICACION MULTIPLE
   empleados_conPlanificacion: any = [];
   empleados_sinPlanificacion: any = [];
   VerificarDuplicidadMultiple(form, datosPlanComida) {
+    // LIMPIAR LISTA DE DATOS
     this.empleados_conPlanificacion = [];
     this.empleados_sinPlanificacion = [];
+    // CONTADOR DE REGISTROS
     var contar_seleccionados = 0;
+    // DATOS DE USUARIO
+    let datosDuplicados = {
+      id: '',
+      fecha_inicio: form.fechaInicioForm,
+      fecha_fin: form.fechaFinForm
+    }
+    // PROCESAR TODOS LOS DATOS
     this.data.servicios.map(obj => {
-      let datosDuplicados = {
-        id: obj.id,
-        fecha_inicio: form.fechaInicioForm,
-        fecha_fin: form.fechaFinForm
-      }
-      this.restPlan.BuscarDuplicadosFechas(datosDuplicados).subscribe(plan => {
+      datosDuplicados.id = obj.id;
+      // METODO PARA VERIFICAR DATOS DUPLICADOS
+      this.restPlan.BuscarDuplicadosFechas(datosDuplicados).subscribe(res => {
+
         contar_seleccionados = contar_seleccionados + 1;
         this.empleados_conPlanificacion = this.empleados_conPlanificacion.concat(obj);
-        console.log('contador ', contar_seleccionados, ' ' + this.data.servicios.length)
         if (contar_seleccionados === this.data.servicios.length) {
-          console.log('datos fechas m', this.empleados_conPlanificacion)
-          console.log('datos fechas entra m', this.empleados_sinPlanificacion)
-
+          // METODO PARA VALIDAR REGISTRO DE HORARIO
           this.VerificarHorariosEmpleadosMultiples(form, datosPlanComida, this.empleados_sinPlanificacion, this.empleados_conPlanificacion);
         }
+
       }, error => {
+
         contar_seleccionados = contar_seleccionados + 1;
-        console.log('contador ', contar_seleccionados, ' ' + this.data.servicios.length)
         this.empleados_sinPlanificacion = this.empleados_sinPlanificacion.concat(obj);
         if (contar_seleccionados === this.data.servicios.length) {
-          console.log('datos fechas m', this.empleados_conPlanificacion)
-          console.log('datos fechas entra m', this.empleados_sinPlanificacion)
-
-
-
-          /** MÉTODO PARA PLANIFICAR */
+          // METODO PARA VALIDAR REGISTRO DE HORARIO 
           this.VerificarHorariosEmpleadosMultiples(form, datosPlanComida, this.empleados_sinPlanificacion, this.empleados_conPlanificacion);
         }
+
       });
     })
   }
 
+  // METODO PARA VALIDAR REGISTRO DE PLANIFICACION DE LOS USUARIOS
   empleados_conHorario: any = [];
   empleados_sinHorario: any = [];
-  VerificarHorariosEmpleadosMultiples(form, datosPlanComida, sin_planificacion, con_planificacion) {
+  VerificarHorariosEmpleadosMultiples(form: any, datosPlanComida: any, sin_planificacion: any, con_planificacion: any) {
     var contar_horario = 0;
+    let datosHorario = {
+      fechaInicio: form.fechaInicioForm,
+      fechaFinal: form.fechaFinForm
+    }
     sin_planificacion.map(obj => {
-      let datosHorario = {
-        fechaInicio: form.fechaInicioForm,
-        fechaFinal: form.fechaFinForm
-      }
-      this.restH.BuscarHorarioFechas(obj.codigo, datosHorario).subscribe(plan => {
+      // METODO PARA BUSCAR EXISTENCIA DE HORARIO
+      this.restH.BuscarHorarioFechas(obj.codigo, datosHorario).subscribe(res => {
         contar_horario = contar_horario + 1;
         this.empleados_conHorario = this.empleados_conHorario.concat(obj);
         if (contar_horario === sin_planificacion.length) {
-          console.log('entaaaaaaaa')
-          /** MÉTODO PARA PLANIFICAR */
+          // METODO PARA GUARDAR PLANIFICACION
           this.PlanificarMultiple(form, datosPlanComida, this.empleados_conHorario);
 
-          /** MÉTODO PARA INDICAR EMPLEADOS NO PLANIFICADOS */
+          // MENSAJE DE USUARIOS CON NOVEDADES
           this.IndicarMensajePlanificados(con_planificacion);
           this.IndicarMensajeHorarios(this.empleados_sinHorario, sin_planificacion);
         }
+
       }, error => {
+
         contar_horario = contar_horario + 1;
         this.empleados_sinHorario = this.empleados_sinHorario.concat(obj);
+
         if (contar_horario === sin_planificacion.length) {
-          console.log('mmmmmkdfr')
-          /** MÉTODO PARA PLANIFICAR */
+          // GUARDAR REGISTRO DE PLANIFICACION
           this.PlanificarMultiple(form, datosPlanComida, this.empleados_conHorario);
 
-          /** MÉTODO PARA INDICAR EMPLEADOS NO PLANIFICADOS */
+          // MOSTRAR MENSAJES DE USUARIOS CON NOVEDADES
           this.IndicarMensajePlanificados(con_planificacion);
           this.IndicarMensajeHorarios(this.empleados_sinHorario, sin_planificacion);
         }
       });
-
     })
 
   }
 
+  // MENSAJE QUE INDICA QUE USUARIOS CUENTA CON PLANIFICACION
   IndicarMensajePlanificados(array_datos: any) {
+    // VALIDAR QUE LA LISTA TENGA DATOS
     if (array_datos.length != 0) {
+      // MENSAJE SI TODO LOS USUARIOS CUENTAN CON PLANIFICACION
       if (array_datos.length === this.data.servicios.length) {
-        this.toastr.info('No se ha registrado la planificación para ninguno de los empleado seleccionados.', 'Empleados ya cuenta con una planificación registrada en las fechas indicas.', {
+        this.toastr.info('',
+          'Los colaboradores ya cuenta con una planificación registrada en las fechas indicas.', {
           timeOut: 12000,
         })
-        this.dialogRef.close();
+        this.ventana.close();
       }
       else {
+        // MENSAJE SI ALGUNOS USUARIOS CUENTAN CON PLANIFICACION
         var nombres_empleados = '';
         array_datos.map(obj => {
-          nombres_empleados = nombres_empleados + ' - ' + obj.empleado
+          nombres_empleados = nombres_empleados + ' - ' + obj.nombre
         })
-        this.toastr.info('No se ha registrado la planificación de los empleados ' + nombres_empleados, 'Empleados ya cuenta con una planificación registrada en las fechas indicas.', {
+        this.toastr.info('',
+          'Los siguientes colaboradores: ' + nombres_empleados + ' ya cuenta con una planificación en las fechas indicas.', {
           timeOut: 12000,
         })
       }
     }
   }
 
+  // MENSAJE PARA INDICAR QUE LOS USUARIOS NO TIENE HORARIO
   IndicarMensajeHorarios(array_datos: any, sin_planificacion) {
+    // VALIDAR QUE LA LISTA TENGA REGISTROS
     if (array_datos.length != 0) {
+      // SI TODO LOS USUARIOS NO TIENEN REGISRO DE PLANIFICACION HORARIA
       if (array_datos.length === sin_planificacion.length) {
-        this.toastr.info('No se ha registrado la planificación para ninguno de los empleado seleccionados.', 'Empleados no tienen registrado un horario laboral en las fechas indicadas.', {
+        this.toastr.info('',
+          'Los colaboradores no tienen registrada planificación u horario en las fechas indicadas.', {
           timeOut: 12000,
         })
-        this.dialogRef.close();
+        this.ventana.close();
       }
       else {
+        // SI ALGUNOS USUARIOS O CUENTA CON PLANIFICACION HORARIA
         var nombres_empleados = '';
         array_datos.map(obj => {
-          nombres_empleados = nombres_empleados + ' - ' + obj.empleado
+          nombres_empleados = nombres_empleados + ' - ' + obj.nombre
         })
-        this.toastr.info('No se ha registrado la planificación de los empleados ' + nombres_empleados, 'Empleados no tienen registrado un horario laboral en las fechas indicadas.', {
+        this.toastr.info('',
+          'Los siguientes colaboradores: ' + nombres_empleados +
+          ' no tienen registrado palnificación u horario laboral en las fechas indicadas.', {
           timeOut: 12000,
         })
       }
     }
   }
 
-  PlanificarMultiple(form, datosPlanComida, empleados_planificados: any) {
+  // METODO DE REGISTROS DE PLANIFICACIÓN DE VARIOS USUARIOS
+  PlanificarMultiple(form: any, datosPlanComida: any, empleados_planificados: any) {
+
+    var usuario = '';
+
     if (empleados_planificados.length != 0) {
+
       this.inicioDate = moment(form.fechaInicioForm).format('MM-DD-YYYY');
       this.finDate = moment(form.fechaFinForm).format('MM-DD-YYYY');
+
       // CREACIÓN DE LA PLANIFICACIÓN PARA VARIOS EMPLEADOS
-      this.restPlan.CrearPlanComidas(datosPlanComida).subscribe(plan => {
-        // CONSULTAMOS EL ID DE LA ÚLTIMA PLANIFICACIÓN CREADA
-        this.restPlan.ObtenerUltimaPlanificacion().subscribe(res => {
-          console.log('ultima planificacion', res[0].ultimo);
+      this.restPlan.CrearPlanComidas(datosPlanComida).subscribe(res => {
+        if (res.message != 'error') {
+          var plan = res.info;
+
+          // LECTURA DE DATOS DE LA PLANIFICACIÓN
+          let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
+          let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
+          let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
+          let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+
+          this.fechasHorario = []; // ARRAY QUE CONTIENE TODAS LAS FECHAS DEL MES INDICADO
+          // INICIALIZAR DATOS DE FECHA
+          var start = new Date(this.inicioDate);
+          var end = new Date(this.finDate);
+          // LÓGICA PARA OBTENER EL NOMBRE DE CADA UNO DE LOS DÍA DEL PERIODO INDICADO
+          while (start <= end) {
+            this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
+            var newDate = start.setDate(start.getDate() + 1);
+            start = new Date(newDate);
+          }
+
           // INDICAMOS A QUE EMPLEADO SE LE REALIZA UNA PLANIFICACIÓN
           this.contador = 0;
+          let planEmpleado = {
+            codigo: '',
+            id_empleado: '',
+            id_plan_comida: plan.id,
+            fecha: '',
+            hora_inicio: form.horaInicioForm,
+            hora_fin: form.horaFinForm,
+            consumido: false
+          }
+          // LEER DATOS DE CADA USUARIOS
           empleados_planificados.map(obj => {
-            this.fechasHorario = []; // Array que contiene todas las fechas del mes indicado
-            // Inicializar datos de fecha
-            var start = new Date(this.inicioDate);
-            var end = new Date(this.finDate);
-            // Lógica para obtener el nombre de cada uno de los día del periodo indicado
-            while (start <= end) {
-              /* console.log(moment(start).format('dddd DD/MM/YYYY'), form.lunesForm)
-               if (moment(start).format('dddd') === 'lunes' && form.lunesForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }
-               if (moment(start).format('dddd') === 'martes' && form.martesForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }
-               if (moment(start).format('dddd') === 'miércoles' && form.miercolesForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }
-               if (moment(start).format('dddd') === 'jueves' && form.juevesForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }
-               if (moment(start).format('dddd') === 'viernes' && form.viernesForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }
-               if (moment(start).format('dddd') === 'sábado' && form.sabadoForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }
-               if (moment(start).format('dddd') === 'domingo' && form.domingoForm === false) {
-                 this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-               }*/
-              this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
-              var newDate = start.setDate(start.getDate() + 1);
-              start = new Date(newDate);
-            }
+            planEmpleado.codigo = obj.codigo;
+            planEmpleado.id_empleado = obj.id;
+
+            // LECTURA DE NOMBRES DE USUARIOS
+            usuario = usuario + '<tr><th>' + obj.nombre + '</th><th>' + obj.cedula + '</th></tr>';
+
             this.contadorFechas = 0;
+
+            // LEER DATOS POR CADA FECHA
             this.fechasHorario.map(fec => {
-              let datosPlanEmpleado = {
-                codigo: obj.codigo,
-                id_empleado: obj.id,
-                id_plan_comida: res[0].ultimo,
-                fecha: fec,
-                hora_inicio: form.horaInicioForm,
-                hora_fin: form.horaFinForm,
-                consumido: false
-              }
-              this.restPlan.CrearPlanComidasEmpleado(datosPlanEmpleado).subscribe(res => {
+              planEmpleado.fecha = fec;
+              this.restPlan.CrearPlanComidasEmpleado(planEmpleado).subscribe(res => {
                 this.contadorFechas = this.contadorFechas + 1;
                 if (this.contadorFechas === this.fechasHorario.length) {
-                  this.EnviarNotificaciones(form.fechaInicioForm, form.fechaFinForm, form.horaInicioForm, form.horaFinForm, this.empleado_envia, obj.id);
+                  this.NotificarPlanificacion(plan, desde, hasta, h_inicio, h_fin, obj.id);
                 }
               });
             })
+            // CONTADOR DE USUARIOS A LOS QUE SE REGISTRARÁ PLANIFICACION
             this.contador = this.contador + 1;
             if (this.contador === empleados_planificados.length) {
-              this.dialogRef.close();
-              //window.location.reload();
-              this.toastr.success('Operación Exitosa', 'Se registra un total de  ' + empleados_planificados.length + ' Servicios de Alimetación Planificados.', {
+              this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
+              this.toastr.success('',
+                'Se ha registrado Planificación de alimentación a un total de ' + empleados_planificados.length + ' colaboradores.', {
                 timeOut: 8000,
               })
+              this.CerrarRegistroPlanificacion();
             }
           })
-        });
+        }
       });
     }
-  }
-
-  ObtenerMensajeErrorObservacion() {
-    if (this.observacionF.hasError('pattern')) {
-      return 'Ingrese información válida';
+    else {
+      this.toastr.warning('Ups algo salio mal !!!', 'Proceso no registrado.', {
+        timeOut: 6000,
+      });
+      this.CerrarRegistroPlanificacion();
     }
-    return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
   }
 
-  CerrarRegistroPlanificacion() {
-    this.LimpiarCampos();
-    this.dialogRef.close();
-  }
-
-  LimpiarCampos() {
-    this.PlanificacionComidasForm.reset();
-    this.ObtenerServicios();
-  }
-
-  envios: any = [];
-  EnviarNotificaciones(fecha_plan_inicio, fecha_plan_fin, h_inicio, h_fin, empleado_envia, empleado_recibe) {
-    let datosCorreo = {
-      id_usua_plan: empleado_recibe,
-      id_usu_admin: empleado_envia,
-      fecha_inicio: moment(fecha_plan_inicio).format('DD-MM-YYYY'),
-      fecha_fin: moment(fecha_plan_fin).format('DD-MM-YYYY'),
-      hora_inicio: h_inicio,
-      hora_fin: h_fin
-    }
-    this.restPlan.EnviarCorreoPlan(datosCorreo).subscribe(envio => {
-      this.envios = [];
-      this.envios = envio;
-      console.log('datos envio', this.envios.notificacion);
-      if (this.envios.notificacion === true) {
-        this.NotificarPlanificacion1(empleado_envia, empleado_recibe, fecha_plan_inicio, fecha_plan_fin);
-      }
-    });
-  }
-
-
-
-
-
-
-  NotificarPlanificacion1(empleado_envia: any, empleado_recive: any, fecha_inicio, fecha_fin) {
-    let mensaje = {
-      id_empl_envia: empleado_envia,
-      id_empl_recive: empleado_recive,
-      mensaje: 'Alimentación Planificada desde el ' + moment(fecha_inicio).format('YYYY-MM-DD') + ' al ' + moment(fecha_fin).format('YYYY-MM-DD')
-    }
-    console.log(mensaje);
-    this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
-      console.log(res.message);
-    })
-  }
-
-
-  IngresarSoloLetras(e) {
-    this.validar.IngresarSoloLetras(e);
-  }
-
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
+  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
     let DataCorreo = {
-      observacion: datos.descripcion,
-      id_comida: datos.id,
+      observacion: datos.observacion,
+      id_comida: datos.id_comida,
       id_envia: this.idEmpleadoLogueado,
       nombres: usuario,
       correo: cuenta_correo,
       inicio: h_inicio,
       extra: datos.extra,
-      desde: desde + ' ' + moment(datos.fecha_desdde).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
+      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
       final: h_fin,
     }
 
@@ -570,30 +557,30 @@ export class PlanificacionComidasComponent implements OnInit {
       const { access, message } = err.error.message;
       if (access === false) {
         this.toastr.error(message)
-        this.dialogRef.close();
+        this.ventana.close();
       }
     })
   }
 
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
+  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
   NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
     let mensaje = {
-      //id_empl_envia: this.id_user_loggin,
+      id_comida: datos.id_comida,
+      id_empl_envia: this.idEmpleadoLogueado,
       id_empl_recive: id_empleado_recibe,
-      tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
-      mensaje: 'Planificación de horas extras desde ' +
-        desde + ' ' + moment(datos.fecha_desdde).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
-        ' horario de ' + h_inicio + ' a ' + h_fin,
+      tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
+      mensaje: 'Planificación de alimentación desde ' +
+        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
     }
     this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
-      console.log(res.message);
     }, err => {
       const { access, message } = err.error.message;
       if (access === false) {
         this.toastr.error(message)
-        this.dialogRef.close();
+        this.ventana.close();
       }
     })
   }
@@ -622,7 +609,7 @@ export class PlanificacionComidasComponent implements OnInit {
     this.cont_correo = 0;
     this.info_correo = '';
     data.forEach((obj: any) => {
-      this.cont_correo = this.cont_correo + 1
+      this.cont_correo = this.cont_correo + 1;
       if (this.info_correo === '') {
         this.info_correo = obj.correo;
       }
@@ -630,7 +617,27 @@ export class PlanificacionComidasComponent implements OnInit {
         this.info_correo = this.info_correo + ', ' + obj.correo;
       }
     })
-    console.log('ver correos -----------', this.info_correo)
+  }
+
+  IngresarSoloLetras(e) {
+    this.validar.IngresarSoloLetras(e);
+  }
+
+  ObtenerMensajeErrorObservacion() {
+    if (this.observacionF.hasError('pattern')) {
+      return 'Ingrese información válida';
+    }
+    return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
+  }
+
+  CerrarRegistroPlanificacion() {
+    this.LimpiarCampos();
+    this.ventana.close();
+  }
+
+  LimpiarCampos() {
+    this.PlanificacionComidasForm.reset();
+    this.ObtenerServicios();
   }
 
 }

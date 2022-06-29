@@ -74,7 +74,8 @@ class DepartamentoRutas {
 
         // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIO DE ALIMENTACION APP WEB
         this.router.post('/mail-plan-comida/', TokenValidation, PLAN_COMIDAS_CONTROLADOR.EnviarCorreoPlanComidas);
-        // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIO DE ALIMENTACION APP MOVIL
+        
+        // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE SOLICITUD DE SERVICIO DE ALIMENTACION APP MOVIL
         this.router.post('/mail-noti-solicitud-comida-movil/:id_empresa', PLAN_COMIDAS_CONTROLADOR.EnviarCorreoComidasMovil);
 
 

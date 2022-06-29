@@ -39,6 +39,7 @@ function DatosCorreo(id_empresa) {
             .then(result => {
             return result.rows;
         });
+        console.log('correo... ', credenciales);
         if (credenciales.length === 0) {
             return { message: 'error' };
         }

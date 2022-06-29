@@ -2,34 +2,7 @@
 
 mat-form-field { padding: 10px 15px 0px 15px; width: 250px;}
 
-.tituloPlanificacionAlmuerzos { 
-    font-size: 25px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px;
-}
-
-#nomEmpleado { font-size: 14px; }
-
-#planComida { cursor: pointer; }
-
 #selecAlmuerzo { font-size: 14px; }
-
-#mover { 
-    cursor: grab;
-    color: blue;
-    font-size: 20px;
-    margin-left: 10px;
-}
-
-.nota {
-    font-size: 12px; 
-    font-weight: bold; 
-    text-align: justify;
-    padding: 0px 5px 10px 5px;
-    color: rgb(52,65,84);
-}
 
 .scrollbar {
     float: left;

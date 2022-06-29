@@ -68,64 +68,6 @@ class PlanComidasControlador {
             res.status(404).jsonp({ text: 'Registro no encontrado' });
         });
     }
-    // CONSULTA PARA REGISTRAR DATOS DE SOLICITUD DE COMIDA
-    CrearSolicitaComida(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar, id_departamento } = req.body;
-                const response = yield database_1.default.query('INSERT INTO solicita_comidas (id_empleado, fecha, id_comida, observacion, fec_comida, ' +
-                    'hora_inicio, hora_fin, extra, verificar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar]);
-                const [objetoAlimento] = response.rows;
-                if (!objetoAlimento)
-                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
-                const alimento = objetoAlimento;
-                const JefesDepartamentos = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, ' +
-                    'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, ' +
-                    'e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, c.comida_mail, c.comida_noti ' +
-                    'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
-                    'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
-                    'WHERE da.id_departamento = $1 AND ' +
-                    'da.id_empl_cargo = ecr.id AND ' +
-                    'da.id_departamento = cg.id AND ' +
-                    'da.estado = true AND ' +
-                    'cg.id_sucursal = s.id AND ' +
-                    'ecr.id_empl_contrato = ecn.id AND ' +
-                    'ecn.id_empleado = e.id AND ' +
-                    'e.id = c.id_empleado', [id_departamento]).then(result => { return result.rows; });
-                console.log(JefesDepartamentos);
-                if (JefesDepartamentos.length === 0)
-                    return res.status(400)
-                        .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
-                const [obj] = JefesDepartamentos;
-                let depa_padre = obj.depa_padre;
-                let JefeDepaPadre;
-                if (depa_padre !== null) {
-                    do {
-                        JefeDepaPadre = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
-                            'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
-                            'ecn.id AS contrato, e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname, e.cedula, e.correo, c.comida_mail, ' +
-                            'c.comida_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
-                            'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
-                            'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
-                            'da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
-                            'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre]);
-                        depa_padre = JefeDepaPadre.rows[0].depa_padre;
-                        JefesDepartamentos.push(JefeDepaPadre.rows[0]);
-                    } while (depa_padre !== null);
-                    alimento.EmpleadosSendNotiEmail = JefesDepartamentos;
-                    return res.status(200).jsonp(alimento);
-                }
-                else {
-                    alimento.EmpleadosSendNotiEmail = JefesDepartamentos;
-                    return res.status(200).jsonp(alimento);
-                }
-            }
-            catch (error) {
-                console.log(error);
-                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
-            }
-        });
-    }
     BuscarSolEmpleadoFechasActualizar(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id, id_empleado, fecha, hora_inicio, hora_fin } = req.body;
@@ -310,6 +252,64 @@ class PlanComidasControlador {
             }
         });
     }
+    // CONSULTA PARA REGISTRAR DATOS DE SOLICITUD DE COMIDA
+    CrearSolicitaComida(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar, id_departamento } = req.body;
+                const response = yield database_1.default.query('INSERT INTO solicita_comidas (id_empleado, fecha, id_comida, observacion, fec_comida, ' +
+                    'hora_inicio, hora_fin, extra, verificar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [id_empleado, fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, verificar]);
+                const [objetoAlimento] = response.rows;
+                if (!objetoAlimento)
+                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
+                const alimento = objetoAlimento;
+                const JefesDepartamentos = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, ' +
+                    'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, ' +
+                    'e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, c.comida_mail, c.comida_noti ' +
+                    'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+                    'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
+                    'WHERE da.id_departamento = $1 AND ' +
+                    'da.id_empl_cargo = ecr.id AND ' +
+                    'da.id_departamento = cg.id AND ' +
+                    'da.estado = true AND ' +
+                    'cg.id_sucursal = s.id AND ' +
+                    'ecr.id_empl_contrato = ecn.id AND ' +
+                    'ecn.id_empleado = e.id AND ' +
+                    'e.id = c.id_empleado', [id_departamento]).then(result => { return result.rows; });
+                console.log(JefesDepartamentos);
+                if (JefesDepartamentos.length === 0)
+                    return res.status(400)
+                        .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+                const [obj] = JefesDepartamentos;
+                let depa_padre = obj.depa_padre;
+                let JefeDepaPadre;
+                if (depa_padre !== null) {
+                    do {
+                        JefeDepaPadre = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
+                            'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
+                            'ecn.id AS contrato, e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname, e.cedula, e.correo, c.comida_mail, ' +
+                            'c.comida_noti FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
+                            'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
+                            'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
+                            'da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
+                            'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre]);
+                        depa_padre = JefeDepaPadre.rows[0].depa_padre;
+                        JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                    } while (depa_padre !== null);
+                    alimento.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(alimento);
+                }
+                else {
+                    alimento.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(alimento);
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
     // CONSULTA PARA CREAR UNA PLANIFICACIÓN
     CrearPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -322,10 +322,10 @@ class PlanComidasControlador {
         `, [fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, fec_inicio, fec_final]);
                 const [planAlimentacion] = response.rows;
                 if (!planAlimentacion) {
-                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
+                    return res.status(404).jsonp({ message: 'error' });
                 }
                 else {
-                    return res.status(200).jsonp(planAlimentacion);
+                    return res.status(200).jsonp({ message: 'ok', info: planAlimentacion });
                 }
             }
             catch (error) {
@@ -716,14 +716,20 @@ class PlanComidasControlador {
     // NOTIFICACIONES DE SOLICITUDES Y PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN
     EnviarNotificacionComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
-            var f = new Date();
-            f.setUTCHours(f.getHours());
-            let create_at = f.toJSON();
+            let { id_empl_envia, id_empl_recive, mensaje, tipo, id_comida } = req.body;
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
+            const SERVICIO_SOLICITADO = yield database_1.default.query(`
+        SELECT tc.nombre AS servicio, ctc.nombre AS menu, ctc.hora_inicio, ctc.hora_fin, 
+          dm.nombre AS comida, dm.valor, dm.observacion 
+        FROM tipo_comida AS tc, cg_tipo_comidas AS ctc, detalle_menu AS dm 
+        WHERE tc.id = ctc.tipo_comida AND ctc.id = dm.id_menu AND dm.id = $1
+      `, [id_comida]);
+            let notifica = mensaje + SERVICIO_SOLICITADO.rows[0].servicio;
             yield database_1.default.query(`
       INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
       VALUES($1, $2, $3, $4, $5)
-      `, [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+      `, [create_at, id_empl_envia, id_empl_recive, notifica, tipo]);
             res.jsonp({ message: 'Notificación enviada con éxito.' });
         });
     }
@@ -792,7 +798,7 @@ class PlanComidasControlador {
                            <b>Servicio desde:</b> ${inicio} <br>
                            <b>Servicio hasta:</b> ${final} <br>
                            <b>Tipo de servicio:</b> ${tipo_servicio} <br>
-                           <b>Estado:</b> Pendiente <br><br>
+                           <b>Estado:</b> Pendiente de autorización <br><br>
                            <a href="${url}">Dar clic en el siguiente enlace para revisar solicitud de servicio de alimentación.</a> <br><br>
                            <b>Solicitado por:</b> ${solicitado_por} <br><br>
                        </p>
@@ -894,7 +900,7 @@ class PlanComidasControlador {
                            <b>Servicio desde:</b> ${inicio} <br>
                            <b>Servicio hasta:</b> ${final} <br>
                            <b>Tipo de servicio:</b> ${tipo_servicio} <br>
-                           <b>Estado:</b> Pendiente <br><br>
+                           <b>Estado:</b> Pendiente de autorización <br><br>
                            <b>Solicitado por:</b> ${solicitado_por} <br><br>
                        </p>
                        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
@@ -945,6 +951,7 @@ class PlanComidasControlador {
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
                 const { id_envia, desde, hasta, inicio, final, correo, id_comida, observacion, extra, nombres } = req.body;
+                console.log('data', req.body);
                 var tipo_servicio = 'Extra';
                 if (extra === false) {
                     tipo_servicio = 'Normal';
@@ -956,6 +963,7 @@ class PlanComidasControlador {
         FROM datos_actuales_empleado AS da, empl_cargos AS ec
         WHERE da.id = $1 AND ec.id = da.id_cargo
       `, [id_envia]).then(resultado => { return resultado.rows[0]; });
+                console.log('envia...', Envia);
                 const SERVICIO_SOLICITADO = yield database_1.default.query(`
             SELECT tc.nombre AS servicio, ctc.nombre AS menu, ctc.hora_inicio, ctc.hora_fin, 
               dm.nombre AS comida, dm.valor, dm.observacion 
@@ -979,10 +987,10 @@ class PlanComidasControlador {
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
                            <b>Asunto:</b> Solicitud de servicio de alimentación <br> 
-                           <b>Colaborador que envía:</b> ${Envia.rows[0].nombre} ${Envia.rows[0].apellido} <br>
-                           <b>Número de Cédula:</b> ${Envia.rows[0].cedula} <br>
-                           <b>Cargo:</b> ${Envia.rows[0].tipo_cargo} <br>
-                           <b>Departamento:</b> ${Envia.rows[0].departamento} <br>
+                           <b>Colaborador que envía:</b> ${Envia.nombre} ${Envia.apellido} <br>
+                           <b>Número de Cédula:</b> ${Envia.cedula} <br>
+                           <b>Cargo:</b> ${Envia.tipo_cargo} <br>
+                           <b>Departamento:</b> ${Envia.departamento} <br>
                            <b>Generado mediante:</b> Aplicación Web <br>
                            <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
                            <b>Hora de envío:</b> ${tiempo.hora} <br><br> 

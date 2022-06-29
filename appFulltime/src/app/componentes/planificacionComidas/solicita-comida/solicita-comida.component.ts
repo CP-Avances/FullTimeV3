@@ -1,16 +1,16 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import * as moment from 'moment';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import * as moment from 'moment';
 
-import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
+import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
 @Component({
   selector: 'app-solicita-comida',
@@ -18,56 +18,54 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
   styleUrls: ['./solicita-comida.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
 
 export class SolicitaComidaComponent implements OnInit {
 
-  idComidaF = new FormControl('', Validators.required);
-  idEmpleadoF = new FormControl('');
-  fechaF = new FormControl('', [Validators.required]);
-  observacionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
   fechaPlanificacionF = new FormControl('', Validators.required);
+  observacionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
+  idEmpleadoF = new FormControl('');
   horaInicioF = new FormControl('', Validators.required);
+  idComidaF = new FormControl('', Validators.required);
   horaFinF = new FormControl('', Validators.required);
-  tipoF = new FormControl('', Validators.required);;
   platosF = new FormControl('', Validators.required);;
+  fechaF = new FormControl('', [Validators.required]);
   extraF = new FormControl('', [Validators.required]);
+  tipoF = new FormControl('', Validators.required);;
 
-  // asignar los campos en un formulario en grupo
+  // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
   public PlanificacionComidasForm = new FormGroup({
-    idComidaForm: this.idComidaF,
-    idEmpleadoForm: this.idEmpleadoF,
-    fechaForm: this.fechaF,
-    observacionForm: this.observacionF,
     fechaPlanificacionForm: this.fechaPlanificacionF,
+    observacionForm: this.observacionF,
     horaInicioForm: this.horaInicioF,
+    idComidaForm: this.idComidaF,
     horaFinForm: this.horaFinF,
-    tipoForm: this.tipoF,
     platosForm: this.platosF,
-    extraForm: this.extraF
+    fechaForm: this.fechaF,
+    extraForm: this.extraF,
+    tipoForm: this.tipoF,
   });
 
   tipoComidas: any = [];
   empleados: any = [];
-  FechaActual: any;
-  idEmpleadoLogueado: any;
+
   departamento: any;
+  FechaActual: any;
 
   constructor(
     private toastr: ToastrService,
     private rest: TipoComidasService,
     public restE: EmpleadoService,
     public validar: ValidacionesService,
+    public ventana: MatDialogRef<SolicitaComidaComponent>,
     public restPlan: PlanComidasService,
     public restUsuario: UsuarioService,
-    public dialogRef: MatDialogRef<SolicitaComidaComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
     this.departamento = parseInt(localStorage.getItem("departamento"));
   }
 
@@ -75,24 +73,12 @@ export class SolicitaComidaComponent implements OnInit {
     console.log('datos', this.data, this.data.servicios, 'departamento', this.departamento)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.MostrarDatos();
     this.ObtenerServicios();
     this.ObtenerEmpleados(this.data.idEmpleado);
 
   }
 
-  descripcion: string;
-  empleado_recibe: number;
-  empleado_envia: number;
-  tipo: string;
-  MostrarDatos() {
-    this.ObtenerEmpleados(this.data.idEmpleado);
-    this.restUsuario.BuscarDatosUser(parseInt(this.idEmpleadoLogueado)).subscribe(data => {
-      this.empleado_envia = this.data.idEmpleado;
-      this.empleado_recibe = this.idEmpleadoLogueado;
-    });
-  }
-
+  // METODO PARA OBTENER LISTA DE SERVICIOS DE ALIMENTACION
   servicios: any = [];
   ObtenerServicios() {
     this.servicios = [];
@@ -101,7 +87,7 @@ export class SolicitaComidaComponent implements OnInit {
     })
   }
 
-  // Al seleccionar un tipo de servicio se muestra la lista de menús registrados
+  // AL SELECCIONAR UN TIPO DE SERVICIO SE MUESTRA LA LISTA DE MENÚS REGISTRADOS
   ObtenerPlatosComidas(form) {
     this.idComidaF.reset();
     this.platosF.reset();
@@ -117,6 +103,7 @@ export class SolicitaComidaComponent implements OnInit {
     })
   }
 
+  // METODO DE BUSQUEDA DE DETALLES DE ALIMENTACION
   detalle: any = [];
   ObtenerDetalleMenu(form) {
     this.platosF.reset();
@@ -136,46 +123,47 @@ export class SolicitaComidaComponent implements OnInit {
     })
   }
 
-  // metodo para ver la informacion del empleado 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
       this.empleados = data;
-      console.log(this.empleados)
       this.PlanificacionComidasForm.patchValue({
-        idEmpleadoForm: this.empleados[0].nombre + ' ' + this.empleados[0].apellido,
         fechaForm: this.FechaActual,
         extraForm: 'false'
       })
     })
   }
 
+  // METODO PARA REGISTRAR SOLICITUD DE ALIMENTACION
   contador: number = 0;
   InsertarPlanificacion(form) {
+    // DATOS DE PLANIFICACION
     let datosPlanComida = {
+      id_departamento: parseInt(localStorage.getItem('departamento')),
       id_empleado: this.data.idEmpleado,
-      fecha: form.fechaForm,
-      id_comida: form.platosForm,
       observacion: form.observacionForm,
-      fec_comida: form.fechaPlanificacionForm,
       hora_inicio: form.horaInicioForm,
-      hora_fin: form.horaFinForm,
-      extra: form.extraForm,
+      fec_comida: form.fechaPlanificacionForm,
+      id_comida: form.platosForm,
       verificar: 'NO',
-      id_departamento: parseInt(localStorage.getItem('departamento'))
+      hora_fin: form.horaFinForm,
+      fecha: form.fechaForm,
+      extra: form.extraForm,
     };
-
+    // VERIFICAR SI EXISTE UNA SOLICITUD O PLANIFICACION REGISTRADA
     let datosDuplicados = {
       id: this.data.idEmpleado,
+      fecha_fin: form.fechaPlanificacionForm,
       fecha_inicio: form.fechaPlanificacionForm,
-      fecha_fin: form.fechaPlanificacionForm
     }
+    // METODO PARA BUSCAR DATOS DUPLICADOS
     this.restPlan.BuscarDuplicadosFechas(datosDuplicados).subscribe(plan => {
-      console.log('datos fechas', plan)
       this.toastr.info(this.empleados[0].nombre + ' ' + this.empleados[0].apellido + ' ya tiene registrada una planificación de alimentación en la fecha solicitada.', '', {
         timeOut: 6000,
       })
     }, error => {
+      // METODO PARA CREAR SOLICITUD DE ALIMENTACION
       this.restPlan.CrearSolicitudComida(datosPlanComida).subscribe(alimentacion => {
         this.SendEmailsEmpleados(alimentacion);
         this.NotificarPlanificacion(alimentacion);
@@ -187,24 +175,7 @@ export class SolicitaComidaComponent implements OnInit {
     });
   }
 
-  ObtenerMensajeErrorObservacion() {
-    if (this.observacionF.hasError('pattern')) {
-      return 'Ingrese información válida';
-    }
-    return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
-  }
-
-  CerrarRegistroPlanificacion() {
-    this.LimpiarCampos();
-    this.dialogRef.close();
-  }
-
-  LimpiarCampos() {
-    this.PlanificacionComidasForm.reset();
-    this.ObtenerServicios();
-  }
-
-
+  // METODO PARA ENVIO DE NOTIFICACION
   NotificarPlanificacion(alimentacion: any) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
@@ -232,10 +203,8 @@ export class SolicitaComidaComponent implements OnInit {
 
   }
 
+  // METODO PARA ENVIO DE CORREO
   SendEmailsEmpleados(alimentacion: any) {
-
-    console.log('ver lista', alimentacion)
-
     var cont = 0;
     var correo_usuarios = '';
 
@@ -301,6 +270,23 @@ export class SolicitaComidaComponent implements OnInit {
 
   IngresarSoloLetras(e) {
     this.validar.IngresarSoloLetras(e);
+  }
+
+  ObtenerMensajeErrorObservacion() {
+    if (this.observacionF.hasError('pattern')) {
+      return 'Ingrese información válida';
+    }
+    return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
+  }
+
+  CerrarRegistroPlanificacion() {
+    this.LimpiarCampos();
+    this.ventana.close();
+  }
+
+  LimpiarCampos() {
+    this.PlanificacionComidasForm.reset();
+    this.ObtenerServicios();
   }
 
 }

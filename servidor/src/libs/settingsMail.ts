@@ -34,7 +34,7 @@ async function DatosCorreo(id_empresa: number): Promise<any> {
     .then(result => {
       return result.rows;
     })
-
+console.log('correo... ', credenciales)
   if (credenciales.length === 0) {
     return { message: 'error' }
   }
