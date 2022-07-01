@@ -12,36 +12,9 @@ mat-form-field {padding: 10px 10px 0px 10px;}
 
 .caja {padding: 10px 10px 0px 10px;}
 
-.vacacionesE { 
-    font-size: 25px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white;  
-    padding-top: 10px; 
-}
-
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    font-size: 20px;
-    margin-left: 10px;
-}
-
-#nomEmple { font-size: 13px; }
-
 .mat-radio-button ~ .mat-radio-button { margin-left: 18px; }
 
-
-
 #activo { cursor: pointer; }
-
-.nota {
-    font-size: 12px; 
-    font-weight: bold; 
-    text-align: justify;
-    padding: 0px 5px 10px 5px; 
-    color: rgb(52,65,84);
-}
 
 #Feriado { font-size: 14px; }
 

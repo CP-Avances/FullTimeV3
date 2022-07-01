@@ -5,7 +5,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { MatDialog } from '@angular/material/dialog';
 import { VacacionAutorizacionesComponent } from '../../autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
-import { EditarVacacionesEmpleadoComponent } from '../../rolEmpleado/vacaciones-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
+import { EditarVacacionesEmpleadoComponent } from '../../rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 
 export interface VacacionesElemento {
   apellido: string;
@@ -53,7 +53,7 @@ export class ListarVacacionesComponent implements OnInit {
 
   constructor(
     private restV: VacacionesService,
-    private vistaFlotante: MatDialog,
+    private ventana: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -169,7 +169,7 @@ export class ListarVacacionesComponent implements OnInit {
 
   // Autorización de vacaciones
   AbrirAutorizaciones(datos_vacacion, forma: string) {
-    this.vistaFlotante.open(VacacionAutorizacionesComponent,
+    this.ventana.open(VacacionAutorizacionesComponent,
       { width: '600px', data: { datosVacacion: datos_vacacion, carga: forma } }).afterClosed().subscribe(items => {
         window.location.reload();
       });
@@ -185,8 +185,15 @@ export class ListarVacacionesComponent implements OnInit {
   EditarVacaciones(id) {
     this.restV.ListarUnaVacacion(id).subscribe(res => {
       this.vacaciones_lista = res;
-      this.vistaFlotante.open(EditarVacacionesEmpleadoComponent,
-        { width: '900px', data: this.vacaciones_lista[0] }).afterClosed().subscribe(items => {
+      console.log('ver vacaciones ', res)
+      this.ventana.open(EditarVacacionesEmpleadoComponent,
+        {
+          width: '900px',
+          data: {
+            info: this.vacaciones_lista[0], id_empleado: this.vacaciones_lista[0].id_empleado,
+            id_contrato: this.vacaciones_lista[0].id_contrato
+          }
+        }).afterClosed().subscribe(items => {
           this.ObtenerListaVacaciones();
           this.ObtenerListaVacacionesAutorizadas();
         });

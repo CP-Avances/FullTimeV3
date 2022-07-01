@@ -1,6 +1,7 @@
+import { ModuloPermisosValidation } from '../../libs/Modulos/verificarPermisos'
+import { TokenValidation } from '../../libs/verificarToken'
 import { Router } from 'express';
 import DATOS_GENERALES_CONTROLADOR from '../../controlador/datosGenerales/datosGeneralesControlador';
-import { TokenValidation } from '../../libs/verificarToken'
 
 class CiudadRutas {
     public router: Router = Router();
@@ -10,6 +11,10 @@ class CiudadRutas {
     }
 
     configuracion(): void {
+        this.router.get('/datos-actuales/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.DatosActuales);
+
+        this.router.post('/buscar-jefes', [TokenValidation, ModuloPermisosValidation], DATOS_GENERALES_CONTROLADOR.BuscarJefes);
+
         this.router.get('/empleadoAutoriza/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosEmpleadoAutoriza);
         this.router.get('/info_actual', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosActualesEmpleado);
 

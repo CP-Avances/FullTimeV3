@@ -65,17 +65,20 @@ class PermisosControlador {
     ListarUnPermisoInfo(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_permiso;
-            const PERMISOS = yield database_1.default.query('SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, ' +
-                'p.documento, p.docu_nombre, p.fec_final, p.estado, p.id_empl_cargo, e.nombre, e.apellido, e.cedula, ' +
-                'e.id AS id_empleado, cp.id AS id_tipo_permiso, cp.descripcion AS nom_permiso, ec.id AS id_contrato ' +
-                'FROM permisos AS p, empl_contratos AS ec, empleados AS e, cg_tipo_permisos AS cp WHERE p.id = $1 AND ' +
-                'p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND p.id_tipo_permiso = cp.id ORDER ' +
-                'BY fec_creacion DESC', [id]);
+            const PERMISOS = yield database_1.default.query(`
+            SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, p.dia, p.hora_salida, p.hora_ingreso, 
+            p.hora_numero, p.documento, p.docu_nombre, p.fec_final, p.estado, p.id_empl_cargo, e.nombre, 
+            e.apellido, e.cedula, e.id AS id_empleado, cp.id AS id_tipo_permiso, 
+            cp.descripcion AS nom_permiso, ec.id AS id_contrato 
+            FROM permisos AS p, empl_contratos AS ec, empleados AS e, cg_tipo_permisos AS cp 
+            WHERE p.id = $1 AND p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
+            p.id_tipo_permiso = cp.id
+            `, [id]);
             if (PERMISOS.rowCount > 0) {
                 return res.json(PERMISOS.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }
@@ -160,117 +163,6 @@ class PermisosControlador {
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
-    guardarDocumentoPermiso(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let list = req.files;
-            let doc = list.uploads[0].path.split("\\")[1];
-            let id = req.params.id;
-            yield database_1.default.query('UPDATE permisos SET documento = $2 WHERE id = $1', [id, doc]);
-            res.jsonp({ message: 'Documento Actualizado' });
-        });
-    }
-    ActualizarEstado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            var estado_letras;
-            const { estado, id_permiso, id_departamento, id_empleado } = req.body;
-            yield database_1.default.query('UPDATE permisos SET estado = $1 WHERE id = $2', [estado, id]);
-            const JefeDepartamento = yield database_1.default.query('SELECT da.id, cg.id AS id_dep, s.id AS id_suc, ' +
-                'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, ' +
-                'e.id AS empleado, e.nombre, e.cedula, e.correo, e.apellido FROM depa_autorizaciones AS da, ' +
-                'empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, ' +
-                'empleados AS e WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND ' +
-                'da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
-                'ecn.id_empleado = e.id', [id_departamento]);
-            const InfoPermisoReenviarEstadoEmpleado = yield database_1.default.query('SELECT p.id, p.descripcion, p.estado, ' +
-                'e.cedula, e.nombre, e.apellido, e.correo, co.permiso_mail, co.permiso_noti FROM permisos AS p, ' +
-                'empl_contratos AS c, empleados AS e, config_noti AS co WHERE p.id = $1 AND ' +
-                'p.id_empl_contrato = c.id AND c.id_empleado = e.id AND co.id_empleado = e.id AND e.id = $2', [id_permiso, id_empleado]);
-            console.log(estado, id_permiso, id_departamento, id_empleado);
-            console.log(JefeDepartamento.rows);
-            console.log(InfoPermisoReenviarEstadoEmpleado.rows);
-            const email = process.env.EMAIL;
-            const pass = process.env.PASSWORD;
-            let smtpTransport = nodemailer.createTransport({
-                service: 'Gmail',
-                auth: {
-                    user: email,
-                    pass: pass
-                }
-            });
-            JefeDepartamento.rows.forEach(obj => {
-                var url = `${process.env.URL_DOMAIN}/solicitarPermiso`;
-                InfoPermisoReenviarEstadoEmpleado.rows.forEach(ele => {
-                    if (estado === 1) {
-                        estado_letras = 'Pendiente';
-                    }
-                    else if (estado === 2) {
-                        estado_letras = 'Pre-autorizado';
-                    }
-                    else if (estado === 3) {
-                        estado_letras = 'Autorizado';
-                    }
-                    else if (estado === 4) {
-                        estado_letras = 'Negado';
-                    }
-                    let notifi_realtime = {
-                        id_send_empl: obj.empleado,
-                        id_receives_depa: obj.id_dep,
-                        estado: estado_letras,
-                        id_permiso: id_permiso,
-                        id_vacaciones: null
-                    };
-                    console.log(notifi_realtime);
-                    let data = {
-                        from: obj.correo,
-                        to: ele.correo,
-                        template: 'hola',
-                        subject: 'Estado de solicitud de permiso',
-                        html: `<p><b>${obj.nombre} ${obj.apellido}</b> jefe/a del departamento de <b>${obj.departamento}</b> con número de
-                    cédula ${obj.cedula} a cambiado el estado de su permiso a: <b>${estado_letras}</b></p>
-                    <h4><b>Informacion del permiso</b></h4>
-                    <ul>
-                        <li><b>Descripción</b>: ${ele.descripcion} </li>
-                        <li><b>Empleado</b>: ${ele.nombre} ${ele.apellido} </li>
-                        <li><b>Cédula</b>: ${ele.cedula} </li>
-                        <li><b>Sucursal</b>: ${obj.sucursal} </li>
-                        <li><b>Departamento</b>: ${obj.departamento} </li>
-                        </ul>
-                    <a href="${url}">Ir a verificar estado permisos</a>`
-                    };
-                    console.log(data);
-                    if (ele.permiso_mail === true && ele.permiso_noti === true) {
-                        smtpTransport.sendMail(data, (error, info) => __awaiter(this, void 0, void 0, function* () {
-                            if (error) {
-                                console.log(error);
-                            }
-                            else {
-                                console.log('Email sent: ' + info.response);
-                            }
-                        }));
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-                    }
-                    else if (ele.permiso_mail === true && ele.permiso_noti === false) {
-                        smtpTransport.sendMail(data, (error, info) => __awaiter(this, void 0, void 0, function* () {
-                            if (error) {
-                                console.log(error);
-                            }
-                            else {
-                                console.log('Email sent: ' + info.response);
-                            }
-                        }));
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-                    }
-                    else if (ele.permiso_mail === false && ele.permiso_noti === true) {
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-                    }
-                    else if (ele.permiso_mail === false && ele.permiso_noti === false) {
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-                    }
-                });
-            });
-        });
-    }
     ObtenerDatosSolicitud(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_emple_permiso;
@@ -295,20 +187,6 @@ class PermisosControlador {
             else {
                 return res.status(404).json({ text: 'No se encuentran registros' });
             }
-        });
-    }
-    EliminarPermiso(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let { id_permiso, doc } = req.params;
-            yield database_1.default.query('DELETE FROM realtime_noti where id_permiso = $1', [id_permiso]);
-            yield database_1.default.query('DELETE FROM permisos WHERE id = $1', [id_permiso]);
-            if (doc != 'null' && doc != "") {
-                console.log(id_permiso, doc, ' entra ');
-                let filePath = `servidor\\docRespaldosPermisos\\${doc}`;
-                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
-                fs_1.default.unlinkSync(direccionCompleta);
-            }
-            res.jsonp({ message: 'registro eliminado' });
         });
     }
     ObtenerFechasPermiso(req, res) {
@@ -408,6 +286,18 @@ class PermisosControlador {
                 permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
                 return res.status(200).jsonp(permiso);
             }
+        });
+    }
+    // REGISTRAR DOCUMENTO DE RESPALDO DE PERMISO  
+    GuardarDocumentoPermiso(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let list = req.files;
+            let doc = list.uploads[0].path.split("\\")[1];
+            let id = req.params.id;
+            yield database_1.default.query(`
+            UPDATE permisos SET documento = $2 WHERE id = $1
+            `, [id, doc]);
+            res.jsonp({ message: 'Documento Actualizado' });
         });
     }
     // METODO PARA EDITAR SOLICITUD DE PERMISOS
@@ -543,17 +433,52 @@ class PermisosControlador {
             }
         });
     }
+    // METODO PARA ELIMINAR PERMISO
+    EliminarPermiso(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { id_permiso, doc } = req.params;
+            yield database_1.default.query(`
+               DELETE FROM realtime_noti where id_permiso = $1
+               `, [id_permiso]);
+            const response = yield database_1.default.query(`
+            DELETE FROM permisos WHERE id = $1 RETURNING *
+            `, [id_permiso]);
+            if (doc != 'null' && doc != '' && doc != null) {
+                console.log(id_permiso, doc, ' entra ');
+                let filePath = `servidor\\docRespaldosPermisos\\${doc}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            const [objetoPermiso] = response.rows;
+            if (objetoPermiso) {
+                return res.status(200).jsonp(objetoPermiso);
+            }
+            else {
+                return res.status(404).jsonp({ message: 'Solicitud no eliminada.' });
+            }
+        });
+    }
+    // METODO PARA ACTUALIZAR ESTADO DEL PERMISO
+    ActualizarEstado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { estado } = req.body;
+            yield database_1.default.query(`
+            UPDATE permisos SET estado = $1 WHERE id = $2
+            `, [estado, id]);
+        });
+    }
     /** ********************************************************************************************* **
      ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * **
      ** ********************************************************************************************* **/
     // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO DESDE APLICACIÓN WEB
-    SendMailNotifiPermiso(req, res) {
+    EnviarCorreoWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
-                const { id_empl_contrato, id_dep, correo, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso, solicitado_por, id } = req.body;
+                const { id_empl_contrato, id_dep, correo, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso, solicitado_por, id, asunto, tipo_solicitud, proceso } = req.body;
                 const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
                     'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
                     'd.nombre AS departamento ' +
@@ -568,7 +493,7 @@ class PermisosControlador {
                 let data = {
                     to: correo,
                     from: settingsMail_1.email,
-                    subject: 'SOLICITUD DE PERMISO',
+                    subject: asunto,
                     html: `
                         <body>
                             <div style="text-align: center;">
@@ -576,12 +501,12 @@ class PermisosControlador {
                             </div>
                             <br>
                             <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                                El presente correo es para informar que se ha creado la siguiente solicitud de permiso: <br>  
+                                El presente correo es para informar que se ha ${proceso} la siguiente solicitud de permiso: <br>  
                             </p>
                             <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
                             <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                                 <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
-                                <b>Asunto:</b> Solicitud de permiso <br> 
+                                <b>Asunto:</b> ${asunto} <br> 
                                 <b>Colaborador que envía:</b> ${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido} <br>
                                 <b>Número de Cédula:</b> ${correoInfoPidePermiso.rows[0].cedula} <br>
                                 <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
@@ -601,7 +526,7 @@ class PermisosControlador {
                                     <b>Horas permiso:</b> ${horas_permiso} <br>
                                     <b>Estado:</b> ${estado_p} <br><br>
                                     <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de permiso.</a> <br><br>
-                                    <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                                    <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
                                 </p>
                                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                                     <b>Gracias por la atención</b><br>
@@ -647,7 +572,7 @@ class PermisosControlador {
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
             if (datos === 'ok') {
-                const { id_empl_contrato, id_dep, correo, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso, solicitado_por } = req.body;
+                const { id_empl_contrato, id_dep, correo, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso, solicitado_por, asunto, tipo_solicitud, proceso } = req.body;
                 const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
                     'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
                     'd.nombre AS departamento ' +
@@ -661,7 +586,7 @@ class PermisosControlador {
                 let data = {
                     to: correo,
                     from: settingsMail_1.email,
-                    subject: 'SOLICITUD DE PERMISO',
+                    subject: asunto,
                     html: `
                            <body>
                                <div style="text-align: center;">
@@ -669,12 +594,12 @@ class PermisosControlador {
                                </div>
                                <br>
                                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                                   El presente correo es para informar que se ha creado la siguiente solicitud de permiso: <br>  
+                                   El presente correo es para informar que se ha ${proceso} la siguiente solicitud de permiso: <br>  
                                </p>
                                <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
                                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                                    <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
-                                   <b>Asunto:</b> Solicitud de permiso <br> 
+                                   <b>Asunto:</b> ${asunto} <br> 
                                    <b>Colaborador que envía:</b> ${correoInfoPidePermiso.rows[0].nombre} ${correoInfoPidePermiso.rows[0].apellido} <br>
                                    <b>Número de Cédula:</b> ${correoInfoPidePermiso.rows[0].cedula} <br>
                                    <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
@@ -693,7 +618,7 @@ class PermisosControlador {
                                    <b>Días permiso:</b> ${dias_permiso} <br>
                                    <b>Horas permiso:</b> ${horas_permiso} <br>
                                    <b>Estado:</b> ${estado_p} <br><br>
-                                   <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                                   <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
                                </p>
                                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                                    <b>Gracias por la atención</b><br>

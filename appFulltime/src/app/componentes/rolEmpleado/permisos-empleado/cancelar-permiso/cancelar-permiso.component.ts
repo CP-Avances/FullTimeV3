@@ -1,129 +1,43 @@
-import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
-import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
-import { AutorizacionService } from "src/app/servicios/autorizacion/autorizacion.service";
-import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
-
-interface Estado {
-  id: number,
-  nombre: string
-}
+import { ToastrService } from 'ngx-toastr';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 @Component({
-  selector: 'app-editar-estado-autorizaccion',
-  templateUrl: './editar-estado-autorizaccion.component.html',
-  styleUrls: ['./editar-estado-autorizaccion.component.css']
+  selector: 'app-cancelar-permiso',
+  templateUrl: './cancelar-permiso.component.html',
+  styleUrls: ['./cancelar-permiso.component.css']
 })
 
-export class EditarEstadoAutorizaccionComponent implements OnInit {
-
-  estados: Estado[] = [
-    { id: 2, nombre: 'Pre-autorizado' },
-    { id: 3, nombre: 'Autorizado' },
-    { id: 4, nombre: 'Negado' }
-  ];
-
-  estado = new FormControl('', Validators.required);
-
-  public estadoAutorizacionesForm = new FormGroup({
-    estadoF: this.estado
-  });
-
-  NotifiRes: any;
-  id_empleado_loggin: number;
-  FechaActual: any;
+export class CancelarPermisoComponent implements OnInit {
 
   constructor(
-    private restA: AutorizacionService,
     private restP: PermisosService,
     private toastr: ToastrService,
     private realTime: RealTimeService,
     private restTipoP: TipoPermisosService,
+    public ventana: MatDialogRef<CancelarPermisoComponent>,
     public informacion: DatosGeneralesService,
-    public ventana: MatDialogRef<EditarEstadoAutorizaccionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
     console.log(this.data);
-    console.log(this.data.auto.id_documento);
-    console.log(this.data.permiso.id_empleado);
-    console.log(this.data.permiso.estado);
-
-    if (this.data.permiso.estado === 1) {
-      this.toastr.info('Solicitud pendiente de aprobación.', '', {
-        timeOut: 6000,
-      })
-    } else {
-      this.estadoAutorizacionesForm.patchValue({
-        estadoF: this.data.auto.estado
-      });
-    }
-
-    this.id_empleado_loggin = parseInt(localStorage.getItem('empleado'));
+    this.ObtenerTiposPermiso();
     this.ObtenerDatos();
-    this.ObtenerTiempo();
   }
 
-  ObtenerTiempo() {
-    var f = moment();
-    this.FechaActual = f.format('YYYY-MM-DD');
-  }
-
-  // METODO DE APROBACION DE SOLICITUD DE PERMISO
-  ActualizarEstadoAprobacion(form: any) {
-    let aprobacion = {
-      id_documento: this.data.auto.id_documento + localStorage.getItem('empleado') + '_' + form.estadoF + ',',
-      estado: form.estadoF,
-    }
-    this.restA.ActualizarAprobacion(this.data.auto.id, aprobacion).subscribe(res => {
-      this.EditarEstadoPermiso(this.data.auto.id_permiso, form.estadoF);
-      this.NotificarAprobacion(form.estadoF);
-    })
-  }
-
-  // METODO DE ACTUALIZACION DE ESTADO DE PERMISO
-  resEstado: any = [];
-  EditarEstadoPermiso(id_permiso: number, estado_permiso: any) {
-    let datosPermiso = {
-      estado: estado_permiso,
-    }
-    this.restP.ActualizarEstado(id_permiso, datosPermiso).subscribe(res => {
-    });
-  }
-
-  // METODO DE ENVIO DE NOTIFICACIONES RESPECTO A LA APROBACION
-  NotificarAprobacion(estado: number) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
-    var datos = {
-      depa_user_loggin: depa_user_loggin,
-      objetoPermiso: this.data.permiso,
-    }
-
-    // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
-    if (estado === 2) {
-      var estado_p = 'Preautorizado';
-    }
-    else if (estado === 3) {
-      var estado_p = 'Autorizado';
-    }
-    else if (estado === 4) {
-      var estado_p = 'Negado';
-    }
-    this.informacion.BuscarJefes(datos).subscribe(permiso => {
-      console.log(permiso);
-      this.EnviarCorreo(permiso, estado_p);
-      this.EnviarNotificacion(permiso, estado_p);
-      this.toastr.success('', 'Proceso realizado exitosamente.', {
-        timeOut: 6000,
-      });
-      this.ventana.close(true);
+  // MÉTODO PARA MOSTRAR LISTA DE PERMISOS DE ACUERDO AL ROL 
+  tipoPermisos: any = [];
+  ObtenerTiposPermiso() {
+    this.tipoPermisos = [];
+    this.restTipoP.getTipoPermisoRest().subscribe(datos => {
+      this.tipoPermisos = datos;
     });
   }
 
@@ -131,8 +45,28 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
   actuales: any = [];
   ObtenerDatos() {
     this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.permiso.id_empleado).subscribe(datos => {
+    this.informacion.ObtenerDatosActuales(this.data.id_empleado).subscribe(datos => {
       this.actuales = datos;
+    });
+  }
+
+  aceptarAdvertencia() {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
+    this.restP.EliminarPermiso(this.data.info.id, this.data.info.documento).subscribe(res => {
+      console.log(res);
+      var datos = {
+        depa_user_loggin: depa_user_loggin,
+        objeto: res,
+      }
+      this.informacion.BuscarJefes(datos).subscribe(permiso => {
+        console.log(permiso);
+        this.EnviarCorreo(permiso);
+        this.EnviarNotificacion(permiso);
+        this.toastr.error('Solicitud de permiso eliminada.', '', {
+          timeOut: 6000,
+        });
+        this.ventana.close(true);
+      });
     });
   }
 
@@ -140,7 +74,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
    ** **                   METODO DE ENVIO DE NOTIFICACIONES DE PERMISOS                       ** **
    ** ******************************************************************************************* **/
 
-  EnviarCorreo(permiso: any, estado_p: string) {
+  EnviarCorreo(permiso: any) {
 
     console.log('entra correo')
     var cont = 0;
@@ -150,6 +84,20 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     let solicitud = moment.weekdays(moment(permiso.fec_creacion).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_creacion).day()).slice(1);
     let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
     let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+
+    // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
+    if (permiso.estado === 1) {
+      var estado_p = 'Pendiente de autorización';
+    }
+
+    // LEYENDO DATOS DE TIPO DE PERMISO
+    var tipo_permiso = '';
+    this.tipoPermisos.filter(o => {
+      if (o.id === permiso.id_tipo_permiso) {
+        tipo_permiso = o.descripcion
+      }
+      return tipo_permiso;
+    })
 
     // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
     permiso.EmpleadosSendNotiEmail.forEach(e => {
@@ -183,18 +131,18 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
           hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
           h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
           h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
-          id_empl_contrato: permiso.id_contrato,
-          tipo_solicitud: 'Permiso ' + estado_p.toLowerCase() + ' por',
+          id_empl_contrato: permiso.id_empl_contrato,
+          tipo_solicitud: 'Permiso eliminado por',
           horas_permiso: permiso.hora_numero,
           observacion: permiso.descripcion,
-          tipo_permiso: permiso.nom_permiso,
+          tipo_permiso: tipo_permiso,
           dias_permiso: permiso.dia,
           estado_p: estado_p,
-          proceso: estado_p.toLowerCase(),
+          proceso: 'eliminado',
           id_dep: e.id_dep,
           id_suc: e.id_suc,
           correo: correo_usuarios,
-          asunto: 'APROBACION DE SOLICITUD DE PERMISO',
+          asunto: 'ELIMINACION DE SOLICITUD DE PERMISO',
           id: permiso.id,
           solicitado_por: localStorage.getItem('fullname_print'),
         }
@@ -227,7 +175,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     })
   }
 
-  EnviarNotificacion(permiso: any, estado_p: string) {
+  EnviarNotificacion(permiso: any) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
     let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
@@ -244,14 +192,14 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     }
 
     let notificacion = {
+      id_send_empl: this.data.id_empleado,
       id_receives_empl: '',
       id_receives_depa: '',
+      estado: 'Pendiente',
+      id_permiso: permiso.id,
       id_vacaciones: null,
       id_hora_extra: null,
-      id_send_empl: this.id_empleado_loggin,
-      id_permiso: permiso.id,
-      estado: estado_p,
-      mensaje: 'Ha ' + estado_p + ' su solicitud de permiso desde ' +
+      mensaje: 'Ha eliminado su solicitud de permiso desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
     }
@@ -277,10 +225,6 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       }
     })
   }
-
-
-
-
 
 
 }

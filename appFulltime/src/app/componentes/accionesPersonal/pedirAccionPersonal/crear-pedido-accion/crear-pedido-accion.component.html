@@ -127,7 +127,7 @@
                         <mat-form-field *ngIf="ingresoAcuerdo">
                             <mat-label>Ingresar opción</mat-label>
                             <input matInput placeholder="Ej: Decreto" [formControl]="otroDecretoF" [ngStyle]="estilo">
-                            <mat-icon id="planComida" matSuffix matTooltipClass="cargoE-tooltip"
+                            <mat-icon id="planComida" matSuffix 
                                 matTooltipPosition="right" matTooltip="Regresar a la lista de opciones existentes"
                                 (click)="VerDecretos()">
                                 help_outline</mat-icon>
@@ -151,7 +151,7 @@
                             <mat-label>Ingresar cargo</mat-label>
                             <input matInput placeholder="Ej: Laboratorista" [formControl]="otroCargoF"
                                 [ngStyle]="estiloC">
-                            <mat-icon id="planComida" matSuffix matTooltipClass="cargoE-tooltip"
+                            <mat-icon id="planComida" matSuffix 
                                 matTooltipPosition="right" matTooltip="Regresar a la lista de opciones existentes"
                                 (click)="VerCargos()">
                                 help_outline</mat-icon>
@@ -184,7 +184,7 @@
                                 (keypress)="IngresarSoloNumeros($event)">
                             <span matPrefix>$&nbsp;</span>
                             <span matSuffix>.00</span>
-                            <mat-icon id="planComida" matSuffix matTooltipClass="cargoE-tooltip"
+                            <mat-icon id="planComida" matSuffix 
                                 matTooltipPosition="right" matTooltip="Indicar cual es el salario propuesto">
                                 help_outline</mat-icon>
                         </mat-form-field>

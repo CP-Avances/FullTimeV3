@@ -60,109 +60,9 @@ class AutorizacionesControlador {
         res.jsonp({ message: 'Autorizacion guardado' });
     }
 
-    public async ActualizarEstadoPermiso(req: Request, res: Response): Promise<void> {
-
-        var tiempo = fechaHora();
-
-        const path_folder = path.resolve('logos');
-
-        var datos = await Credenciales(parseInt(req.params.id_empresa));
-
-        if (datos === 'ok') {
 
 
 
-            const id = req.params.id;
-            const { id_documento, estado, id_permiso, id_departamento, id_empleado } = req.body;
-
-            await pool.query('UPDATE autorizaciones SET estado = $1, id_documento = $2 WHERE id = $3', [estado, id_documento, id]);
-            res.jsonp({ message: 'Autorizacion guardado' });
-            /*const JefeDepartamento = await pool.query('SELECT da.id, cg.id AS id_dep, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, e.nombre, e.cedula, e.correo, e.apellido FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, empleados AS e WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id', [id_departamento]);
-            const InfoPermisoReenviarEstadoEmpleado = await pool.query('SELECT p.id, p.descripcion, p.estado, e.cedula, e.nombre, e.apellido, e.correo, co.permiso_mail, co.permiso_noti FROM permisos AS p, empl_contratos AS c, empleados AS e, config_noti AS co WHERE p.id = $1 AND p.id_empl_contrato = c.id AND c.id_empleado = e.id AND co.id_empleado = e.id AND e.id = $2', [id_permiso, id_empleado]);
-    
-            // console.log(JefeDepartamento.rows)
-            // console.log(InfoPermisoReenviarEstadoEmpleado.rows)
-            const estadoAutorizacion = [
-                { id: 1, nombre: 'Pendiente' },
-                { id: 2, nombre: 'Pre-autorizado' },
-                { id: 3, nombre: 'Autorizado' },
-                { id: 4, nombre: 'Negado' },
-            ];
-    
-            let nombreEstado = '';
-            estadoAutorizacion.forEach(obj => {
-                if (obj.id === estado) {
-                    nombreEstado = obj.nombre
-                }
-            });
-    
-            JefeDepartamento.rows.forEach(obj => {
-                var url = `${process.env.URL_DOMAIN}/solicitarPermiso`;
-                InfoPermisoReenviarEstadoEmpleado.rows.forEach(ele => {
-                    let notifi_realtime = {
-                        id_send_empl: obj.empleado,
-                        id_receives_depa: obj.id_dep,
-                        estado: nombreEstado,
-                        id_permiso: id_permiso,
-                        id_vacaciones: null,
-                        id_hora_extra: null
-                    }
-    
-                    let data = {
-                        from: obj.correo,
-                        to: ele.correo,
-                        subject: 'Estado de solicitud de permiso',
-                        html: `<p><b>${obj.nombre} ${obj.apellido}</b> jefe/a del departamento de <b>${obj.departamento}</b> con número de
-                        cédula ${obj.cedula} a cambiado el estado de su permiso a: <b>${nombreEstado}</b></p>
-                        <h4><b>Informacion del permiso</b></h4>
-                        <ul>
-                            <li><b>Descripción</b>: ${ele.descripcion} </li>
-                            <li><b>Empleado</b>: ${ele.nombre} ${ele.apellido} </li>
-                            <li><b>Cédula</b>: ${ele.cedula} </li>
-                            <li><b>Sucursal</b>: ${obj.sucursal} </li>
-                            <li><b>Departamento</b>: ${obj.departamento} </li>
-                            </ul>
-                        <a href="${url}">Ir a verificar estado permisos</a>`
-                    };
-                    console.log(data);
-                    if (ele.permiso_mail === true && ele.permiso_noti === true) {
-                         var corr = enviarMail(servidor, parseInt(puerto));
-                    corr.sendMail(data, function (error: any, info: any) {
-                        if (error) {
-                            console.log('Email error: ' + error);
-                            return res.jsonp({ message: 'error' });
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                            return res.jsonp({ message: 'ok' });
-                        }
-                    });
-    
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-                    } else if (ele.permiso_mail === true && ele.permiso_noti === false) {
-                         var corr = enviarMail(servidor, parseInt(puerto));
-                    corr.sendMail(data, function (error: any, info: any) {
-                        if (error) {
-                            console.log('Email error: ' + error);
-                            return res.jsonp({ message: 'error' });
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                            return res.jsonp({ message: 'ok' });
-                        }
-                    });
-    
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-                    } else if (ele.permiso_mail === false && ele.permiso_noti === true) {
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-                    } else if (ele.permiso_mail === false && ele.permiso_noti === false) {
-                        res.json({ message: 'Estado de permiso actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-                    }
-                });
-            });*/
-        }
-        else {
-            res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
-        }
-    }
 
 
     public async ActualizarEstadoAutorizacionPermiso(req: Request, res: Response): Promise<void> {
@@ -481,6 +381,22 @@ class AutorizacionesControlador {
         else {
             res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
         }
+    }
+
+
+    // METODO DE APROBACION DE SOLICITUD DE PERMISO
+    public async ActualizarEstadoPermiso(req: Request, res: Response): Promise<void> {
+
+        const id = req.params.id;
+        const { id_documento, estado } = req.body;
+
+        await pool.query(
+            `
+                UPDATE autorizaciones SET estado = $1, id_documento = $2 WHERE id = $3
+                `
+            , [estado, id_documento, id]);
+
+        res.jsonp({ message: 'Registro exitoso.' });
     }
 }
 

@@ -1,24 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../../environments/environment';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
+import { EditarPermisoEmpleadoComponent } from '../editar-permiso-empleado/editar-permiso-empleado.component';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
+import { CancelarPermisoComponent } from '../cancelar-permiso/cancelar-permiso.component';
+import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
+import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
-import { CancelarPermisoComponent } from './cancelar-permiso/cancelar-permiso.component';
-import { EditarPermisoEmpleadoComponent } from './editar-permiso-empleado/editar-permiso-empleado.component';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { ValidacionesService } from '../../../servicios/validaciones/validaciones.service';
-import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-solicitar-permisos-empleado',
   templateUrl: './solicitar-permisos-empleado.component.html',
   styleUrls: ['./solicitar-permisos-empleado.component.css']
 })
+
 export class SolicitarPermisosEmpleadoComponent implements OnInit {
 
   idEmpleado: string;

@@ -27,6 +27,7 @@ class PeriodoVacacionControlador {
     }
 
     public async EncontrarIdPerVacaciones(req: Request, res: Response): Promise<any> {
+        
         const { id_empleado } = req.params;
         const VACACIONES = await pool.query('SELECT pv.id, ce.id AS idContrato FROM peri_vacaciones AS pv, ' +
             'empl_contratos AS ce, empleados AS e WHERE ce.id_empleado = e.id AND pv.id_empl_contrato = ce.id ' +

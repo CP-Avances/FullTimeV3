@@ -1,14 +1,23 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
+import pool from '../../database';
 const builder = require('xmlbuilder');
 
-import pool from '../../database';
-
 class TipoPermisosControlador {
-  public async list(req: Request, res: Response) {
-    const rolPermisos = await pool.query('SELECT * FROM cg_tipo_permisos ORDER BY descripcion');
-    res.jsonp(rolPermisos.rows);
+  public async Listar(req: Request, res: Response) {
+    const rolPermisos = await pool.query(
+      `
+      SELECT * FROM cg_tipo_permisos ORDER BY descripcion ASC
+      `
+    );
+    if (rolPermisos.rowCount > 0) {
+      return res.jsonp(rolPermisos.rows)
+    }
+    else {
+      res.status(404).jsonp({ text: 'Registros no encontrados.' });
+    }
   }
+
 
   public async listAccess(req: Request, res: Response) {
     const acce_empleado = req.params.acce_empleado;

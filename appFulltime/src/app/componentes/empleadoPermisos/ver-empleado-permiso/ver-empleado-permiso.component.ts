@@ -1,25 +1,24 @@
 // IMPORTAR LIBRERIAS
+import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import pdfMake from 'pdfmake/build/pdfmake';
-import { Router } from '@angular/router';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR COMPONENTES
 import { EditarEstadoAutorizaccionComponent } from '../../autorizaciones/editar-estado-autorizaccion/editar-estado-autorizaccion.component';
-import { AutorizacionesComponent } from '../../autorizaciones/autorizaciones/autorizaciones.component';
 
 // IMPORTAR SERVICIOS
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ValidacionesService } from '../../../servicios/validaciones/validaciones.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 // VARIABLE MANEJO DE ESTADOS
 interface Estado {
@@ -45,14 +44,6 @@ export class VerEmpleadoPermisoComponent implements OnInit {
 
   HabilitarAutorizacion: boolean = true;
 
-  // OPCIONS DE REVISIÓN DE SOLICITUDES
-  estados: Estado[] = [
-    { id: 1, nombre: 'Pendiente' },
-    { id: 2, nombre: 'Pre-autorizado' },
-    { id: 3, nombre: 'Autorizado' },
-    { id: 4, nombre: 'Negado' },
-  ];
-
   // VARIABLES DE BÚSQUEDA DE DATOS DE EMPLEADO
   empleado: any = [];
   idEmpleado: number;
@@ -66,15 +57,17 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   hipervinculo: string = environment.url
 
   constructor(
+
     private validacionesService: ValidacionesService, // VALIDACIONES DE ACCESO
-    public restGeneral: DatosGeneralesService, // SERVICIO DE DATOS GENERALES DE EMPLEADO
+    private router: Router, // VARIABLE DE MANEJO DE RUTAS O NAVEGACIÓN
     private restD: DepartamentosService, // SERVICIO DE DATOS DE DEPARTAMENTOS
     private restA: AutorizacionService, // SERVICIO DE DATOS DE AUTORIZACIONES 
-    public restEmpre: EmpresaService, // SERVICIO DE DATOS DE EMPRESA
     private restP: PermisosService, // SERVICIO DE DATOS DE PERMISO
-    public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
+
+    public restGeneral: DatosGeneralesService, // SERVICIO DE DATOS GENERALES DE EMPLEADO
+    public restEmpre: EmpresaService, // SERVICIO DE DATOS DE EMPRESA
     public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
-    private router: Router, // VARIABLE DE MANEJO DE RUTAS O NAVEGACIÓN
+    public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
     this.id_permiso = this.router.url.split('/')[2];
@@ -244,16 +237,9 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     })
   }
 
-  // MÉTODOS PARA ABRIR VENTANAS AUTORIZACIONES
-  AbrirAutorizaciones(datosSeleccionados: any): void {
-    this.ventana.open(AutorizacionesComponent, { width: '300px', data: datosSeleccionados }).afterClosed().subscribe(items => {
-      this.BuscarDatos();
-      this.HabilitarAutorizacion = true;
-    });
-  }
-
-  AbrirVentanaEditarAutorizacion(datosSeleccionados: any): void {
-    this.ventana.open(EditarEstadoAutorizaccionComponent, { width: '350px', data: { auto: datosSeleccionados, empl: this.InfoPermiso } })
+  AbrirVentanaEditarAutorizacion(autoriza: any): void {
+    this.ventana.open(EditarEstadoAutorizaccionComponent,
+      { width: '350px', data: { auto: autoriza, permiso: this.InfoPermiso[0] } })
       .afterClosed().subscribe(item => {
         this.BuscarDatos();
       });

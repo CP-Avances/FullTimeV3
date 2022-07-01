@@ -7,9 +7,9 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
-import { CancelarVacacionesComponent } from './cancelar-vacaciones/cancelar-vacaciones.component';
-import { EditarVacacionesEmpleadoComponent } from './editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
+import { CancelarVacacionesComponent } from '../cancelar-vacaciones/cancelar-vacaciones.component';
+import { EditarVacacionesEmpleadoComponent } from '../editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 
 @Component({
   selector: 'app-vacaciones-empleado',
@@ -68,8 +68,10 @@ export class VacacionesEmpleadoComponent implements OnInit {
 
   vacaciones: any = [];
   obtenerVacaciones(id_empleado: number) {
+    this.vacaciones = [];
     this.restPerV.BuscarIDPerVacaciones(id_empleado).subscribe(datos => {
       this.idPerVacacion = datos;
+      console.log('datos', datos)
       this.restVacaciones.ObtenerVacacionesPorIdPeriodo(this.idPerVacacion[0].id).subscribe(res => {
         this.vacaciones = res;
         console.log('datos', this.vacaciones)
@@ -124,14 +126,37 @@ export class VacacionesEmpleadoComponent implements OnInit {
   }
 
   CancelarVacaciones(v) {
-    this.vistaRegistrarDatos.open(CancelarVacacionesComponent, { width: '300px', data: v.id }).afterClosed().subscribe(items => {
-      this.obtenerVacaciones(parseInt(this.idEmpleado));
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(contrato => {
+      this.vistaRegistrarDatos.open(CancelarVacacionesComponent,
+        {
+          width: '300px',
+          data: { id: v.id, id_empleado: parseInt(this.idEmpleado), id_contrato: contrato[0].max }
+        })
+        .afterClosed().subscribe(items => {
+          this.obtenerVacaciones(parseInt(this.idEmpleado));
+        });
+    }, error => {
+      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+        timeOut: 6000,
+      })
     });
   }
 
   EditarVacaciones(v) {
-    this.vistaRegistrarDatos.open(EditarVacacionesEmpleadoComponent, { width: '900px', data: v }).afterClosed().subscribe(items => {
-      this.obtenerVacaciones(parseInt(this.idEmpleado));
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(contrato => {
+      this.vistaRegistrarDatos.open(EditarVacacionesEmpleadoComponent,
+        {
+          width: '900px',
+          data: { info: v, id_empleado: parseInt(this.idEmpleado), id_contrato: contrato[0].max }
+        })
+        .afterClosed().subscribe(items => {
+          this.obtenerVacaciones(parseInt(this.idEmpleado));
+          this.verEmpleado(parseInt(this.idEmpleado))
+        });
+    }, error => {
+      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+        timeOut: 6000,
+      })
     });
   }
 

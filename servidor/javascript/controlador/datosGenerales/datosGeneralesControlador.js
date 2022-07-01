@@ -14,6 +14,76 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../../database"));
 class DatosGeneralesControlador {
+    // METODO DE BUSQUEDA DE DATOS ACTUALES DEL USUARIO
+    DatosActuales(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { empleado_id } = req.params;
+            const DATOS = yield database_1.default.query(`
+            SELECT * FROM datos_actuales_empleado WHERE id = $1
+            `, [empleado_id]);
+            if (DATOS.rowCount > 0) {
+                return res.jsonp(DATOS.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'error' });
+            }
+        });
+    }
+    // METODO PARA BUSCAR JEFES
+    BuscarJefes(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { objeto, depa_user_loggin } = req.body;
+            const permiso = objeto;
+            console.log(permiso);
+            const JefesDepartamentos = yield database_1.default.query(`
+                    SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
+                    cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
+                    e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo,
+                    c.permiso_mail, c.permiso_noti
+                    FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+                    sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+                    WHERE da.id_departamento = $1 AND 
+                    da.id_empl_cargo = ecr.id AND 
+                    da.id_departamento = cg.id AND
+                    da.estado = true AND 
+                    cg.id_sucursal = s.id AND
+                    ecr.id_empl_contrato = ecn.id AND
+                    ecn.id_empleado = e.id AND
+                    e.id = c.id_empleado
+                    `, [depa_user_loggin]).then(result => { return result.rows; });
+            if (JefesDepartamentos.length === 0)
+                return res.status(400)
+                    .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+            const [obj] = JefesDepartamentos;
+            let depa_padre = obj.depa_padre;
+            let JefeDepaPadre;
+            if (depa_padre !== null) {
+                do {
+                    JefeDepaPadre = yield database_1.default.query(`
+                            SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, 
+                            cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, 
+                            ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, 
+                            (e.nombre || ' ' || e.apellido) as fullname, e.cedula, e.correo, c.permiso_mail, 
+                            c.permiso_noti 
+                            FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+                            sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+                            WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND 
+                            da.id_departamento = cg.id AND 
+                            da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND 
+                            ecn.id_empleado = e.id AND e.id = c.id_empleado
+                            `, [depa_padre]);
+                    depa_padre = JefeDepaPadre.rows[0].depa_padre;
+                    JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                } while (depa_padre !== null);
+                permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
+                return res.status(200).jsonp(permiso);
+            }
+            else {
+                permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
+                return res.status(200).jsonp(permiso);
+            }
+        });
+    }
     ListarDatosEmpleadoAutoriza(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { empleado_id } = req.params;

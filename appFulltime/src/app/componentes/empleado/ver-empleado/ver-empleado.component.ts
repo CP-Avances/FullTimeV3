@@ -39,14 +39,14 @@ import { ScriptService } from 'src/app/servicios/empleado/script.service';
 
 // IMPORTAR COMPONENTES
 import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/detallePlanHorarios/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
-import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
+import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/registro-autorizacion-depa/registro-autorizacion-depa.component';
 import { EditarHoraExtraEmpleadoComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
 import { EditarPeriodoVacacionesComponent } from 'src/app/componentes/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
 import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/editar-autorizacion-depa/editar-autorizacion-depa.component';
 import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
-import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
+import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { RegistrarEmpleProcesoComponent } from 'src/app/componentes/empleadoProcesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { EditarEmpleadoProcesoComponent } from 'src/app/componentes/empleadoProcesos/editar-empleado-proceso/editar-empleado-proceso.component';
 import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
@@ -55,15 +55,15 @@ import { PlanificacionComidasComponent } from 'src/app/componentes/planificacion
 import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
 import { EditarPlanificacionComponent } from 'src/app/componentes/planHorarios/editar-planificacion/editar-planificacion.component';
 import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
-import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
+import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
 import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
 import { EditarPlanComidasComponent } from 'src/app/componentes/planificacionComidas/editar-plan-comidas/editar-plan-comidas.component';
 import { RegistrarPeriodoVComponent } from 'src/app/componentes/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { CambiarContrasenaComponent } from '../../rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
 import { RegistroContratoComponent } from 'src/app/componentes/empleado/contrato/registro-contrato/registro-contrato.component';
 import { AdministraComidaComponent } from '../../administra-comida/administra-comida.component';
-import { CancelarPermisoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { PedidoHoraExtraComponent } from '../../horasExtras/pedido-hora-extra/pedido-hora-extra.component';
+import { CancelarPermisoComponent } from '../../rolEmpleado/permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { EditarEmpleadoComponent } from '../datos-empleado/editar-empleado/editar-empleado.component';
 import { FraseSeguridadComponent } from '../../frase-administrar/frase-seguridad/frase-seguridad.component';
 import { TituloEmpleadoComponent } from '../titulos/titulo-empleado/titulo-empleado.component';
@@ -74,7 +74,6 @@ import { EmplLeafletComponent } from '../../settings/leaflet/empl-leaflet/empl-l
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
 import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
 import { switchMap } from 'rxjs/operators';
-import { CrearCoordenadasComponent } from '../../timbre-web/ubicacion-geografica/crear-coordenadas/crear-coordenadas.component';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -547,7 +546,7 @@ export class VerEmpleadoComponent implements OnInit {
   obtenerVacaciones(id_empleado: number) {
     this.restPerV.BuscarIDPerVacaciones(id_empleado).subscribe(datos => {
       this.idPerVacacion = datos;
-      console.log("idPerVaca ", this.idPerVacacion[0].id);
+      console.log("idPerVaca------ ", this.idPerVacacion[0].id);
       this.restVacaciones.ObtenerVacacionesPorIdPeriodo(this.idPerVacacion[0].id).subscribe(res => {
         this.vacaciones = res;
       });
@@ -969,16 +968,30 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   CancelarPermiso(dataPermiso) {
-    this.vistaRegistrarDatos.open(CancelarPermisoComponent, { width: '300px', data: dataPermiso }).afterClosed().subscribe(items => {
-      if (items === true) {
-        this.obtenerPermisos(parseInt(this.idEmpleado));
-      }
-    });
+    this.vistaRegistrarDatos.open(CancelarPermisoComponent,
+      {
+        width: '300px',
+        data: { info: dataPermiso, id_empleado: parseInt(this.idEmpleado) }
+      }).afterClosed().subscribe(items => {
+        if (items === true) {
+          this.obtenerPermisos(parseInt(this.idEmpleado));
+        }
+      });
   }
 
   CancelarVacaciones(v) {
-    this.vistaRegistrarDatos.open(CancelarVacacionesComponent, { width: '300px', data: v.id }).afterClosed().subscribe(items => {
-      this.obtenerVacaciones(parseInt(this.idEmpleado));
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
+      this.vistaRegistrarDatos.open(CancelarVacacionesComponent,
+        {
+          width: '300px',
+          data: { id: v.id, id_empleado: parseInt(this.idEmpleado), id_contrato: datos[0].max }
+        }).afterClosed().subscribe(items => {
+          this.obtenerVacaciones(parseInt(this.idEmpleado));
+        });
+    }, error => {
+      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+        timeOut: 6000,
+      })
     });
   }
 
@@ -1388,8 +1401,18 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   EditarVacaciones(v) {
-    this.vistaRegistrarDatos.open(EditarVacacionesEmpleadoComponent, { width: '900px', data: v }).afterClosed().subscribe(items => {
-      this.obtenerVacaciones(parseInt(this.idEmpleado));
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
+      this.vistaRegistrarDatos.open(EditarVacacionesEmpleadoComponent,
+        {
+          width: '900px',
+          data: { info: v, id_empleado: parseInt(this.idEmpleado), id_contrato: datos[0].max }
+        }).afterClosed().subscribe(items => {
+          this.obtenerVacaciones(parseInt(this.idEmpleado));
+        });
+    }, error => {
+      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+        timeOut: 6000,
+      })
     });
   }
 

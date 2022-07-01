@@ -1,12 +1,14 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import * as moment from 'moment';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import * as moment from 'moment';
 
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 @Component({
   selector: 'app-editar-vacaciones-empleado',
@@ -14,31 +16,32 @@ import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.servi
   styleUrls: ['./editar-vacaciones-empleado.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
+
 export class EditarVacacionesEmpleadoComponent implements OnInit {
 
   calcular = false;
   habilitarCalculados: boolean = false;
 
+  dialaborableF = new FormControl('', [Validators.required]);
+  fechaIngreso = new FormControl('', Validators.required);
   fechaInicio = new FormControl('', Validators.required);
   fechaFinal = new FormControl('', Validators.required);
-  fechaIngreso = new FormControl('', Validators.required);
   dialibreF = new FormControl('', [Validators.required]);
-  dialaborableF = new FormControl('', [Validators.required]);
   calcularF = new FormControl('');
   totalF = new FormControl('');
   diasTF = new FormControl('');
 
   public VacacionesForm = new FormGroup({
+    fechaIngresoForm: this.fechaIngreso,
+    dialaborableForm: this.dialaborableF,
     fecInicioForm: this.fechaInicio,
     fecFinalForm: this.fechaFinal,
-    fechaIngresoForm: this.fechaIngreso,
     diaLibreForm: this.dialibreF,
-    dialaborableForm: this.dialaborableF,
     calcularForm: this.calcularF,
     totalForm: this.totalF,
     diasTForm: this.diasTF
@@ -47,19 +50,31 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
   constructor(
     private restV: VacacionesService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<EditarVacacionesEmpleadoComponent>,
+    private realTime: RealTimeService,
+    private informacion: DatosGeneralesService,
+    public ventana: MatDialogRef<EditarVacacionesEmpleadoComponent>,
     @Inject(MAT_DIALOG_DATA) public dato: any
   ) { }
 
   ngOnInit(): void {
-    console.log(this.dato);
-    this.VacacionesForm.patchValue({
-      fecInicioForm: this.dato.fec_inicio,
-      fecFinalForm: this.dato.fec_final,
-      fechaIngresoForm: this.dato.fec_ingreso,
-      diaLibreForm: this.dato.dia_libre,
-      dialaborableForm: this.dato.dia_laborable,
+    console.log('vacacion', this.dato);
+   this.VacacionesForm.patchValue({
+      fecInicioForm: this.dato.info.fec_inicio,
+      fecFinalForm: this.dato.info.fec_final,
+      fechaIngresoForm: this.dato.info.fec_ingreso,
+      diaLibreForm: this.dato.info.dia_libre,
+      dialaborableForm: this.dato.info.dia_laborable,
       calcularForm: true
+    });
+    this.ObtenerDatos();
+  }
+
+  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  actuales: any = [];
+  ObtenerDatos() {
+    this.actuales = [];
+    this.informacion.ObtenerDatosActuales(this.dato.id_empleado).subscribe(datos => {
+      this.actuales = datos;
     });
   }
 
@@ -216,20 +231,22 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
   }
 
   InsertarVacaciones(form) {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosVacaciones = {
+      depa_user_loggin: depa_user_loggin,
+      dia_laborable: form.dialaborableForm,
+      fec_ingreso: form.fechaIngresoForm,
       fec_inicio: form.fecInicioForm,
       fec_final: form.fecFinalForm,
-      fec_ingreso: form.fechaIngresoForm,
       dia_libre: form.diaLibreForm + form.diasTForm,
-      dia_laborable: form.dialaborableForm,
     };
     console.log(datosVacaciones);
-    this.restV.EditarVacacion(this.dato.id, datosVacaciones).subscribe(response => {
-      console.log(response);
-
+    this.restV.EditarVacacion(this.dato.info.id, datosVacaciones).subscribe(vacaciones => {
       this.toastr.success('Operación Exitosa', 'Vacaciones del Empleado registradas', {
         timeOut: 6000,
       })
+      this.EnviarCorreoEmpleados(vacaciones);
+      this.EnviarNotificacion(vacaciones);
       this.CerrarVentanaRegistroVacaciones();
     }, error => {
       this.toastr.error('Operación Fallida', 'Registro Inválido', {
@@ -238,15 +255,123 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
     });
   }
 
-  LimpiarCampos() {
-    this.VacacionesForm.reset();
+  // METODO PARA ENVIO DE NOTIFICACIONES DE VACACIONES
+  EnviarCorreoEmpleados(vacacion: any) {
+
+    console.log('ver vacaciones..   ', vacacion)
+
+    var cont = 0;
+    var correo_usuarios = '';
+
+    vacacion.EmpleadosSendNotiEmail.forEach(e => {
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE VACACIÓN
+      let desde = moment.weekdays(moment(vacacion.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacacion.fec_inicio).day()).slice(1);
+      let hasta = moment.weekdays(moment(vacacion.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacacion.fec_final).day()).slice(1);
+
+      // CAPTURANDO ESTADO DE LA SOLICITUD DE VACACIÓN
+      if (vacacion.estado === 1) {
+        var estado_v = 'Pendiente';
+      }
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
+      if (e.vaca_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
+          }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
+
+      // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
+      if (cont === vacacion.EmpleadosSendNotiEmail.length) {
+        let datosVacacionCreada = {
+          tipo_solicitud: 'Solicitud de vacaciones actualizada por',
+          idContrato: this.dato.id_contrato,
+          estado_v: estado_v,
+          proceso: 'actualizado',
+          desde: desde + ' ' + moment(vacacion.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(vacacion.fec_final).format('DD/MM/YYYY'),
+          id_dep: e.id_dep, // VERIFICAR
+          id_suc: e.id_suc, // VERIFICAR
+          correo: correo_usuarios,
+          asunto: 'ACTUALIZACION DE SOLICITUD DE VACACIONES',
+          id: vacacion.id,
+          solicitado_por: localStorage.getItem('fullname_print'),
+        }
+        if (correo_usuarios != '') {
+          this.restV.EnviarCorreoVacaciones(datosVacacionCreada).subscribe(
+            resp => {
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
+    })
   }
 
-  CerrarVentanaRegistroVacaciones() {
-    this.LimpiarCampos();
-    this.dialogRef.close(true);
+  EnviarNotificacion(vacaciones: any) {
+
+    let desde = moment.weekdays(moment(vacaciones.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
+
+    var f = new Date();
+    let notificacion = {
+      id_send_empl: this.dato.id_empleado,
+      id_receives_empl: '',
+      id_receives_depa: '',
+      estado: 'Pendiente',
+      id_permiso: null,
+      id_vacaciones: vacaciones.id,
+      id_hora_extra: null,
+      mensaje: 'Ha actualizado su solicitud de vacaciones desde ' +
+        desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
+    }
+
+    vacaciones.EmpleadosSendNotiEmail.forEach(e => {
+
+      notificacion.id_receives_depa = e.id_dep;
+      notificacion.id_receives_empl = e.empleado;
+
+      if (e.vaca_noti) {
+        this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
+          resp => {
+            console.log('ver data de notificacion', resp.respuesta)
+            this.restV.sendNotiRealTime(resp.respuesta);
+          },
+          err => {
+            this.toastr.error(err.error.message, '', {
+              timeOut: 6000,
+            });
+          },
+          () => { },
+        )
+      }
+    })
   }
 
+  // METODO DE VALIDACION DE INGRESO DE NUMEROS
   IngresarSoloNumeros(evt) {
     if (window.event) {
       var keynum = evt.keyCode;
@@ -254,7 +379,7 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
       return true;
     }
@@ -264,6 +389,15 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
       })
       return false;
     }
+  }
+
+  LimpiarCampos() {
+    this.VacacionesForm.reset();
+  }
+
+  CerrarVentanaRegistroVacaciones() {
+    this.LimpiarCampos();
+    this.ventana.close(true);
   }
 
 }

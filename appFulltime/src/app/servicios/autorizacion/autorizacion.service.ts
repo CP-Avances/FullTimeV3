@@ -18,6 +18,13 @@ export class AutorizacionService {
     this.socket.emit('nueva_notificacion', data);
   }
 
+
+  // ACTUALIZACION DE APROBACION
+  ActualizarAprobacion(id: number, datos: any) {
+    return this.http.put(`${environment.url}/autorizaciones/${id}/estado-permiso`, datos);
+  }
+
+
   // catalogo de notificaciones
   getAutorizacionesRest() {
     return this.http.get<any>(`${environment.url}/autorizaciones`);
@@ -39,9 +46,6 @@ export class AutorizacionService {
     return this.http.post(`${environment.url}/autorizaciones`, data);
   }
 
-  PutEstadoAutoPermiso(id: number, datos: any) {
-    return this.http.put(`${environment.url}/autorizaciones/${id}/estado-permiso`, datos);
-  }
 
   PutEstadoAutoPermisoMultiple(datos: any) {
     return this.http.put(`${environment.url}/autorizaciones/estado-permiso/multiple`, datos);

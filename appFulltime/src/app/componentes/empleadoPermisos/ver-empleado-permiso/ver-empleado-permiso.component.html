@@ -1,18 +1,12 @@
-<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+<div class="container" style="padding-top: 15px; padding-bottom: 25px;" *ngFor="let p of InfoPermiso">
     <div class="row">
         <div class="col-md" style="padding-bottom: 10px;">
             <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
                 <div id="titulo">
-                    <div class="container">
-                        <div class="row" style="text-align: center;">
-                            <div class="col">
-                                <h5>INFORMACIÓN DEL PERMISO</h5>
-                            </div>
-                        </div>
-                    </div>
+                    <h5>INFORMACIÓN DEL PERMISO</h5>
                 </div>
                 <mat-card-content>
-                    <div class="container" style="padding-top: 15px;" *ngFor="let p of InfoPermiso">
+                    <div class="container" style="padding-top: 15px;">
                         <div class="row">
                             <div class="col">
                                 <div class="caja1 d-flex justify-content-start">
@@ -60,20 +54,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" style="margin-top: 5px;">
-                            <div class="col">
-                            </div>
-                            <div class="col">
-                            </div>
-                            <div class="col" style="text-align: right;">
-                                <i id="iconos" *ngIf="!HabilitarAutorizacion" class="fas fa-plus-circle"
-                                    style="color:rgb(58, 90, 231);" (click)="AbrirAutorizaciones(p)"
-                                    matTooltipPosition="right"
-                                    matTooltip="Agrega más tipos de permisos de este departamento.">
-                                    <p>Autorización</p>
-                                </i>
-                            </div>
-                        </div>
                     </div>
                 </mat-card-content>
             </mat-card>
@@ -81,13 +61,7 @@
         <div class="col-md">
             <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
                 <div id="titulo">
-                    <div class="container">
-                        <div class="row" style="text-align: center;">
-                            <div class="col">
-                                <h5>INFORMACIÓN DE LA AUTORIZACIÓN</h5>
-                            </div>
-                        </div>
-                    </div>
+                    <h5>INFORMACIÓN DE LA APROBACIÓN</h5>
                 </div>
                 <mat-card-content>
                     <div class="container" style="padding-top: 15px;" *ngFor="let a of autorizacion">
@@ -135,7 +109,7 @@
                                 <i *ngIf="!habilitarActualizar" class="fas fa-edit" id='i-cursor'
                                     style="color:green; text-align: center;" matSuffix matTooltipPosition="right"
                                     (click)="AbrirVentanaEditarAutorizacion(a)"
-                                    matTooltip="Cambiar el estado del permiso">
+                                    matTooltip="Aprobación de la solicitud.">
                                     <p>Estado</p>
                                 </i>
                             </div>

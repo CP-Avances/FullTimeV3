@@ -12,6 +12,8 @@ import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 // CREACIÓN DE LISTA DE OPCIONES DE SOLICITUD DE PERMISO 
 interface opcionesDiasHoras {
@@ -98,7 +100,9 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     private restP: PermisosService,
     private restE: EmpleadoService,
     private toastr: ToastrService,
+    private realTime: RealTimeService,
     private restTipoP: TipoPermisosService,
+    private informacion: DatosGeneralesService,
     private loginServise: LoginService,
     @Inject(MAT_DIALOG_DATA) public info: any
   ) { }
@@ -108,12 +112,13 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     this.CargarInformacion(this.info.dataPermiso.id_tipo_permiso);
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    console.log(this.info.dataPermiso);
+    console.log(this.info);
     this.num = this.info.dataPermiso.num_permiso
     this.MostrarDatos();
     this.ObtenerTiposPermiso();
     this.ComparacionSolicitud();
     this.ObtenerEmpleado(this.info.id_empleado);
+    this.ObtenerDatos();
   }
 
   // MÉTODO PARA OBTENER DATOS DEL EMPLEADO 
@@ -123,6 +128,15 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
       this.empleado = data;
     })
+  }
+
+  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  actuales: any = [];
+  ObtenerDatos() {
+    this.actuales = [];
+    this.informacion.ObtenerDatosActuales(this.info.id_empleado).subscribe(datos => {
+      this.actuales = datos;
+    });
   }
 
   // MÉTODO PARA COMPARAR QUE TIPO DE SOLIICTUD REALIZÓ PERMISOS POR DIAS - HORAS - DIAS/HORAS 
@@ -465,8 +479,9 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   }
 
   InsertarPermiso(form) {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosPermiso = {
-      depa_user_loggin: parseInt(localStorage.getItem('departamento')),
+      depa_user_loggin: depa_user_loggin,
       id_tipo_permiso: form.idPermisoForm,
       anterior_doc: this.info.dataPermiso.documento,
       hora_ingreso: form.horasIngresoForm,
@@ -751,13 +766,15 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
       this.LimpiarNombreArchivo();
       if (this.archivoSubido != undefined) {
         if (this.archivoSubido[0].size <= 2e+6) {
-          this.restP.EditarPermiso(this.info.dataPermiso.id, datos).subscribe(response => {
+          this.restP.EditarPermiso(this.info.dataPermiso.id, datos).subscribe(permiso => {
             this.toastr.success('Operación Exitosa', 'Permiso Editado', {
               timeOut: 6000,
             });
-            this.LimpiarCampos();
-            console.log('ver informacion de permiso ', response);
-            this.SubirRespaldo(this.info.dataPermiso.id)
+            this.SubirRespaldo(this.info.dataPermiso.id);
+            this.EnviarCorreo(permiso);
+            this.EnviarNotificacion(permiso);
+            this.CerrarVentanaPermiso();
+            console.log('ver informacion de permiso ', permiso);
           }, err => {
             const { access, message } = err.error.message;
             if (access === false) {
@@ -779,13 +796,14 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
 
     } else {
       console.log(datos);
-      this.restP.EditarPermiso(this.info.dataPermiso.id, datos).subscribe(response => {
+      this.restP.EditarPermiso(this.info.dataPermiso.id, datos).subscribe(permiso => {
         this.toastr.success('Operación Exitosa', 'Permiso Editado', {
           timeOut: 6000,
         });
-        this.LimpiarCampos();
-        this.ventana.close(true)
-        console.log('ver informacion de permiso ', response);
+        this.EnviarCorreo(permiso);
+        this.EnviarNotificacion(permiso);
+        this.CerrarVentanaPermiso();
+        console.log('ver informacion de permiso ', permiso);
       }, err => {
         const { access, message } = err.error.message;
         if (access === false) {
@@ -935,6 +953,163 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
         this.Tdias = this.datosPermiso[0].num_dia_maximo;
         this.Thoras = this.datosPermiso[0].num_hora_maximo;
         this.tipoPermisoSelec = 'Días y Horas';
+      }
+    })
+  }
+
+
+  /** ******************************************************************************************* **
+   ** **                   METODO DE ENVIO DE NOTIFICACIONES DE PERMISOS                       ** **
+   ** ******************************************************************************************* **/
+
+  EnviarCorreo(permiso: any) {
+
+    console.log('entra correo')
+    var cont = 0;
+    var correo_usuarios = '';
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    let solicitud = moment.weekdays(moment(permiso.fec_creacion).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_creacion).day()).slice(1);
+    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+
+    // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
+    if (permiso.estado === 1) {
+      var estado_p = 'Pendiente de autorización';
+    }
+
+    // LEYENDO DATOS DE TIPO DE PERMISO
+    var tipo_permiso = '';
+    this.tipoPermisos.filter(o => {
+      if (o.id === permiso.id_tipo_permiso) {
+        tipo_permiso = o.descripcion
+      }
+      return tipo_permiso;
+    })
+
+    // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
+    permiso.EmpleadosSendNotiEmail.forEach(e => {
+
+      console.log('for each', e)
+
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
+      if (e.permiso_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
+          }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
+
+      console.log('contadores', permiso.EmpleadosSendNotiEmail.length + ' cont ' + cont)
+
+      if (cont === permiso.EmpleadosSendNotiEmail.length) {
+
+        console.log('data entra correo usuarios', correo_usuarios)
+
+        let datosPermisoCreado = {
+          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
+          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
+          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
+          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
+          id_empl_contrato: permiso.id_empl_contrato,
+          tipo_solicitud: 'Permiso actualizado por',
+          horas_permiso: permiso.hora_numero,
+          observacion: permiso.descripcion,
+          tipo_permiso: tipo_permiso,
+          dias_permiso: permiso.dia,
+          estado_p: estado_p,
+          proceso: 'actualizado',
+          id_dep: e.id_dep,
+          id_suc: e.id_suc,
+          correo: correo_usuarios,
+          asunto: 'ACTUALIZACION DE SOLICITUD DE PERMISO',
+          id: permiso.id,
+          solicitado_por: localStorage.getItem('fullname_print'),
+        }
+        if (correo_usuarios != '') {
+          console.log('data entra enviar correo')
+
+          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+            resp => {
+              console.log('data entra enviar correo', resp)
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
+    })
+  }
+
+  EnviarNotificacion(permiso: any) {
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+    let h_inicio = moment(permiso.hora_salida, 'HH:mm').format('HH:mm');
+    let h_fin = moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm');
+
+    if (h_inicio === '00:00') {
+      h_inicio = '';
+    }
+
+    if (h_fin === '00:00') {
+      h_fin = '';
+    }
+
+    let notificacion = {
+      id_send_empl: this.info.id_empleado,
+      id_receives_empl: '',
+      id_receives_depa: '',
+      estado: 'Pendiente',
+      id_permiso: permiso.id,
+      id_vacaciones: null,
+      id_hora_extra: null,
+      mensaje: 'Ha actualizado su solicitud de permiso desde ' +
+        desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
+        hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
+    }
+
+    permiso.EmpleadosSendNotiEmail.forEach(e => {
+
+      notificacion.id_receives_depa = e.id_dep;
+      notificacion.id_receives_empl = e.empleado;
+
+      if (e.permiso_noti) {
+        this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
+          resp => {
+            console.log('ver data de notificacion', resp.respuesta)
+            this.restP.sendNotiRealTime(resp.respuesta);
+          },
+          err => {
+            this.toastr.error(err.error.message, '', {
+              timeOut: 6000,
+            });
+          },
+          () => { },
+        )
       }
     })
   }

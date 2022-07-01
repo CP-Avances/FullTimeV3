@@ -954,7 +954,7 @@
                                 <label>{{v.estado}}</label>
                             </div>
                         </div>
-                        <div class="float-right" *ngIf="v.estado === 'Solicitado'">
+                        <div class="float-right" *ngIf="v.estado === 1">
                             <i class="fas fa-edit" id="edit" style="margin-right: 20px;" (click)="EditarVacaciones(v)"
                                 matSuffix matTooltipPosition="right"
                                 matTooltip="Modificar los datos generales de este registro">
