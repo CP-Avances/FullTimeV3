@@ -21,7 +21,7 @@ export class AutorizacionService {
 
   // ACTUALIZACION DE APROBACION
   ActualizarAprobacion(id: number, datos: any) {
-    return this.http.put(`${environment.url}/autorizaciones/${id}/estado-permiso`, datos);
+    return this.http.put(`${environment.url}/autorizaciones/${id}/estado-aprobacion`, datos);
   }
 
 
@@ -49,10 +49,6 @@ export class AutorizacionService {
 
   PutEstadoAutoPermisoMultiple(datos: any) {
     return this.http.put(`${environment.url}/autorizaciones/estado-permiso/multiple`, datos);
-  }
-
-  PutEstadoAutoVacacion(datos: any) {
-    return this.http.put(`${environment.url}/autorizaciones/estado-vacacion`, datos);
   }
 
   PutEstadoAutoHoraExtra(id: number, datos: any) {

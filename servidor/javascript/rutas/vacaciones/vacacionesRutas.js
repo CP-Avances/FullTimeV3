@@ -17,7 +17,6 @@ class VacacionesRutas {
         this.router.get('/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.VacacionesIdPeriodo);
         this.router.get('/one/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarUnaVacacion);
         this.router.post('/fechasFeriado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerFechasFeriado);
-        this.router.put('/:id/estado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ActualizarEstado);
         this.router.get('/datosSolicitud/:id_emple_vacacion', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerSolicitudVacaciones);
         this.router.get('/datosAutorizacion/:id_vacaciones', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerAutorizacionVacaciones);
         // CREAR REGISTRO DE VACACIONES
@@ -28,6 +27,8 @@ class VacacionesRutas {
         this.router.get('/listar/vacacion/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarVacacionId);
         // ELIMINAR SOLICITUD DE VACACIONES
         this.router.delete('/eliminar/:id_vacacion', verificarToken_1.TokenValidation, vacacionesControlador_1.default.EliminarVacaciones);
+        // EDITAR ESTADO DE VACACIONES
+        this.router.put('/:id/estado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ActualizarEstado);
         // ENVIO DE CORREO DE VACACIONES DESDE APLICACIONES WEB
         this.router.post('/mail-noti/', verificarToken_1.TokenValidation, vacacionesControlador_1.default.EnviarCorreoVacacion);
         // ENVIO DE CORREO DE VACACIONES DESDE APLICACION MOVIL

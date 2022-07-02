@@ -6,7 +6,6 @@ import * as moment from 'moment';
 
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { AutorizacionService } from "src/app/servicios/autorizacion/autorizacion.service";
-import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 
@@ -44,7 +43,6 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     private restP: PermisosService,
     private toastr: ToastrService,
     private realTime: RealTimeService,
-    private restTipoP: TipoPermisosService,
     public informacion: DatosGeneralesService,
     public ventana: MatDialogRef<EditarEstadoAutorizaccionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -103,7 +101,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     var datos = {
       depa_user_loggin: depa_user_loggin,
-      objetoPermiso: this.data.permiso,
+      objeto: this.data.permiso,
     }
 
     // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
@@ -251,7 +249,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       id_send_empl: this.id_empleado_loggin,
       id_permiso: permiso.id,
       estado: estado_p,
-      mensaje: 'Ha ' + estado_p + ' su solicitud de permiso desde ' +
+      mensaje: 'Ha ' + estado_p.toLowerCase() + ' su solicitud de permiso desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
     }

@@ -213,7 +213,7 @@ class NotificacionTiempoRealControlador {
         subject: asunto,
         html: `<body>
                 <div style="text-align: center;">
-                  <img width="50%" height="50%" src="cid:cabeceraf"/>
+                  <img width="25%" height="25%" src="cid:cabeceraf"/>
                 </div>
                 <br>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -306,7 +306,7 @@ class NotificacionTiempoRealControlador {
         subject: asunto,
         html: `<body>
                 <div style="text-align: center;">
-                  <img width="50%" height="50%" src="cid:cabeceraf"/>
+                  <img width="25%" height="25%" src="cid:cabeceraf"/>
                 </div>
                 <br>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">

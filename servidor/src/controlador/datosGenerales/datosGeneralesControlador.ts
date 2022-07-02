@@ -31,7 +31,7 @@ class DatosGeneralesControlador {
                     SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
                     cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
                     e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo,
-                    c.permiso_mail, c.permiso_noti
+                    c.permiso_mail, c.permiso_noti, c.vaca_mail, c.vaca_noti
                     FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
                     sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
                     WHERE da.id_departamento = $1 AND 

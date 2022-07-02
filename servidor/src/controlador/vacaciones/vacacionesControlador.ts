@@ -86,143 +86,6 @@ class VacacionesControlador {
     }
   }
 
-  public async ActualizarEstado(req: Request, res: Response): Promise<void> {
-    const path_folder = path.resolve('logos')
-    Credenciales(req.id_empresa)
-    const id = req.params.id;
-    const { estado, id_vacacion, id_rece_emp, id_depa_send } = req.body;
-    await pool.query('UPDATE vacaciones SET estado = $1 WHERE id = $2', [estado, id]);
-
-    console.log(estado, id_vacacion, id_rece_emp, id_depa_send);
-
-    const JefeDepartamento = await pool.query(
-      `SELECT da.id, cg.id AS id_dep, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, 
-      ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, e.nombre, e.cedula, e.correo, e.apellido 
-      FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, 
-      empl_contratos AS ecn, empleados AS e 
-      WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND 
-      cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id`,
-      [id_depa_send]);
-
-    const InfoVacacionesReenviarEstadoEmpleado = await pool.query(
-      `SELECT v.id, v.estado, v.fec_inicio, v.fec_final, v.fec_ingreso, e.id AS id_empleado, e.cedula, 
-      e.nombre, e.apellido, e.correo, co.vaca_mail, co.vaca_noti 
-      FROM vacaciones AS v, peri_vacaciones AS pv, empl_contratos AS c, empleados AS e, 
-      config_noti AS co WHERE v.id = $1 AND v.id_peri_vacacion = pv.id AND c.id = pv.id_empl_contrato AND 
-      co.id_empleado = e.id AND e.id = $2`, [id_vacacion, id_rece_emp]);
-
-    if (3 === estado) {
-      RestarPeriodoVacacionAutorizada(parseInt(id));
-    }
-
-    JefeDepartamento.rows.forEach(obj => {
-      var url = `${process.env.URL_DOMAIN}/vacacionesEmpleado`;
-      InfoVacacionesReenviarEstadoEmpleado.rows.forEach(ele => {
-        let notifi_realtime = {
-          id_send_empl: obj.empleado,
-          id_receives_depa: obj.id_dep,
-          estado: estado,
-          id_vacaciones: id_vacacion,
-          id_permiso: null
-        }
-        var estado_letras: any;
-        if (estado === 1) {
-          estado_letras = 'Pendiente'
-        }
-        else if (estado === 2) {
-          estado_letras = 'Pre-autorizado'
-        }
-        else if (estado === 3) {
-          estado_letras = 'Autorizado'
-        }
-        else if (estado === 4) {
-          estado_letras = 'Negado'
-        }
-        var f = new Date();
-        f.setUTCHours(f.getHours())
-        let fecha = f.toJSON();
-        fecha = fecha.split('T')[0];
-        let data = {
-          from: obj.correo,
-          to: ele.correo,
-          subject: 'Estado de solicitud de Vacaciones',
-          html: `
-          <img src="cid:cabeceraf" width="50%" height="50%"/>
-               
-          <p><b>${obj.nombre} ${obj.apellido}</b> jefe/a del departamento de <b>${obj.departamento}</b> con número de
-                cédula ${obj.cedula} a cambiado el estado de su solicitud de vacaciones a: <b>${estado_letras}</b></p>
-                <h4><b>Informacion de las vacaciones</b></h4>
-                <ul>
-                    <li><b>Empleado</b>: ${ele.nombre} ${ele.apellido} </li>
-                    <li><b>Cédula</b>: ${ele.cedula} </li>
-                    <li><b>Sucursal</b>: ${obj.sucursal} </li>
-                    <li><b>Departamento</b>: ${obj.departamento} </li>
-                    <li><b>Fecha inicio </b>: ${ele.fec_inicio.toLocaleString().split(" ")[0]} </li> 
-                    <li><b>Fecha final </b>: ${ele.fec_final.toLocaleString().split(" ")[0]} </li>
-                    <li><b>Fecha ingresa </b>: ${ele.fec_ingreso.toLocaleString().split(" ")[0]} </li>
-                    </ul>
-                <a href="${url}">Ir a verificar estado vacaciones</a>
-                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                <b>Gracias por la atención</b><br>
-                <b>Saludos cordiales,</b> <br><br>
-              </p>
-              <img src="cid:pief" width="50%" height="50%"/>
-         ` , attachments: [
-            {
-              filename: 'cabecera_firma.jpg',
-              path: `${path_folder}/${cabecera_firma}`,
-              cid: 'cabeceraf' //same cid value as in the html img src
-            },
-            {
-              filename: 'pie_firma.jpg',
-              path: `${path_folder}/${pie_firma}`,
-              cid: 'pief' //same cid value as in the html img src
-            }]
-        };
-
-        let port = 465;
-
-        if (puerto != null && puerto != '') {
-          port = parseInt(puerto);
-        }
-
-        if (ele.vaca_mail === true && ele.vaca_noti === true) {
-          var corr = enviarMail(servidor, parseInt(puerto));
-          corr.sendMail(data, function (error: any, info: any) {
-            if (error) {
-              console.log('Email error: ' + error);
-              return res.jsonp({ message: 'error' });
-            } else {
-              console.log('Email sent: ' + info.response);
-              return res.jsonp({ message: 'ok' });
-            }
-          });
-
-          res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-        } else if (ele.vaca_mail === true && ele.vaca_noti === false) {
-          var corr = enviarMail(servidor, parseInt(puerto));
-          corr.sendMail(data, function (error: any, info: any) {
-            if (error) {
-              console.log('Email error: ' + error);
-              return res.jsonp({ message: 'error' });
-            } else {
-              console.log('Email sent: ' + info.response);
-              return res.jsonp({ message: 'ok' });
-            }
-          });
-
-          res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-        } else if (ele.vaca_mail === false && ele.vaca_noti === true) {
-          res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-        } else if (ele.vaca_mail === false && ele.vaca_noti === false) {
-          res.json({ message: 'Estado de las vacaciones actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-        }
-      });
-
-    });
-
-  }
-
   public async ObtenerSolicitudVacaciones(req: Request, res: Response) {
     const id = req.params.id_emple_vacacion;
     const SOLICITUD = await pool.query('SELECT *FROM vista_datos_solicitud_vacacion WHERE id_emple_vacacion = $1', [id]);
@@ -466,6 +329,23 @@ class VacacionesControlador {
     }
   }
 
+  // ACTUALIZAR ESTADO DE SOLICITUD DE VACACIONES
+  public async ActualizarEstado(req: Request, res: Response): Promise<void> {
+
+    const id = req.params.id;
+    const { estado } = req.body;
+
+    await pool.query(
+      `
+      UPDATE vacaciones SET estado = $1 WHERE id = $2
+      `, [estado, id]);
+
+    if (3 === estado) {
+      RestarPeriodoVacacionAutorizada(parseInt(id));
+    }
+
+  }
+
   /** ********************************************************************************************** **
    **                MÉTODOS DE ENVIO DE CORREOS DE SOLICITUDES DE VACACIONES                        **
    ** ********************************************************************************************** **/
@@ -478,6 +358,8 @@ class VacacionesControlador {
     const path_folder = path.resolve('logos');
 
     var datos = await Credenciales(req.id_empresa);
+
+    console.log('ver datos correo  ', datos);
 
     if (datos === 'ok') {
 
@@ -507,7 +389,7 @@ class VacacionesControlador {
         html: `
                <body>
                    <div style="text-align: center;">
-                       <img width="50%" height="50%" src="cid:cabeceraf"/>
+                       <img width="25%" height="25%" src="cid:cabeceraf"/>
                    </div>
                    <br>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -608,7 +490,7 @@ class VacacionesControlador {
         html: `
                  <body>
                      <div style="text-align: center;">
-                         <img width="50%" height="50%" src="cid:cabeceraf"/>
+                         <img width="25%" height="25%" src="cid:cabeceraf"/>
                      </div>
                      <br>
                      <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
