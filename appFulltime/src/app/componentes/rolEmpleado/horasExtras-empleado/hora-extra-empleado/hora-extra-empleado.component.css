@@ -1,11 +1,3 @@
-.barraTitulo { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
 p { font-size: x-small; }
 
 .fas { cursor: pointer; }
@@ -17,8 +9,6 @@ p { font-size: x-small; }
 .btn { margin-bottom: 10px; background-color: rgb(80,87,97); color: white; } 
 
 #datosF { font-weight: bold; font-size: 15px; padding-right: 5px; }
-
-
 
 .caja1 {padding: 0px 10px 0px 10px; width: 250px; }
 

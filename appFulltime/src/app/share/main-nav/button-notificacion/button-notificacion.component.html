@@ -76,7 +76,7 @@
                 </a>
             </div>
             <div *ngIf="n.visto == false">
-                <a style="background: rgb(240, 221, 77);"
+                <a style="background: rgb(241,233,124);"
                     *ngIf="loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
                     mat-menu-item [routerLink]="['/ver-permiso/', n.id_permiso]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -97,7 +97,7 @@
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
-                <a style="background: rgb(173, 243, 126);"
+                <a style="background: rgb(196,217,124);"
                     *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
                     [routerLink]="['/ver-vacacion/', n.id_vacaciones]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -118,7 +118,7 @@
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
-                <a style="background: rgb(107, 228, 168);"
+                <a style="background: rgb(142,161,193);"
                     *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
                     [routerLink]="['/ver-hora-extra/', n.id_hora_extra]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">

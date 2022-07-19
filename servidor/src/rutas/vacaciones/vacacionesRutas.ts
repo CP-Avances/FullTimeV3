@@ -21,6 +21,10 @@ class VacacionesRutas {
         this.router.get('/datosSolicitud/:id_emple_vacacion', TokenValidation, VACACIONES_CONTROLADOR.ObtenerSolicitudVacaciones);
         this.router.get('/datosAutorizacion/:id_vacaciones', TokenValidation, VACACIONES_CONTROLADOR.ObtenerAutorizacionVacaciones);
 
+        /** ************************************************************************************************* **
+         ** **                          METODOS PARA MANEJO DE VACACIONES                                  ** ** 
+         ** ************************************************************************************************* **/
+
         // CREAR REGISTRO DE VACACIONES
         this.router.post('/', TokenValidation, VACACIONES_CONTROLADOR.CrearVacaciones);
         // EDITAR REGISTRO DE VACACIONES
@@ -31,6 +35,10 @@ class VacacionesRutas {
         this.router.delete('/eliminar/:id_vacacion', TokenValidation, VACACIONES_CONTROLADOR.EliminarVacaciones);
         // EDITAR ESTADO DE VACACIONES
         this.router.put('/:id/estado', TokenValidation, VACACIONES_CONTROLADOR.ActualizarEstado);
+
+        /** ************************************************************************************************* **
+         ** **                        METODO DE ENVIO DE NOTIFICACIONES                                    ** ** 
+         ** ************************************************************************************************* **/
 
         // ENVIO DE CORREO DE VACACIONES DESDE APLICACIONES WEB
         this.router.post('/mail-noti/', TokenValidation, VACACIONES_CONTROLADOR.EnviarCorreoVacacion);

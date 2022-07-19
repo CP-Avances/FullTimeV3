@@ -52,7 +52,7 @@ export class MainNavComponent implements OnInit {
     public loginService: LoginService,
     public restEmpresa: EmpresaService,
     public restF: FuncionesService,
-    public vistaFlotante: MatDialog,
+    public ventana: MatDialog,
     private router: Router,
     private toaster: ToastrService,
     private plantillaPDF: PlantillaReportesService,
@@ -94,9 +94,8 @@ export class MainNavComponent implements OnInit {
       if (diferencia <= 30) {
         this.showMessageLicencia = true;
         const text = (diferencia === 1) ? 'dia' : 'dias';
-        this.toaster.warning(`Tu licencia expira en ${diferencia + ' ' + text}`)
+        this.toaster.warning(`SU LICENCIA EXPIRA EN ${diferencia + ' ' + text}`)
       }
-
     }
   }
 
@@ -161,7 +160,8 @@ export class MainNavComponent implements OnInit {
   }
 
   RegistrarFrase() {
-    this.vistaFlotante.open(FraseSeguridadComponent, { width: '350px', data: this.id_empleado_logueado }).disableClose = true;
+    this.ventana.open(FraseSeguridadComponent,
+      { width: '350px', data: this.id_empleado_logueado }).disableClose = true;
   }
 
   irHome() {

@@ -74,7 +74,11 @@ export class RealTimeService {
     return this.http.post<any>(`${environment.url}/noti-real-time/mail-comunicado`, datos);
   }
 
-  EnviarMensajeComunicado(data: any) {
+  /** ************************************************************************************ **
+   ** **                 MÉTODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
+   ** ************************************************************************************ **/
+
+  EnviarMensajeGeneral(data: any) {
     return this.http.post<any>(`${environment.url}/noti-real-time/noti-comunicado/`, data);
   }
 

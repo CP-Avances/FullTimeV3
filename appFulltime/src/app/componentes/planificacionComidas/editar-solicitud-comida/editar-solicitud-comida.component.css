@@ -1,32 +1,16 @@
-.btn { background-color: rgb(80,87,97); margin-left: 15px; color: white; }
-
-mat-form-field { padding: 10px 15px 0px 15px; width: 250px;}
-
-#selecAlmuerzo { font-size: 14px; }
-
-#planComida { cursor: pointer; }
-
-.tituloPlanificacionAlmuerzos { 
-    background: rgb(52,65,84); 
-    text-align: center; 
-    padding-top: 14px;
-    font-size: 25px; 
-    color: white; 
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
 }
 
-#mover { 
-    margin-left: 10px;
-    font-size: 20px;
-    color: blue;
-    cursor: grab;
+mat-form-field {
+    padding: 10px 15px 0px 15px;
+    width: 250px;
 }
 
-.nota {
-    padding: 0px 5px 10px 5px;
-    color: rgb(52,65,84);
-    text-align: justify;
-    font-weight: bold; 
-    font-size: 12px; 
+#selecAlmuerzo {
+    font-size: 14px;
 }
 
 .scrollbar {
@@ -40,6 +24,6 @@ mat-form-field { padding: 10px 15px 0px 15px; width: 250px;}
 }
 
 .scrollbar-primary::-webkit-scrollbar {
-    background-color: #F5F5F5; 
+    background-color: #F5F5F5;
     width: 12px;
 }

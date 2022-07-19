@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VACACIONES_CONTROLADOR = void 0;
-const settingsMail_1 = require("../../libs/settingsMail");
 const CargarVacacion_1 = require("../../libs/CargarVacacion");
+const settingsMail_1 = require("../../libs/settingsMail");
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
 class VacacionesControlador {
@@ -334,7 +334,6 @@ class VacacionesControlador {
             var tiempo = (0, settingsMail_1.fechaHora)();
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
-            console.log('ver datos correo  ', datos);
             if (datos === 'ok') {
                 const { idContrato, desde, hasta, id_dep, id_suc, estado_v, correo, solicitado_por, id, asunto, tipo_solicitud, proceso } = req.body;
                 const correoInfoPideVacacion = yield database_1.default.query(`
@@ -382,8 +381,8 @@ class VacacionesControlador {
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Estado:</b> ${estado_v} <br><br>
-                       <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de vacaciones.</a> <br><br>                           
                        <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
+                       <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de vacaciones.</a> <br><br>                                                  
                    </p>
                    <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Gracias por la atención</b><br>

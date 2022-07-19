@@ -35,11 +35,11 @@ export class ButtonNotificacionComponent implements OnInit {
         if (parseInt(data.id_receives_empl) === this.id_empleado_logueado) {
           console.log('data_notificacion **** ', data);
           this.realTime.ObtenerUnaNotificaciones(data.id).subscribe(res => {
-             console.log('res_notificacion **** ', res);
+            console.log('res_notificacion **** ', res);
             this.estadoNotificacion = false;
-            if (this.noti_real_time.length < 5) {
+            if (this.noti_real_time.length < 10) {
               this.noti_real_time.unshift(res[0]);
-            } else if (this.noti_real_time.length >= 5) {
+            } else if (this.noti_real_time.length >= 10) {
               this.noti_real_time.unshift(res[0]);
               this.noti_real_time.pop();
             }
@@ -70,7 +70,7 @@ export class ButtonNotificacionComponent implements OnInit {
   confRes: any = [];
   LlamarNotificaciones(id: number) {
     this.realTime.ObtenerNotificacionesReceives(id).subscribe(res => {
-     // console.log('res_notificacion **** ', res);
+      // console.log('res_notificacion **** ', res);
       this.noti_real_time = res;
       console.log(this.noti_real_time);
       if (!this.noti_real_time.text) {
@@ -88,7 +88,7 @@ export class ButtonNotificacionComponent implements OnInit {
       console.log(err);
     });
     this.realTime.ObtenerConfigNotiEmpleado(id).subscribe(res => {
-       console.log(res);
+      console.log(res);
       this.confRes = res;
       if (!this.confRes.text) {
         if (res[0].vaca_noti === false || res[0].permiso_noti === false || res[0].hora_extra_noti === false) {

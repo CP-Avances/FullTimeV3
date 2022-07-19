@@ -526,10 +526,13 @@ export class PlanificacionComidasComponent implements OnInit {
 
     // DATOS DE ESTRUCTURA DEL CORREO
     let DataCorreo = {
+      tipo_solicitud: 'REALIZA',
       observacion: datos.observacion,
       id_comida: datos.id_comida,
       id_envia: this.idEmpleadoLogueado,
       nombres: usuario,
+      proceso: 'creado',
+      asunto: 'PLANIFICACION DE ALIMENTACION',
       correo: cuenta_correo,
       inicio: h_inicio,
       extra: datos.extra,
@@ -570,7 +573,7 @@ export class PlanificacionComidasComponent implements OnInit {
       id_empl_envia: this.idEmpleadoLogueado,
       id_empl_recive: id_empleado_recibe,
       tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
-      mensaje: 'Planificación de alimentación desde ' +
+      mensaje: 'Planificación servicio de alimentación desde ' +
         desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
         ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',

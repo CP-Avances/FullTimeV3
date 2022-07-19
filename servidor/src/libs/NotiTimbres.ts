@@ -23,20 +23,20 @@ export const NotificacionTimbreAutomatica = function () {
                 // f.setUTCDate(15);
                 f.setUTCMonth(parseInt(m) - 1);
                 f.setUTCFullYear(parseInt(a));
-                console.log('-----6 ',f.toJSON());
+                console.log('-----6 ', f.toJSON());
 
                 // let hora: number = parseInt(f.toLocaleTimeString().split(':')[0]);
                 let hora: number = 9; // =====> solo para probar
                 f.setUTCHours(hora);
-                console.log('----7 ',f.toJSON());
+                console.log('----7 ', f.toJSON());
 
-                if(f != null){
+                if (f != null && f.toJSON() != null) {
                     var fecha: string = f.toJSON().split('T')[0];
                     var h = f.toJSON().split('T')[1];
                     let retorno = await CalcularHoras(fecha, h.split(':')[0]);
                     console.log('Retorno final:', retorno);
                 }
-                
+
                 //let retorno = await CalcularHoras(fecha, h.split(':')[0]);
                 //console.log('Retorno final:', retorno);
             }

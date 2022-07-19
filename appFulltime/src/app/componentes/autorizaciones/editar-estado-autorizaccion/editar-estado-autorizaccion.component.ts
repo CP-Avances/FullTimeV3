@@ -107,16 +107,19 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
     if (estado === 2) {
       var estado_p = 'Preautorizado';
+      var estado_c = 'Preautorizada';
     }
     else if (estado === 3) {
       var estado_p = 'Autorizado';
+      var estado_c = 'Autorizada';
     }
     else if (estado === 4) {
       var estado_p = 'Negado';
+      var estado_c = 'Negada';
     }
     this.informacion.BuscarJefes(datos).subscribe(permiso => {
       console.log(permiso);
-      this.EnviarCorreo(permiso, estado_p);
+      this.EnviarCorreo(permiso, estado_p, estado_c);
       this.EnviarNotificacion(permiso, estado_p);
       this.toastr.success('', 'Proceso realizado exitosamente.', {
         timeOut: 6000,
@@ -138,7 +141,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
    ** **                   METODO DE ENVIO DE NOTIFICACIONES DE PERMISOS                       ** **
    ** ******************************************************************************************* **/
 
-  EnviarCorreo(permiso: any, estado_p: string) {
+  EnviarCorreo(permiso: any, estado_p: string, estado_c: string) {
 
     console.log('entra correo')
     var cont = 0;
@@ -192,7 +195,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
           id_dep: e.id_dep,
           id_suc: e.id_suc,
           correo: correo_usuarios,
-          asunto: 'APROBACION DE SOLICITUD DE PERMISO',
+          asunto: 'SOLICITUD DE PERMISO ' + estado_c.toUpperCase(),
           id: permiso.id,
           solicitado_por: localStorage.getItem('fullname_print'),
         }

@@ -4,7 +4,6 @@ import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto,
 import fs from 'fs';
 import pool from '../../database';
 import path from 'path';
-const nodemailer = require("nodemailer");
 
 class PermisosControlador {
 
@@ -48,26 +47,6 @@ class PermisosControlador {
         }
     }
 
-    public async ListarUnPermisoInfo(req: Request, res: Response) {
-        const id = req.params.id_permiso
-        const PERMISOS = await pool.query(
-            `
-            SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, p.dia, p.hora_salida, p.hora_ingreso, 
-            p.hora_numero, p.documento, p.docu_nombre, p.fec_final, p.estado, p.id_empl_cargo, e.nombre, 
-            e.apellido, e.cedula, e.id AS id_empleado, cp.id AS id_tipo_permiso, 
-            cp.descripcion AS nom_permiso, ec.id AS id_contrato 
-            FROM permisos AS p, empl_contratos AS ec, empleados AS e, cg_tipo_permisos AS cp 
-            WHERE p.id = $1 AND p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
-            p.id_tipo_permiso = cp.id
-            `, [id]);
-        if (PERMISOS.rowCount > 0) {
-            return res.json(PERMISOS.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
-        }
-    }
-
     public async ObtenerUnPermiso(req: Request, res: Response) {
         const id = req.params.id;
         const PERMISOS = await pool.query('SELECT * FROM permisos WHERE id = $1', [id]);
@@ -78,7 +57,6 @@ class PermisosControlador {
             return res.status(404).jsonp({ text: 'No se encuentran registros' });
         }
     }
-
 
     public async ObtenerNumPermiso(req: Request, res: Response): Promise<any> {
         const { id_empleado } = req.params;
@@ -385,9 +363,9 @@ class PermisosControlador {
         } else {
             const response: QueryResult = await pool.query(
                 `
-                    UPDATE permisos SET descripcion = $1, fec_inicio = $2, fec_final = $3, dia = $4, dia_libre = $5, 
-                    id_tipo_permiso = $6, hora_numero = $7, num_permiso = $8, docu_nombre = $9, hora_salida = $10, 
-                    hora_ingreso = $11 WHERE id = $12 RETURNING *
+                    UPDATE permisos SET descripcion = $1, fec_inicio = $2, fec_final = $3, dia = $4, 
+                    dia_libre = $5, id_tipo_permiso = $6, hora_numero = $7, num_permiso = $8, docu_nombre = $9, 
+                    hora_salida = $10, hora_ingreso = $11 WHERE id = $12 RETURNING *
                 `
                 , [descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero,
                     num_permiso, docu_nombre, hora_salida, hora_ingreso, id]);
@@ -506,6 +484,29 @@ class PermisosControlador {
             , [estado, id]);
     }
 
+    // METODO PARA OBTENER INFORMACION DE UN PERMISO
+    public async ListarUnPermisoInfo(req: Request, res: Response) {
+        const id = req.params.id_permiso
+        const PERMISOS = await pool.query(
+            `
+            SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, p.dia, p.hora_salida, p.hora_ingreso, 
+            p.hora_numero, p.documento, p.docu_nombre, p.fec_final, p.estado, p.id_empl_cargo, e.nombre, 
+            e.apellido, e.cedula, e.id AS id_empleado, cp.id AS id_tipo_permiso, 
+            cp.descripcion AS nom_permiso, ec.id AS id_contrato 
+            FROM permisos AS p, empl_contratos AS ec, empleados AS e, cg_tipo_permisos AS cp 
+            WHERE p.id = $1 AND p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
+            p.id_tipo_permiso = cp.id
+            `,
+            [id]);
+        if (PERMISOS.rowCount > 0) {
+            return res.json(PERMISOS.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+
     /** ********************************************************************************************* **
      ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * ** 
      ** ********************************************************************************************* **/
@@ -575,8 +576,8 @@ class PermisosControlador {
                                     <b>Días permiso:</b> ${dias_permiso} <br>
                                     <b>Horas permiso:</b> ${horas_permiso} <br>
                                     <b>Estado:</b> ${estado_p} <br><br>
-                                    <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de permiso.</a> <br><br>
                                     <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
+                                    <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de permiso.</a> <br><br>
                                 </p>
                                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                                     <b>Gracias por la atención</b><br>

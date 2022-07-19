@@ -51,13 +51,10 @@ export class PlanHoraExtraService {
     return this.http.put<any>(`${environment.url}/planificacionHoraExtra/estado/${id}`, datos);
   }
 
-  EnviarMensajeJustificacion(data: any) {
-    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/aviso/`, data);
-  }
 
 
 
-
+  
 
   /** *************************************************************************************************** **
    ** *                 ENVIO DE CORREO ELECTRONICO DE PLANIFICACIÓN DE HORAS EXTRAS                    * ** 

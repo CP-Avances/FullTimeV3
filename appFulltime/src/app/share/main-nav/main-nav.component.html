@@ -56,19 +56,21 @@
 
     </mat-tree>
 
-    <mat-card *ngIf="showMessageLicencia" style="background-color: rgba(0, 89, 255, 0.849); color: white;" >
+    <mat-card *ngIf="showMessageLicencia"
+      style="background-color: rgba(240, 56, 56, 0.849); color: white; text-align: center;">
+      <mat-icon style="font-size: 40px;">report_problem</mat-icon>
       <mat-card-header>
-        <mat-card-title>Licencia caduca</mat-card-title>
-        <mat-card-subtitle style="color: rgb(221, 221, 221);">
+        <mat-card-title style="font-size: 18px;">LICENCIA EXPIRARÁ</mat-card-title>
+        <mat-card-subtitle style="color: rgb(221, 221, 221); font-size: 14px;">
           {{fec_caducidad_licencia | date: 'fullDate' }}
         </mat-card-subtitle>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content style="font-size: 15px;">
         <p>
-          Comunicate con casa pazmiño para seguir utilizando tu sistema.
+          Comunicate con Casa Pazmiño para seguir utilizando tu sistema.
         </p>
       </mat-card-content>
-      <mat-card-actions>
+      <mat-card-actions style="text-align: center;">
         <a mat-raised-button href="https://casapazmino.com.ec" target="_blank">Ir Casa Pazmiño
           <mat-icon>public</mat-icon>
         </a>
@@ -97,8 +99,8 @@
 
           <!-- Botón Home -->
           <button mat-mini-fab style="margin-left: 10px; margin-right: 10px;" (click)="irHome()">
-            <mat-icon id="iconos-navegador" style="margin-left: 8px;" matSuffix 
-              matTooltipPosition="right" matTooltip="Ir inicio">home</mat-icon>
+            <mat-icon id="iconos-navegador" style="margin-left: 8px;" matSuffix matTooltipPosition="right"
+              matTooltip="Ir inicio">home</mat-icon>
           </button>
 
           <!-- Botón Avisos -->

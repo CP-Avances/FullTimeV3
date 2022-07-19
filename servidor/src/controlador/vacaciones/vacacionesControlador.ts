@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { QueryResult } from 'pg';
+import { RestarPeriodoVacacionAutorizada } from '../../libs/CargarVacacion';
 import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales }
   from '../../libs/settingsMail'
-import { RestarPeriodoVacacionAutorizada } from '../../libs/CargarVacacion'
+import { QueryResult } from 'pg';
 import pool from '../../database';
 import path from 'path';
 
@@ -359,8 +359,6 @@ class VacacionesControlador {
 
     var datos = await Credenciales(req.id_empresa);
 
-    console.log('ver datos correo  ', datos);
-
     if (datos === 'ok') {
 
       const { idContrato, desde, hasta, id_dep, id_suc, estado_v, correo, solicitado_por,
@@ -414,8 +412,8 @@ class VacacionesControlador {
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Estado:</b> ${estado_v} <br><br>
-                       <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de vacaciones.</a> <br><br>                           
                        <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
+                       <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de vacaciones.</a> <br><br>                                                  
                    </p>
                    <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Gracias por la atención</b><br>

@@ -239,10 +239,11 @@ export class VerVacacionComponent implements OnInit {
   }
 
   AbrirAutorizaciones(datosSeleccionados: any): void {
-    this.ventana.open(VacacionAutorizacionesComponent, { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(item => {
-      this.BuscarDatos();
-      this.HabilitarAutorizacion = true;
-    });
+    this.ventana.open(VacacionAutorizacionesComponent,
+      { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(item => {
+        this.BuscarDatos();
+        this.HabilitarAutorizacion = true;
+      });
   }
 
   ObtenerFecha() {

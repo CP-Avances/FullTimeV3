@@ -269,13 +269,12 @@ class NotificacionTiempoRealControlador {
             }
         });
     }
-    // NOTIFICACIÓN DE COMUNICADOS
-    EnviarNotificacionComunicado(req, res) {
+    // NOTIFICACIÓNES GENERALES
+    EnviarNotificacionGeneral(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let { id_empl_envia, id_empl_recive, mensaje } = req.body;
+            let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
             var tiempo = (0, settingsMail_1.fechaHora)();
             let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
-            let tipo = 6; // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
             yield database_1.default.query(`
         INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
         VALUES($1, $2, $3, $4, $5)

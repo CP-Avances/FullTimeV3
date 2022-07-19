@@ -70,7 +70,7 @@ export class SolicitaComidaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('datos', this.data, this.data.servicios, 'departamento', this.departamento)
+    console.log('datos', this.data, 'departamento', this.departamento)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
     this.ObtenerServicios();
@@ -165,7 +165,7 @@ export class SolicitaComidaComponent implements OnInit {
     }, error => {
       // METODO PARA CREAR SOLICITUD DE ALIMENTACION
       this.restPlan.CrearSolicitudComida(datosPlanComida).subscribe(alimentacion => {
-        this.SendEmailsEmpleados(alimentacion);
+        this.EnviarCorreo(alimentacion);
         this.NotificarPlanificacion(alimentacion);
         this.toastr.success('Operación Exitosa', 'Solicitud registrada.', {
           timeOut: 6000,
@@ -178,18 +178,21 @@ export class SolicitaComidaComponent implements OnInit {
   // METODO PARA ENVIO DE NOTIFICACION
   NotificarPlanificacion(alimentacion: any) {
 
+    console.log('enviar planificacion ', alimentacion)
+
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
     let desde = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
     let inicio = moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm');
     let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
 
     let mensaje = {
-      id_empl_envia: this.data.idEmpleado,
+      id_empl_envia: parseInt(this.data.idEmpleado),
       id_empl_recive: '',
       tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
       mensaje: 'Ha solicitado un servicio de alimentación desde ' +
         desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
-        ' horario de ' + inicio + ' a ' + final,
+        ' horario de ' + inicio + ' a ' + final + ' servicio ',
+      id_comida: alimentacion.id_comida
     }
 
     alimentacion.EmpleadosSendNotiEmail.forEach(e => {
@@ -204,7 +207,7 @@ export class SolicitaComidaComponent implements OnInit {
   }
 
   // METODO PARA ENVIO DE CORREO
-  SendEmailsEmpleados(alimentacion: any) {
+  EnviarCorreo(alimentacion: any) {
     var cont = 0;
     var correo_usuarios = '';
 
@@ -229,20 +232,23 @@ export class SolicitaComidaComponent implements OnInit {
       }
 
       if (cont === alimentacion.EmpleadosSendNotiEmail.length) {
-        let datosServicioCreado = {
+        let comida = {
+          id_usua_solicita: alimentacion.id_empleado,
+          tipo_solicitud: 'Servicio de alimentación solicitado por',
           fec_solicitud: solicitud + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY'),
+          observacion: alimentacion.observacion,
+          id_comida: alimentacion.id_comida,
+          proceso: 'creado',
+          correo: correo_usuarios,
+          asunto: 'SOLICITUD DE SERVICIO DE ALIMENTACION',
           inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
           final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),
-          id_comida: alimentacion.id_comida,
-          observacion: alimentacion.observacion,
-          id_usua_solicita: alimentacion.id_empleado,
           extra: alimentacion.extra,
-          correo: correo_usuarios,
           id: alimentacion.id,
-          solicitado_por: this.empleados[0].nombre + ' ' + this.empleados[0].apellido
+          solicitado_por: localStorage.getItem('fullname_print'),
         }
         if (correo_usuarios != '') {
-          this.restPlan.EnviarCorreo(datosServicioCreado).subscribe(
+          this.restPlan.EnviarCorreo(comida).subscribe(
             resp => {
               if (resp.message === 'ok') {
                 this.toastr.success('Correo de solicitud enviado exitosamente.', '', {

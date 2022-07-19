@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import { TokenValidation } from '../../libs/verificarToken'
 import { ModuloPermisosValidation } from '../../libs/Modulos/verificarPermisos'
+import { TokenValidation } from '../../libs/verificarToken'
+import { Router } from 'express';
 import PERMISOS_CONTROLADOR from '../../controlador/permisos/permisosControlador';
 const multipart = require('connect-multiparty');
 
@@ -21,9 +21,6 @@ class PermisosRutas {
         this.router.get('/lista-autorizados/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisosAutorizados);
         this.router.get('/:id', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerUnPermiso);
         this.router.get('/permiso/editar/:id', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEditar);
-        
-
-
 
         this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
         this.router.get('/numPermiso/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerNumPermiso);
@@ -31,10 +28,13 @@ class PermisosRutas {
         this.router.get('/datosSolicitud/:id_emple_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerDatosSolicitud);
         this.router.get('/datosAutorizacion/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerDatosAutorizacion);
 
-
         this.router.get('/permisoCodigo/:codigo', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoCodigo);
         this.router.post('/fechas_permiso/:codigo', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerFechasPermiso);
         this.router.post('/permisos-solicitados', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisos_Fechas);
+
+        /** ************************************************************************************************** **
+         ** **                         METODOS PARA MANEJO DE PERMISOS                                      ** **
+         ** ************************************************************************************************** **/
 
         // CREAR PERMISO
         this.router.post('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.CrearPermisos);
@@ -43,13 +43,15 @@ class PermisosRutas {
         // ACTUALIZAR PERMISO
         this.router.put('/:id/permiso-solicitado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EditarPermiso);
         // ELIMINAR PERMISO
-        
         this.router.delete('/eliminar/:id_permiso/:doc', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EliminarPermiso);
         // ACTUALIZAR ESTADO DEL PERMISO
         this.router.put('/:id/estado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ActualizarEstado);
-
         // BUSCAR INFORMACION DE UN PERMISO
         this.router.get('/un-permiso/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarUnPermisoInfo);
+
+        /** ************************************************************************************************* **
+         ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** ** 
+         ** ************************************************************************************************* **/
 
         // ENVIAR CORREO MEDIANTE APLICACION WEB
         this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EnviarCorreoWeb);

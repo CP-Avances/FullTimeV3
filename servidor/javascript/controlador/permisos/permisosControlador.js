@@ -17,7 +17,6 @@ const settingsMail_1 = require("../../libs/settingsMail");
 const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
-const nodemailer = require("nodemailer");
 class PermisosControlador {
     ListarPermisos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -59,26 +58,6 @@ class PermisosControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    ListarUnPermisoInfo(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id_permiso;
-            const PERMISOS = yield database_1.default.query(`
-            SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, p.dia, p.hora_salida, p.hora_ingreso, 
-            p.hora_numero, p.documento, p.docu_nombre, p.fec_final, p.estado, p.id_empl_cargo, e.nombre, 
-            e.apellido, e.cedula, e.id AS id_empleado, cp.id AS id_tipo_permiso, 
-            cp.descripcion AS nom_permiso, ec.id AS id_contrato 
-            FROM permisos AS p, empl_contratos AS ec, empleados AS e, cg_tipo_permisos AS cp 
-            WHERE p.id = $1 AND p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
-            p.id_tipo_permiso = cp.id
-            `, [id]);
-            if (PERMISOS.rowCount > 0) {
-                return res.json(PERMISOS.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }
@@ -369,9 +348,9 @@ class PermisosControlador {
             }
             else {
                 const response = yield database_1.default.query(`
-                    UPDATE permisos SET descripcion = $1, fec_inicio = $2, fec_final = $3, dia = $4, dia_libre = $5, 
-                    id_tipo_permiso = $6, hora_numero = $7, num_permiso = $8, docu_nombre = $9, hora_salida = $10, 
-                    hora_ingreso = $11 WHERE id = $12 RETURNING *
+                    UPDATE permisos SET descripcion = $1, fec_inicio = $2, fec_final = $3, dia = $4, 
+                    dia_libre = $5, id_tipo_permiso = $6, hora_numero = $7, num_permiso = $8, docu_nombre = $9, 
+                    hora_salida = $10, hora_ingreso = $11 WHERE id = $12 RETURNING *
                 `, [descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero,
                     num_permiso, docu_nombre, hora_salida, hora_ingreso, id]);
                 let filePath = `servidor\\docRespaldosPermisos\\${anterior_doc}`;
@@ -468,6 +447,27 @@ class PermisosControlador {
             `, [estado, id]);
         });
     }
+    // METODO PARA OBTENER INFORMACION DE UN PERMISO
+    ListarUnPermisoInfo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id_permiso;
+            const PERMISOS = yield database_1.default.query(`
+            SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, p.dia, p.hora_salida, p.hora_ingreso, 
+            p.hora_numero, p.documento, p.docu_nombre, p.fec_final, p.estado, p.id_empl_cargo, e.nombre, 
+            e.apellido, e.cedula, e.id AS id_empleado, cp.id AS id_tipo_permiso, 
+            cp.descripcion AS nom_permiso, ec.id AS id_contrato 
+            FROM permisos AS p, empl_contratos AS ec, empleados AS e, cg_tipo_permisos AS cp 
+            WHERE p.id = $1 AND p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND 
+            p.id_tipo_permiso = cp.id
+            `, [id]);
+            if (PERMISOS.rowCount > 0) {
+                return res.json(PERMISOS.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+            }
+        });
+    }
     /** ********************************************************************************************* **
      ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * **
      ** ********************************************************************************************* **/
@@ -525,8 +525,8 @@ class PermisosControlador {
                                     <b>Días permiso:</b> ${dias_permiso} <br>
                                     <b>Horas permiso:</b> ${horas_permiso} <br>
                                     <b>Estado:</b> ${estado_p} <br><br>
-                                    <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de permiso.</a> <br><br>
                                     <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
+                                    <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de permiso.</a> <br><br>
                                 </p>
                                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                                     <b>Gracias por la atención</b><br>

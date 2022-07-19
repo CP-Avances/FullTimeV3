@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const verificarToken_1 = require("../../libs/verificarToken");
 const verificarPermisos_1 = require("../../libs/Modulos/verificarPermisos");
+const verificarToken_1 = require("../../libs/verificarToken");
+const express_1 = require("express");
 const permisosControlador_1 = __importDefault(require("../../controlador/permisos/permisosControlador"));
 const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart({
@@ -30,6 +30,9 @@ class PermisosRutas {
         this.router.get('/permisoCodigo/:codigo', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerPermisoCodigo);
         this.router.post('/fechas_permiso/:codigo', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerFechasPermiso);
         this.router.post('/permisos-solicitados', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.BuscarPermisos_Fechas);
+        /** ************************************************************************************************** **
+         ** **                         METODOS PARA MANEJO DE PERMISOS                                      ** **
+         ** ************************************************************************************************** **/
         // CREAR PERMISO
         this.router.post('/', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.CrearPermisos);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO
@@ -42,6 +45,9 @@ class PermisosRutas {
         this.router.put('/:id/estado', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ActualizarEstado);
         // BUSCAR INFORMACION DE UN PERMISO
         this.router.get('/un-permiso/:id_permiso', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ListarUnPermisoInfo);
+        /** ************************************************************************************************* **
+         ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** **
+         ** ************************************************************************************************* **/
         // ENVIAR CORREO MEDIANTE APLICACION WEB
         this.router.post('/mail-noti/', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.EnviarCorreoWeb);
         // ENVIAR CORREO MEDIANTE APLICACION MOVIL

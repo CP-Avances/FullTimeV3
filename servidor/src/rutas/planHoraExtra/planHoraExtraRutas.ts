@@ -17,11 +17,9 @@ class DepartamentoRutas {
         this.router.get('/id_plan_hora', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.EncontrarUltimoPlan);
         this.router.get('/justificar', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.ListarPlanHoraExtraObserva);
         this.router.get('/autorizacion', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.ListarPlanHoraExtraAutorizada);
-        this.router.put('/tiempo-autorizado/:id', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.TiempoAutorizado);
+
         this.router.put('/observacion/:id', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.ActualizarObservacion);
         this.router.put('/estado/:id', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.ActualizarEstado);
-
-        this.router.post('/send/aviso/', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.EnviarCorreoNotificacion);
 
         this.router.get('/datosAutorizacion/:id_plan_extra', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.ObtenerDatosAutorizacion);
 
@@ -60,6 +58,10 @@ class DepartamentoRutas {
         // CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
         this.router.post('/send/noti-planifica', TokenValidation, PLAN_HORA_EXTRA_CONTROLADOR.EnviarNotiPlanHE);
 
+
+
+        // ACTUALIZACION DE TIEMPO AUTORIZADO 
+        this.router.put('/tiempo-autorizado/:id', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.TiempoAutorizado);
     }
 }
 

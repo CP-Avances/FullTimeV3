@@ -39,7 +39,8 @@ class DatosGeneralesControlador {
                     SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
                     cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
                     e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo,
-                    c.permiso_mail, c.permiso_noti, c.vaca_mail, c.vaca_noti
+                    c.permiso_mail, c.permiso_noti, c.vaca_mail, c.vaca_noti, c.hora_extra_mail, 
+                    c.hora_extra_noti, c.comida_mail, c.comida_noti
                     FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
                     sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
                     WHERE da.id_departamento = $1 AND 
@@ -64,7 +65,8 @@ class DatosGeneralesControlador {
                             cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, 
                             ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, 
                             (e.nombre || ' ' || e.apellido) as fullname, e.cedula, e.correo, c.permiso_mail, 
-                            c.permiso_noti 
+                            c.permiso_noti, c.vaca_mail, c.vaca_noti, c.hora_extra_mail, 
+                            c.hora_extra_noti, c.comida_mail, c.comida_noti
                             FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
                             sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
                             WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND 
@@ -487,19 +489,17 @@ class DatosGeneralesControlador {
             let estado = req.params.estado;
             // CONSULTA DE BUSQUEDA DE SUCURSALES
             let suc = yield database_1.default.query(`
-        SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-        ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
-        `)
-                .then(result => { return result.rows; });
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
+            `).then(result => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
             let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
                 dep.departamentos = yield database_1.default.query(`
-            SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
-            WHERE d.id_sucursal = $1
-            `, [dep.id_suc])
-                    .then(result => {
+                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
+                WHERE d.id_sucursal = $1
+                `, [dep.id_suc]).then(result => {
                     return result.rows.filter(obj => {
                         return obj.name_dep != 'Ninguno';
                     });

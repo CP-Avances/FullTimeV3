@@ -354,7 +354,7 @@ export class RegistrarVacacionesComponent implements OnInit {
 
       // CAPTURANDO ESTADO DE LA SOLICITUD DE VACACIÓN
       if (vacacion.estado === 1) {
-        var estado_v = 'Pendiente';
+        var estado_v = 'Pendiente de autorización';
       }
 
       // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN

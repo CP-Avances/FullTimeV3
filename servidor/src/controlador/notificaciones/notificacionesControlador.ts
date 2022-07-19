@@ -266,18 +266,19 @@ class NotificacionTiempoRealControlador {
     }
   }
 
-  // NOTIFICACIÓN DE COMUNICADOS
-  public async EnviarNotificacionComunicado(req: Request, res: Response): Promise<void> {
-    let { id_empl_envia, id_empl_recive, mensaje } = req.body;
+  // NOTIFICACIÓNES GENERALES
+  public async EnviarNotificacionGeneral(req: Request, res: Response): Promise<void> {
+    let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
     var tiempo = fechaHora();
     let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
-    let tipo = 6; // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
+
     await pool.query(
       `
         INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
         VALUES($1, $2, $3, $4, $5)
       `,
       [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+
     res.jsonp({ message: 'Comunicado enviado exitosamente.' })
   }
 

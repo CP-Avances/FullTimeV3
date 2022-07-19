@@ -1,7 +1,7 @@
 <br>
 <div class="container" style="padding-bottom: 25px;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div class="barraTitulo d-flex bd-highlight">
+        <div class="d-flex bd-highlight" id="titulo">
             <div class="w-100 bd-highlight">
                 <h5>Solicitar Hora Extra</h5>
             </div>
@@ -49,22 +49,18 @@
             </div>
             <div style="text-align: right;" *ngIf="h.estado === 'Pendiente'">
                 <i class="fas fa-edit" id="edit" (click)="EditarHoraExtra(h)" matSuffix matTooltipPosition="right"
-                     matTooltip="Modificar los datos generales de este registro">
+                    matTooltip="Modificar los datos generales de este registro">
                     <p>Editar</p>
                 </i>
                 <i class="fas fa-backspace" id="cancel" (click)="CancelarHoraExtra(h)" matSuffix
-                    matTooltipPosition="right" 
-                    matTooltip="Cancelar solicitud de horas extras">
+                    matTooltipPosition="right" matTooltip="Cancelar solicitud de horas extras">
                     <p>Cancelar</p>
                 </i>
             </div>
             <mat-divider></mat-divider>
         </div>
-        <mat-paginator id="pagina" [length]="hora_extra.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="hora_extra.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
-        <!-- <div class="card-footer pb-0 pt-3">
-            <jw-pagination [items]="hora_extra" (changePage)="onChangePage($event)"></jw-pagination>
-        </div>-->
     </div>
 </div>

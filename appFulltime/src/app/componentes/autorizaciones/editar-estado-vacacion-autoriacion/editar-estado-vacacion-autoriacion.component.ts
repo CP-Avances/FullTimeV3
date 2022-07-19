@@ -1,11 +1,12 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
+
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
+import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 interface Estado {
@@ -18,10 +19,10 @@ interface Estado {
   templateUrl: './editar-estado-vacacion-autoriacion.component.html',
   styleUrls: ['./editar-estado-vacacion-autoriacion.component.css']
 })
+
 export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
 
   estados: Estado[] = [
-    // { id: 1, nombre: 'Pendiente'},
     { id: 2, nombre: 'Pre-autorizado' },
     { id: 3, nombre: 'Autorizado' },
     { id: 4, nombre: 'Negado' },
@@ -45,12 +46,13 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
     private restV: VacacionesService,
     public ventana: MatDialogRef<EditarEstadoVacacionAutoriacionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.id_empleado_loggin = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
-    console.log(this.data, 'datakjdjddjdndn');
-    this.id_empleado_loggin = parseInt(localStorage.getItem('empleado'));
-    this.ObtenerTiempo();
+    console.log(this.data, ' aprobar vacacion');
+
     if (this.data.auto.estado === 1) {
       this.toastr.info('Solicitud pendiente de aprobación.', '', {
         timeOut: 6000,
@@ -60,16 +62,17 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
         estadoF: this.data.auto.estado
       });
     }
+
+    this.ObtenerTiempo();
     this.ObtenerDatos();
   }
 
   ObtenerTiempo() {
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    console.log('fecha Actual', this.FechaActual);
   }
 
-  // METODO DE APROBACION DE SOLICITUD DE PERMISO
+  // METODO DE APROBACION DE SOLICITUD DE VACACIONES
   ActualizarEstadoAprobacion(form: any) {
     let aprobacion = {
       id_documento: this.data.auto.id_documento + localStorage.getItem('empleado') + '_' + form.estadoF + ',',
@@ -101,16 +104,19 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
     // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
     if (estado === 2) {
       var estado_v = 'Preautorizado';
+      var estado_c = 'Preautorizada';
     }
     else if (estado === 3) {
       var estado_v = 'Autorizado';
+      var estado_c = 'Autorizada';
     }
     else if (estado === 4) {
       var estado_v = 'Negado';
+      var estado_c = 'Negada';
     }
     this.informacion.BuscarJefes(datos).subscribe(vacacion => {
       console.log(vacacion);
-      this.EnviarCorreoEmpleados(vacacion, estado_v);
+      this.EnviarCorreoEmpleados(vacacion, estado_v, estado_c);
       this.EnviarNotificacion(vacacion, estado_v);
       this.toastr.success('', 'Proceso realizado exitosamente.', {
         timeOut: 6000,
@@ -129,7 +135,7 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
   }
 
   // METODO PARA ENVIO DE NOTIFICACIONES DE VACACIONES
-  EnviarCorreoEmpleados(vacacion: any, estado_v: string) {
+  EnviarCorreoEmpleados(vacacion: any, estado_v: string, estado_c: string) {
 
     console.log('ver vacaciones..   ', vacacion)
 
@@ -156,7 +162,6 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
         }
       }
 
-      console.log('ver contadores..   ', cont + '   ' + vacacion.EmpleadosSendNotiEmail.length)
       // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
       if (cont === vacacion.EmpleadosSendNotiEmail.length) {
         let datosVacacionCreada = {
@@ -169,11 +174,11 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
           id_dep: e.id_dep, // VERIFICAR
           id_suc: e.id_suc, // VERIFICAR
           correo: correo_usuarios,
-          asunto: 'APROBACIÓN DE SOLICITUD DE VACACIONES',
+          asunto: 'SOLICITUD DE VACACIONES ' + estado_c.toUpperCase(),
           id: vacacion.id,
           solicitado_por: localStorage.getItem('fullname_print'),
         }
-        console.log('ver correos..   ', correo_usuarios)
+
         if (correo_usuarios != '') {
           this.restV.EnviarCorreoVacaciones(datosVacacionCreada).subscribe(
             resp => {

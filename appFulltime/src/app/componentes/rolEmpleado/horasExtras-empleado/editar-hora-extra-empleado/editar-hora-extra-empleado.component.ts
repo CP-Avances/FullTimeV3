@@ -1,31 +1,33 @@
-import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { MatDialogRef } from '@angular/material/dialog';
 import * as moment from 'moment';
 
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
-import { ValidacionesService } from '../../../servicios/validaciones/validaciones.service';
-import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
-// INTERFACE QUE PERMITE DEFINIR LOS DATOS DE ESTADO DE LA SOLICITU DE HORAS EXTRAS
 interface Estado {
   id: number,
   nombre: string
 }
 
 @Component({
-  selector: 'app-pedido-hora-extra',
-  templateUrl: './pedido-hora-extra.component.html',
-  styleUrls: ['./pedido-hora-extra.component.css'],
+  selector: 'app-editar-hora-extra-empleado',
+  templateUrl: './editar-hora-extra-empleado.component.html',
+  styleUrls: ['./editar-hora-extra-empleado.component.css'],
+  providers: [
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'es' },
+  ]
 })
 
-export class PedidoHoraExtraComponent implements OnInit {
+export class EditarHoraExtraEmpleadoComponent implements OnInit {
 
-  // TIPOS DE ESTADOS QUE TIENE UNA SOLICITUD DE HORAS EXTRAS
   estados: Estado[] = [
     { id: 1, nombre: 'Pendiente' },
     { id: 2, nombre: 'Pre-autorizado' },
@@ -34,18 +36,15 @@ export class PedidoHoraExtraComponent implements OnInit {
   ];
 
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
-  fechaSolicitudF = new FormControl('', [Validators.required]);
-  fechaInicioF = new FormControl('', [Validators.required]);
   descripcionF = new FormControl('', [Validators.required]);
+  fechaInicioF = new FormControl('', [Validators.required]);
   horaInicioF = new FormControl('');
   FechaFinF = new FormControl('', [Validators.required]);
   horaFinF = new FormControl('', [Validators.required]);
   estadoF = new FormControl('', [Validators.required]);
   horasF = new FormControl('', [Validators.required]);
 
-  // VARIABLES DEL FORMULARIO DONDE SE REGISTRA LOS DATOS INGRESADOS
   public PedirHoraExtraForm = new FormGroup({
-    fechaSolicitudForm: this.fechaSolicitudF,
     descripcionForm: this.descripcionF,
     fechaInicioForm: this.fechaInicioF,
     horaInicioForm: this.horaInicioF,
@@ -55,20 +54,16 @@ export class PedidoHoraExtraComponent implements OnInit {
     horasForm: this.horasF,
   });
 
-  // DATOS DEL EMPLEADO
-  FechaActual: any;
   id_user_loggin: number;
   id_cargo_loggin: number;
   id_contrato_loggin: number;
 
   constructor(
     private realTime: RealTimeService,
-    private validar: ValidacionesService,
     private restHE: PedHoraExtraService,
     private toastr: ToastrService,
-    private restE: EmpleadoService,
-    public restAutoriza: AutorizacionService,
-    public ventana: MatDialogRef<PedidoHoraExtraComponent>,
+    public ventana: MatDialogRef<EditarHoraExtraEmpleadoComponent>,
+    @Inject(MAT_DIALOG_DATA) public datos: any
   ) {
     // VARIABLES DEL EMPLEADO QUE SOLICITA
     this.id_user_loggin = parseInt(localStorage.getItem("empleado"));
@@ -77,34 +72,46 @@ export class PedidoHoraExtraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // OBTENER LA FECHA ACTUAL
-    var f = moment();
-    this.FechaActual = f.format('YYYY-MM-DD');
-    this.PedirHoraExtraForm.patchValue({
-      fechaSolicitudForm: this.FechaActual,
-      estadoForm: 1
+    console.log(this.datos);
+
+    this.estados.forEach(obj => {
+      if (this.datos.estado === obj.nombre) {
+        this.PedirHoraExtraForm.patchValue({ estadoForm: obj.id });
+      }
     });
-
-    // OBTENER EL HORARIO DEL EMPLEADO
-    this.HorarioEmpleadoSemanal(this.id_cargo_loggin);
-    // OBTENER LOS DATOS GENERALES DEL EMPLEADO
-    this.ObtenerEmpleados(this.id_user_loggin);
+    this.PedirHoraExtraForm.patchValue({
+      descripcionForm: this.datos.descripcion,
+      fechaInicioForm: this.datos.fec_inicio,
+      horaInicioForm: this.datos.fec_inicio.split("T")[1].split(".")[0],
+      FechaFinForm: this.datos.fec_final,
+      horaFinForm: this.datos.fec_final.split("T")[1].split(".")[0],
+      horasForm: this.datos.num_hora.split(":")[0] + ":" + this.datos.num_hora.split(":")[1],
+    });
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
-  empleados: any = [];
-  ObtenerEmpleados(idemploy: any) {
-    this.empleados = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
-      this.empleados = data;
-    })
-  }
+  InsertarHoraExtra(form1) {
+    let dataPedirHoraExtra = {
+      depa_user_loggin: localStorage.getItem('departamento'),
+      tipo_funcion: 0,
+      descripcion: form1.descripcionForm,
+      fec_inicio: null,
+      fec_final: null,
+      num_hora: form1.horasForm + ":00",
+      estado: form1.estadoForm,
+    }
 
-  // MÉTODO PARA OBTENER EL HORARIO DEL EMPLEADO 
-  Horario: any
-  HorarioEmpleadoSemanal(id_cargo: number) {
-    this.restHE.HorarioEmpleadoSemanal(id_cargo).subscribe(res => {
-      this.Horario = res;
+    dataPedirHoraExtra.fec_inicio = this.ValidarFechas(form1.fechaInicioForm, form1.horaInicioForm);
+    dataPedirHoraExtra.fec_final = this.ValidarFechas(form1.FechaFinForm, form1.horaFinForm);
+
+    this.restHE.EditarHoraExtra(parseInt(this.datos.id), dataPedirHoraExtra).subscribe(horaExtra => {
+      console.log('ver horaE ---- ', horaExtra)
+      this.toastr.success('Operación Exitosa', 'Hora extra solicitada', {
+        timeOut: 6000,
+      });
+      this.EnviarCorreo(horaExtra);
+      this.EnviarNotificacion(horaExtra);
+      this.ventana.close(true);
+
     }, err => {
       const { access, message } = err.error.message;
       if (access === false) {
@@ -112,109 +119,32 @@ export class PedidoHoraExtraComponent implements OnInit {
         this.ventana.close();
       }
     });
+
   }
 
-  // MÉTODO PARA VALIDAR LA FECHA DE LA SOLICITUD CON EL HORARIO DEL EMPLEADO 
-  ValidarFechas(formFechas) {
-    var fi = new Date(formFechas.fechaInicioForm);
-    var ff = new Date(formFechas.FechaFinForm)
-
-    console.log(fi.toJSON()); console.log(ff.toJSON());
-    if (fi > ff) {
-      this.toastr.error('Fecha inicial no puede ser mayor a fecha final', '', {
-        timeOut: 6000,
-      })
-      this.fechaInicioF.reset();
-      this.FechaFinF.reset()
-    }
-    //false ===> significa que ese dia labora || true ===> significa que ese dia tiene libre
-    let valor1 = this.Horario.filter(fil => {
-      return fil.fecha === fi.toJSON().split('T')[0];
-    }).map(result => {
-      return result.estado
-    })
-    let valor2 = this.Horario.filter(fil => {
-      return fil.fecha === ff.toJSON().split('T')[0];
-    }).map(result => {
-      return result.estado
-    })
-
-    console.log(valor1[0]); console.log(valor2[0]);
-    if (valor1[0] === undefined || valor2[0] === undefined) {
-      this.toastr.error('Fechas seleccionadas no corresponden a la semana laboral actual', '', {
-        timeOut: 6000,
-      });
-      this.fechaInicioF.reset();
-      this.FechaFinF.reset()
+  ValidarFechas(fecha, hora) {
+    if (hora.split(":").length < 3) {
+      hora = hora + ":00";
     }
 
-    if (valor1[0] === true) {
-      this.toastr.info('Fecha de inicio tiene dia libre', '', {
-        timeOut: 6000,
-      })
-      this.fechaInicioF.reset();
-    }
-    if (valor2[0] === true) {
-      this.toastr.info('Fecha de fin tiene dia libre', '', {
-        timeOut: 6000,
-      })
-      this.FechaFinF.reset()
-    }
-    console.log(valor1, '===', valor2);
-  }
-
-  // MÉTODO PARA REGISTRAR LOS DATOS DEL PEDIDO DE HORA EXTRA 
-  HoraExtraResponse: any;
-  NotifiRes: any;
-  arrayNivelesDepa: any = [];
-  insertarTipoPermiso(form1) {
-    console.log(form1.fechaInicioForm, form1.horaInicioForm);
-    console.log(form1.FechaFinForm, form1.horaFinForm);
-
-    let horaI = form1.fechaInicioForm._i.year + "-" + form1.fechaInicioForm._i.month + "-" + form1.fechaInicioForm._i.date + "T" + form1.horaInicioForm + ":00"
-    let horaF = form1.FechaFinForm._i.year + "-" + form1.FechaFinForm._i.month + "-" + form1.FechaFinForm._i.date + "T" + form1.horaFinForm + ":00"
-    let dataPedirHoraExtra = {
-      id_empl_cargo: this.id_cargo_loggin,
-      id_usua_solicita: this.id_user_loggin,
-      fec_inicio: horaI,
-      fec_final: horaF,
-      fec_solicita: form1.fechaSolicitudForm,
-      num_hora: form1.horasForm + ":00",
-      descripcion: form1.descripcionForm,
-      estado: form1.estadoForm,
-      observacion: false,
-      tipo_funcion: 0,
-      depa_user_loggin: parseInt(localStorage.getItem('departamento')),
-      codigo: this.empleados[0].codigo
-    }
-    this.restHE.GuardarHoraExtra(dataPedirHoraExtra).subscribe(horaExtra => {
-      this.IngresarAutorizacion(horaExtra);
-      this.EnviarNotificacion(horaExtra);
-      this.EnviarCorreo(horaExtra);
-      this.toastr.success('Operación Exitosa', 'Hora extra solicitada', {
-        timeOut: 6000,
-      });
-      this.ventana.close();
-    }, err => {
-      const { access, message } = err.error.message;
-      if (message) return this.toastr.error(message)
-      if (access === false) {
-        this.ventana.close();
+    if (fecha._i != undefined) {
+      fecha._i.month = fecha._i.month + 1;
+      if (fecha._i.month < 10 && fecha._i.date < 10) {
+        return fecha._i.year + "-0" + fecha._i.month + "-0" + fecha._i.date + "T" + hora + ".000Z"
+      } else if (fecha._i.month >= 10 && fecha._i.date >= 10) {
+        return fecha._i.year + "-" + fecha._i.month + "-" + fecha._i.date + "T" + hora + ".000Z"
+      } else if (fecha._i.month < 10 && fecha._i.date >= 10) {
+        return fecha._i.year + "-0" + fecha._i.month + "-" + fecha._i.date + "T" + hora + ".000Z"
+      } else if (fecha._i.month >= 10 && fecha._i.date < 10) {
+        return fecha._i.year + "-" + fecha._i.month + "-0" + fecha._i.date + "T" + hora + ".000Z"
       }
-    });
+    } else {
+      return fecha.split("T")[0] + "T" + hora + '.000Z'
+    }
+
   }
 
-  // MÉTODO PARA VALIDAR EL INGRESO DE LETRAS 
-  IngresarSoloLetras(e) {
-    return this.validar.IngresarSoloLetras(e)
-  }
 
-  // MÉTODO PARA VALIDAR EL INGRESO DE NÚMEROS
-  IngresarSoloNumeros(evt) {
-    return this.validar.IngresarSoloNumeros(evt)
-  }
-
-  // MÉTODO PARA CALCULAR EL NÚMERO DE HORAS SOLICITADAS  
   CalcularTiempo(form) {
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
     if (form.horaInicioForm != '' && form.horaFinForm != '') {
@@ -225,7 +155,7 @@ export class PedidoHoraExtraComponent implements OnInit {
         t2 = new Date();
       t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
       t2.setHours(parseInt(hora2[0]), parseInt(hora2[1]), parseInt(hora2[2]));
-      // AQUÍ HAGO LA RESTA
+      //Aquí hago la resta
       t1.setHours(t2.getHours() - t1.getHours(), t2.getMinutes() - t1.getMinutes(), t2.getSeconds() - t1.getSeconds());
       if (t1.getHours() < 10 && t1.getMinutes() < 10) {
         var tiempoTotal: string = '0' + t1.getHours() + ':' + '0' + t1.getMinutes();
@@ -247,10 +177,9 @@ export class PedidoHoraExtraComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LIMPIAR LOS CAMPOS DEL FORMULARIO 
-  LimpiarCampoHoras() {
-    this.PedirHoraExtraForm.patchValue({ horasForm: '' })
-  }
+  /** ******************************************************************************************* **
+   ** **                   METODO DE ENVIO DE NOTIFICACIONES DE HORAS EXTRAS                      ** **
+   ** ******************************************************************************************* **/
 
   // METODO PARA ENVIAR NOTIFICACIONES DE CORREO
   EnviarCorreo(horaExtra: any) {
@@ -298,14 +227,14 @@ export class PedidoHoraExtraComponent implements OnInit {
           num_horas: moment(horaExtra.num_hora, 'HH:mm').format('HH:mm'),
           observacion: horaExtra.descripcion,
           estado_h: estado_h,
-          proceso: 'creado',
-          asunto: 'SOLICITUD DE REALIZACION DE HORAS EXTRAS',
+          proceso: 'actualizado',
+          asunto: 'ACTUALIZACION DE SOLICITUD DE REALIZACION DE HORAS EXTRAS',
           id_dep: e.id_dep,
           id_suc: e.id_suc,
           correo: correo_usuarios,
           id: horaExtra.id,
           id_empl_contrato: this.id_contrato_loggin,
-          solicitado_por: this.empleados[0].nombre + ' ' + this.empleados[0].apellido
+          solicitado_por: localStorage.getItem('fullname_print')
         }
         console.log('ver horas extras ....   ', datosHoraExtraCreada)
         if (correo_usuarios != '') {
@@ -344,17 +273,15 @@ export class PedidoHoraExtraComponent implements OnInit {
     let h_inicio = moment(horaExtra.fec_inicio).format('HH:mm');
     let h_final = moment(horaExtra.fec_final).format('HH:mm');
 
-    var f = new Date();
     let notificacion = {
       id_send_empl: this.id_user_loggin,
       id_receives_empl: '',
       id_receives_depa: '',
       estado: 'Pendiente',
-      create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
       id_permiso: null,
       id_vacaciones: null,
       id_hora_extra: horaExtra.id,
-      mensaje: 'Ha realizado una solicitud de horas extras desde ' +
+      mensaje: 'Ha actualizado su solicitud de horas extras desde ' +
         desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
         ' horario de ' + h_inicio + ' a ' + h_final,
@@ -382,20 +309,49 @@ export class PedidoHoraExtraComponent implements OnInit {
     })
   }
 
-  IngresarAutorizacion(horaExtra: any) {
-    // ARREGLO DE DATOS PARA INGRESAR UNA AUTORIZACIÓN
-    let newAutorizaciones = {
-      orden: 1, // ORDEN DE LA AUTORIZACIÓN 
-      estado: 1, // ESTADO PENDIENTE
-      id_departamento: parseInt(localStorage.getItem('departamento')),
-      id_permiso: null,
-      id_vacacion: null,
-      id_hora_extra: horaExtra.id,
-      id_documento: '',
-      id_plan_hora_extra: null,
+  IngresarSoloLetras(e) {
+    let key = e.keyCode || e.which;
+    let tecla = String.fromCharCode(key).toString();
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
+    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
+    let especiales = [8, 37, 39, 46, 6, 13];
+    let tecla_especial = false
+    for (var i in especiales) {
+      if (key == especiales[i]) {
+        tecla_especial = true;
+        break;
+      }
     }
-    this.restAutoriza.postAutorizacionesRest(newAutorizaciones).subscribe(res => {
-    }, error => { })
+    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
+        timeOut: 6000,
+      })
+      return false;
+    }
+  }
+
+  IngresarSoloNumeros(evt) {
+    if (window.event) {
+      var keynum = evt.keyCode;
+    }
+    else {
+      keynum = evt.which;
+    }
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
+    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
+      return true;
+    }
+    else {
+      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
+        timeOut: 6000,
+      })
+      return false;
+    }
+  }
+
+  LimpiarCampoHoras() {
+    this.PedirHoraExtraForm.patchValue({ horasForm: '' })
   }
 
 }

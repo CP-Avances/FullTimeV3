@@ -154,12 +154,11 @@ import { SolicitarPermisosEmpleadoComponent } from './componentes/rolEmpleado/pe
 import { VerDocumentacionComponent } from './componentes/rolEmpleado/ver-documentacion/ver-documentacion.component';
 import { InformacionJefeComponent } from './componentes/rolEmpleado/informacion-jefe/informacion-jefe.component';
 import { HomeEmpleadoComponent } from './componentes/rolEmpleado/home-empleado/home-empleado.component';
-import { HoraExtraEmpleadoComponent } from './componentes/rolEmpleado/hora-extra-empleado/hora-extra-empleado.component';
+import { HoraExtraEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/hora-extra-empleado/hora-extra-empleado.component';
 import { PlanificacionComidasEmpleadoComponent } from './componentes/rolEmpleado/planificacion-comidas-empleado/planificacion-comidas-empleado.component';
 import { ProcesosEmpleadoComponent } from './componentes/rolEmpleado/procesos-empleado/procesos-empleado.component';
 import { AutorizaEmpleadoComponent } from './componentes/rolEmpleado/autoriza-empleado/autoriza-empleado.component';
-import { CancelarHoraExtraComponent } from './componentes/rolEmpleado/hora-extra-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
-import { EditarHoraExtraEmpleadoComponent } from './componentes/rolEmpleado/hora-extra-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
+import { CancelarHoraExtraComponent } from './componentes/rolEmpleado/horasExtras-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
 
 // Cambiar el local de la APP
 import localEsEC from '@angular/common/locales/es-EC'
@@ -307,6 +306,7 @@ import { EditarPermisoEmpleadoComponent } from './componentes/rolEmpleado/permis
 import { CancelarPermisoComponent } from './componentes/rolEmpleado/permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { CancelarVacacionesComponent } from './componentes/rolEmpleado/vacacion-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
 import { EditarVacacionesEmpleadoComponent } from './componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
+import { EditarHoraExtraEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 

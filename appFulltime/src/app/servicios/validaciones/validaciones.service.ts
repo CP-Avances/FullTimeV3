@@ -29,7 +29,7 @@ export class ValidacionesService {
       this.router.navigate(['/estadisticas']);
     }
     if (text) {
-      this.toastr.error(text)
+      this.toastr.info(text)
     }
     // this.router.navigate(['/estadisticas', { relativeTo: this.route, skipLocationChange: false }]);
   }
@@ -49,9 +49,9 @@ export class ValidacionesService {
       this.router.navigate(['/home']);
       // this.router.navigate(['/home', { relativeTo: this.route, skipLocationChange: false }]);
     }
-   /* if (text) {
-      this.toastr.error(text)
-    }*/
+    /* if (text) {
+       this.toastr.error(text)
+     }*/
   }
 
   RedireccionarMixto(error) {

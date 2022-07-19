@@ -58,7 +58,7 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('vacacion', this.dato);
-   this.VacacionesForm.patchValue({
+    this.VacacionesForm.patchValue({
       fecInicioForm: this.dato.info.fec_inicio,
       fecFinalForm: this.dato.info.fec_final,
       fechaIngresoForm: this.dato.info.fec_ingreso,
@@ -255,6 +255,10 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
     });
   }
 
+  /** ******************************************************************************************* **
+   ** **                   METODO DE ENVIO DE NOTIFICACIONES DE VACACIONES                     ** **
+   ** ******************************************************************************************* **/
+
   // METODO PARA ENVIO DE NOTIFICACIONES DE VACACIONES
   EnviarCorreoEmpleados(vacacion: any) {
 
@@ -273,7 +277,7 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
 
       // CAPTURANDO ESTADO DE LA SOLICITUD DE VACACIÓN
       if (vacacion.estado === 1) {
-        var estado_v = 'Pendiente';
+        var estado_v = 'Pendiente de autorización';
       }
 
       // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
@@ -335,7 +339,6 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
     let desde = moment.weekdays(moment(vacaciones.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_inicio).day()).slice(1);
     let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
 
-    var f = new Date();
     let notificacion = {
       id_send_empl: this.dato.id_empleado,
       id_receives_empl: '',
