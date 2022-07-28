@@ -1,24 +1,41 @@
-#resultadosEmpre { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+.btn {
+    margin-left: 20px;
+    background-color: rgb(80, 87, 97);
+    color: white;
 }
 
-#permisoSuc { cursor: pointer; }
+p {
+    font-size: x-small;
+}
 
-.btn { margin-left: 20px; background-color: rgb(80,87,97); color: white; }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-p { font-size: x-small; }
+.fas {
+    color: green;
+    margin-right: 20px;
+    cursor: pointer;
+}
 
-td { padding-top: 10px; text-align: center;  }
+.far {
+    color: red;
+    margin-right: 20px;
+    cursor: pointer;
+}
 
-.fas { color:green; margin-right: 20px; cursor: pointer; }
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-.far { color:red; margin-right: 20px; cursor: pointer; }
+#SelectCheck {
+    cursor: pointer;
+    margin-left: 10px;
+}
 
-table { width: 100%; font-size: 14px; }
-
-
+#cerrar {
+    cursor: pointer;
+    margin-left: 15px;
+}

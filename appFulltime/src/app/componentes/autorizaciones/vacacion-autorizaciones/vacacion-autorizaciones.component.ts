@@ -128,9 +128,9 @@ export class VacacionAutorizacionesComponent implements OnInit {
       estado: form.estadoF,
       id_vacacion: id_vacacion,
     }
-    this.restAutorizaciones.PutEstadoAutoVacacion(newAutorizacionesM).subscribe(resA => {
-      this.EditarEstadoVacacion(form, id_vacacion, empleado_solicita, id_departamento);
-    })
+    /*  this.restAutorizaciones.PutEstadoAutoVacacion(newAutorizacionesM).subscribe(resA => {
+        this.EditarEstadoVacacion(form, id_vacacion, empleado_solicita, id_departamento);
+      })*/
   }
 
   resVacacion: any = [];

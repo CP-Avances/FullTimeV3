@@ -68,7 +68,7 @@ export class ListarSolicitudComponent implements OnInit {
   constructor(
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
     public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
-    private vistaFlotante: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
+    private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
   ) { }
 
   ngOnInit(): void {
@@ -151,7 +151,7 @@ export class ListarSolicitudComponent implements OnInit {
 
   // MÉTODO PARA ABRIR VENTA DE AUTORIZACIÓN DE SOLICITUDES CON TODOS LOS DATOS SELECCIONADOS
   AbrirAutorizaciones(datos_solicitud, forma: string) {
-    this.vistaFlotante.open(AutorizaSolicitudComponent,
+    this.ventana.open(AutorizaSolicitudComponent,
       { width: '400px', data: { datosMultiple: datos_solicitud, carga: forma } })
       .afterClosed().subscribe(items => {
         this.ObtenerSolicitudesAutorizados();
@@ -166,9 +166,9 @@ export class ListarSolicitudComponent implements OnInit {
 
   // MÉTODO PARA ABRIR VENTANA DE EDICIÓN DE SOLICITUD
   VentanaEditarPlanComida(datoSeleccionado: any) {
-    this.vistaFlotante.open(EditarSolicitudComidaComponent, {
+    this.ventana.open(EditarSolicitudComidaComponent, {
       width: '600px',
-      data: { solicitud: datoSeleccionado, modo: 'administrador' }
+      data: { solicitud: datoSeleccionado }
     })
       .afterClosed().subscribe(item => {
         this.ObtenerSolicitudesAutorizados();

@@ -1,19 +1,19 @@
 // LLAMADO A LAS LIBRERIAS
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
 // LLAMADO A LOS SERVICIOS
-import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
-import { formatCurrency } from '@angular/common';
+import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
+import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 @Component({
   selector: 'app-editar-solicitud-comida',
@@ -30,14 +30,14 @@ import { formatCurrency } from '@angular/common';
 export class EditarSolicitudComidaComponent implements OnInit {
 
   // VALIDACIONES DE LOS CAMPOS DEL FORMULARIO
-  observacionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
   fechaPlanificacionF = new FormControl('', Validators.required);
+  observacionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
   horaInicioF = new FormControl('', Validators.required);
   idComidaF = new FormControl('', Validators.required);
-  fechaF = new FormControl('', [Validators.required]);
   horaFinF = new FormControl('', Validators.required);
-  extraF = new FormControl('', [Validators.required]);
   platosF = new FormControl('', Validators.required);
+  fechaF = new FormControl('', [Validators.required]);
+  extraF = new FormControl('', [Validators.required]);
   tipoF = new FormControl('', Validators.required);
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO DE UN GRUPO
@@ -53,30 +53,42 @@ export class EditarSolicitudComidaComponent implements OnInit {
     tipoForm: this.tipoF,
   });
 
-  tipoComidas: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE TIPO DE COMIDAS
-  empleados: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE EMPLEADO
-  FechaActual: any; // VARIABLE DE ALAMCENAMIENTO DE FECHA DEL DÍA DE HOY
   idEmpleadoLogueado: any; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIO SESIÓN
   departamento: any; // VARIABLE DE ALMACENAMIENTO DE ID DE DEPARTAMENTO DE EMPLEADO QUE INICIO SESIÓN
+  FechaActual: any; // VARIABLE DE ALAMCENAMIENTO DE FECHA DEL DÍA DE HOY
+  tipoComidas: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE TIPO DE COMIDAS
+  empleados: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE EMPLEADO
 
   constructor(
-    public dialogRef: MatDialogRef<EditarSolicitudComidaComponent>, // VARIABLE VENTANA DE DIÁLOGO
-    @Inject(MAT_DIALOG_DATA) public data: any, // VARIABLE CON DATOS PASADOS DE LA VENTANA ANTERIOR
-    public restH: EmpleadoHorariosService, // SERVICIO DE DATOS DE HORARIOS DE EMPLEADO
-    public restPlan: PlanComidasService, // SERVICIO DE DATOS DE PLAN COMIDAS
     public restUsuario: UsuarioService, // SERVICIO DE DATOS DE USUARIO
-    private rest: TipoComidasService, // SERVICIO DE DATOS DE TIPO DE COMIDAS
+    public restPlan: PlanComidasService, // SERVICIO DE DATOS DE PLAN COMIDAS
+    public ventana: MatDialogRef<EditarSolicitudComidaComponent>, // VARIABLE VENTANA DE DIÁLOGO
+    public restH: EmpleadoHorariosService, // SERVICIO DE DATOS DE HORARIOS DE EMPLEADO
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
+    private informacion: DatosGeneralesService,
     private toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
+    private rest: TipoComidasService, // SERVICIO DE DATOS DE TIPO DE COMIDAS
+    @Inject(MAT_DIALOG_DATA) public data: any, // VARIABLE CON DATOS PASADOS DE LA VENTANA ANTERIOR
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
     this.departamento = parseInt(localStorage.getItem("departamento"));
   }
 
   ngOnInit(): void {
+    console.log('ver data de actualizacion ', this.data)
     this.ObtenerEmpleados(this.data.solicitud.id_empleado);
     this.ObtenerServicios();
     this.CargarDatos();
+    this.ObtenerDatos();
+  }
+
+  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  actuales: any = [];
+  ObtenerDatos() {
+    this.actuales = [];
+    this.informacion.ObtenerDatosActuales(this.data.solicitud.id_empleado).subscribe(datos => {
+      this.actuales = datos;
+    });
   }
 
   // MÉTODO PARA MOSTRAR LA INFORMCIÓN DEL EMPLEADO 
@@ -105,9 +117,9 @@ export class EditarSolicitudComidaComponent implements OnInit {
       fechaPlanificacionForm: this.data.solicitud.fec_comida,
       observacionForm: this.data.solicitud.observacion,
       horaInicioForm: this.data.solicitud.hora_inicio,
-      platosForm: this.data.solicitud.id_detalle,
       idComidaForm: this.data.solicitud.id_menu,
       horaFinForm: this.data.solicitud.hora_fin,
+      platosForm: this.data.solicitud.id_detalle,
       tipoForm: this.data.solicitud.id_servicio,
     })
     if (this.data.solicitud.extra === true) {
@@ -192,10 +204,10 @@ export class EditarSolicitudComidaComponent implements OnInit {
     var fin_hora = moment(form.horaFinForm, "HH:mm:ss").subtract(moment.duration("00:01:00")).format("HH:mm:ss");
     let datosSolicitud = {
       id_empleado: this.data.solicitud.id_empleado,
-      fecha: form.fechaPlanificacionForm,
-      id: this.data.solicitud.id,
       hora_inicio: inicio_hora,
       hora_fin: fin_hora,
+      fecha: form.fechaPlanificacionForm,
+      id: this.data.solicitud.id,
     }
     this.restPlan.BuscarDuplicadosSolicitudFechas(datosSolicitud).subscribe(plan => {
       this.toastr.info(this.empleados[0].nombre + ' ' + this.empleados[0].apellido + ' ya tiene realizada una solicitud de servicio de alimentación en la fecha indicada.', '', {
@@ -223,6 +235,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
 
   // MÉTODO PARA ACTUALIZAR LA SOLICITUD SELECCIONADA
   ActualizarSolicitud(form) {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosPlanComida = {
       id_empleado: this.data.solicitud.id_empleado,
       fec_comida: form.fechaPlanificacionForm,
@@ -233,14 +246,15 @@ export class EditarSolicitudComidaComponent implements OnInit {
       id: this.data.solicitud.id,
       fecha: form.fechaForm,
       extra: form.extraForm,
+      id_departamento: depa_user_loggin,
     };
-    this.restPlan.ActualizarSolicitudComida(datosPlanComida).subscribe(response => {
-      if (this.data.modo === 'administrador') {
-        this.EnviarNotificacionesSolicitud(form.fechaPlanificacionForm, form.horaInicioForm, form.horaFinForm, this.idEmpleadoLogueado, this.data.solicitud.id_empleado);
-      }
-      else {
-        this.EnviarNotificaciones(form.fechaPlanificacionForm, form.horaInicioForm, form.horaFinForm);
-      }
+    this.restPlan.ActualizarSolicitudComida(datosPlanComida).subscribe(alimentacion => {
+
+      console.log('ver data actualizada ', alimentacion)
+
+      this.EnviarCorreo(alimentacion);
+      this.NotificarPlanificacion(alimentacion);
+
       this.toastr.success('Operación Exitosa', 'Servicio de Alimentación Actualizado.', {
         timeOut: 6000,
       })
@@ -248,77 +262,106 @@ export class EditarSolicitudComidaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA INDICAR ERROR EN EL INGRESO DE OBSERVACIONES
-  ObtenerMensajeErrorObservacion() {
-    if (this.observacionF.hasError('pattern')) {
-      return 'Ingrese información válida';
-    }
-    return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
-  }
 
-  // MÉTODO PARA CERRAR VENTANA DE DIÁLOGO
-  CerrarRegistroPlanificacion() {
-    this.dialogRef.close();
-  }
 
-  // MÉTODO PARA ENVIAR A TODOS LOS JEFES CAMBIOS EN LA SOLICITUD ENVIADA
-  envios: any = []; // VARIABLE PARA ALMACENAR DATOS DE ENVIOS DE NOTIFICACIONES
-  jefes: any = []; // VARIABLE PARA ALMACENAR DATOS DE JEFES INMEDIATOS
-  EnviarNotificaciones(fecha: any, h_inicio: any, h_fin: any) {
-    var nota = 'Solicitó Alimentación ' + ' para ' + moment(fecha).format('YYYY-MM-DD')
-    this.restPlan.obtenerJefes(this.departamento).subscribe(data => {
-      this.jefes = [];
-      this.jefes = data;
-      this.jefes.map(obj => {
-        let datosCorreo = {
-          id_usua_solicita: this.data.solicitud.id_empleado,
-          fecha: moment(fecha).format('YYYY-MM-DD'),
-          comida_mail: obj.comida_mail,
-          comida_noti: obj.comida_noti,
-          hora_inicio: h_inicio,
-          correo: obj.correo,
-          hora_fin: h_fin
-        }
-        this.restPlan.EnviarCorreo(datosCorreo).subscribe(envio => {
-          this.envios = [];
-          this.envios = envio;
-          if (this.envios.notificacion === true) {
-            this.NotificarPlanificacion(this.data.solicitud.id_empleado, obj.empleado, nota);
+  // METODO PARA ENVIO DE CORREO
+  EnviarCorreo(alimentacion: any) {
+    var cont = 0;
+    var correo_usuarios = '';
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
+    let solicitud = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+
+    alimentacion.EmpleadosSendNotiEmail.forEach(e => {
+
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE ALIMENTACIÓN
+      if (e.comida_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
           }
-        });
-      })
-    });
-  }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
 
-  // MÉTODO PARA ENVIAR NOTIFICACIÓN AL SISTEMA DE LA ACTUALIZACIÓN DE DATOS DE SOLICITUD
-  NotificarPlanificacion(empleado_envia: any, empleado_recive: any, nota: any) {
-    let mensaje = {
-      id_empl_recive: empleado_recive,
-      id_empl_envia: empleado_envia,
-      mensaje: nota
-    }
-    this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
+      if (cont === alimentacion.EmpleadosSendNotiEmail.length) {
+        let comida = {
+          id_usua_solicita: alimentacion.id_empleado,
+          tipo_solicitud: 'Servicio de alimentación actualizado por',
+          fec_solicitud: solicitud + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY'),
+          observacion: alimentacion.observacion,
+          id_comida: alimentacion.id_comida,
+          proceso: 'actualizado',
+          estadoc: 'Pendiente de autorización',
+          correo: correo_usuarios,
+          asunto: 'ACTUALIZACION DE SOLICITUD DE SERVICIO DE ALIMENTACION',
+          inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
+          final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),
+          extra: alimentacion.extra,
+          id: alimentacion.id,
+          solicitado_por: localStorage.getItem('fullname_print'),
+        }
+        if (correo_usuarios != '') {
+          this.restPlan.EnviarCorreo(comida).subscribe(
+            resp => {
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
     })
   }
 
-  // MÉTODO PARA ENVIAR CORREO AL EMPLEADO INDICANDO QUE SE ACTUALIZÓ LOS DATOS DE SU SOLICITUD
-  EnviarNotificacionesSolicitud(fecha_plan_inicio: any, h_inicio: any, h_fin: any, empleado_envia: any, empleado_recibe: any) {
-    var nota = 'Actualizó su Solicitud de Alimentación.';
-    let datosCorreo = {
-      fecha_inicio: moment(fecha_plan_inicio).format('DD-MM-YYYY'),
-      id_usua_plan: empleado_recibe,
-      id_usu_admin: empleado_envia,
-      hora_inicio: h_inicio,
-      hora_fin: h_fin
+  // METODO PARA ENVIO DE NOTIFICACION
+  NotificarPlanificacion(alimentacion: any) {
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
+    let desde = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+    let inicio = moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm');
+    let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
+
+    let mensaje = {
+      id_empl_envia: this.data.solicitud.id_empleado,
+      id_empl_recive: '',
+      tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
+      mensaje: 'Ha actualizado su solicitud de alimentación desde ' +
+        desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
+        ' horario de ' + inicio + ' a ' + final + ' servicio ',
+      id_comida: alimentacion.id_comida
     }
-    this.restPlan.EnviarCorreoSolicitudActualizada(datosCorreo).subscribe(envio => {
-      this.envios = [];
-      this.envios = envio;
-      if (this.envios.notificacion === true) {
-        this.NotificarPlanificacion(empleado_envia, empleado_recibe, nota);
+
+    alimentacion.EmpleadosSendNotiEmail.forEach(e => {
+      mensaje.id_empl_recive = e.empleado;
+      if (e.comida_noti) {
+        this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
+          console.log(res.message);
+        })
       }
-    });
+    })
+
   }
+
+
 
   // MÉTODO PARA INGRESAR SOLO LETRAS
   IngresarSoloLetras(e) {
@@ -342,5 +385,19 @@ export class EditarSolicitudComidaComponent implements OnInit {
       return false;
     }
   }
+
+  // MÉTODO PARA INDICAR ERROR EN EL INGRESO DE OBSERVACIONES
+  ObtenerMensajeErrorObservacion() {
+    if (this.observacionF.hasError('pattern')) {
+      return 'Ingrese información válida';
+    }
+    return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
+  }
+
+  // MÉTODO PARA CERRAR VENTANA DE DIÁLOGO
+  CerrarRegistroPlanificacion() {
+    this.ventana.close();
+  }
+
 
 }

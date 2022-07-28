@@ -54,16 +54,9 @@ export class PedHoraExtraService {
     return this.http.get(`${environment.url}/horas-extras-pedidas/datosAutorizacion/${id_hora}`);
   }
 
-  SendMailNoti(datos: any) {
-    return this.http.post<any>(`${environment.url}/horas-extras-pedidas/mail-noti`, datos);
-  }
 
   EliminarHoraExtra(id_hora_extra: number) {
     return this.http.delete(`${environment.url}/horas-extras-pedidas/eliminar/${id_hora_extra}`);
-  }
-
-  EditarHoraExtra(id: number, datos: any) {
-    return this.http.put(`${environment.url}/horas-extras-pedidas/${id}/hora-extra-solicitada`, datos);
   }
 
   HorarioEmpleadoSemanal(id_cargo: number) {
@@ -101,5 +94,16 @@ export class PedHoraExtraService {
   BuscarHorasPlanificadas(datos: any, desde: string, hasta: string) {
     return this.http.put(`${environment.url}/horas-extras-pedidas/horas-planificadas/${desde}/${hasta}`, datos);
   }
-  
+
+
+  // ENVIAR CORREO DE SOLICITUD
+  EnviarCorreo(datos: any) {
+    return this.http.post<any>(`${environment.url}/horas-extras-pedidas/mail-noti`, datos);
+  }
+
+  EditarHoraExtra(id: number, datos: any) {
+    return this.http.put(`${environment.url}/horas-extras-pedidas/${id}/solicitud`, datos);
+  }
+
+
 }

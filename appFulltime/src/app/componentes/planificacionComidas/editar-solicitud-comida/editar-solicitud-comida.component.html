@@ -1,10 +1,10 @@
 <!--PANTALLA PARA EDITAR DATOS DE SOLICITUD DE SERVICIO DE ALIMENTACIÓN -->
 <div class="scrollbar scrollbar-primary">
-    <div class="d-flex bd-highlight tituloPlanificacionAlmuerzos">
-        <mat-icon class="flex-shrink-1 bd-highlight" id="mover">open_with</mat-icon>
-        <h4 class="w-100 bd-highlight" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Alimentación</h4>
+    <div id="titulo">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            EDITAR SOLICITUD SERVICIO ALIMENTACIÓN</span>
     </div>
-    <br>
     <div class="nota">
         <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
             Guardar.</span>
@@ -15,15 +15,14 @@
                 <mat-label>Fecha Actual</mat-label>
                 <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa" formControlName="fechaForm" required
                     disabled>
-                <mat-datepicker-toggle matSuffix [for]="picker" id="planComida" matTooltipClass="planComida-tooltip"
-                    matTooltipPosition="right"
+                <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" matTooltipPosition="right"
                     matTooltip="Fecha en la que se registra la edición de solicitud de servicio de alimentación.">
                 </mat-datepicker-toggle>
                 <mat-datepicker touchUi #picker></mat-datepicker>
             </mat-form-field>
             <mat-form-field>
                 <mat-label id="selecAlmuerzo">Tipo de Servicio</mat-label>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Lista de tipos de servicios registrados">
                     help_outline</mat-icon>
                 <mat-select formControlName="tipoForm" required>
@@ -35,7 +34,7 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label id="selecAlmuerzo">Menú</mat-label>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Lista de menús de acuerdo al tipo de servicio">
                     help_outline</mat-icon>
                 <mat-select formControlName="idComidaForm" required>
@@ -47,7 +46,7 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label id="selecAlmuerzo">Alimentación</mat-label>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Lista de platos de comida registradas en el sistema.">
                     help_outline</mat-icon>
                 <mat-select formControlName="platosForm" required>
@@ -60,7 +59,7 @@
                 <mat-label>Observación</mat-label>
                 <input matInput placeholder="Ejm: 1" formControlName="observacionForm"
                     (keypress)="IngresarSoloLetras($event)" required>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ingresar una indicación de la solicitud de servicio de alimentación.">
                     help_outline</mat-icon>
                 <mat-error *ngIf="observacionF.invalid">{{ObtenerMensajeErrorObservacion()}}</mat-error>
@@ -69,8 +68,7 @@
                 <mat-label>Fecha de consumo</mat-label>
                 <input matInput [matDatepicker]="picker2" placeholder="dd/mm/aaaa"
                     formControlName="fechaPlanificacionForm" required>
-                <mat-datepicker-toggle matSuffix [for]="picker2" id="planComida" matTooltipClass="planComida-tooltip"
-                    matTooltipPosition="right"
+                <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" matTooltipPosition="right"
                     matTooltip="Ingresar fecha en la que se va a asistir al servicio de alimentación solicitado. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                 </mat-datepicker-toggle>
                 <mat-datepicker touchUi #picker2></mat-datepicker>
@@ -78,20 +76,20 @@
             <mat-form-field>
                 <mat-label>Hora de inicio</mat-label>
                 <input matInput type="time" formControlName="horaInicioForm" required readonly>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Hora en la que inicia el servicio de alimentación.">
                     help_outline</mat-icon>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Hora de fin</mat-label>
                 <input matInput type="time" placeholder="Ejm: 1" formControlName="horaFinForm" required readonly>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Hora de finalización del servicio de alimentación.">
                     help_outline</mat-icon>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Servicio Extra</mat-label>
-                <mat-icon id="planComida" matSuffix matTooltipClass="planComida-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Indicar si es un servicio extra.">
                     help_outline</mat-icon>
                 <mat-select formControlName="extraForm" required>

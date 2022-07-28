@@ -17,11 +17,10 @@ class DepartamentoRutas {
         this.router.get('/by-vacacion/:id_vacacion', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ObtenerAutorizacionByVacacion);
         this.router.get('/by-hora-extra/:id_hora_extra', autorizacionesControlador_1.default.ObtenerAutorizacionByHoraExtra);
         this.router.post('/', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.CrearAutorizacion);
-        this.router.put('/:id/estado-permiso', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ActualizarEstadoPermiso);
         this.router.put('/estado-permiso/multiple', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ActualizarEstadoAutorizacionPermiso);
-        this.router.put('/estado-vacacion', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ActualizarEstadoVacacion);
-        this.router.put('/:id_hora_extra/estado-hora-extra', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ActualizarEstadoHoraExtra);
         this.router.put('/:id_plan_hora_extra/estado-plan-hora-extra', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ActualizarEstadoPlanificacion);
+        // ACTUALIZAR ESTADO DE APROBACION DE SOLICITUDES
+        this.router.put('/:id/estado-aprobacion', verificarToken_1.TokenValidation, autorizacionesControlador_1.default.ActualizarEstadoSolicitudes);
     }
 }
 const AUTORIZA_DEPARTAMENTO_RUTAS = new DepartamentoRutas();

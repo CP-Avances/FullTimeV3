@@ -203,7 +203,7 @@ export class ComunicadosComponent implements OnInit {
   pageSizeOptions_dep = [5, 10, 20, 50];
   tamanio_pagina_dep: number = 5;
   numero_pagina_dep: number = 1;
-  
+
   // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
   pageSizeOptions_emp = [5, 10, 20, 50];
   tamanio_pagina_emp: number = 5;
@@ -416,9 +416,10 @@ export class ComunicadosComponent implements OnInit {
     let mensaje = {
       id_empl_envia: empleado_envia,
       id_empl_recive: empleado_recive,
-      mensaje: form.tituloForm + '; ' + form.mensajeForm
+      mensaje: form.tituloForm + '; ' + form.mensajeForm,
+      tipo: 6,  // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
     }
-    this.realTime.EnviarMensajeComunicado(mensaje).subscribe(res => {
+    this.realTime.EnviarMensajeGeneral(mensaje).subscribe(res => {
     })
   }
 

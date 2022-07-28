@@ -1,0 +1,10 @@
+<mat-card-content>
+    <div style="text-align: center;">
+        <h5><b>ADVERTENCIA !!!</b> </h5>
+        <p id="mensaje">¿Está seguro de cancelar la solicitud de vacaciones?</p>
+    </div>
+</mat-card-content>
+<div class="d-flex justify-content-around">
+    <button type="submit" class="btn btn-primary btn-sm" (click)="aceptarAdvertencia()">Aceptar</button>
+    <button id="cancelar" type="submit" class="btn btn-sm" (click)="ventana.close(false)">Salir</button>
+</div>

@@ -304,10 +304,13 @@ export class PlanHoraExtraComponent implements OnInit {
 
     // DATOS DE ESTRUCTURA DEL CORREO
     let DataCorreo = {
+      tipo_solicitud: 'REALIZA',
       id_empl_envia: this.id_user_loggin,
       observacion: datos.descripcion,
+      proceso: 'creado',
       correos: cuenta_correo,
       nombres: usuario,
+      asunto: 'PLANIFICACION DE HORAS EXTRAS',
       inicio: h_inicio,
       desde: desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY'),
       hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),

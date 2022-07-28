@@ -1,10 +1,10 @@
 <!-- TABLA CON LISTA DE SOLICITUDES DE SERVICIO DE ALIMENTACIÓN PENDIENTES -->
 <br>
-<div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista_planificaciones">
+<div class="container" style="padding-bottom: 25px; text-align: center;" *ngIf="lista_planificaciones">
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <span class="w-100 bd-highlight">
-                Lista de Planificaciones Registradas</span>
+                LISTA DE PLANIFICACIONES REGISTRADAS</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -33,7 +33,8 @@
                                 <p>Editar</p>
                             </i>
                             <i *ngIf="ver_icono" (click)="HabilitarTablaEliminar(e.id)" class="far fa-trash-alt"
-                                id="t-eliminar" matSuffix matTooltipPosition="right" matTooltip="Eliminar este registro.">
+                                id="t-eliminar" matSuffix matTooltipPosition="right"
+                                matTooltip="Eliminar este registro.">
                                 <p>Eliminar</p>
                             </i>
                         </td>
@@ -41,14 +42,13 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="planificaciones.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="planificaciones.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>
 
 <!-- TABLA CON LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA -->
-<br>
 <div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista_empleados">
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
@@ -66,7 +66,7 @@
                 id="cerrar">
                 close</mat-icon>
             <span class="w-100 bd-highlight">
-                Lista de Empleados con Planificación</span> 
+                LISTA DE COLABORADORES CON PLANIFICACIÓN</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -97,7 +97,7 @@
                                 [aria-label]="checkboxLabel(e)">
                             </mat-checkbox>
                         </td>
-                        <td>{{e.nombre}} {{e.apellido}}</td>
+                        <td>{{e.nombre}}</td>
                         <td>{{e.nombre_servicio}}</td>
                         <td>{{e.nombre_menu}}</td>
                         <td>{{e.fec_inicio.split('T')[0]}}</td>
@@ -110,8 +110,9 @@
                                 matTooltip="Modificar los datos generales de este registro.">
                                 <p>Editar</p>
                             </i>
-                            <i *ngIf="ver_eliminar" (click)="ConfirmarDeletePlanComidas(e)" class="far fa-trash-alt" id="t-eliminar"
-                                matSuffix matTooltipPosition="right" matTooltip="Eliminar este registro.">
+                            <i *ngIf="ver_eliminar" (click)="ConfirmarDeletePlanComidas(e)" class="far fa-trash-alt"
+                                id="t-eliminar" matSuffix matTooltipPosition="right"
+                                matTooltip="Eliminar este registro.">
                                 <p>Eliminar</p>
                             </i>
                         </td>

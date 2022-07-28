@@ -16,6 +16,7 @@ import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.serv
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 interface opcionesDiasHoras {
   valor: string;
@@ -128,6 +129,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   constructor(
     private loginServise: LoginService,
+    private informacion_: DatosGeneralesService,
     private restTipoP: TipoPermisosService,
     private realTime: RealTimeService,
     private toastr: ToastrService,
@@ -154,6 +156,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.ImprimirNumeroPermiso();
     this.ObtenerEmpleado(this.datoEmpleado.idEmpleado);
     this.ObtenerEmpleadoLogueado(this.idEmpleado);
+    this.ObtenerDatos();
   }
 
   empleado: any = [];
@@ -163,6 +166,15 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
       this.empleado = data;
     })
+  }
+
+  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  actuales: any = [];
+  ObtenerDatos() {
+    this.actuales = [];
+    this.informacion_.ObtenerDatosActuales(this.datoEmpleado.idEmpleado).subscribe(datos => {
+      this.actuales = datos;
+    });
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
@@ -288,7 +300,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           });
         }
       }
-
     }
     else {
       this.toastr.error('Aún no selecciona un Tipo de Permiso', 'VERIFICAR', {
@@ -311,89 +322,100 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
     //VALIDAR INGRESO DE FECHA DE SALIDA Y SELECCIÓN DE TIPO DE PERMISO
     if (form.fechaInicioForm != '' && form.idPermisoForm != '') {
-
-      this.horasTrabajo = [];
-      let datosFechas = {
-        id_emple: this.datoEmpleado.idEmpleado,
-        fecha: form.fechaInicioForm
-      }
-      console.log('datos', datosFechas)
       this.dIngreso = event.value;
+      var inicio = String(moment(this.dSalida, "YYYY/MM/DD").format("YYYY-MM-DD"));
+      var final = String(moment(this.dIngreso, "YYYY/MM/DD").format("YYYY-MM-DD"));
 
-      let solicitud = {
-        fec_inicio: String(moment(this.dSalida, "YYYY/MM/DD").format("YYYY-MM-DD")),
-        fec_final: String(moment(this.dIngreso, "YYYY/MM/DD").format("YYYY-MM-DD")),
-        codigo: parseInt(this.empleado[0].codigo)
+      if (Date.parse(inicio) > Date.parse(final)) {
+        this.toastr.error('Las fechas no han sido ingresadas de forma correcta.', 'VERIFICAR', {
+          timeOut: 6000,
+        });
+        this.PermisoForm.patchValue({
+          fechaInicioForm: '',
+          fechaFinalForm: ''
+        });
       }
+      else {
+        this.horasTrabajo = [];
+        let datosFechas = {
+          id_emple: this.datoEmpleado.idEmpleado,
+          fecha: form.fechaInicioForm
+        }
+        console.log('datos', datosFechas)
 
-      this.restP.BuscarPermisosSolicitados(solicitud).subscribe(solicitados => {
-        if (solicitados.length != 0) {
-          console.log('ver permiso fechas', solicitados)
-          this.toastr.info('En las fechas ingresadas ya existe un registro de solicitud.', 'VERIFICAR', {
-            timeOut: 6000,
-          });
-          this.PermisoForm.patchValue({
-            fechaInicioForm: '',
-            fechaFinalForm: ''
-          });
-        } else {
-          // MÉTODO DE BÚSQUEDA DE HORAS DE TRABAJO
-          this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
-            this.horasTrabajo = datos;
 
-            console.log('ver horas trabajadas', this.horasTrabajo)
-            // MÉTODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
-            this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);
-
-            // SOLICITUD DE PERMISO POR DÍAS
-            if (form.solicitarForm === 'Días') {
-              let datos = {
-                fec_inicio: form.fechaInicioForm,
-                fec_final: form.fechaFinalForm
-              }
-              this.restP.BuscarFechasPermiso(datos, parseInt(this.empleado[0].codigo)).subscribe(response => {
-                console.log('fechas_permiso', response);
-                this.fechas_horario = response;
-                this.fechas_horario.map(obj => {
-                  if (obj.fecha.split('T')[0] === moment(this.dSalida).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
-                    this.PermisoForm.patchValue({
-                      horaSalidaForm: obj.hora
-                    })
-                  }
-                  if (obj.fecha.split('T')[0] === moment(this.dIngreso).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
-                    this.PermisoForm.patchValue({
-                      horasIngresoForm: obj.hora
-                    })
-                  }
-                })
-                this.readonly = true;
-              }, err => {
-                /*   const { access, message } = err.error.message;
-                   if (access === false) {
-                     this.toastr.error(message)
-                     this.ventana.close();
-                   }*/
-              })
-            }
-          }, error => {
-            this.toastr.info('Las fechas indicadas no se encuentran dentro de su horario laboral', 'VERIFICAR', {
-              timeOut: 6000,
-            });
-            this.LimpiarCamposFecha();
-          });
+        let solicitud = {
+          fec_inicio: inicio,
+          fec_final: final,
+          codigo: parseInt(this.empleado[0].codigo)
         }
 
-      })
+        this.restP.BuscarPermisosSolicitados(solicitud).subscribe(solicitados => {
+          if (solicitados.length != 0) {
+            console.log('ver permiso fechas', solicitados)
+            this.toastr.info('En las fechas ingresadas ya existe un registro de solicitud.', 'VERIFICAR', {
+              timeOut: 6000,
+            });
+            this.PermisoForm.patchValue({
+              fechaInicioForm: '',
+              fechaFinalForm: ''
+            });
+          } else {
+            // MÉTODO DE BÚSQUEDA DE HORAS DE TRABAJO
+            this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
+              this.horasTrabajo = datos;
+
+              console.log('ver horas trabajadas', this.horasTrabajo)
+              // MÉTODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
+              this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);
+
+              // SOLICITUD DE PERMISO POR DÍAS
+              if (form.solicitarForm === 'Días') {
+                let datos = {
+                  fec_inicio: form.fechaInicioForm,
+                  fec_final: form.fechaFinalForm
+                }
+                this.restP.BuscarFechasPermiso(datos, parseInt(this.empleado[0].codigo)).subscribe(response => {
+                  console.log('fechas_permiso', response);
+                  this.fechas_horario = response;
+                  this.fechas_horario.map(obj => {
+                    if (obj.fecha.split('T')[0] === moment(this.dSalida).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
+                      this.PermisoForm.patchValue({
+                        horaSalidaForm: obj.hora
+                      })
+                    }
+                    if (obj.fecha.split('T')[0] === moment(this.dIngreso).format('YYYY-MM-DD') && obj.tipo_entr_salida === 'E') {
+                      this.PermisoForm.patchValue({
+                        horasIngresoForm: obj.hora
+                      })
+                    }
+                  })
+                  this.readonly = true;
+                }, err => {
+                  /*   const { access, message } = err.error.message;
+                     if (access === false) {
+                       this.toastr.error(message)
+                       this.ventana.close();
+                     }*/
+                })
+              }
+            }, error => {
+              this.toastr.info('Las fechas indicadas no se encuentran dentro de su horario laboral', 'VERIFICAR', {
+                timeOut: 6000,
+              });
+              this.LimpiarCamposFecha();
+            });
+          }
+        })
+      }
     }
     else {
-      this.toastr.error('Aún no selecciona un Tipo de Permiso o aún no ingresa fecha de salida.', 'VERIFICAR', {
+      this.toastr.error('Aún no selecciona un Tipo de Permiso o aún no ingresa fecha de Inicio de permiso.', 'VERIFICAR', {
         timeOut: 6000,
       });
       this.LimpiarCamposFecha();
     }
   }
-
-
 
   informacion: boolean = false;
   ImprimirDatos(form) {
@@ -524,6 +546,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   InsertarPermiso(form) {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosPermiso = {
       fec_creacion: form.fecCreacionForm,
       descripcion: form.descripcionForm,
@@ -539,7 +562,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       hora_numero: form.horasForm,
       num_permiso: this.num,
       docu_nombre: form.nombreCertificadoForm,
-      depa_user_loggin: parseInt(localStorage.getItem('departamento')),
+      depa_user_loggin: depa_user_loggin,
       id_empl_cargo: this.datoEmpleado.idCargo,
       hora_salida: form.horaSalidaForm,
       hora_ingreso: form.horasIngresoForm,
@@ -970,6 +993,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     }, error => { })
   }
 
+  /** *************************************************************************************** ** 
+   ** **                   METODOS ENVIO DE NOTIFICACIONES DE PERMISOS                     ** ** 
+   ** *************************************************************************************** **/
 
   SendEmailsEmpleados(permiso: any) {
 
@@ -984,7 +1010,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
     // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
     if (permiso.estado === 1) {
-      var estado_p = 'Pendiente';
+      var estado_p = 'Pendiente de autorización';
     }
 
     // LEYENDO DATOS DE TIPO DE PERMISO
@@ -1023,22 +1049,25 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         console.log('data entra correo usuarios', correo_usuarios)
 
         let datosPermisoCreado = {
-          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
-          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
-          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
-          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
+          tipo_solicitud: 'Permiso solicitado por',
           id_empl_contrato: permiso.id_empl_contrato,
           horas_permiso: permiso.hora_numero,
-          observacion: permiso.descripcion,
           tipo_permiso: tipo_permiso,
           dias_permiso: permiso.dia,
+          observacion: permiso.descripcion,
+          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
+          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
+          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
+          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
           estado_p: estado_p,
+          proceso: 'creado',
           id_dep: e.id_dep,
           id_suc: e.id_suc,
           correo: correo_usuarios,
+          asunto: 'SOLICITUD DE PERMISO',
           id: permiso.id,
-          solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido
+          solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido,
         }
         if (correo_usuarios != '') {
           console.log('data entra enviar correo')
@@ -1086,16 +1115,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       h_fin = '';
     }
 
-    var f = new Date();
     let notificacion = {
-      id_send_empl: this.datoEmpleado.idEmpleado,
       id_receives_empl: '',
       id_receives_depa: '',
-      estado: 'Pendiente',
-      create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-      id_permiso: permiso.id,
       id_vacaciones: null,
       id_hora_extra: null,
+      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_permiso: permiso.id,
+      estado: 'Pendiente',
       mensaje: 'Ha realizado una solicitud de permiso desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,

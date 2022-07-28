@@ -51,9 +51,8 @@
                             </div>
                         </div>
                         <div class="col" style="text-align: right;">
-                            <i id="iconos" *ngIf="!HabilitarAutorizacion" class="fas fa-stopwatch"
-                                style="color:rgb(58, 90, 231);"
-                                (click)="AbrirTiempoAutorizacion(h.num_hora, h.id, h.id_usua_solicita, h)"
+                            <i id="iconos" *ngIf="HabilitarAutorizacion" class="fas fa-stopwatch"
+                                style="color:rgb(58, 90, 231);" (click)="AbrirAprobacion(h, '', 1)"
                                 matTooltipPosition="right"
                                 matTooltip="Agrega más tipos de permisos de este departamento.">
                                 <p>Autorización</p>
@@ -75,7 +74,29 @@
                     </div>
                 </div>
                 <mat-card-content>
+
                     <div class="container" style="padding-top: 15px;" *ngFor="let a of autorizacion">
+                        <div *ngIf="habilitarActualizar">
+                            <div class="d-flex flex-wrap justify-content-around" *ngFor="let h of hora_extra">
+                                <button mat-button type="button" class="btn btn-sm"
+                                    (click)="AbrirAprobacion(h, 'aprobar', a)">
+                                    <i id="iconos" class="fa fa-edit"></i>
+                                    Aprobar
+                                </button>
+                                <button mat-button type="button" class="btn btn-sm"
+                                    (click)="AbrirAprobacion(h, 'editar', a)">
+                                    <i id="iconos" class="far fa-clock"></i>
+                                    Actualizar Horas
+                                </button>
+                                <button mat-button type="submit" class="btn btn-sm"
+                                    (click)="AbrirAprobacion(h, 'observacion', a)" matSuffix matTooltipPosition="right"
+                                    matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
+                                    <i id="iconos" class="far fa-comment"></i>
+                                    Enviar Observación
+                                </button>
+                            </div>
+                        </div>
+                        <br>
                         <div class="row">
                             <div class="col">
                                 <div class="caja1 d-flex justify-content-start">
@@ -111,21 +132,6 @@
                                         </a>
                                     </label>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 5px;">
-                            <div class="col">
-                            </div>
-                            <div class="col">
-                            </div>
-                            <div class="col" style="text-align: right;" *ngIf="!habilitarActualizar">
-                                <i *ngFor="let h of hora_extra" id="iconos" class="fas fa-stopwatch"
-                                    style="color:rgb(58, 90, 231); margin-right: 10px;"
-                                    (click)="AbrirTiempoAutorizacion(h.num_hora, h.id, h.id_usua_solicita, h)"
-                                    matTooltipPosition="right"
-                                    matTooltip="Agrega más tipos de permisos de este departamento.">
-                                    <p>Horas</p>
-                                </i>
                             </div>
                         </div>
                     </div>

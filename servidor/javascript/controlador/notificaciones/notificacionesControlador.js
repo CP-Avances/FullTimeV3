@@ -123,31 +123,6 @@ class NotificacionTiempoRealControlador {
             }
         });
     }
-    // MÉTODO PARA CREAR NOTIFICACIONES
-    CrearNotificacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log('entra validar notificacion');
-                const { id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones, id_hora_extra, mensaje } = req.body;
-                const response = yield database_1.default.query(`
-          INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
-            id_permiso, id_vacaciones, id_hora_extra, mensaje ) 
-          VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING * 
-      `, [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
-                    id_hora_extra, mensaje]);
-                const [notificiacion] = response.rows;
-                if (!notificiacion)
-                    return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
-                return res.status(200)
-                    .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
-            }
-            catch (error) {
-                console.log(error);
-                return res.status(500)
-                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
-            }
-        });
-    }
     ActualizarVista(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
@@ -240,7 +215,7 @@ class NotificacionTiempoRealControlador {
                     subject: asunto,
                     html: `<body>
                 <div style="text-align: center;">
-                  <img width="50%" height="50%" src="cid:cabeceraf"/>
+                  <img width="25%" height="25%" src="cid:cabeceraf"/>
                 </div>
                 <br>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -280,10 +255,12 @@ class NotificacionTiempoRealControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -294,13 +271,12 @@ class NotificacionTiempoRealControlador {
             }
         });
     }
-    // NOTIFICACIÓN DE COMUNICADOS
-    EnviarNotificacionComunicado(req, res) {
+    // NOTIFICACIÓNES GENERALES
+    EnviarNotificacionGeneral(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let { id_empl_envia, id_empl_recive, mensaje } = req.body;
+            let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
             var tiempo = (0, settingsMail_1.fechaHora)();
             let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
-            let tipo = 6; // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
             yield database_1.default.query(`
         INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
         VALUES($1, $2, $3, $4, $5)
@@ -326,7 +302,7 @@ class NotificacionTiempoRealControlador {
                     subject: asunto,
                     html: `<body>
                 <div style="text-align: center;">
-                  <img width="50%" height="50%" src="cid:cabeceraf"/>
+                  <img width="25%" height="25%" src="cid:cabeceraf"/>
                 </div>
                 <br>
                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -366,10 +342,12 @@ class NotificacionTiempoRealControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -377,6 +355,31 @@ class NotificacionTiempoRealControlador {
             }
             else {
                 res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
+    // MÉTODO PARA CREAR NOTIFICACIONES
+    CrearNotificacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                var tiempo = (0, settingsMail_1.fechaHora)();
+                const { id_send_empl, id_receives_empl, id_receives_depa, estado, id_permiso, id_vacaciones, id_hora_extra, mensaje } = req.body;
+                let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
+                const response = yield database_1.default.query(`
+            INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
+              id_permiso, id_vacaciones, id_hora_extra, mensaje ) 
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING * 
+        `, [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
+                    id_hora_extra, mensaje]);
+                const [notificiacion] = response.rows;
+                if (!notificiacion)
+                    return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+                return res.status(200)
+                    .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
             }
         });
     }

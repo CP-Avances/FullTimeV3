@@ -1,12 +1,12 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 
 interface Estado {
   id: number,
@@ -18,10 +18,10 @@ interface Estado {
   templateUrl: './editar-estado-hora-extra-autorizacion.component.html',
   styleUrls: ['./editar-estado-hora-extra-autorizacion.component.css']
 })
+
 export class EditarEstadoHoraExtraAutorizacionComponent implements OnInit {
 
   estados: Estado[] = [
-    // { id: 1, nombre: 'Pendiente' },
     { id: 2, nombre: 'Pre-autorizado' },
     { id: 3, nombre: 'Autorizado' },
     { id: 4, nombre: 'Negado' },
@@ -42,7 +42,7 @@ export class EditarEstadoHoraExtraAutorizacionComponent implements OnInit {
     private toastr: ToastrService,
     public restPH: PedHoraExtraService,
     private realTime: RealTimeService,
-    public dialogRef: MatDialogRef<EditarEstadoHoraExtraAutorizacionComponent>,
+    public ventana: MatDialogRef<EditarEstadoHoraExtraAutorizacionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.id_empleado_loggin = parseInt(localStorage.getItem('empleado'));
@@ -51,7 +51,7 @@ export class EditarEstadoHoraExtraAutorizacionComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.data.empl);
     if (this.data.autorizacion[0].estado === 1) {
-      this.toastr.info('La autorización esta en pendiente. Pre-autoriza o Autoriza el permiso.','', {
+      this.toastr.info('Solicitud pendiente de aprobación.', '', {
         timeOut: 6000,
       })
     } else {
@@ -88,7 +88,7 @@ export class EditarEstadoHoraExtraAutorizacionComponent implements OnInit {
       const { access, message } = err.error.message;
       if (!access) {
         this.toastr.error(message)
-        this.dialogRef.close();
+        this.ventana.close();
       }
     })
   }
@@ -121,14 +121,16 @@ export class EditarEstadoHoraExtraAutorizacionComponent implements OnInit {
           this.restPH.sendNotiRealTime(notificacion);
         }
       });
-      this.dialogRef.close();
+      this.ventana.close();
     }, err => {
       const { access, message } = err.error.message;
       if (!access) {
         this.toastr.error(message)
-        this.dialogRef.close();
+        this.ventana.close();
       }
     })
   }
+
+
 
 }

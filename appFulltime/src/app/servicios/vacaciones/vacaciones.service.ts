@@ -34,9 +34,7 @@ export class VacacionesService {
     return this.http.get(`${environment.url}/vacaciones/one/${id}`);
   }
 
-  ListarUnaVacacion(id: number) {
-    return this.http.get(`${environment.url}/vacaciones/listar/vacacion/${id}`);
-  }
+
 
   RegistrarVacaciones(datos: any) {
     return this.http.post(`${environment.url}/vacaciones`, datos);
@@ -58,10 +56,6 @@ export class VacacionesService {
     return this.http.get(`${environment.url}/vacaciones/datosAutorizacion/${id_vacaciones}`);
   }
 
-  SendMailNoti(datos: any) {
-    return this.http.post<any>(`${environment.url}/vacaciones/mail-noti`, datos);
-  }
-
   EliminarVacacion(id_vacacion: number) {
     return this.http.delete(`${environment.url}/vacaciones/eliminar/${id_vacacion}`);
   }
@@ -74,4 +68,16 @@ export class VacacionesService {
   BuscarSolicitudVacacion(datos: any, desde: string, hasta: string) {
     return this.http.put(`${environment.url}/empleado-vacaciones-solicitudes/vacaciones-solicitudes/${desde}/${hasta}`, datos);
   }
+
+  // BUSQUEDA DE VACACIONES MEDIANTE ID
+  ListarUnaVacacion(id: number) {
+    return this.http.get(`${environment.url}/vacaciones/listar/vacacion/${id}`);
+  }
+
+  // ENVIAR CORREOS DE SOLICITUDES DE VACACIONES
+  EnviarCorreoVacaciones(datos: any) {
+    return this.http.post<any>(`${environment.url}/vacaciones/mail-noti`, datos);
+  }
+  
+
 }

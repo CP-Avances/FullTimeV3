@@ -35,7 +35,7 @@ const NotificacionTimbreAutomatica = function () {
                 let hora = 9; // =====> solo para probar
                 f.setUTCHours(hora);
                 console.log('----7 ', f.toJSON());
-                if (f != null) {
+                if (f != null && f.toJSON() != null) {
                     var fecha = f.toJSON().split('T')[0];
                     var h = f.toJSON().split('T')[1];
                     let retorno = yield CalcularHoras(fecha, h.split(':')[0]);

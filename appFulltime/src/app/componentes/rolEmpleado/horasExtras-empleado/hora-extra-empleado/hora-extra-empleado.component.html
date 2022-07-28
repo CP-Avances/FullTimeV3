@@ -1,0 +1,66 @@
+<br>
+<div class="container" style="padding-bottom: 25px;">
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <div class="w-100 bd-highlight">
+                <h5>SOLICITUDES DE HORAS EXTRAS</h5>
+            </div>
+            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                <button type="submit" class="btn btn-outline-light btn-sm"
+                    (click)="AbrirVentanaHoraExtra()">Añadir</button>
+            </div>
+        </div>
+        <div *ngFor="let h of hora_extra | paginate:tamanio_pagina:numero_pagina" style="padding-top: 15px;">
+            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Código:</label>
+                    <label>{{h.id}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Descripción:</label>
+                    <label>{{h.descripcion}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Estado:</label>
+                    <label>{{h.estado}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Fecha Solicita:</label>
+                    <label>{{h.fec_solicita.split("T")[0]}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Tiempo hora extra:</label>
+                    <label>{{h.num_hora}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Fecha Inicio:</label>
+                    <label>{{h.fec_inicio.split("T")[0]}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                    <label id="datosF">Fecha Final:</label>
+                    <label>{{h.fec_final.split("T")[0]}}</label>
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                </div>
+                <div class="caja1 d-flex justify-content-start">
+                </div>
+            </div>
+            <div style="text-align: right;" *ngIf="h.estado === 'Pendiente'">
+                <i class="fas fa-edit" id="edit" (click)="EditarHoraExtra(h)" matSuffix matTooltipPosition="right"
+                    matTooltip="Modificar los datos generales de este registro">
+                    <p>Editar</p>
+                </i>
+                <i class="fas fa-backspace" id="cancel" (click)="CancelarHoraExtra(h)" matSuffix
+                    matTooltipPosition="right" matTooltip="Cancelar solicitud de horas extras">
+                    <p>Cancelar</p>
+                </i>
+            </div>
+            <mat-divider></mat-divider>
+        </div>
+        <mat-paginator id="pagina" [length]="hora_extra.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

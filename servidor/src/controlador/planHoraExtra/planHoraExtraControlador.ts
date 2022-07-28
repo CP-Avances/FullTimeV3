@@ -8,15 +8,7 @@ import path from 'path';
 
 class PlanHoraExtraControlador {
 
-  public async ListarPlanificacion(req: Request, res: Response) {
-    const PLAN = await pool.query('SELECT * FROM plan_hora_extra ORDER BY fecha_desde DESC');
-    if (PLAN.rowCount > 0) {
-      res.jsonp(PLAN.rows);
-    }
-    else {
-      return res.status(404).jsonp({ text: 'No se encuentran registros' });
-    }
-  }
+
 
   public async ListarPlanHoraExtra(req: Request, res: Response) {
     const PLAN = await pool.query('SELECT e.id AS empl_id, e.codigo, e.cedula, e.nombre, e.apellido, ' +
@@ -75,6 +67,61 @@ class PlanHoraExtraControlador {
     }
   }
 
+  public async EncontrarUltimoPlan(req: Request, res: Response): Promise<any> {
+    const PLAN = await pool.query('SELECT MAX(id) AS id_plan_hora FROM plan_hora_extra');
+    if (PLAN.rowCount > 0) {
+      if (PLAN.rows[0]['id_plan_hora'] != null) {
+        return res.jsonp(PLAN.rows)
+      }
+      else {
+        return res.status(404).jsonp({ text: 'Registro no encontrado' });
+      }
+    }
+    else {
+      return res.status(404).jsonp({ text: 'Registro no encontrado' });
+    }
+  }
+
+
+  // 
+  public async ObtenerDatosAutorizacion(req: Request, res: Response) {
+    const id = req.params.id_plan_extra;
+    const SOLICITUD = await pool.query('SELECT a.id AS id_autorizacion, a.id_documento AS empleado_estado, ' +
+      'p.id AS id_plan_extra, pe.id AS plan_hora_extra_empleado FROM autorizaciones AS a, plan_hora_extra AS p, ' +
+      'plan_hora_extra_empleado AS pe ' +
+      'WHERE pe.id = a.id_plan_hora_extra AND pe.id_plan_hora = p.id AND p.id = $1', [id]);
+    if (SOLICITUD.rowCount > 0) {
+      return res.json(SOLICITUD.rows)
+    }
+    else {
+      return res.status(404).json({ text: 'No se encuentran registros' });
+    }
+  }
+
+  // ACTUALIZAR 
+  public async TiempoAutorizado(req: Request, res: Response) {
+    const id = parseInt(req.params.id);
+    const { hora } = req.body;
+    let respuesta = await pool.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then(result => {
+      return { message: 'Tiempo de hora autorizada confirmada' }
+    });
+    res.jsonp(respuesta)
+  }
+
+  public async ActualizarObservacion(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    const { observacion } = req.body;
+    await pool.query('UPDATE plan_hora_extra_empleado SET observacion = $1 WHERE id = $2', [observacion, id]);
+    res.jsonp({ message: 'Planificación Actualizada' });
+  }
+
+  public async ActualizarEstado(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    const { estado } = req.body;
+    await pool.query('UPDATE plan_hora_extra_empleado SET estado = $1 WHERE id = $2', [estado, id]);
+    res.jsonp({ message: 'Estado de Planificación Actualizada' });
+  }
+
   /** ************************************************************************************************* **
    ** **                METODOS PARA CREACION DE PLANIFICACION DE HORAS EXTRAS                       ** ** 
    ** ************************************************************************************************* **/
@@ -109,46 +156,13 @@ class PlanHoraExtraControlador {
     }
   }
 
-
-
-
-  public async ActualizarPlanHoraExtra(req: Request, res: Response) {
-    const id = req.params.id;
-    const { id_empl_planifica, fecha_desde, fecha_hasta, hora_inicio,
-      hora_fin, descripcion, horas_totales } = req.body;
-    await pool.query('UPDATE plan_hora_extra SET id_empl_planifica = $1, fecha_desde = $2, ' +
-      'fecha_hasta = $3, hora_inicio = $4, hora_fin = $5, descripcion = $6, horas_totales = $7 WHERE id = $8 ',
-      [id_empl_planifica, fecha_desde, fecha_hasta,
-        hora_inicio, hora_fin, descripcion, horas_totales, id]);
-    res.jsonp({ message: 'Planificacion registrada' });
-
-  }
-
-  public async EncontrarUltimoPlan(req: Request, res: Response): Promise<any> {
-    const PLAN = await pool.query('SELECT MAX(id) AS id_plan_hora FROM plan_hora_extra');
-    if (PLAN.rowCount > 0) {
-      if (PLAN.rows[0]['id_plan_hora'] != null) {
-        return res.jsonp(PLAN.rows)
-      }
-      else {
-        return res.status(404).jsonp({ text: 'Registro no encontrado' });
-      }
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Registro no encontrado' });
-    }
-  }
-
-  /** ************************************************************************************************* **
-   ** **                  METODOS DE PLANIFICACION DE HORAS EXTRAS POR USUARIO                       ** **
-   ** ************************************************************************************************* **/
-
   // CREAR PLANIFICACION DE HE POR USUARIO
   public async CrearPlanHoraExtraEmpleado(req: Request, res: Response) {
 
     try {
 
-      const { id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado, codigo } = req.body;
+      const { id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado,
+        codigo } = req.body;
 
       const response: QueryResult = await pool.query(
         `
@@ -159,9 +173,10 @@ class PlanHoraExtraControlador {
         [id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado, codigo]);
 
       const [planEmpleado] = response.rows;
-      if (!planEmpleado) return res.status(400).jsonp({ message: 'Error' });
+      if (!planEmpleado) return res.status(400).jsonp({ message: 'error' });
 
-      return res.status(200).jsonp({ message: 'Planificación registrada con éxito.', info: planEmpleado });
+      return res.status(200)
+        .jsonp({ message: 'Planificación registrada con éxito.', info: planEmpleado });
 
     } catch (error) {
       return res.status(500)
@@ -170,9 +185,12 @@ class PlanHoraExtraControlador {
 
   }
 
-  public async ListarPlanEmpleados(req: Request, res: Response) {
-    const id = req.params.id_plan_hora;
-    const PLAN = await pool.query('SELECT * FROM plan_hora_extra_empleado WHERE id_plan_hora = $1', [id]);
+  // BUSQUEDA DE DATOS DE PLANIFICACIONES DE HORAS EXTRAS
+  public async ListarPlanificacion(req: Request, res: Response) {
+    const PLAN = await pool.query(
+      `
+      SELECT * FROM plan_hora_extra ORDER BY fecha_desde DESC
+      `);
     if (PLAN.rowCount > 0) {
       res.jsonp(PLAN.rows);
     }
@@ -181,99 +199,50 @@ class PlanHoraExtraControlador {
     }
   }
 
-  public async TiempoAutorizado(req: Request, res: Response) {
-    const id = parseInt(req.params.id);
-    const { hora } = req.body;
-    let respuesta = await pool.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then(result => {
-      return { message: 'Tiempo de hora autorizada confirmada' }
-    });
-    res.jsonp(respuesta)
-  }
-
-  public async ActualizarObservacion(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    const { observacion } = req.body;
-    await pool.query('UPDATE plan_hora_extra_empleado SET observacion = $1 WHERE id = $2', [observacion, id]);
-    res.jsonp({ message: 'Planificación Actualizada' });
-  }
-
-  public async ActualizarEstado(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    const { estado } = req.body;
-    await pool.query('UPDATE plan_hora_extra_empleado SET estado = $1 WHERE id = $2', [estado, id]);
-    res.jsonp({ message: 'Estado de Planificación Actualizada' });
-  }
-
-
-  public async EnviarCorreoNotificacion(req: Request, res: Response): Promise<void> {
-
-    var tiempo = fechaHora();
-
-    const path_folder = path.resolve('logos');
-
-    var datos = await Credenciales(parseInt(req.params.id_empresa));
-
-    if (datos === 'ok') {
-
-
-      let { id_empl_envia, id_empl_recive, mensaje } = req.body;
-
-      var f = new Date();
-      f.setUTCHours(f.getHours())
-
-      let create_at = f.toJSON();
-      let tipo = 1; // es el tipo de aviso 
-      // console.log(id_empl_envia, id_empl_recive, create_at, mensaje, tipo);
-      await pool.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) VALUES($1, $2, $3, $4, $5)', [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
-
-      const Envia = await pool.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_envia]).then(resultado => { return resultado.rows[0] });
-      const Recibe = await pool.query('SELECT nombre, apellido, correo FROM empleados WHERE id = $1', [id_empl_recive]).then(resultado => { return resultado.rows[0] });
-
-      let data = {
-        // from: Envia.correo,
-        from: email,
-        to: Recibe.correo,
-        subject: 'Justificacion Hora Extra',
-        html: `<p><h4><b>${Envia.nombre} ${Envia.apellido}</b> </h4> escribe: <b>${mensaje}</b> 
-            <h4>A usted: <b>${Recibe.nombre} ${Recibe.apellido} </b></h4>
-            `
-      };
-      let port = 465;
-
-      if (puerto != null && puerto != '') {
-        port = parseInt(puerto);
-      }
-      var corr = enviarMail(servidor, parseInt(puerto));
-      corr.sendMail(data, function (error: any, info: any) {
-        if (error) {
-          console.log('Email error: ' + error);
-          return res.jsonp({ message: 'error' });
-        } else {
-          console.log('Email sent: ' + info.response);
-          return res.jsonp({ message: 'ok' });
-        }
-      });
-
-
-      res.jsonp({ message: 'Se envio notificacion y correo electrónico.' })
-    } else {
-      res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
-    }
-  }
-
-  public async ObtenerDatosAutorizacion(req: Request, res: Response) {
-    const id = req.params.id_plan_extra;
-    const SOLICITUD = await pool.query('SELECT a.id AS id_autorizacion, a.id_documento AS empleado_estado, ' +
-      'p.id AS id_plan_extra, pe.id AS plan_hora_extra_empleado FROM autorizaciones AS a, plan_hora_extra AS p, ' +
-      'plan_hora_extra_empleado AS pe ' +
-      'WHERE pe.id = a.id_plan_hora_extra AND pe.id_plan_hora = p.id AND p.id = $1', [id]);
-    if (SOLICITUD.rowCount > 0) {
-      return res.json(SOLICITUD.rows)
+  // BUSQUEDA DE USUARIOS POR ID DE PLANIFICACION
+  public async ListarPlanEmpleados(req: Request, res: Response) {
+    const id = req.params.id_plan_hora;
+    const PLAN = await pool.query(
+      `
+      SELECT p.id AS id_plan, pe.id, p.descripcion, p.fecha_desde, p.fecha_hasta, p.hora_inicio, p.hora_fin,
+        p.horas_totales, e.id AS id_empleado, (e.nombre || ' ' || e.apellido) AS nombre,
+        e.codigo, e.cedula, e.correo, pe.id_empl_cargo AS id_cargo, pe.id_empl_contrato AS id_contrato
+      FROM plan_hora_extra_empleado AS pe, plan_hora_extra AS p, empleados AS e
+      WHERE pe.id_plan_hora = $1 AND pe.id_plan_hora = p.id AND e.id = pe.id_empl_realiza
+      `
+      , [id]);
+    if (PLAN.rowCount > 0) {
+      res.jsonp(PLAN.rows);
     }
     else {
-      return res.status(404).json({ text: 'No se encuentran registros' });
+      return res.status(404).jsonp({ text: 'No se encuentran registros' });
     }
   }
+
+  // ELIMINAR REGISTRO DE PLANIFICACION HORAS EXTRAS
+  public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    await pool.query(
+      `
+        DELETE FROM plan_hora_extra WHERE id = $1
+        `
+      , [id]);
+    res.jsonp({ message: 'Registro eliminado' });
+  }
+
+  // ELIMINAR PLANIFICACION DE UN USUARIO ESPECIFICO
+  public async EliminarPlanEmpleado(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    const id_empleado = req.params.id_empleado;
+    await pool.query(
+      `
+        DELETE FROM plan_hora_extra_empleado WHERE id_plan_hora = $1 AND id_empl_realiza = $2
+        `
+      , [id, id_empleado]);
+
+    res.jsonp({ message: 'Registro eliminado' });
+  }
+
 
 
   /** ********************************************************************************************* **
@@ -290,7 +259,8 @@ class PlanHoraExtraControlador {
 
     if (datos === 'ok') {
 
-      const { id_empl_envia, correos, nombres, observacion, desde, hasta, inicio, fin, horas } = req.body;
+      const { id_empl_envia, correos, nombres, observacion, desde, hasta, inicio, fin,
+        horas, asunto, tipo_solicitud, proceso } = req.body;
 
       const Envia = await pool.query(`
         SELECT da.nombre, da.apellido, da.cedula, da.correo, 
@@ -304,20 +274,20 @@ class PlanHoraExtraControlador {
       let data = {
         from: email,
         to: correos,
-        subject: 'PLANIFICACION DE HORAS EXTRAS',
+        subject: asunto,
         html: `
                <body>
                    <div style="text-align: center;">
-                       <img width="50%" height="50%" src="cid:cabeceraf"/>
+                       <img width="25%" height="25%" src="cid:cabeceraf"/>
                    </div>
                    <br>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                       El presente correo es para informar que se ha creado la siguiente planificación de horas extras: <br>  
+                       El presente correo es para informar que se ha ${proceso} la siguiente planificación de horas extras: <br>  
                    </p>
-                   <h3 style="font-family: Arial; text-align: center;">DATOS DEL COLABORADOR QUE REALIZA PLANIFICACIÓN HORAS EXTRAS</h3>
+                   <h3 style="font-family: Arial; text-align: center;">DATOS DEL COLABORADOR QUE ${tipo_solicitud} PLANIFICACIÓN HORAS EXTRAS</h3>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Empresa:</b> ${nombre} <br>   
-                       <b>Asunto:</b> Planificación de realización de horas extras <br> 
+                       <b>Asunto:</b> ${asunto} <br> 
                        <b>Colaborador que envía:</b> ${Envia.nombre} ${Envia.apellido} <br>
                        <b>Número de Cédula:</b> ${Envia.cedula} <br>
                        <b>Cargo:</b> ${Envia.tipo_cargo} <br>
@@ -333,8 +303,8 @@ class PlanHoraExtraControlador {
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Horario:</b> ${inicio} a ${fin} <br>
-                       <b>Número de horas planificadas:</b> ${horas} <br>
-                       <b>Colabores que cuenta con planificación de horas extras:</b>
+                       <b>Número de horas planificadas:</b> ${horas} <br><br>
+                       <b>Colabores a los cuales se les ha ${proceso} una planificación de horas extras:</b>
                   </p>
                   <div style="text-align: center;"> 
                       <table border=2 cellpadding=10 cellspacing=0 style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px;">
@@ -368,9 +338,11 @@ class PlanHoraExtraControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }

@@ -18,6 +18,7 @@ import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-ge
 import { PlanHoraExtraComponent } from 'src/app/componentes/horasExtras/planificacionHoraExtra/plan-hora-extra/plan-hora-extra.component';
 
 import { ITableEmpleados } from 'src/app/model/reportes.model';
+import { PlanificacionComidasComponent } from '../planificacion-comidas/planificacion-comidas.component';
 
 @Component({
   selector: 'app-plan-comidas',
@@ -374,11 +375,10 @@ export class PlanComidasComponent implements OnInit {
   // METODO PARA ABRIR FORMULARIO DE INGRESO DE PLANIFICACION DE HE
   Planificar(seleccionados: any) {
     this.ventana.open(
-      PlanHoraExtraComponent,
-      {
-        width: '800px',
-        data: { planifica: seleccionados, actualizar: false }
-      })
+      PlanificacionComidasComponent, {
+      width: '600px',
+      data: { servicios: seleccionados }
+    })
       .afterClosed().subscribe(item => {
         this.auto_individual = true;
         this.LimpiarFormulario();
@@ -448,77 +448,6 @@ export class PlanComidasComponent implements OnInit {
     this.auto_individual = false;
     this.activar_seleccion = false;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /* applyFilter(event: Event) {
-     const filterValue = (event.target as HTMLInputElement).value;
-     this.filtroEmpleados = filterValue.trim().toLowerCase();
-     this.dataSource.filter = filterValue.trim().toLowerCase();
-   }
- */
-
-  /* PlanificacionVarios() {
-     let EmpleadosSeleccionados;
-     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
-       return {
-         id: obj.id,
-         empleado: obj.nombre + ' ' + obj.apellido,
-         codigo: obj.codigo
-       }
-     })
-     if (EmpleadosSeleccionados.length > 0) {
- 
-       // Ventana para ingresar planificación de comidas 
-       this.vistaFlotante.open(PlanificacionComidasComponent, {
-         width: '600px',
-         data: { servicios: EmpleadosSeleccionados, modo: 'multiple' }
-       }).afterClosed().subscribe(item => {
-         this.ObtenerEmpleados();
-         this.LimpiarCampos();
-         this.LimpiarBusquedas();
-         this.btnCheckHabilitar = false;
-         this.auto_individual = true;
-         this.selectionUno.clear();
-       });
-     }
-   }
- */
 
   // VALIDACIONES DE INGRESO DE LETRAS 
   IngresarSoloLetras(e) {

@@ -42,17 +42,10 @@ export class ButtonAvisosComponent implements OnInit {
         if (this.timbres_noti.length > 0) {
           this.timbres_noti.forEach(obj => {
             obj.create_at = moment(obj.create_at).format('DD/MM/YYYY') + ' ' + moment(obj.create_at).format('HH:mm:ss')
-            
             if (obj.visto === false) {
               this.num_timbre_false = this.num_timbre_false + 1;
               this.estadoTimbres = false;
             }
-            if (obj.descripcion.split(' ')[0] === 'Alimentación') {
-              // console.log('verificando espacios', obj.descripcion.split(' '))
-              this.mensaje_inicio = obj.descripcion.split(' ')[0] + ' ' + obj.descripcion.split(' ')[1] + ' ' + obj.descripcion.split(' ')[2] + ' ' + obj.descripcion.split(' ')[3];
-              this.mensaje_fin = obj.descripcion.split(' ')[4] + ' ' + obj.descripcion.split(' ')[5] + ' ' + obj.descripcion.split(' ')[6];
-            }
-
           });
         }
       }

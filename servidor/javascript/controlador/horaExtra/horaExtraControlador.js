@@ -17,7 +17,6 @@ const MetodosHorario_1 = require("../../libs/MetodosHorario");
 const settingsMail_1 = require("../../libs/settingsMail");
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
-const nodemailer = require("nodemailer");
 class HorasExtrasPedidasControlador {
     ListarHorasExtrasPedidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -79,269 +78,6 @@ class HorasExtrasPedidasControlador {
             }
         });
     }
-    ObtenerlistaHora(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_user } = req.params;
-            const HORAS_EXTRAS_PEDIDAS = yield database_1.default.query('SELECT * FROM hora_extr_pedidos WHERE id_usua_solicita = $1', [id_user]);
-            if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
-                return res.jsonp(HORAS_EXTRAS_PEDIDAS.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    CrearHoraExtraPedida(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, num_hora, descripcion, estado, observacion, tipo_funcion, depa_user_loggin, codigo } = req.body;
-                const response = yield database_1.default.query('INSERT INTO hora_extr_pedidos ( id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, ' +
-                    'fec_solicita, num_hora, descripcion, estado, observacion, tipo_funcion, codigo ) ' +
-                    'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *', [id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, num_hora, descripcion,
-                    estado, observacion, tipo_funcion, codigo]);
-                const [objetoHoraExtra] = response.rows;
-                if (!objetoHoraExtra)
-                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
-                const hora_extra = objetoHoraExtra;
-                const JefesDepartamentos = yield database_1.default.query(`
-      SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
-      cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
-      e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname , e.cedula, e.correo, c.hora_extra_mail, c.hora_extra_noti
-      FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
-      sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
-      WHERE da.id_departamento = $1 AND 
-      da.id_empl_cargo = ecr.id AND 
-      da.id_departamento = cg.id AND 
-      da.estado = true AND 
-      cg.id_sucursal = s.id AND 
-      ecr.id_empl_contrato = ecn.id AND 
-      ecn.id_empleado = e.id AND 
-      e.id = c.id_empleado
-      `, [depa_user_loggin])
-                    .then(result => {
-                    return result.rows;
-                });
-                if (JefesDepartamentos.length === 0)
-                    return res.status(400)
-                        .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
-                const [obj] = JefesDepartamentos;
-                let depa_padre = obj.depa_padre;
-                let JefeDepaPadre;
-                if (depa_padre !== null) {
-                    do {
-                        JefeDepaPadre = yield database_1.default.query('SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, ' +
-                            'cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ' +
-                            'ecn.id AS contrato, e.id AS empleado, (e.nombre || \' \' || e.apellido) as fullname, e.cedula, ' +
-                            'e.correo, c.hora_extra_mail, c.hora_extra_noti ' +
-                            'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, ' +
-                            'sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c ' +
-                            'WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND ' +
-                            'da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ' +
-                            'ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre]);
-                        depa_padre = JefeDepaPadre.rows[0].depa_padre;
-                        JefesDepartamentos.push(JefeDepaPadre.rows[0]);
-                    } while (depa_padre !== null);
-                    hora_extra.EmpleadosSendNotiEmail = JefesDepartamentos;
-                    return res.status(200).jsonp(hora_extra);
-                }
-                else {
-                    hora_extra.EmpleadosSendNotiEmail = JefesDepartamentos;
-                    return res.status(200).jsonp(hora_extra);
-                }
-            }
-            catch (error) {
-                console.log(error);
-                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
-            }
-        });
-    }
-    /** ************************************************************************************************* **
-     ** **         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                 **
-     ** ************************************************************************************************* **/
-    // MÉTODO PARA ENVIAR CORREOS DESDE APLICACIÓN WEB
-    SendMailNotifiHoraExtra(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var tiempo = (0, settingsMail_1.fechaHora)();
-            const path_folder = path_1.default.resolve('logos');
-            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
-            if (datos === 'ok') {
-                const { id_empl_contrato, solicitud, desde, hasta, num_horas, observacion, estado_h, correo, solicitado_por, h_inicio, h_final, id } = req.body;
-                const correoInfoPideHoraExtra = yield database_1.default.query('SELECT e.correo, e.nombre, e.apellido, e.cedula, ' +
-                    'ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
-                    'd.nombre AS departamento ' +
-                    'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
-                    'cg_departamentos AS d ' +
-                    'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
-                    '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id ' +
-                    'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ' +
-                    'ORDER BY cargo DESC', [id_empl_contrato]);
-                console.log(correoInfoPideHoraExtra.rows);
-                var url = `${process.env.URL_DOMAIN}/ver-hora-extra`;
-                let data = {
-                    to: correo,
-                    from: settingsMail_1.email,
-                    subject: 'SOLICITUD DE REALIZACION DE HORAS EXTRA',
-                    html: `
-                   <body>
-                       <div style="text-align: center;">
-                           <img width="50%" height="50%" src="cid:cabeceraf"/>
-                       </div>
-                       <br>
-                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           El presente correo es para informar que se ha creado la siguiente solicitud de realización de horas extras: <br>  
-                       </p>
-                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
-                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
-                           <b>Asunto:</b> Solicitud de Horas Extras <br> 
-                           <b>Colaborador que envía:</b> ${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido} <br>
-                           <b>Número de Cédula:</b> ${correoInfoPideHoraExtra.rows[0].cedula} <br>
-                           <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
-                           <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
-                           <b>Generado mediante:</b> Aplicación Web <br>
-                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
-                       </p>
-                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
-                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           <b>Motivo:</b> Solicitud de Horas Extras <br>   
-                           <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                           <b>Desde:</b> ${desde} ${h_inicio} <br>
-                           <b>Hasta:</b> ${hasta} ${h_final} <br>
-                           <b>Observación:</b> ${observacion} <br>
-                           <b>Num. horas solicitadas:</b> ${num_horas} <br>
-                           <b>Estado:</b> ${estado_h} <br><br>
-                           <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de hora extra.</a> <br><br>
-                           <b>Solicitado por:</b> ${solicitado_por} <br><br>
-                       </p>
-                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                           <b>Gracias por la atención</b><br>
-                           <b>Saludos cordiales,</b> <br><br>
-                       </p>
-                       <img src="cid:pief" width="50%" height="50%"/>
-                    </body>
-                `,
-                    attachments: [
-                        {
-                            filename: 'cabecera_firma.jpg',
-                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
-                        },
-                        {
-                            filename: 'pie_firma.jpg',
-                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
-                        }
-                    ]
-                };
-                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
-                corr.sendMail(data, function (error, info) {
-                    if (error) {
-                        console.log('Email error: ' + error);
-                        return res.jsonp({ message: 'error' });
-                    }
-                    else {
-                        console.log('Email sent: ' + info.response);
-                        return res.jsonp({ message: 'ok' });
-                    }
-                });
-            }
-            else {
-                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
-            }
-        });
-    }
-    // MÉTODO DE ENVÍO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
-    EnviarCorreoHoraExtraMovil(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var tiempo = (0, settingsMail_1.fechaHora)();
-            const path_folder = path_1.default.resolve('logos');
-            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
-            if (datos === 'ok') {
-                const { id_empl_contrato, solicitud, desde, hasta, num_horas, observacion, estado_h, correo, solicitado_por, h_inicio, h_final } = req.body;
-                const correoInfoPideHoraExtra = yield database_1.default.query('SELECT e.correo, e.nombre, e.apellido, e.cedula, ' +
-                    'ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
-                    'd.nombre AS departamento ' +
-                    'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
-                    'cg_departamentos AS d ' +
-                    'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
-                    '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id ' +
-                    'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ' +
-                    'ORDER BY cargo DESC', [id_empl_contrato]);
-                console.log(correoInfoPideHoraExtra.rows);
-                let data = {
-                    to: correo,
-                    from: settingsMail_1.email,
-                    subject: 'SOLICITUD DE REALIZACION DE HORAS EXTRA',
-                    html: `
-                   <body>
-                       <div style="text-align: center;">
-                           <img width="50%" height="50%" src="cid:cabeceraf"/>
-                       </div>
-                       <br>
-                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           El presente correo es para informar que se ha creado la siguiente solicitud de realización de horas extras: <br>  
-                       </p>
-                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
-                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
-                           <b>Asunto:</b> Solicitud de Horas Extras <br> 
-                           <b>Colaborador que envía:</b> ${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido} <br>
-                           <b>Número de Cédula:</b> ${correoInfoPideHoraExtra.rows[0].cedula} <br>
-                           <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
-                           <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
-                           <b>Generado mediante:</b> Aplicación Móvil <br>
-                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
-                       </p>
-                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
-                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           <b>Motivo:</b> Solicitud de Horas Extras <br>   
-                           <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                           <b>Desde:</b> ${desde} ${h_inicio} <br>
-                           <b>Hasta:</b> ${hasta} ${h_final} <br>
-                           <b>Observación:</b> ${observacion} <br>
-                           <b>Num. horas solicitadas:</b> ${num_horas} <br>
-                           <b>Estado:</b> ${estado_h} <br><br>
-                           <b>Solicitado por:</b> ${solicitado_por} <br><br>
-                       </p>
-                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                           <b>Gracias por la atención</b><br>
-                           <b>Saludos cordiales,</b> <br><br>
-                       </p>
-                       <img src="cid:pief" width="50%" height="50%"/>
-                    </body>
-                `,
-                    attachments: [
-                        {
-                            filename: 'cabecera_firma.jpg',
-                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
-                        },
-                        {
-                            filename: 'pie_firma.jpg',
-                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
-                        }
-                    ]
-                };
-                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
-                corr.sendMail(data, function (error, info) {
-                    if (error) {
-                        console.log('Email error: ' + error);
-                        return res.jsonp({ message: 'error' });
-                    }
-                    else {
-                        console.log('Email sent: ' + info.response);
-                        return res.jsonp({ message: 'ok' });
-                    }
-                });
-            }
-            else {
-                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
-            }
-        });
-    }
     ObtenerSolicitudHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_emple_hora;
@@ -351,137 +87,6 @@ class HorasExtrasPedidasControlador {
             }
             else {
                 return res.status(404).json({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    ActualizarObservacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { observacion } = req.body;
-            yield database_1.default.query('UPDATE hora_extr_pedidos SET observacion = $1 WHERE id = $2', [observacion, id]);
-            res.jsonp({ message: 'Pedido hora extra Actualizada' });
-        });
-    }
-    ActualizarEstado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var tiempo = (0, settingsMail_1.fechaHora)();
-            const path_folder = path_1.default.resolve('logos');
-            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
-            if (datos === 'ok') {
-                const id = req.params.id;
-                const { estado, id_hora_extra, id_departamento } = req.body;
-                console.log(estado, id_hora_extra, id_departamento);
-                yield database_1.default.query('UPDATE hora_extr_pedidos SET estado = $1 WHERE id = $2', [estado, id]);
-                const JefeDepartamento = yield database_1.default.query('SELECT da.id, cg.id AS id_dep, s.id AS id_suc, ' +
-                    'cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, ' +
-                    'e.nombre, e.cedula, e.correo, c.hora_extra_mail, c.hora_extra_noti FROM depa_autorizaciones AS da, ' +
-                    'empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, empleados AS e, ' +
-                    'config_noti AS c WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND ' +
-                    'da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id ' +
-                    'AND ecn.id_empleado = e.id AND e.id = c.id_empleado AND da.estado = true', [id_departamento]);
-                const InfoHoraExtraReenviarEstadoEmpleado = yield database_1.default.query('SELECT h.descripcion, h.fec_inicio, h.fec_final, h.fec_solicita, h.estado, h.num_hora, h.id, e.id AS empleado, e.correo, e.nombre, e.apellido, e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo FROM empleados AS e, empl_cargos AS ecr, hora_extr_pedidos AS h WHERE h.id = $1 AND h.id_empl_cargo = ecr.id AND e.id = h.id_usua_solicita ORDER BY cargo DESC LIMIT 1', [id_hora_extra]);
-                console.log(InfoHoraExtraReenviarEstadoEmpleado.rows);
-                let estadoHoraExtra = [
-                    { valor: 1, nombre: 'Pendiente' },
-                    { valor: 2, nombre: 'Pre-Autorizado' },
-                    { valor: 3, nombre: 'Autorizado' },
-                    { valor: 4, nombre: 'Negado' }
-                ];
-                let nombreEstado = '';
-                estadoHoraExtra.forEach(obj => {
-                    if (obj.valor === estado) {
-                        nombreEstado = obj.nombre;
-                    }
-                    if (obj.valor === 3) { //cuando este en estado tres se registra la hora_extr_calculos.
-                    }
-                });
-                JefeDepartamento.rows.forEach(obj => {
-                    var url = `${process.env.URL_DOMAIN}/horaExtraEmpleado`;
-                    InfoHoraExtraReenviarEstadoEmpleado.rows.forEach(ele => {
-                        let notifi_realtime = {
-                            id_send_empl: obj.empleado,
-                            id_receives_depa: obj.id_dep,
-                            estado: nombreEstado,
-                            id_permiso: null,
-                            id_vacaciones: null,
-                            id_hora_extra: id_hora_extra
-                        };
-                        var f = new Date();
-                        f.setUTCHours(f.getHours());
-                        let fecha = f.toJSON();
-                        fecha = fecha.split('T')[0];
-                        let data = {
-                            from: obj.correo,
-                            to: ele.correo,
-                            subject: 'Estado de solicitud de Hora Extra',
-                            html: `<p><b>${obj.nombre} ${obj.apellido}</b> jefe/a del departamento de <b>${obj.departamento}</b> con número de
-                cédula ${obj.cedula} a cambiado el estado de su permiso a: <b>${nombreEstado}</b></p>
-                <h4><b>Informacion del permiso</b></h4>
-                <ul>
-                    <li><b>Descripción</b>: ${ele.descripcion} </li>
-                    <li><b>Empleado</b>: ${ele.nombre} ${ele.apellido} </li>
-                    <li><b>Cédula</b>: ${ele.cedula} </li>
-                    <li><b>Sucursal</b>: ${obj.sucursal} </li>
-                    <li><b>Departamento</b>: ${obj.departamento} </li>
-                    </ul>
-                <a href="${url}">Ir a verificar estado hora extra</a>`,
-                            attachments: [
-                                {
-                                    filename: 'cabecera_firma.jpg',
-                                    path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
-                                    cid: 'cabeceraf' //same cid value as in the html img src
-                                },
-                                {
-                                    filename: 'pie_firma.jpg',
-                                    path: `${path_folder}/${settingsMail_1.pie_firma}`,
-                                    cid: 'pief' //same cid value as in the html img src
-                                }
-                            ]
-                        };
-                        console.log(data);
-                        let port = 465;
-                        if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                            port = parseInt(settingsMail_1.puerto);
-                        }
-                        if (obj.hora_extra_mail === true && obj.hora_extra_noti === true) {
-                            var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
-                            corr.sendMail(data, function (error, info) {
-                                if (error) {
-                                    console.log('Email error: ' + error);
-                                    return res.jsonp({ message: 'error' });
-                                }
-                                else {
-                                    console.log('Email sent: ' + info.response);
-                                    return res.jsonp({ message: 'ok' });
-                                }
-                            });
-                            res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-                        }
-                        else if (obj.hora_extra_maill === true && obj.hora_extra_noti === false) {
-                            var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
-                            corr.sendMail(data, function (error, info) {
-                                if (error) {
-                                    console.log('Email error: ' + error);
-                                    return res.jsonp({ message: 'error' });
-                                }
-                                else {
-                                    console.log('Email sent: ' + info.response);
-                                    return res.jsonp({ message: 'ok' });
-                                }
-                            });
-                            res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-                        }
-                        else if (obj.hora_extra_mail === false && obj.hora_extra_noti === true) {
-                            res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: true, realtime: [notifi_realtime] });
-                        }
-                        else if (obj.hora_extra_mail === false && obj.hora_extra_noti === false) {
-                            res.json({ message: 'Estado de hora extra actualizado exitosamente', notificacion: false, realtime: [notifi_realtime] });
-                        }
-                    });
-                });
-            }
-            else {
-                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
             }
         });
     }
@@ -499,23 +104,6 @@ class HorasExtrasPedidasControlador {
             }
         });
     }
-    EliminarHoraExtra(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_hora_extra } = req.params;
-            yield database_1.default.query('DELETE FROM realtime_noti WHERE id_hora_extra = $1', [id_hora_extra]);
-            yield database_1.default.query('DELETE FROM hora_extr_pedidos WHERE id = $1', [id_hora_extra]);
-            res.jsonp({ message: 'Registro eliminado' });
-        });
-    }
-    EditarHoraExtra(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { fec_inicio, fec_final, num_hora, descripcion, estado, tipo_funcion } = req.body;
-            console.log(fec_inicio, fec_final, num_hora, descripcion, estado, tipo_funcion);
-            yield database_1.default.query('UPDATE hora_extr_pedidos SET fec_inicio = $1, fec_final = $2, num_hora = $3, descripcion = $4, estado = $5, tipo_funcion = $6 WHERE id = $7', [fec_inicio, fec_final, num_hora, descripcion, estado, tipo_funcion, id]);
-            res.jsonp({ message: 'Hora Extra editado' });
-        });
-    }
     ObtenerHorarioEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id_empl_cargo = parseInt(req.params.id_cargo);
@@ -523,18 +111,6 @@ class HorasExtrasPedidasControlador {
             // let respuesta = await ValidarHorarioEmpleado(id_empleado, id_empl_cargo)
             let respuesta = yield (0, MetodosHorario_1.VerificarHorario)(id_empl_cargo);
             console.log(respuesta);
-            res.jsonp(respuesta);
-        });
-    }
-    TiempoAutorizado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id_hora = parseInt(req.params.id_hora);
-            const { hora } = req.body;
-            console.log(id_hora);
-            console.log(hora);
-            let respuesta = yield database_1.default.query('UPDATE hora_extr_pedidos SET tiempo_autorizado = $2 WHERE id = $1', [id_hora, hora]).then(result => {
-                return { message: 'Tiempo de hora autorizada confirmada' };
-            });
             res.jsonp(respuesta);
         });
     }
@@ -642,16 +218,457 @@ class HorasExtrasPedidasControlador {
             return res.status(200).jsonp(nuevo);
         });
     }
+    /** ************************************************************************************************* **
+     ** **                       METODO PARA MANEJO DE HORAS EXTRAS                                    ** **
+     ** ************************************************************************************************* **/
+    // CREACIÓN DE HORAS EXTRAS
+    CrearHoraExtraPedida(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, num_hora, descripcion, estado, observacion, tipo_funcion, depa_user_loggin, codigo } = req.body;
+                const response = yield database_1.default.query(`
+        INSERT INTO hora_extr_pedidos ( id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, 
+        fec_solicita, num_hora, descripcion, estado, observacion, tipo_funcion, codigo ) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
+        `, [id_empl_cargo, id_usua_solicita, fec_inicio, fec_final, fec_solicita, num_hora, descripcion,
+                    estado, observacion, tipo_funcion, codigo]);
+                const [objetoHoraExtra] = response.rows;
+                if (!objetoHoraExtra)
+                    return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
+                const hora_extra = objetoHoraExtra;
+                const JefesDepartamentos = yield database_1.default.query(`
+      SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
+      cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
+      e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo, 
+      c.hora_extra_mail, c.hora_extra_noti
+      FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+      sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+      WHERE da.id_departamento = $1 AND 
+      da.id_empl_cargo = ecr.id AND 
+      da.id_departamento = cg.id AND 
+      da.estado = true AND 
+      cg.id_sucursal = s.id AND 
+      ecr.id_empl_contrato = ecn.id AND 
+      ecn.id_empleado = e.id AND 
+      e.id = c.id_empleado
+      `, [depa_user_loggin])
+                    .then(result => {
+                    return result.rows;
+                });
+                if (JefesDepartamentos.length === 0)
+                    return res.status(400)
+                        .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+                const [obj] = JefesDepartamentos;
+                let depa_padre = obj.depa_padre;
+                let JefeDepaPadre;
+                if (depa_padre !== null) {
+                    do {
+                        JefeDepaPadre = yield database_1.default.query(`
+            SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, 
+            cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, 
+            ecn.id AS contrato, e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname, e.cedula, 
+            e.correo, c.hora_extra_mail, c.hora_extra_noti 
+            FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+            sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+            WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND 
+            da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND 
+            ecn.id_empleado = e.id AND e.id = c.id_empleado
+            `, [depa_padre]);
+                        depa_padre = JefeDepaPadre.rows[0].depa_padre;
+                        JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                    } while (depa_padre !== null);
+                    hora_extra.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(hora_extra);
+                }
+                else {
+                    hora_extra.EmpleadosSendNotiEmail = JefesDepartamentos;
+                    return res.status(200).jsonp(hora_extra);
+                }
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
+    // METODO PARA EDITAR HORA EXTRA
+    EditarHoraExtra(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { fec_inicio, fec_final, num_hora, descripcion, estado, tipo_funcion, depa_user_loggin } = req.body;
+            const response = yield database_1.default.query(`
+        UPDATE hora_extr_pedidos SET fec_inicio = $1, fec_final = $2, num_hora = $3, descripcion = $4, 
+        estado = $5, tipo_funcion = $6 WHERE id = $7 RETURNING *
+      `, [fec_inicio, fec_final, num_hora, descripcion, estado, tipo_funcion, id]);
+            const [objetoHoraExtra] = response.rows;
+            if (!objetoHoraExtra)
+                return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
+            const hora_extra = objetoHoraExtra;
+            const JefesDepartamentos = yield database_1.default.query(`
+        SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
+        cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
+        e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo, 
+        c.hora_extra_mail, c.hora_extra_noti
+        FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+        sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+        WHERE da.id_departamento = $1 AND 
+        da.id_empl_cargo = ecr.id AND 
+        da.id_departamento = cg.id AND 
+        da.estado = true AND 
+        cg.id_sucursal = s.id AND 
+        ecr.id_empl_contrato = ecn.id AND 
+        ecn.id_empleado = e.id AND 
+        e.id = c.id_empleado
+        `, [depa_user_loggin])
+                .then(result => {
+                return result.rows;
+            });
+            if (JefesDepartamentos.length === 0)
+                return res.status(400)
+                    .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
+            const [obj] = JefesDepartamentos;
+            let depa_padre = obj.depa_padre;
+            let JefeDepaPadre;
+            if (depa_padre !== null) {
+                do {
+                    JefeDepaPadre = yield database_1.default.query(`
+              SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, 
+              cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, 
+              ecn.id AS contrato, e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname, e.cedula, 
+              e.correo, c.hora_extra_mail, c.hora_extra_noti 
+              FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+              sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+              WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND 
+              da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND 
+              ecn.id_empleado = e.id AND e.id = c.id_empleado
+              `, [depa_padre]);
+                    depa_padre = JefeDepaPadre.rows[0].depa_padre;
+                    JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                } while (depa_padre !== null);
+                hora_extra.EmpleadosSendNotiEmail = JefesDepartamentos;
+                return res.status(200).jsonp(hora_extra);
+            }
+            else {
+                hora_extra.EmpleadosSendNotiEmail = JefesDepartamentos;
+                return res.status(200).jsonp(hora_extra);
+            }
+        });
+    }
+    // ELIMINAR REGISTRO DE HORAS EXTRAS
+    EliminarHoraExtra(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_hora_extra } = req.params;
+            yield database_1.default.query(`
+      DELETE FROM realtime_noti WHERE id_hora_extra = $1
+      `, [id_hora_extra]);
+            yield database_1.default.query(`
+      DELETE FROM autorizaciones WHERE id_hora_extra = $1
+      `, [id_hora_extra]);
+            const response = yield database_1.default.query(`
+      DELETE FROM hora_extr_pedidos WHERE id = $1 RETURNING *
+      `, [id_hora_extra]);
+            const [objetoHoraExtra] = response.rows;
+            if (objetoHoraExtra) {
+                return res.status(200).jsonp(objetoHoraExtra);
+            }
+            else {
+                return res.status(404).jsonp({ message: 'Solicitud no eliminada.' });
+            }
+        });
+    }
+    // BUSCAR REGISTROS DE HORAS EXTRAS DE UN USUARIO
+    ObtenerlistaHora(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_user } = req.params;
+            const HORAS_EXTRAS_PEDIDAS = yield database_1.default.query(`
+      SELECT * FROM hora_extr_pedidos WHERE id_usua_solicita = $1
+      `, [id_user]);
+            if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
+                return res.jsonp(HORAS_EXTRAS_PEDIDAS.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se han encontrado registros.' });
+            }
+        });
+    }
+    // EDITAR TIEMPO DE AUTORIZACION
+    TiempoAutorizado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id_hora = parseInt(req.params.id_hora);
+                const { hora } = req.body;
+                const response = yield database_1.default.query(`
+        UPDATE hora_extr_pedidos SET tiempo_autorizado = $2 WHERE id = $1 RETURNING *
+        `, [id_hora, hora]);
+                const [horaExtra] = response.rows;
+                if (!horaExtra) {
+                    return res.status(400)
+                        .jsonp({ message: 'Upps !!! algo salio mal. Solicitud de hora extra no ingresada' });
+                }
+                else {
+                    return res.status(200).jsonp(horaExtra);
+                }
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
+    // EDITAR ESTADO DE LA SOLICITUD DE HORA EXTRA
+    ActualizarEstado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                const { estado } = req.body;
+                const response = yield database_1.default.query(`
+          UPDATE hora_extr_pedidos SET estado = $1 WHERE id = $2 RETURNING *
+        `, [estado, id]);
+                const [horaExtra] = response.rows;
+                if (!horaExtra) {
+                    return res.status(400)
+                        .jsonp({ message: 'Upps !!! algo salio mal. Solicitud de hora extra no ingresada' });
+                }
+                else {
+                    return res.status(200).jsonp(horaExtra);
+                }
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
+    // EDITAR ESTADO DE OBSERVACION DE SOLICITUD DE HORA EXTRA
+    ActualizarObservacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                const { observacion } = req.body;
+                const response = yield database_1.default.query(`
+      UPDATE hora_extr_pedidos SET observacion = $1 WHERE id = $2 RETURNING *
+      `, [observacion, id]);
+                const [horaExtra] = response.rows;
+                if (!horaExtra) {
+                    return res.status(400)
+                        .jsonp({ message: 'Upps !!! algo salio mal. Solicitud de hora extra no ingresada' });
+                }
+                else {
+                    return res.status(200).jsonp(horaExtra);
+                }
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
+    /** ************************************************************************************************* **
+     ** **          MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **
+     ** ************************************************************************************************* **/
+    // MÉTODO PARA ENVIAR CORREOS DESDE APLICACIÓN WEB
+    SendMailNotifiHoraExtra(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
+            if (datos === 'ok') {
+                const { id_empl_contrato, solicitud, desde, hasta, num_horas, observacion, estado_h, correo, solicitado_por, h_inicio, h_final, id, asunto, proceso, tipo_solicitud } = req.body;
+                const correoInfoPideHoraExtra = yield database_1.default.query(`
+        SELECT e.correo, e.nombre, e.apellido, e.cedula, 
+        ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, 
+        d.nombre AS departamento 
+        FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, 
+        cg_departamentos AS d 
+        WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND 
+        (SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id 
+        AND tc.id = ecr.cargo AND d.id = ecr.id_departamento 
+        ORDER BY cargo DESC
+        `, [id_empl_contrato]);
+                console.log(correoInfoPideHoraExtra.rows);
+                var url = `${process.env.URL_DOMAIN}/ver-hora-extra`;
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: asunto,
+                    html: `
+                   <body>
+                       <div style="text-align: center;">
+                           <img width="25%" height="25%" src="cid:cabeceraf"/>
+                       </div>
+                       <br>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           El presente correo es para informar que se ha ${proceso} la siguiente solicitud de realización de horas extras: <br>  
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                           <b>Asunto:</b> ${asunto} <br> 
+                           <b>Colaborador que envía:</b> ${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido} <br>
+                           <b>Número de Cédula:</b> ${correoInfoPideHoraExtra.rows[0].cedula} <br>
+                           <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
+                           <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
+                           <b>Generado mediante:</b> Aplicación Web <br>
+                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Motivo:</b> Solicitud de Horas Extras <br>   
+                           <b>Fecha de Solicitud:</b> ${solicitud} <br> 
+                           <b>Desde:</b> ${desde} ${h_inicio} <br>
+                           <b>Hasta:</b> ${hasta} ${h_final} <br>
+                           <b>Observación:</b> ${observacion} <br>
+                           <b>Num. horas solicitadas:</b> ${num_horas} <br>
+                           <b>Estado:</b> ${estado_h} <br><br>
+                           <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
+                           <a href="${url}/${id}">Dar clic en el siguiente enlace para revisar solicitud de realización de hora extra.</a> <br><br>                         
+                       </p>
+                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Gracias por la atención</b><br>
+                           <b>Saludos cordiales,</b> <br><br>
+                       </p>
+                       <img src="cid:pief" width="50%" height="50%"/>
+                    </body>
+                `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        corr.close();
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        corr.close();
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
+    // MÉTODO DE ENVÍO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
+    EnviarCorreoHoraExtraMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            const path_folder = path_1.default.resolve('logos');
+            var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
+            if (datos === 'ok') {
+                const { id_empl_contrato, solicitud, desde, hasta, num_horas, observacion, estado_h, correo, solicitado_por, h_inicio, h_final, asunto, proceso, tipo_solicitud } = req.body;
+                const correoInfoPideHoraExtra = yield database_1.default.query(`
+        SELECT e.correo, e.nombre, e.apellido, e.cedula, 
+        ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, 
+        d.nombre AS departamento 
+        FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, 
+        cg_departamentos AS d 
+        WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND 
+        (SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id) = ecr.id 
+        AND tc.id = ecr.cargo AND d.id = ecr.id_departamento 
+        ORDER BY cargo DESC
+        `, [id_empl_contrato]);
+                console.log(correoInfoPideHoraExtra.rows);
+                let data = {
+                    to: correo,
+                    from: settingsMail_1.email,
+                    subject: asunto,
+                    html: `
+                   <body>
+                       <div style="text-align: center;">
+                           <img width="25%" height="25%" src="cid:cabeceraf"/>
+                       </div>
+                       <br>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           El presente correo es para informar que se ha ${proceso} la siguiente solicitud de realización de horas extras: <br>  
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                           <b>Asunto:</b> ${asunto} <br> 
+                           <b>Colaborador que envía:</b> ${correoInfoPideHoraExtra.rows[0].nombre} ${correoInfoPideHoraExtra.rows[0].apellido} <br>
+                           <b>Número de Cédula:</b> ${correoInfoPideHoraExtra.rows[0].cedula} <br>
+                           <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
+                           <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
+                           <b>Generado mediante:</b> Aplicación Móvil <br>
+                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       </p>
+                       <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
+                       <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Motivo:</b> ${observacion} <br>   
+                           <b>Fecha de Solicitud:</b> ${solicitud} <br> 
+                           <b>Desde:</b> ${desde} ${h_inicio} <br>
+                           <b>Hasta:</b> ${hasta} ${h_final} <br>
+                           <b>Num. horas solicitadas:</b> ${num_horas} <br>
+                           <b>Estado:</b> ${estado_h} <br><br>
+                           <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
+                       </p>
+                       <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                           <b>Gracias por la atención</b><br>
+                           <b>Saludos cordiales,</b> <br><br>
+                       </p>
+                       <img src="cid:pief" width="50%" height="50%"/>
+                    </body>
+                `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        corr.close();
+                        console.log('Email error: ' + error);
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        corr.close();
+                        console.log('Email sent: ' + info.response);
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
 }
 exports.horaExtraPedidasControlador = new HorasExtrasPedidasControlador();
 exports.default = exports.horaExtraPedidasControlador;
 const BuscarHorasExtras = function (id, desde, hasta) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield database_1.default.query('SELECT p.fecha_desde, p.fecha_hasta, p.hora_inicio, p.hora_fin, p.descripcion, ' +
-            'p.horas_totales, e.nombre AS planifica_nombre, e.apellido AS planifica_apellido ' +
-            'FROM plan_hora_extra AS p, plan_hora_extra_empleado AS pe, empleados AS e ' +
-            'WHERE p.id = pe.id_plan_hora AND e.id = p.id_empl_planifica AND pe.codigo = $1 AND ' +
-            'p.fecha_desde BETWEEN $2 AND $3', [id, desde, hasta])
+        return yield database_1.default.query(`
+    SELECT p.fecha_desde, p.fecha_hasta, p.hora_inicio, p.hora_fin, p.descripcion, 
+    p.horas_totales, e.nombre AS planifica_nombre, e.apellido AS planifica_apellido 
+    FROM plan_hora_extra AS p, plan_hora_extra_empleado AS pe, empleados AS e 
+    WHERE p.id = pe.id_plan_hora AND e.id = p.id_empl_planifica AND pe.codigo = $1 AND 
+    p.fecha_desde BETWEEN $2 AND $3
+    `, [id, desde, hasta])
             .then(res => {
             return res.rows;
         });

@@ -231,17 +231,19 @@ export class VerVacacionComponent implements OnInit {
 
   // ABRIR VENTANAS DE NAVEGACIÓN
   AbrirVentanaEditarAutorizacion(datosSeleccionados: any): void {
-    this.ventana.open(EditarEstadoVacacionAutoriacionComponent, { width: '350px', data: { datosSeleccionados, id_rece_emp: this.vacacion[0].id_empleado } })
+    this.ventana.open(EditarEstadoVacacionAutoriacionComponent,
+      { width: '350px', data: { auto: datosSeleccionados, vacacion: this.vacacion[0] } })
       .afterClosed().subscribe(item => {
         this.BuscarDatos();
       });
   }
 
   AbrirAutorizaciones(datosSeleccionados: any): void {
-    this.ventana.open(VacacionAutorizacionesComponent, { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(item => {
-      this.BuscarDatos();
-      this.HabilitarAutorizacion = true;
-    });
+    this.ventana.open(VacacionAutorizacionesComponent,
+      { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(item => {
+        this.BuscarDatos();
+        this.HabilitarAutorizacion = true;
+      });
   }
 
   ObtenerFecha() {

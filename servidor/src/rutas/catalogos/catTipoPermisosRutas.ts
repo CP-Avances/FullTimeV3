@@ -12,7 +12,7 @@ class TipoPermisosRutas {
     }
 
     configuracion(): void {
-        this.router.get('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.list);
+        this.router.get('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.Listar);
         this.router.get('/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.getOne);
         this.router.post('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.create);
         this.router.put('/editar/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.editar);

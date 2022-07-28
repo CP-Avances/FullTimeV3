@@ -1,19 +1,20 @@
 // LLAMADO DE LIBRERIAS
+import { Component, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
+import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 
 // LLAMADO A COMPONENTES
+import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
 import { MetodosComponent } from '../../metodoEliminar/metodos.component';
 
 // LLAMADO A SERVICIOS
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { ToastrService } from 'ngx-toastr';
-import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
 export interface SolicitudElemento {
@@ -25,7 +26,6 @@ export interface SolicitudElemento {
   fec_inicio: string;
   fec_final: string;
   fecha: string;
-  apellido: string;
   hora_fin: string;
   nombre: string;
   codigo: number;
@@ -36,7 +36,9 @@ export interface SolicitudElemento {
   id_servicio: number;
   observa_menu: string;
   observacion: string;
-  valor: string
+  valor: string;
+  correo: string;
+  cedula: string;
 }
 
 @Component({
@@ -76,16 +78,18 @@ export class ListarPlanificacionComponent implements OnInit {
 
   constructor(
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
-    public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
     public toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
-    private vistaFlotante: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
     public router: Router,
+    public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
+    private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
+    private restP: ParametrosService,
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
     this.ObtenerPlanificaciones(); // LISTA DE PLANIFCACIONES DE SERVICIOS DE ALIMENTACIÓN
+    this.BuscarParametro();
   }
 
   /** ********************************************************************************************* */
@@ -100,6 +104,7 @@ export class ListarPlanificacionComponent implements OnInit {
 
   // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
   ObtenerPlanificaciones() {
+    this.planificaciones = [];
     this.restC.ObtenerPlanComidas().subscribe(res => {
       this.planificaciones = res;
       if (this.planificaciones.length != 0) {
@@ -141,7 +146,7 @@ export class ListarPlanificacionComponent implements OnInit {
       id_empleado: datoSeleccionado.id_empleado
     }
     this.restC.EncontrarPlanComidaEmpleadoConsumido(datosConsumido).subscribe(consu => {
-      this.toastr.info('No es posible actualizar la planificación de alimentación de ' + datoSeleccionado.nombre + ' ' + datoSeleccionado.apellido + ' ya que presenta registros de servicio de alimentación consumidos.', '', {
+      this.toastr.info('Proceso inválido. ' + datoSeleccionado.nombre + ' ' + datoSeleccionado.apellido + ' ya tiene un registro de servicio de alimentación consumido.', '', {
         timeOut: 6000,
       })
     }, error => {
@@ -151,7 +156,7 @@ export class ListarPlanificacionComponent implements OnInit {
   }
 
   VentanaEditarPlanComida(datoSeleccionado: any, componente: any, forma: any) {
-    this.vistaFlotante.open(componente, {
+    this.ventana.open(componente, {
       width: '600px',
       data: { solicitud: datoSeleccionado, modo: forma }
     })
@@ -167,14 +172,29 @@ export class ListarPlanificacionComponent implements OnInit {
         this.botonEditar = false;
         this.botonEliminar = false;
         this.selectionUno.clear();
+        this.ObtenerPlanificaciones();
       });
   }
 
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanComidas(id_plan: number, id_empleado: number, datos: any) {
+
+    // LECTURA DE DATOS DE USUARIO
+    let usuario = '<tr><th>' + datos.nombre +
+      '</th><th>' + datos.cedula + '</th></tr>';
+    let cuenta_correo = datos.correo;
+
+    // LECTURA DE DATOS DE LA PLANIFICACIÓN
+    let desde = moment.weekdays(moment(datos.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(datos.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_final).day()).slice(1);
+    let h_inicio = moment(datos.hora_inicio, 'HH:mm').format('HH:mm');
+    let h_fin = moment(datos.hora_fin, 'HH:mm').format('HH:mm');
+
+
     this.restC.EliminarPlanComida(id_plan, id_empleado).subscribe(res => {
-      this.EnviarNotificaciones(datos.fec_inicio, datos.fec_final, datos.hora_inicio, datos.hora_fin, this.idEmpleadoLogueado, datos.id_empleado)
+      this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
+      this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
@@ -188,54 +208,24 @@ export class ListarPlanificacionComponent implements OnInit {
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlanComidas(datos: any) {
+    console.log('ver data seleccionada... ', datos)
     // VERIFICAR SI HAY UN REGISTRO CON ESTADO CONSUMIDO DENTRO DE LA PLANIFICACION
     let datosConsumido = {
       id_plan_comida: datos.id,
       id_empleado: datos.id_empleado
     }
     this.restC.EncontrarPlanComidaEmpleadoConsumido(datosConsumido).subscribe(consu => {
-      this.toastr.info('No es posible eliminar la planificación de alimentación de ' + datos.nombre + ' ' + datos.apellido + ' ya que presenta registros de servicio de alimentación consumidos.', '', {
+      this.toastr.info('Proceso no permitido. Usuario ' + datos.nombre + ' ' + datos.apellido + ' tiene un registro de alimentación consumido.', '', {
         timeOut: 6000,
       })
     }, error => {
-      this.vistaFlotante.open(MetodosComponent, { width: '450px' }).afterClosed()
+      this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
         .subscribe((confirmado: Boolean) => {
           if (confirmado) {
             this.EliminarPlanComidas(datos.id, datos.id_empleado, datos);
           }
         });
     });
-  }
-
-  // ENVIO DE NOTIFICACIONES AL CORREO INDICADO QUE SE ELIMINO EL REGISTRO
-  envios: any = [];
-  EnviarNotificaciones(fecha_plan_inicio: any, fecha_plan_fin: any, h_inicio: any, h_fin: any, empleado_envia: any, empleado_recibe: any) {
-    let datosCorreo = {
-      id_usua_plan: empleado_recibe,
-      id_usu_admin: empleado_envia,
-      fecha_inicio: moment(fecha_plan_inicio).format('DD-MM-YYYY'),
-      fecha_fin: moment(fecha_plan_fin).format('DD-MM-YYYY'),
-      hora_inicio: h_inicio,
-      hora_fin: h_fin
-    }
-    this.restC.EnviarCorreoEliminaPlan(datosCorreo).subscribe(envio => {
-      this.envios = [];
-      this.envios = envio;
-      if (this.envios.notificacion === true) {
-        this.NotificarPlanificacion(empleado_envia, empleado_recibe);
-      }
-    });
-  }
-
-  // ENVIO DE NOTIFICACIONES AL SISTEMA INDICADO QUE SE ELIMINO EL REGISTRO
-  NotificarPlanificacion(empleado_envia: any, empleado_recive: any) {
-    let mensaje = {
-      id_empl_envia: empleado_envia,
-      id_empl_recive: empleado_recive,
-      mensaje: 'Planificación de Alimentación Eliminada.'
-    }
-    this.restC.EnviarMensajePlanComida(mensaje).subscribe(res => {
-    })
   }
 
 
@@ -252,6 +242,7 @@ export class ListarPlanificacionComponent implements OnInit {
   // MÉTODO PARA BÚSQUEDA DE DATOS DE EMPLEADOS CON PLANIFICACIÓN
   planEmpleados: any = []; // VARIABLE PARA GUARDAR DATOS DE EMPLEADOS CON PLANIFICACIÓN
   ObtenerEmpleadosPlanificacion(id: any, accion: any, lista_empleados: any, icono: any, editar: any, eliminar: any) {
+
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.planEmpleados = res;
       this.tipo_accion = accion;
@@ -261,10 +252,11 @@ export class ListarPlanificacionComponent implements OnInit {
       this.ver_eliminar = eliminar;
     }, error => {
       this.restC.EliminarRegistro(id).subscribe(res => {
-        this.toastr.error('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
+        this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
           timeOut: 6000,
         })
-        window.location.reload();
+        // window.location.reload();
+        this.ObtenerPlanificaciones();
       });
     });
   }
@@ -328,7 +320,8 @@ export class ListarPlanificacionComponent implements OnInit {
     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
       return {
         nombre: obj.nombre,
-        apellido: obj.apellido,
+        cedula: obj.cedula,
+        correo: obj.correo,
         id_empleado: obj.id_empleado,
         hora_inicio: obj.hora_inicio,
         hora_fin: obj.hora_fin,
@@ -360,17 +353,27 @@ export class ListarPlanificacionComponent implements OnInit {
   EliminarRegistrosMultiple() {
     let EmpleadosSeleccionados;
     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
+      console.log('ver data obj... ', obj)
       return {
-        nombre: obj.nombre,
-        apellido: obj.apellido,
-        id_empleado: obj.id_empleado,
-        id: obj.id,
+        alimentacion: obj
       }
     })
+
+    console.log('ver data de empleados ... ', EmpleadosSeleccionados[0].alimentacion)
     if (EmpleadosSeleccionados.length === 1) {
-      this.ConfirmarDeletePlanComidas(EmpleadosSeleccionados[0]);
+      this.ConfirmarDeletePlanComidas(EmpleadosSeleccionados[0].alimentacion);
     } else if (EmpleadosSeleccionados.length > 1) {
-      this.ConfirmarDeletePlanComidasMultiple(EmpleadosSeleccionados)
+
+      this.ContarCorreos(EmpleadosSeleccionados);
+      if (this.cont_correo <= this.correos) {
+        this.ConfirmarDeletePlanComidasMultiple(EmpleadosSeleccionados)
+      }
+      else {
+        this.toastr.warning('Trata de enviar correo de un total de ' + this.cont_correo + ' colaboradores, sin embargo solo tiene permitido enviar un total de ' + this.correos + ' correos.', 'ACCIÓN NO PERMITIDA.', {
+          timeOut: 6000,
+        });
+      }
+
     }
     else {
       this.toastr.info('No ha seleccionado ningún registro.', 'Seleccionar registros.', {
@@ -383,16 +386,32 @@ export class ListarPlanificacionComponent implements OnInit {
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   id_plan: any;
   EliminarPlanComidasMultiple(datos: any) {
-    datos.map(del => {
-      this.id_plan = del.id;
-      this.restC.EliminarPlanComida(del.id, del.id_empleado).subscribe(res => {
+
+    var usuario = '';
+
+    datos.map(obj => {
+
+      console.log('ver eliminar 56666 ', plan)
+      var plan = obj.alimentacion
+      // LECTURA DE DATOS DE LA PLANIFICACIÓN
+      let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
+      let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
+      let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
+      let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+
+      // LECTURA DE NOMBRES DE USUARIOS
+      usuario = usuario + '<tr><th>' + plan.nombre + '</th><th>' + plan.cedula + '</th></tr>';
+
+      this.restC.EliminarPlanComida(plan.id, plan.id_empleado).subscribe(res => {
         this.contar_eliminados = this.contar_eliminados + 1;
-        this.EnviarNotificaciones(del.fec_inicio, del.fec_final, del.hora_inicio, del.hora_fin, this.idEmpleadoLogueado, del.id_empleado)
+        this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, plan.id_empleado);
+
         if (this.contar_eliminados === datos.length) {
-          this.toastr.error('Se ha eliminado un total de ' + datos.length + ' registros.', 'Registros Eliminados Exitosamente.', {
+          this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
+          this.toastr.error('Se ha eliminado un total de ' + datos.length + ' registros.', '', {
             timeOut: 6000,
           });
-          this.VerificarPlanificacion(this.id_plan, '2', false, true);
+          this.VerificarPlanificacion(plan.id, '2', false, true);
           this.botonSeleccion = false;
           this.botonEditar = false;
           this.botonEliminar = false;
@@ -409,20 +428,22 @@ export class ListarPlanificacionComponent implements OnInit {
   contar_eliminados: number = 0;
   nota_nombres: string = '';
   ConfirmarDeletePlanComidasMultiple(datos: any) {
+    console.log('ver datos seleccionados', datos)
     this.empleado_conConsumo = [];
     this.empleado_sinConsumo = [];
     this.contar = 0;
     this.contar_eliminados = 0;
     datos.map(obj => {
+
       // VERIFICAR SI HAY UN REGISTRO CON ESTADO CONSUMIDO DENTRO DE LA PLANIFICACION
       let datosConsumido = {
-        id_plan_comida: obj.id,
-        id_empleado: obj.id_empleado
+        id_plan_comida: obj.alimentacion.id,
+        id_empleado: obj.alimentacion.id_empleado
       }
       this.restC.EncontrarPlanComidaEmpleadoConsumido(datosConsumido).subscribe(consu => {
         this.contar = this.contar + 1;
         this.empleado_conConsumo = this.empleado_conConsumo.concat(obj);
-        this.nota_nombres = this.nota_nombres + ' - ' + obj.nombre + ' ' + obj.apellido;
+        this.nota_nombres = this.nota_nombres + ' - ' + obj.alimentacion.nombre;
         if (this.contar === datos.length) {
           this.MostrarMensajeEliminado(this.empleado_conConsumo, datos, this.nota_nombres);
           this.nota_nombres = '';
@@ -437,17 +458,18 @@ export class ListarPlanificacionComponent implements OnInit {
           this.MetodoEliminar(this.empleado_sinConsumo);
         }
       });
+
     })
   }
 
   // MÉTODO PARA MOSTRAR MENSAJES SEGÚN LECTURA DE DATOS
   MostrarMensajeEliminado(consumidos: any, datos_seleccion: any, nota: any) {
     if (consumidos.length === datos_seleccion.length) {
-      this.toastr.error('No se puede eliminar planifación de ningún empleado.', 'Los empleados seleccionados presentan registros de planiifcación seleccionada con estado consumido.', {
+      this.toastr.error('Proceso no permitido.', 'Los usuarios seleccionados ya tienen registro de planificación consumida.', {
         timeOut: 6000,
       });
     } else if (consumidos.length > 0) {
-      this.toastr.error(nota + '. \nLos empleados indicados presentan registros de planificación seleccionada con estado consumido.', 'No es posible eliminar planificación de: ', {
+      this.toastr.error(nota + '. \nLos usuarios indicados presentan tienen planificación con estado consumido.', 'No es posible eliminar planificación de: ', {
         timeOut: 6000,
       });
     }
@@ -456,7 +478,7 @@ export class ListarPlanificacionComponent implements OnInit {
   // MÉTODO PARA ABRIR VENTA DE SELECCIÓN ELIMINAR DATOS
   MetodoEliminar(datos_eliminar: any) {
     if (datos_eliminar.length > 0) {
-      this.vistaFlotante.open(MetodosComponent, { width: '450px' }).afterClosed()
+      this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
         .subscribe((confirmado: Boolean) => {
           if (confirmado) {
             this.EliminarPlanComidasMultiple(datos_eliminar);
@@ -468,12 +490,12 @@ export class ListarPlanificacionComponent implements OnInit {
   // VERIFICAR SI LA PLANIFICACIÓN TIENE DATOS DE EMPLEADOS
   VerificarPlanificacion(id, accion, editar, eliminar) {
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
-      this.planEmpleados = res;
-      this.tipo_accion = accion;
       this.lista_empleados = true;
-      this.ver_icono = false;
-      this.ver_editar = editar;
+      this.planEmpleados = res;
       this.ver_eliminar = eliminar;
+      this.tipo_accion = accion;
+      this.ver_editar = editar;
+      this.ver_icono = false;
     }, res => {
       this.restC.EliminarRegistro(id).subscribe(res => {
         this.tipo_accion = accion;
@@ -481,9 +503,107 @@ export class ListarPlanificacionComponent implements OnInit {
         this.ver_icono = true;
         this.ver_editar = false;
         this.ver_eliminar = false;
-        window.location.reload();
+        this.ObtenerPlanificaciones();
       });
     });
   }
+
+
+  /** ***************************************************************************************************** **
+   ** **               METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE ALIMENTACION                ** **
+   ** ***************************************************************************************************** **/
+
+  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
+  EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
+
+    // DATOS DE ESTRUCTURA DEL CORREO
+    let DataCorreo = {
+      tipo_solicitud: 'ELIMINA',
+      observacion: datos.observacion,
+      id_comida: datos.id_detalle,
+      id_envia: this.idEmpleadoLogueado,
+      nombres: usuario,
+      proceso: 'eliminado',
+      asunto: 'ELIMINACION DE PLANIFICACION DE ALIMENTACION',
+      correo: cuenta_correo,
+      inicio: h_inicio,
+      extra: datos.extra,
+      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
+      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
+      final: h_fin,
+    }
+
+    console.log('DATOS A ENVIARSE POR CORREO', DataCorreo);
+    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    this.restC.EnviarCorreoPlan(DataCorreo).subscribe(res => {
+      if (res.message === 'ok') {
+        this.toastr.success('Correo de planificación enviado exitosamente.', '', {
+          timeOut: 6000,
+        });
+      }
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de planificación.', {
+          timeOut: 6000,
+        });
+      }
+      console.log(res.message);
+
+    })
+  }
+
+
+  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
+  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
+    let mensaje = {
+      id_comida: datos.id_detalle,
+      id_empl_envia: this.idEmpleadoLogueado,
+      id_empl_recive: id_empleado_recibe,
+      tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
+      mensaje: 'Planificación de alimentación eliminada desde ' +
+        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
+    }
+    this.restC.EnviarMensajePlanComida(mensaje).subscribe(res => {
+    })
+  }
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE CORREOS
+  correos: number;
+  BuscarParametro() {
+    // id_tipo_parametro LIMITE DE CORREOS = 24
+    let datos = [];
+    this.restP.ListarDetalleParametros(24).subscribe(
+      res => {
+        datos = res;
+        if (datos.length != 0) {
+          this.correos = parseInt(datos[0].descripcion)
+        }
+        else {
+          this.correos = 0
+        }
+      });
+  }
+
+  // MÉTODO PARA CONTAR CORREOS A ENVIARSE
+  cont_correo: number = 0;
+  info_correo: string = '';
+  ContarCorreos(data: any) {
+    console.log('ver data correo.... ', data)
+    this.cont_correo = 0;
+    this.info_correo = '';
+    data.forEach((obj: any) => {
+      console.log('ver obj correo.... ', obj.alimentacion.correo)
+      this.cont_correo = this.cont_correo + 1;
+      if (this.info_correo === '') {
+        this.info_correo = obj.alimentacion.correo;
+      }
+      else {
+        this.info_correo = this.info_correo + ', ' + obj.alimentacion.correo;
+      }
+      console.log('ver info correo...', this.info_correo)
+    })
+  }
+
 
 }

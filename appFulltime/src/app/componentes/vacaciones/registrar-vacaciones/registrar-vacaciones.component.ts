@@ -10,6 +10,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 interface Estado {
   id: number,
@@ -76,6 +77,7 @@ export class RegistrarVacacionesComponent implements OnInit {
     private restV: VacacionesService,
     private toastr: ToastrService,
     private realTime: RealTimeService,
+    private informacion: DatosGeneralesService,
     public restAutoriza: AutorizacionService,
     public dialogRef: MatDialogRef<RegistrarVacacionesComponent>,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
@@ -94,6 +96,7 @@ export class RegistrarVacacionesComponent implements OnInit {
     });
 
     this.ObtenerEmpleadoLogueado(this.idEmpleado);
+    this.ObtenerDatos();
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
@@ -102,6 +105,15 @@ export class RegistrarVacacionesComponent implements OnInit {
     this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
       this.empleadoLogueado = data;
     })
+  }
+
+  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  actuales: any = [];
+  ObtenerDatos() {
+    this.actuales = [];
+    this.informacion.ObtenerDatosActuales(this.datoEmpleado.idEmpleado).subscribe(datos => {
+      this.actuales = datos;
+    });
   }
 
   fechasTotales: any = [];
@@ -265,6 +277,7 @@ export class RegistrarVacacionesComponent implements OnInit {
   NotifiRes: any;
   arrayNivelesDepa: any = [];
   InsertarVacaciones(form) {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosVacaciones = {
       fec_inicio: form.fecInicioForm,
       fec_final: form.fecFinalForm,
@@ -274,16 +287,16 @@ export class RegistrarVacacionesComponent implements OnInit {
       dia_laborable: form.dialaborableForm,
       legalizado: form.legalizadoForm,
       id_peri_vacacion: this.datoEmpleado.idPerVacacion,
-      depa_user_loggin: parseInt(localStorage.getItem('departamento')),
+      depa_user_loggin: depa_user_loggin,
       id_empl_cargo: this.datoEmpleado.idCargo,
-      codigo: this.empleados[0].codigo
+      codigo: parseInt(this.empleados[0].codigo)
     };
     console.log(datosVacaciones);
     this.restV.RegistrarVacaciones(datosVacaciones).subscribe(vacacion => {
 
       this.IngresarAutorizacion(vacacion);
       this.EnviarNotificacion(vacacion);
-      this.SendEmailsEmpleados(vacacion);
+      this.EnviarCorreoEmpleados(vacacion);
       this.toastr.success('Operación Exitosa', 'Solicitud registrada.', {
         timeOut: 6000,
       })
@@ -324,7 +337,7 @@ export class RegistrarVacacionesComponent implements OnInit {
     }
   }
 
-  SendEmailsEmpleados(vacacion: any) {
+  EnviarCorreoEmpleados(vacacion: any) {
 
     console.log('ver vacaciones..   ', vacacion)
 
@@ -341,7 +354,7 @@ export class RegistrarVacacionesComponent implements OnInit {
 
       // CAPTURANDO ESTADO DE LA SOLICITUD DE VACACIÓN
       if (vacacion.estado === 1) {
-        var estado_v = 'Pendiente';
+        var estado_v = 'Pendiente de autorización';
       }
 
       // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
@@ -359,18 +372,21 @@ export class RegistrarVacacionesComponent implements OnInit {
       // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
       if (cont === vacacion.EmpleadosSendNotiEmail.length) {
         let datosVacacionCreada = {
-          desde: desde + ' ' + moment(vacacion.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(vacacion.fec_final).format('DD/MM/YYYY'),
+          tipo_solicitud: 'Vacaciones solicitadas por',
           idContrato: this.datoEmpleado.idContratoActual,
           estado_v: estado_v,
+          proceso: 'creado',
+          desde: desde + ' ' + moment(vacacion.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(vacacion.fec_final).format('DD/MM/YYYY'),
           id_dep: e.id_dep, // VERIFICAR
           id_suc: e.id_suc, // VERIFICAR
           correo: correo_usuarios,
+          asunto: 'SOLICITUD DE VACACIONES',
           id: vacacion.id,
           solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido
         }
         if (correo_usuarios != '') {
-          this.restV.SendMailNoti(datosVacacionCreada).subscribe(
+          this.restV.EnviarCorreoVacaciones(datosVacacionCreada).subscribe(
             resp => {
               if (resp.message === 'ok') {
                 this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
@@ -400,16 +416,14 @@ export class RegistrarVacacionesComponent implements OnInit {
     let desde = moment.weekdays(moment(vacaciones.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_inicio).day()).slice(1);
     let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
 
-    var f = new Date();
     let notificacion = {
-      id_send_empl: this.datoEmpleado.idEmpleado,
       id_receives_empl: '',
       id_receives_depa: '',
-      estado: 'Pendiente',
-      create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-      id_permiso: null,
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
+      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_permiso: null,
+      estado: 'Pendiente',
       mensaje: 'Ha realizado una solicitud de vacaciones desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),

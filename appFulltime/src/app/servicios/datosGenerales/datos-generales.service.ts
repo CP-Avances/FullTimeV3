@@ -14,6 +14,14 @@ export class DatosGeneralesService {
     private socket: Socket
   ) { }
 
+  ObtenerDatosActuales(id_empleado: number) {
+    return this.http.get(`${environment.url}/generalidades/datos-actuales/${id_empleado}`);
+  }
+
+  BuscarJefes(datos: any) {
+    return this.http.post<any>(`${environment.url}/generalidades/buscar-jefes`, datos);
+  }
+
   AutorizaEmpleado(id_empleado: number) {
     return this.http.get(`${environment.url}/generalidades/empleadoAutoriza/${id_empleado}`);
   }

@@ -39,14 +39,13 @@ import { ScriptService } from 'src/app/servicios/empleado/script.service';
 
 // IMPORTAR COMPONENTES
 import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/detallePlanHorarios/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
-import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
+import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/registro-autorizacion-depa/registro-autorizacion-depa.component';
-import { EditarHoraExtraEmpleadoComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
 import { EditarPeriodoVacacionesComponent } from 'src/app/componentes/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
 import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/editar-autorizacion-depa/editar-autorizacion-depa.component';
 import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
-import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
+import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { RegistrarEmpleProcesoComponent } from 'src/app/componentes/empleadoProcesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { EditarEmpleadoProcesoComponent } from 'src/app/componentes/empleadoProcesos/editar-empleado-proceso/editar-empleado-proceso.component';
 import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
@@ -55,15 +54,15 @@ import { PlanificacionComidasComponent } from 'src/app/componentes/planificacion
 import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
 import { EditarPlanificacionComponent } from 'src/app/componentes/planHorarios/editar-planificacion/editar-planificacion.component';
 import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
-import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacaciones-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
-import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/hora-extra-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
+import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
+import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/horasExtras-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
 import { EditarPlanComidasComponent } from 'src/app/componentes/planificacionComidas/editar-plan-comidas/editar-plan-comidas.component';
 import { RegistrarPeriodoVComponent } from 'src/app/componentes/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { CambiarContrasenaComponent } from '../../rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
 import { RegistroContratoComponent } from 'src/app/componentes/empleado/contrato/registro-contrato/registro-contrato.component';
 import { AdministraComidaComponent } from '../../administra-comida/administra-comida.component';
-import { CancelarPermisoComponent } from 'src/app/componentes/rolEmpleado/solicitar-permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { PedidoHoraExtraComponent } from '../../horasExtras/pedido-hora-extra/pedido-hora-extra.component';
+import { CancelarPermisoComponent } from '../../rolEmpleado/permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { EditarEmpleadoComponent } from '../datos-empleado/editar-empleado/editar-empleado.component';
 import { FraseSeguridadComponent } from '../../frase-administrar/frase-seguridad/frase-seguridad.component';
 import { TituloEmpleadoComponent } from '../titulos/titulo-empleado/titulo-empleado.component';
@@ -74,7 +73,8 @@ import { EmplLeafletComponent } from '../../settings/leaflet/empl-leaflet/empl-l
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
 import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
 import { switchMap } from 'rxjs/operators';
-import { CrearCoordenadasComponent } from '../../timbre-web/ubicacion-geografica/crear-coordenadas/crear-coordenadas.component';
+import { EditarHoraExtraEmpleadoComponent } from '../../rolEmpleado/horasExtras-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -139,7 +139,7 @@ export class VerEmpleadoComponent implements OnInit {
     public restPlanComidas: PlanComidasService, // SERVICIO DATOS DE PLANIFICACIÓN COMIDAS
     public restPerV: PeriodoVacacionesService, // SERVICIO DATOS PERIODO DE VACACIONES
     public restVacaciones: VacacionesService, // SERVICIO DATOS DE VACACIONES
-    public vistaRegistrarDatos: MatDialog, // VARIABLE MANEJO DE VENTANAS
+    public ventana: MatDialog, // VARIABLE MANEJO DE VENTANAS
     public restEmpleado: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     public restPlanH: PlanHorarioService, // SERVICIO DATOS PLANIFICACIÓN DE HORARIO
     private scriptService: ScriptService, // SERVICIO DATOS EMPLEADO - REPORTE
@@ -153,6 +153,8 @@ export class VerEmpleadoComponent implements OnInit {
     private toastr: ToastrService, // VARIABLE MANEJO DE MENSAJES DE NOTIFICACIONES
     public restU: UsuarioService, // SERVICIO DATOS USUARIO
     public router: Router, // VARIABLE NAVEGACIÓN DE RUTAS URL
+
+    private informacion: DatosGeneralesService,
 
     private activatedRoute: ActivatedRoute,
 
@@ -198,6 +200,8 @@ export class VerEmpleadoComponent implements OnInit {
       )
       .subscribe(() => {
       });
+
+    this.VerDatosActuales(parseInt(this.idEmpleado));
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
@@ -211,7 +215,7 @@ export class VerEmpleadoComponent implements OnInit {
   // METODO INCLUIR EL CROKIS
   AbrirLeaflet(nombre: string, apellido: string, codigo: number) {
 
-    this.vistaRegistrarDatos.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
+    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
       console.log(res);
       if (res.message === true) {
         if (res.latlng != undefined) {
@@ -239,7 +243,7 @@ export class VerEmpleadoComponent implements OnInit {
 
 
   AbirVentanaEditarEmpleado(dataEmpley) {
-    this.vistaRegistrarDatos.open(EditarEmpleadoComponent, { data: dataEmpley, width: '800px' }).afterClosed().subscribe(result => {
+    this.ventana.open(EditarEmpleadoComponent, { data: dataEmpley, width: '800px' }).afterClosed().subscribe(result => {
       if (result) {
         this.verEmpleado(this.idEmpleado)
       }
@@ -260,7 +264,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   AbrirVentanaRegistarTituloEmpleado() {
-    this.vistaRegistrarDatos.open(TituloEmpleadoComponent, { data: this.idEmpleado, width: '360px' }).afterClosed().subscribe(result => {
+    this.ventana.open(TituloEmpleadoComponent, { data: this.idEmpleado, width: '360px' }).afterClosed().subscribe(result => {
       if (result) {
         this.obtenerTituloEmpleado(parseInt(this.idEmpleado))
       }
@@ -268,7 +272,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   AbrirVentanaEditarTitulo(dataTitulo) {
-    this.vistaRegistrarDatos.open(EditarTituloComponent, { data: dataTitulo, width: '360px' }).afterClosed().subscribe(result => {
+    this.ventana.open(EditarTituloComponent, { data: dataTitulo, width: '360px' }).afterClosed().subscribe(result => {
       if (result) {
         this.obtenerTituloEmpleado(parseInt(this.idEmpleado))
       }
@@ -288,7 +292,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteTitulo(id: number) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.eliminarTituloEmpleado(id);
@@ -358,7 +362,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   AbrirVentanaEditarContrato(dataContrato) {
-    this.vistaRegistrarDatos.open(EditarContratoComponent, { data: dataContrato, width: '600px' }).afterClosed().subscribe(result => {
+    this.ventana.open(EditarContratoComponent, { data: dataContrato, width: '600px' }).afterClosed().subscribe(result => {
       if (result) {
         console.log(result);
         this.obtenerContratoEmpleadoRegimen()
@@ -378,7 +382,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // VENTANA PARA INGRESAR CONTRATO DEL EMPLEADO
   AbrirVentanaCrearContrato(): void {
-    this.vistaRegistrarDatos.open(RegistroContratoComponent, { width: '650px', data: this.idEmpleado }).
+    this.ventana.open(RegistroContratoComponent, { width: '650px', data: this.idEmpleado }).
       afterClosed().subscribe(item => {
         this.obtenerContratoEmpleadoRegimen();
         this.obtenerCargoEmpleado(parseInt(this.idEmpleado));
@@ -448,7 +452,7 @@ export class VerEmpleadoComponent implements OnInit {
       this.idContrato = datos;
       console.log(datos);
       console.log("idcargo ", this.idContrato[0].max)
-      this.vistaRegistrarDatos.open(EmplCargosComponent,
+      this.ventana.open(EmplCargosComponent,
         { width: '900px', data: { idEmpleado: this.idEmpleado, idContrato: this.idContrato[0].max } }).
         afterClosed().subscribe(item => {
           this.obtenerCargoEmpleado(parseInt(this.idEmpleado));
@@ -474,6 +478,8 @@ export class VerEmpleadoComponent implements OnInit {
     this.restEmpleado.getOneEmpleadoRest(parseInt(idemploy)).subscribe(data => {
       console.log(data);
       this.empleadoUno = data;
+
+      console.log('EMPLEADO ..... ', this.empleadoUno);
       var empleado = data[0]['nombre'] + data[0]['apellido'];
       if (data[0]['imagen'] != null) {
         this.urlImagen = `${environment.url}/empleado/img/` + data[0]['imagen'];
@@ -547,7 +553,7 @@ export class VerEmpleadoComponent implements OnInit {
   obtenerVacaciones(id_empleado: number) {
     this.restPerV.BuscarIDPerVacaciones(id_empleado).subscribe(datos => {
       this.idPerVacacion = datos;
-      console.log("idPerVaca ", this.idPerVacacion[0].id);
+      console.log("idPerVaca------ ", this.idPerVacacion[0].id);
       this.restVacaciones.ObtenerVacacionesPorIdPeriodo(this.idPerVacacion[0].id).subscribe(res => {
         this.vacaciones = res;
       });
@@ -613,6 +619,7 @@ export class VerEmpleadoComponent implements OnInit {
   // MÉTODO PARA MOSTRAR DATOS DE PLANIFICACIÓN DE ALMUERZOS 
   planComidas: any;
   obtenerPlanComidasEmpleado(id_empleado: number) {
+
     this.planComidas = [];
     this.restPlanComidas.ObtenerPlanComidaPorIdEmpleado(id_empleado).subscribe(res => {
       this.planComidas = res;
@@ -743,7 +750,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteDiscapacidad(id: number) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.eliminarDiscapacidad(id);
@@ -766,7 +773,7 @@ export class VerEmpleadoComponent implements OnInit {
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteHorario(datos: any) {
     console.log('datos horario', datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarPlanGeneral(datos.fec_inicio, datos.fec_final, datos.id_horarios, datos.codigo)
@@ -809,7 +816,7 @@ export class VerEmpleadoComponent implements OnInit {
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlanificacion(datos: any) {
     console.log('planificacion', datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.BuscarDatosPlanHorario(datos.id, datos.codigo)
@@ -850,16 +857,33 @@ export class VerEmpleadoComponent implements OnInit {
     })
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
+  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanComidas(id_plan: number, id_empleado: number, datos: any) {
+
+    // LECTURA DE DATOS DE USUARIO
+    let usuario = '<tr><th>' + datos.nombre +
+      '</th><th>' + datos.cedula + '</th></tr>';
+    let cuenta_correo = datos.correo;
+
+    // LECTURA DE DATOS DE LA PLANIFICACIÓN
+    let desde = moment.weekdays(moment(datos.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(datos.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_final).day()).slice(1);
+    let h_inicio = moment(datos.hora_inicio, 'HH:mm').format('HH:mm');
+    let h_fin = moment(datos.hora_fin, 'HH:mm').format('HH:mm');
+
+
     this.restPlanComidas.EliminarPlanComida(id_plan, id_empleado).subscribe(res => {
-      this.EnviarNotificaciones(datos.fec_inicio, datos.fec_final, datos.hora_inicio, datos.hora_fin, this.idEmpleadoLogueado, datos.id_empleado)
+      this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
+      this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
       this.obtenerPlanComidasEmpleado(parseInt(this.idEmpleado));
     });
   }
+
+
+
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlanComidas(datos: any) {
@@ -869,11 +893,12 @@ export class VerEmpleadoComponent implements OnInit {
       id_empleado: datos.id_empleado
     }
     this.restPlanComidas.EncontrarPlanComidaEmpleadoConsumido(datosConsumido).subscribe(consu => {
-      this.toastr.info('No es posible eliminar la planificación de alimentación de ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido + ' ya que presenta registros de servicio de alimentación consumidos.', '', {
+      this.toastr.info('Proceso no válido. Usuario ' + this.empleadoUno[0].nombre + ' '
+        + this.empleadoUno[0].apellido + ' tiene registros de alimentación consumidos.', '', {
         timeOut: 6000,
       })
     }, error => {
-      this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+      this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
         .subscribe((confirmado: Boolean) => {
           if (confirmado) {
             this.EliminarPlanComidas(datos.id, datos.id_empleado, datos);
@@ -884,34 +909,67 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  envios: any = [];
-  EnviarNotificaciones(fecha_plan_inicio: any, fecha_plan_fin: any, h_inicio: any, h_fin: any, empleado_envia: any, empleado_recibe: any) {
-    let datosCorreo = {
-      id_usua_plan: empleado_recibe,
-      id_usu_admin: empleado_envia,
-      fecha_inicio: moment(fecha_plan_inicio).format('DD-MM-YYYY'),
-      fecha_fin: moment(fecha_plan_fin).format('DD-MM-YYYY'),
-      hora_inicio: h_inicio,
-      hora_fin: h_fin
+
+  /** ***************************************************************************************************** **
+ ** **               METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE ALIMENTACION                ** **
+ ** ***************************************************************************************************** **/
+
+  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
+  EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
+
+    // DATOS DE ESTRUCTURA DEL CORREO
+    let DataCorreo = {
+      tipo_solicitud: 'ELIMINA',
+      observacion: datos.observacion,
+      id_comida: datos.id_detalle,
+      id_envia: this.idEmpleadoLogueado,
+      nombres: usuario,
+      proceso: 'eliminado',
+      asunto: 'ELIMINACION DE PLANIFICACION DE ALIMENTACION',
+      correo: cuenta_correo,
+      inicio: h_inicio,
+      extra: datos.extra,
+      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
+      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
+      final: h_fin,
     }
-    this.restPlanComidas.EnviarCorreoEliminaPlan(datosCorreo).subscribe(envio => {
-      this.envios = [];
-      this.envios = envio;
-      if (this.envios.notificacion === true) {
-        this.NotificarPlanificacion(empleado_envia, empleado_recibe);
+
+    console.log('DATOS A ENVIARSE POR CORREO', DataCorreo);
+    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    this.restPlanComidas.EnviarCorreoPlan(DataCorreo).subscribe(res => {
+      if (res.message === 'ok') {
+        this.toastr.success('Correo de planificación enviado exitosamente.', '', {
+          timeOut: 6000,
+        });
       }
-    });
+      else {
+        this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de planificación.', {
+          timeOut: 6000,
+        });
+      }
+      console.log(res.message);
+
+    })
   }
 
-  NotificarPlanificacion(empleado_envia: any, empleado_recive: any) {
+
+  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
+  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
     let mensaje = {
-      id_empl_envia: empleado_envia,
-      id_empl_recive: empleado_recive,
-      mensaje: 'Planificación de Alimentación Eliminada.'
+      id_comida: datos.id_detalle,
+      id_empl_envia: this.idEmpleadoLogueado,
+      id_empl_recive: id_empleado_recibe,
+      tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
+      mensaje: 'Planificación de alimentación eliminada desde ' +
+        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
+        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
     }
     this.restPlanComidas.EnviarMensajePlanComida(mensaje).subscribe(res => {
     })
   }
+
+
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarProceso(id_plan: number) {
@@ -926,7 +984,7 @@ export class VerEmpleadoComponent implements OnInit {
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteProceso(datos: any) {
     console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarProceso(datos.id);
@@ -949,7 +1007,7 @@ export class VerEmpleadoComponent implements OnInit {
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteAutorizacion(datos: any) {
     console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarAutorizacion(datos.id);
@@ -960,7 +1018,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   CancelarHoraExtra(h) {
-    this.vistaRegistrarDatos.open(CancelarHoraExtraComponent, { width: '300px', data: h.id }).afterClosed().subscribe(items => {
+    this.ventana.open(CancelarHoraExtraComponent, { width: '300px', data: h.id }).afterClosed().subscribe(items => {
       console.log(items);
       if (items === true) {
         this.ObtenerlistaHorasExtrasEmpleado();
@@ -969,16 +1027,30 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   CancelarPermiso(dataPermiso) {
-    this.vistaRegistrarDatos.open(CancelarPermisoComponent, { width: '300px', data: dataPermiso }).afterClosed().subscribe(items => {
-      if (items === true) {
-        this.obtenerPermisos(parseInt(this.idEmpleado));
-      }
-    });
+    this.ventana.open(CancelarPermisoComponent,
+      {
+        width: '300px',
+        data: { info: dataPermiso, id_empleado: parseInt(this.idEmpleado) }
+      }).afterClosed().subscribe(items => {
+        if (items === true) {
+          this.obtenerPermisos(parseInt(this.idEmpleado));
+        }
+      });
   }
 
   CancelarVacaciones(v) {
-    this.vistaRegistrarDatos.open(CancelarVacacionesComponent, { width: '300px', data: v.id }).afterClosed().subscribe(items => {
-      this.obtenerVacaciones(parseInt(this.idEmpleado));
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
+      this.ventana.open(CancelarVacacionesComponent,
+        {
+          width: '300px',
+          data: { id: v.id, id_empleado: parseInt(this.idEmpleado), id_contrato: datos[0].max }
+        }).afterClosed().subscribe(items => {
+          this.obtenerVacaciones(parseInt(this.idEmpleado));
+        });
+    }, error => {
+      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+        timeOut: 6000,
+      })
     });
   }
 
@@ -1066,7 +1138,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarEliminarVacuna(id: number) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarVacuna(id);
@@ -1085,7 +1157,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.idCargo = datos;
       console.log("idcargo: ", this.idCargo)
-      this.vistaRegistrarDatos.open(RegistoEmpleadoHorarioComponent,
+      this.ventana.open(RegistoEmpleadoHorarioComponent,
         { width: '600px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max, horas_trabaja: this.idCargo[0].hora_trabaja } }).afterClosed().subscribe(item => {
           this.ObtenerHorariosEmpleado(parseInt(this.idEmpleado));
         });
@@ -1108,7 +1180,7 @@ export class VerEmpleadoComponent implements OnInit {
           timeOut: 6000,
         })
       }, error => {
-        this.vistaRegistrarDatos.open(RegistrarPeriodoVComponent,
+        this.ventana.open(RegistrarPeriodoVComponent,
           { width: '900px', data: { idEmpleado: this.idEmpleado, idContrato: this.idContrato[0].max } })
           .afterClosed().subscribe(item => {
             this.obtenerPeriodoVacaciones();
@@ -1131,7 +1203,7 @@ export class VerEmpleadoComponent implements OnInit {
         this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
           this.idPerVacacion = datos;
           console.log("idPerVaca ", this.idPerVacacion)
-          this.vistaRegistrarDatos.open(RegistrarVacacionesComponent,
+          this.ventana.open(RegistrarVacacionesComponent,
             {
               width: '900px', data: {
                 idEmpleado: this.idEmpleado, idPerVacacion: this.idPerVacacion[0].id,
@@ -1164,7 +1236,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.idCargo = datos;
       console.log("idcargo ", this.idCargo[0].max)
-      this.vistaRegistrarDatos.open(RegistroPlanHorarioComponent,
+      this.ventana.open(RegistroPlanHorarioComponent,
         { width: '300px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max } })
         .afterClosed().subscribe(item => {
           this.obtenerPlanHorarios(parseInt(this.idEmpleado));
@@ -1179,16 +1251,25 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA REGISTRAR DETALLE DE HORARIO DEL EMPLEADO
   AbrirVentanaDetallePlanHorario(datos: any): void {
     console.log(datos);
-    this.vistaRegistrarDatos.open(RegistroDetallePlanHorarioComponent,
+    this.ventana.open(RegistroDetallePlanHorarioComponent,
       { width: '350px', data: { idEmpleado: this.idEmpleado, planHorario: datos, actualizarPage: false, direccionarE: false } }).disableClose = true;
   }
 
   // VENTANA PARA INGRESAR PLANIFICACIÓN DE COMIDAS 
   AbrirVentanaPlanificacion(): void {
     console.log(this.idEmpleado);
-    this.vistaRegistrarDatos.open(PlanificacionComidasComponent, {
+    var info = {
+      id_contrato: this.actuales.id_contrato,
+      id_cargo: this.actuales.id_cargo,
+      nombre: this.actuales.nombre + ' ' + this.actuales.apellido,
+      cedula: this.actuales.cedula,
+      correo: this.actuales.correo,
+      codigo: this.actuales.codigo,
+      id: this.actuales.id,
+    }
+    this.ventana.open(PlanificacionComidasComponent, {
       width: '600px',
-      data: { idEmpleado: this.idEmpleado, modo: 'individual' }
+      data: { servicios: info }
     })
       .afterClosed().subscribe(item => {
         this.obtenerPlanComidasEmpleado(parseInt(this.idEmpleado));
@@ -1200,7 +1281,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.idCargo = datos;
       console.log("idcargo ", this.idCargo[0].max)
-      this.vistaRegistrarDatos.open(RegistrarEmpleProcesoComponent,
+      this.ventana.open(RegistrarEmpleProcesoComponent,
         { width: '600px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max } }).afterClosed().subscribe(item => {
           this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
         });
@@ -1216,7 +1297,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.idCargo = datos;
       console.log("idcargo ", this.idCargo[0].max)
-      this.vistaRegistrarDatos.open(RegistroAutorizacionDepaComponent,
+      this.ventana.open(RegistroAutorizacionDepaComponent,
         { width: '600px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max } }).afterClosed().subscribe(item => {
           this.ObtenerAutorizaciones(parseInt(this.idEmpleado));
         });
@@ -1229,7 +1310,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // VENTANA PARA REGISTRAR ADMINISTRACION DE MÓDULO DE ALIMENTACIÓN 
   AbrirVentanaAdminComida(): void {
-    this.vistaRegistrarDatos.open(AdministraComidaComponent,
+    this.ventana.open(AdministraComidaComponent,
       { width: '600px', data: { idEmpleado: this.idEmpleado } })
       .afterClosed().subscribe(item => {
         this.VerAdminComida(parseInt(this.idEmpleado));
@@ -1246,7 +1327,7 @@ export class VerEmpleadoComponent implements OnInit {
         this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
           this.idPerVacacion = datos;
           console.log("idPerVaca ", this.idPerVacacion[0].id)
-          this.vistaRegistrarDatos.open(RegistroEmpleadoPermisoComponent,
+          this.ventana.open(RegistroEmpleadoPermisoComponent,
             {
               width: '1200px',
               data: { idEmpleado: this.idEmpleado, idContrato: this.idContrato[0].max, idPerVacacion: this.idPerVacacion[0].id, idCargo: this.idCargo[0].max }
@@ -1271,7 +1352,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   AbrirVentanaHoraExtra() {
-    this.vistaRegistrarDatos.open(PedidoHoraExtraComponent, { width: '9iipx' })
+    this.ventana.open(PedidoHoraExtraComponent, { width: '9iipx' })
       .afterClosed().subscribe(items => {
         this.ObtenerlistaHorasExtrasEmpleado();
       });
@@ -1283,7 +1364,7 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA EDITAR PROCESOS DEL EMPLEADO 
   AbrirVentanaEditarProceso(datoSeleccionado: any): void {
     console.log(datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarEmpleadoProcesoComponent,
+    this.ventana.open(EditarEmpleadoProcesoComponent,
       { width: '400px', data: { idEmpleado: this.idEmpleado, datosProcesos: datoSeleccionado } })
       .afterClosed().subscribe(item => {
         this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
@@ -1293,7 +1374,7 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA EDITAR PROCESOS DEL EMPLEADO 
   AbrirEditarPeriodoVacaciones(datoSeleccionado: any): void {
     console.log(datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarPeriodoVacacionesComponent,
+    this.ventana.open(EditarPeriodoVacacionesComponent,
       { width: '900px', data: { idEmpleado: this.idEmpleado, datosPeriodo: datoSeleccionado } })
       .afterClosed().subscribe(item => {
         this.obtenerPeriodoVacaciones();
@@ -1304,7 +1385,7 @@ export class VerEmpleadoComponent implements OnInit {
   AbrirEditarHorario(datoSeleccionado: any): void {
     console.log(datoSeleccionado);
     this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.vistaRegistrarDatos.open(EditarHorarioEmpleadoComponent,
+      this.ventana.open(EditarHorarioEmpleadoComponent,
         { width: '600px', data: { idEmpleado: this.idEmpleado, datosHorario: datoSeleccionado, horas_trabaja: datos[0].hora_trabaja } })
         .afterClosed().subscribe(item => {
           console.log(item);
@@ -1320,7 +1401,7 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA REGISTRAR HORARIO 
   AbrirEditarPlanificacion(datoSeleccionado: any): void {
     console.log(datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarPlanificacionComponent,
+    this.ventana.open(EditarPlanificacionComponent,
       { width: '300px', data: { idEmpleado: this.idEmpleado, datosPlan: datoSeleccionado } }).afterClosed().subscribe(item => {
         this.obtenerPlanHorarios(parseInt(this.idEmpleado));
       });
@@ -1349,7 +1430,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   VentanaEditarPlanComida(datoSeleccionado: any, componente: any, forma: any) {
-    this.vistaRegistrarDatos.open(componente, {
+    this.ventana.open(componente, {
       width: '600px',
       data: { solicitud: datoSeleccionado, modo: forma }
     })
@@ -1361,14 +1442,14 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA EDITAR AUTORIZACIONES DE DIFERENTES DEPARTAMENTOS 
   AbrirEditarAutorizar(datoSeleccionado): void {
     console.log('datos auto', datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarAutorizacionDepaComponent,
+    this.ventana.open(EditarAutorizacionDepaComponent,
       { width: '600px', data: { idEmpleado: this.idEmpleado, datosAuto: datoSeleccionado } }).afterClosed().subscribe(item => {
         this.ObtenerAutorizaciones(parseInt(this.idEmpleado));
       });
   }
 
   EditarHoraExtra(h) {
-    this.vistaRegistrarDatos.open(EditarHoraExtraEmpleadoComponent, { width: '900px', data: h }).afterClosed().subscribe(items => {
+    this.ventana.open(EditarHoraExtraEmpleadoComponent, { width: '900px', data: h }).afterClosed().subscribe(items => {
       console.log(items);
       if (items === true) {
         this.ObtenerlistaHorasExtrasEmpleado();
@@ -1377,7 +1458,7 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   EditarPermiso(permisos) {
-    this.vistaRegistrarDatos.open(EditarPermisoEmpleadoComponent, {
+    this.ventana.open(EditarPermisoEmpleadoComponent, {
       width: '1200px',
       data: { dataPermiso: permisos, id_empleado: parseInt(this.idEmpleado) }
     }).afterClosed().subscribe(items => {
@@ -1388,8 +1469,18 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   EditarVacaciones(v) {
-    this.vistaRegistrarDatos.open(EditarVacacionesEmpleadoComponent, { width: '900px', data: v }).afterClosed().subscribe(items => {
-      this.obtenerVacaciones(parseInt(this.idEmpleado));
+    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
+      this.ventana.open(EditarVacacionesEmpleadoComponent,
+        {
+          width: '900px',
+          data: { info: v, id_empleado: parseInt(this.idEmpleado), id_contrato: datos[0].max }
+        }).afterClosed().subscribe(items => {
+          this.obtenerVacaciones(parseInt(this.idEmpleado));
+        });
+    }, error => {
+      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+        timeOut: 6000,
+      })
     });
   }
 
@@ -1794,19 +1885,19 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA MODIFICAR CONTRASEÑA 
   CambiarContrasena(): void {
     console.log(this.idEmpleado);
-    this.vistaRegistrarDatos.open(CambiarContrasenaComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
+    this.ventana.open(CambiarContrasenaComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
   }
 
   // INGRESAR FRASE 
   IngresarFrase(): void {
     console.log(this.idEmpleado);
-    this.vistaRegistrarDatos.open(FraseSeguridadComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
+    this.ventana.open(FraseSeguridadComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
   }
 
   // CAMBIAR FRASE 
   CambiarFrase(): void {
     console.log(this.idEmpleado);
-    this.vistaRegistrarDatos.open(CambiarFraseComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
+    this.ventana.open(CambiarFraseComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
   }
 
   // VER BOTÓN FRASE DE ACUERDO A LA  CONFIGURACIÓN DE SEGURIDAD
@@ -1856,6 +1947,15 @@ export class VerEmpleadoComponent implements OnInit {
       else {
         this.activar = false;
       }
+    });
+  }
+
+  actuales: any = [];
+  VerDatosActuales(id_empleado: number) {
+    this.actuales = [];
+    this.informacion.ObtenerDatosActuales(id_empleado).subscribe(res => {
+      this.actuales = res[0];
+      console.log('ver data de usuarios actuales ... ', this.actuales)
     });
   }
 

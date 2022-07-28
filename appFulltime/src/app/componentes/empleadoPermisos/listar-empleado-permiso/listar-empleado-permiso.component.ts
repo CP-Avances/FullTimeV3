@@ -3,11 +3,11 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 
-import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
+import { EditarPermisoEmpleadoComponent } from '../../rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { AutorizacionesComponent } from 'src/app/componentes/autorizaciones/autorizaciones/autorizaciones.component';
-import { EditarPermisoEmpleadoComponent } from '../../rolEmpleado/solicitar-permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ValidacionesService } from '../../../servicios/validaciones/validaciones.service';
+import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 export interface PermisosElemento {
   apellido: string;

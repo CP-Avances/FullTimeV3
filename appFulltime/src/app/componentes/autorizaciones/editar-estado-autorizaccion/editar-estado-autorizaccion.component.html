@@ -1,6 +1,7 @@
-<div class="d-flex bd-highlight tituloNotifica">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center">Cambiar estado de la autorización</h5>
+<div id="resultados">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        APROBACIÓN DE PERMISOS</span>
 </div>
 <div class="container" style="text-align: center;">
     <div class="nota">
@@ -9,9 +10,7 @@
     <form [formGroup]="estadoAutorizacionesForm">
         <mat-form-field>
             <mat-label>Estados</mat-label>
-            <mat-icon id="notifica" matSuffix matTooltipClass="notifica-tooltip"
-                matTooltipPosition="right"
-                matTooltip="Lista de estados">
+            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Lista de estados">
                 help_outline</mat-icon>
             <mat-select [formControl]="estado" required>
                 <mat-option *ngFor="let e of estados" [value]="e.id">
@@ -22,10 +21,7 @@
     </form>
 </div>
 <div style="text-align: center;">
-    <input type="submit" class="btn btn-sm"
-        (click)="ActualizarEstadoAutorizacion(estadoAutorizacionesForm.value)"
+    <input type="submit" class="btn btn-sm" (click)="ActualizarEstadoAprobacion(estadoAutorizacionesForm.value)"
         [disabled]="!estadoAutorizacionesForm.valid" value="Guardar">
-    <input type="submit" (click)="dialogRef.close()" class="btn btn-sm" value="Salir"
-        style="margin-left: 15px;">
+    <input type="submit" (click)="ventana.close()" class="btn btn-sm" value="Salir" style="margin-left: 15px;">
 </div>
-        

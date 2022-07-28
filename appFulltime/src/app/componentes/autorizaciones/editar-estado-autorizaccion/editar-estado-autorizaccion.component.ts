@@ -1,9 +1,10 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import * as moment from 'moment';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import * as moment from 'moment';
 
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { AutorizacionService } from "src/app/servicios/autorizacion/autorizacion.service";
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
@@ -18,10 +19,10 @@ interface Estado {
   templateUrl: './editar-estado-autorizaccion.component.html',
   styleUrls: ['./editar-estado-autorizaccion.component.css']
 })
+
 export class EditarEstadoAutorizaccionComponent implements OnInit {
 
   estados: Estado[] = [
-    // { id: 1, nombre: 'Pendiente' },
     { id: 2, nombre: 'Pre-autorizado' },
     { id: 3, nombre: 'Autorizado' },
     { id: 4, nombre: 'Negado' }
@@ -39,20 +40,22 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
 
   constructor(
     private restA: AutorizacionService,
-    private toastr: ToastrService,
     private restP: PermisosService,
+    private toastr: ToastrService,
     private realTime: RealTimeService,
-    public dialogRef: MatDialogRef<EditarEstadoAutorizaccionComponent>,
+    public informacion: DatosGeneralesService,
+    public ventana: MatDialogRef<EditarEstadoAutorizaccionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
     console.log(this.data);
     console.log(this.data.auto.id_documento);
-    console.log(this.data.empl[0].id_empleado);
-    console.log(this.data.empl[0].estado);
-    if (this.data.empl[0].estado === 1) {
-      this.toastr.info('La autorización esta en pendiente. Pre-autoriza o Autoriza el permiso.','', {
+    console.log(this.data.permiso.id_empleado);
+    console.log(this.data.permiso.estado);
+
+    if (this.data.permiso.estado === 1) {
+      this.toastr.info('Solicitud pendiente de aprobación.', '', {
         timeOut: 6000,
       })
     } else {
@@ -60,78 +63,224 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
         estadoF: this.data.auto.estado
       });
     }
+
     this.id_empleado_loggin = parseInt(localStorage.getItem('empleado'));
-    this.tiempo();
+    this.ObtenerDatos();
+    this.ObtenerTiempo();
   }
 
-  tiempo() {
+  ObtenerTiempo() {
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    console.log('fecha Actual', this.FechaActual);
   }
 
-  resAutorizacion: any = [];
-  idNoti: any = [];
-  ActualizarEstadoAutorizacion(form) {
-    let newAutorizaciones = {
+  // METODO DE APROBACION DE SOLICITUD DE PERMISO
+  ActualizarEstadoAprobacion(form: any) {
+    let aprobacion = {
       id_documento: this.data.auto.id_documento + localStorage.getItem('empleado') + '_' + form.estadoF + ',',
       estado: form.estadoF,
-      id_permiso: this.data.auto.id_permiso,
-      id_departamento: this.data.auto.id_departamento,
-      id_empleado: this.data.empl[0].id_empleado
     }
-    console.log(newAutorizaciones);
-
-    this.restA.PutEstadoAutoPermiso(this.data.auto.id, newAutorizaciones).subscribe(res => {
-      this.resAutorizacion = [res];
-      console.log(this.resAutorizacion);
-      this.toastr.success('Operación exitosa', 'Estado Actualizado', {
-        timeOut: 6000,
-      });
-      this.EditarEstadoPermiso(this.data.auto.id_permiso, this.data.auto.id_departamento, form, this.data.empl[0].id_empleado, form.estadoF);
+    this.restA.ActualizarAprobacion(this.data.auto.id, aprobacion).subscribe(res => {
+      this.EditarEstadoPermiso(this.data.auto.id_permiso, form.estadoF);
+      this.NotificarAprobacion(form.estadoF);
     })
   }
 
+  // METODO DE ACTUALIZACION DE ESTADO DE PERMISO
   resEstado: any = [];
-  EditarEstadoPermiso(id_permiso, id_departamento, form, id_empleado, estado_permiso) {
+  EditarEstadoPermiso(id_permiso: number, estado_permiso: any) {
     let datosPermiso = {
       estado: estado_permiso,
-      id_permiso: id_permiso,
-      id_departamento: id_departamento,
-      id_empleado: id_empleado
     }
-    // Actualizar estado del permiso
-    this.restP.ActualizarEstado(id_permiso, datosPermiso).subscribe(respo => {
-      this.resEstado = [respo];
-      var f = new Date();
-      let notificacion = {
-        id: null,
-        id_send_empl: this.id_empleado_loggin,
-        id_receives_empl: id_empleado,
-        id_receives_depa: id_departamento,
-        estado: form.estadoF,
-        create_at: `${this.FechaActual}T${f.toLocaleTimeString()}.000Z`,
-        id_permiso: id_permiso,
-        id_vacaciones: null
-      }
-      // Enviar la respectiva notificación de cambio de estado del permiso
-      this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(res => {
-        this.NotifiRes = res;
-        notificacion.id = this.NotifiRes._id;
-        if (this.NotifiRes._id > 0 && this.resEstado[0].notificacion === true) {
-          this.restP.sendNotiRealTime(notificacion);
-        }
-      });
-      this.dialogRef.close();
-      //window.location.reload();
-    }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        this.toastr.error(message)
-        this.dialogRef.close();
-      }
+    this.restP.ActualizarEstado(id_permiso, datosPermiso).subscribe(res => {
     });
   }
+
+  // METODO DE ENVIO DE NOTIFICACIONES RESPECTO A LA APROBACION
+  NotificarAprobacion(estado: number) {
+    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
+    var datos = {
+      depa_user_loggin: depa_user_loggin,
+      objeto: this.data.permiso,
+    }
+
+    // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
+    if (estado === 2) {
+      var estado_p = 'Preautorizado';
+      var estado_c = 'Preautorizada';
+    }
+    else if (estado === 3) {
+      var estado_p = 'Autorizado';
+      var estado_c = 'Autorizada';
+    }
+    else if (estado === 4) {
+      var estado_p = 'Negado';
+      var estado_c = 'Negada';
+    }
+    this.informacion.BuscarJefes(datos).subscribe(permiso => {
+      console.log(permiso);
+      this.EnviarCorreo(permiso, estado_p, estado_c);
+      this.EnviarNotificacion(permiso, estado_p);
+      this.toastr.success('', 'Proceso realizado exitosamente.', {
+        timeOut: 6000,
+      });
+      this.ventana.close(true);
+    });
+  }
+
+  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  actuales: any = [];
+  ObtenerDatos() {
+    this.actuales = [];
+    this.informacion.ObtenerDatosActuales(this.data.permiso.id_empleado).subscribe(datos => {
+      this.actuales = datos;
+    });
+  }
+
+  /** ******************************************************************************************* **
+   ** **                   METODO DE ENVIO DE NOTIFICACIONES DE PERMISOS                       ** **
+   ** ******************************************************************************************* **/
+
+  EnviarCorreo(permiso: any, estado_p: string, estado_c: string) {
+
+    console.log('entra correo')
+    var cont = 0;
+    var correo_usuarios = '';
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    let solicitud = moment.weekdays(moment(permiso.fec_creacion).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_creacion).day()).slice(1);
+    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+
+    // VERIFICACIÓN QUE TODOS LOS DATOS HAYAN SIDO LEIDOS PARA ENVIAR CORREO
+    permiso.EmpleadosSendNotiEmail.forEach(e => {
+
+      console.log('for each', e)
+
+      // LECTURA DE DATOS LEIDOS
+      cont = cont + 1;
+
+      // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
+      if (e.permiso_mail) {
+        if (e.estado === true) {
+          if (correo_usuarios === '') {
+            correo_usuarios = e.correo;
+          }
+          else {
+            correo_usuarios = correo_usuarios + ', ' + e.correo
+          }
+        }
+      }
+
+      console.log('contadores', permiso.EmpleadosSendNotiEmail.length + ' cont ' + cont)
+
+      if (cont === permiso.EmpleadosSendNotiEmail.length) {
+
+        console.log('data entra correo usuarios', correo_usuarios)
+
+        let datosPermisoCreado = {
+          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
+          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
+          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
+          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
+          id_empl_contrato: permiso.id_contrato,
+          tipo_solicitud: 'Permiso ' + estado_p.toLowerCase() + ' por',
+          horas_permiso: permiso.hora_numero,
+          observacion: permiso.descripcion,
+          tipo_permiso: permiso.nom_permiso,
+          dias_permiso: permiso.dia,
+          estado_p: estado_p,
+          proceso: estado_p.toLowerCase(),
+          id_dep: e.id_dep,
+          id_suc: e.id_suc,
+          correo: correo_usuarios,
+          asunto: 'SOLICITUD DE PERMISO ' + estado_c.toUpperCase(),
+          id: permiso.id,
+          solicitado_por: localStorage.getItem('fullname_print'),
+        }
+        if (correo_usuarios != '') {
+          console.log('data entra enviar correo')
+
+          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+            resp => {
+              console.log('data entra enviar correo', resp)
+              if (resp.message === 'ok') {
+                this.toastr.success('Correo de solicitud enviado exitosamente.', '', {
+                  timeOut: 6000,
+                });
+              }
+              else {
+                this.toastr.warning('Ups algo salio mal !!!', 'No fue posible enviar correo de solicitud.', {
+                  timeOut: 6000,
+                });
+              }
+            },
+            err => {
+              this.toastr.error(err.error.message, '', {
+                timeOut: 6000,
+              });
+            },
+            () => { },
+          )
+        }
+      }
+    })
+  }
+
+  EnviarNotificacion(permiso: any, estado_p: string) {
+
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
+    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+    let h_inicio = moment(permiso.hora_salida, 'HH:mm').format('HH:mm');
+    let h_fin = moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm');
+
+    if (h_inicio === '00:00') {
+      h_inicio = '';
+    }
+
+    if (h_fin === '00:00') {
+      h_fin = '';
+    }
+
+    let notificacion = {
+      id_receives_empl: '',
+      id_receives_depa: '',
+      id_vacaciones: null,
+      id_hora_extra: null,
+      id_send_empl: this.id_empleado_loggin,
+      id_permiso: permiso.id,
+      estado: estado_p,
+      mensaje: 'Ha ' + estado_p.toLowerCase() + ' su solicitud de permiso desde ' +
+        desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
+        hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
+    }
+
+    permiso.EmpleadosSendNotiEmail.forEach(e => {
+
+      notificacion.id_receives_depa = e.id_dep;
+      notificacion.id_receives_empl = e.empleado;
+
+      if (e.permiso_noti) {
+        this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
+          resp => {
+            console.log('ver data de notificacion', resp.respuesta)
+            this.restP.sendNotiRealTime(resp.respuesta);
+          },
+          err => {
+            this.toastr.error(err.error.message, '', {
+              timeOut: 6000,
+            });
+          },
+          () => { },
+        )
+      }
+    })
+  }
+
+
+
 
 
 

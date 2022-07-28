@@ -11,17 +11,6 @@ export class PlanHoraExtraService {
     private http: HttpClient,
   ) { }
 
-  ConsultarPlanificaciones() {
-    return this.http.get(`${environment.url}/planificacionHoraExtra/planificaciones`);
-  }
-
-  CrearPlanificacionHoraExtra(data: any) {
-    return this.http.post<any>(`${environment.url}/planificacionHoraExtra`, data);
-  }
-
-  ActualizarPlanHoraExtra(id: number, datos: any) {
-    return this.http.put<any>(`${environment.url}/planificacionHoraExtra/planificacion/${id}`, datos);
-  }
 
   AutorizarTiempoHoraExtra(id: number, hora: any) {
     return this.http.put<any>(`${environment.url}/planificacionHoraExtra/tiempo-autorizado/${id}`, hora);
@@ -51,11 +40,35 @@ export class PlanHoraExtraService {
     return this.http.put<any>(`${environment.url}/planificacionHoraExtra/estado/${id}`, datos);
   }
 
-  EnviarMensajeJustificacion(data: any) {
-    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/aviso/`, data);
+
+  /** *************************************************************************************************** **
+   ** **                    METODOS QUE MANEJAN PLANIFICACION DE HORAS EXTRAS                          ** **
+   ** *************************************************************************************************** **/
+
+  // CREAR PLANIFICACION DE HORA EXTRA
+  CrearPlanificacionHoraExtra(data: any) {
+    return this.http.post<any>(`${environment.url}/planificacionHoraExtra`, data);
   }
-
-
+  // CONSULTA DE DATOS DE PLANIFICACION DE HORAS EXTRAS
+  ConsultarPlanificaciones() {
+    return this.http.get(`${environment.url}/planificacionHoraExtra/planificaciones`);
+  }
+  // CREAR PLANIFICACION DE HORA EXTRA POR USUARIO
+  CrearPlanHoraExtraEmpleado(data: any) {
+    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/hora_extra_empleado`, data);
+  }
+  // BUSQUEDA DE DATOS DE PLANIFICACION POR ID DE PLANIFICACION
+  BuscarPlanEmpleados(id_plan_hora: number) {
+    return this.http.get(`${environment.url}/planificacionHoraExtra/plan_empleado/${id_plan_hora}`);
+  }
+  // MÉTODO PARA ELIMINAR PLANIFICACION DE HORA EXTRA
+  EliminarRegistro(id: number) {
+    return this.http.delete(`${environment.url}/planificacionHoraExtra/eliminar/${id}`);
+  }
+  // ELIMINAR PLANIFICACIÓN DE HORA EXTRA DE UN USUARIO
+  EliminarPlanEmpleado(id: number, id_empleado: number) {
+    return this.http.delete(`${environment.url}/planificacionHoraExtra/eliminar/plan-hora/${id}/${id_empleado}`);
+  }
 
 
 
@@ -93,12 +106,5 @@ export class PlanHoraExtraService {
     return this.http.get(`${environment.url}/planificacionHoraExtra/datosAutorizacion/${id_hora_extra}`);
   }
 
-  // TABLA plan_hora_extra_empleado
-  CrearPlanHoraExtraEmpleado(data: any) {
-    return this.http.post<any>(`${environment.url}/planificacionHoraExtra/hora_extra_empleado`, data);
-  }
 
-  BuscarPlanEmpleados(id_plan_hora: number) {
-    return this.http.get(`${environment.url}/planificacionHoraExtra/plan_empleado/${id_plan_hora}`);
-  }
 }

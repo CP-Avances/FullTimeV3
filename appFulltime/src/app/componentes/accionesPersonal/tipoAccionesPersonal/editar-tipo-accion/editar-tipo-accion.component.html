@@ -30,7 +30,7 @@
                         <mat-form-field *ngIf="ingresoTipo">
                             <mat-label id="letra">Ingresar tipo de acción personal</mat-label>
                             <input matInput placeholder="Ej: Traspaso" [formControl]="otroTipoF" [ngStyle]="estiloT">
-                            <mat-icon id="dispositivo" matSuffix matTooltipClass="cargoE-tooltip"
+                            <mat-icon id="dispositivo" matSuffix 
                                 matTooltipPosition="right"
                                 matTooltip="Regresar a la lista de tipos de acción de personal."
                                 (click)="VerTiposAccion()">

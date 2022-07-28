@@ -56,8 +56,8 @@ export class VerPedidoHoraExtraComponent implements OnInit {
 
   // VARIABLES DE BÚSQUEDA DE DATOS DE AUTORIZACIONES
   autorizacion: any = [];
-  HabilitarTiempo: boolean = true;
-  HabilitarAutorizacion: boolean = true;
+  HabilitarTiempo: boolean = false;
+  HabilitarAutorizacion: boolean = false;
 
   // DATOS DE EMPLEADO LOGUEADO
   empleado: any = [];
@@ -100,7 +100,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     this.restHE.ObtenerUnHoraExtra(this.dataParams.id).subscribe(res => {
       this.hora_extra = res;
       if (this.hora_extra[0].tiempo_autorizado === null) {
-        this.HabilitarTiempo = false;
+        this.HabilitarTiempo = true;
       }
       this.id_usua_solicita = this.hora_extra[0].id_usua_solicita;
 
@@ -151,7 +151,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
           });
         });
       }, error => {
-        this.HabilitarAutorizacion = false;
+        this.HabilitarAutorizacion = true;
       });
     }, err => {
       return this.validacionesService.RedireccionarMixto(err.error)
@@ -249,28 +249,22 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     });
   }
 
-  AbrirTiempoAutorizacion(num_hora, id_hora, id_usua_solicita, datos) {
-    let h = {
-      id_hora: id_hora,
-      hora: num_hora,
-      id_empl_solicita: id_usua_solicita
-    }
+  // VENTANA QUE MUESTRA METODO DE APROBACION SELECCIONADO
+  AbrirAprobacion(datos: any, proceso: string, aprobar: any) {
     this.ventana.open(TiempoAutorizadoComponent, {
-      width: '300px',
-      data: { horas_calculadas: h, pagina: 'solicitud_hora_extra' }
+      width: '400px',
+      data: { horaExtra: datos, proceso: proceso, auto: aprobar }
     }).afterClosed().subscribe(items => {
-      if (items === true) {
-        this.AbrirAutorizaciones(datos, 'individual');
-      } else {
-        window.location.reload();
-      }
+      this.BuscarInfo();
     });
   }
 
   AbrirVentanaEditarAutorizacion(AutoHoraExtra) {
-    this.ventana.open(EditarEstadoHoraExtraAutorizacionComponent, { width: '300px', data: { autorizacion: [AutoHoraExtra], empl: this.id_usua_solicita } }).afterClosed().subscribe(items => {
-      this.BuscarInfo();
-    })
+    this.ventana.open(EditarEstadoHoraExtraAutorizacionComponent,
+      { width: '300px', data: { autorizacion: [AutoHoraExtra], empl: this.id_usua_solicita } })
+      .afterClosed().subscribe(items => {
+        this.BuscarInfo();
+      })
   }
 
   ObtenerFecha() {

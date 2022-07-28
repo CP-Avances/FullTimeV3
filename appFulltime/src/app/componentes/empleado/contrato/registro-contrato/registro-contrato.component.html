@@ -72,7 +72,7 @@
                     <mat-form-field *ngIf="habilitarContrato">
                         <mat-label id="selEmpre">Tipo Contrato</mat-label>
                         <input matInput placeholder="Ej: Indefinido" [formControl]="contratoF" [ngStyle]="estilo">
-                        <mat-icon id="cargoE" matSuffix matTooltipClass="cargoE-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Regresar a la lista de contratos existentes" (click)="VerTiposContratos()">
                             help_outline</mat-icon>
                         <mat-error *ngIf="contratoF.invalid">Ingresar un tipo de contrato válido</mat-error>

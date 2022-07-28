@@ -11,18 +11,6 @@ export class PlanComidasService {
     private http: HttpClient,
   ) { }
 
-  /** SOLICITUD DE COMIDAS */
-  CrearSolicitudComida(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/solicitud`, datos);
-  }
-
-  ActualizarSolicitudComida(datos: any) {
-    return this.http.put(`${environment.url}/planComidas/solicitud`, datos);
-  }
-
-  ActualizarEstadoSolicitudComida(datos: any) {
-    return this.http.put(`${environment.url}/planComidas/solicitud/estado`, datos);
-  }
 
   ObtenerSolComidaPorIdEmpleado(id_empleado: number) {
     return this.http.get<any>(`${environment.url}/planComidas/infoComida/${id_empleado}`)
@@ -45,20 +33,6 @@ export class PlanComidasService {
     return this.http.get<any>(`${environment.url}/planComidas/enviar/notificacion/${id_departamento}`)
   }
 
-  /** ENVIAR CORREO A CADA JEFE */
-  EnviarCorreo(datos: any) {
-    return this.http.post<any>(`${environment.url}/planComidas/mail-noti`, datos);
-  }
-
-  EnviarCorreoEliminarSol(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-noti/eliminar-sol`, datos);
-  }
-
-  /** PLANIFICACIÓN DE COMIDAS */
-  CrearPlanComidas(datos: any) {
-    return this.http.post<any>(`${environment.url}/planComidas/`, datos);
-  }
-
   ObtenerUltimaPlanificacion() {
     return this.http.get<any>(`${environment.url}/planComidas/fin_registro`)
   }
@@ -71,22 +45,12 @@ export class PlanComidasService {
     return this.http.get<any>(`${environment.url}/planComidas/comida-empleado/plan/${id}`)
   }
 
-  EliminarRegistro(id: number) {
-    return this.http.delete(`${environment.url}/planComidas/eliminar/${id}`);
-  }
 
   ActualizarDatos(datos: any) {
     return this.http.put(`${environment.url}/planComidas`, datos);
   }
 
-  /** REGISTRO DE LA PLANIFICACIÓN DE ALIMENTACIÓN AL EMPLEADO */
-  CrearPlanComidasEmpleado(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/empleado/plan`, datos);
-  }
 
-  CrearSolComidasEmpleado(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/empleado/solicitud`, datos);
-  }
 
   EncontrarPlanComidaEmpleadoConsumido(datos: any) {
     return this.http.post(`${environment.url}/planComidas/empleado/plan/consumido`, datos);
@@ -108,33 +72,7 @@ export class PlanComidasService {
     return this.http.post(`${environment.url}/planComidas/duplicidad/actualizar/sol`, datos);
   }
 
-  EnviarCorreoPlan(datos: any) {
-    return this.http.post<any>(`${environment.url}/planComidas/mail-plan-comida`, datos);
-  }
 
-  EnviarCorreoEliminaPlan(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-plan/eliminar-plan`, datos);
-  }
-
-  EnviarCorreoSolicitudActualizada(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-solicitud/actualizacion`, datos);
-  }
-
-  EnviarCorreoEstadoSolicitud(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-solicita`, datos);
-  }
-
-  EliminarSolComida(id: number, fecha: any, id_empleado: number) {
-    return this.http.delete(`${environment.url}/planComidas/eliminar/plan-solicitud/${id}/${fecha}/${id_empleado}`);
-  }
-
-  EliminarSolicitud(id: number) {
-    return this.http.delete(`${environment.url}/planComidas/eliminar/sol-comida/${id}`);
-  }
-
-  EliminarPlanComida(id: number, id_empleado: number) {
-    return this.http.delete(`${environment.url}/planComidas/eliminar/plan-comida/${id}/${id_empleado}`);
-  }
 
   /** Servicio para obtener datos de la tabla tipo_comida */
   CrearTipoComidas(datos: any) {
@@ -149,13 +87,81 @@ export class PlanComidasService {
     return this.http.get<any>(`${environment.url}/planComidas/tipo_comida/ultimo`)
   }
 
-  /** ALERTAS DE NOTIFICACIÓN DE SOLICITUD Y PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN*/
-  EnviarMensajePlanComida(data: any) {
-    return this.http.post<any>(`${environment.url}/planComidas/send/planifica/`, data);
-  }
+
 
   ObtenerPlanComidas() {
     return this.http.get<any>(`${environment.url}/planComidas`)
+  }
+
+
+
+  /** ********************************************************************************************* **
+   ** **              METODOS DE MANEJO DE SOLICTUDES DE SERVICIO DE ALIMENTACION                ** **
+   ** ********************************************************************************************* **/
+
+  // CREAR SOLICITUD DE ALIMENTACION
+  CrearSolicitudComida(datos: any) {
+    return this.http.post(`${environment.url}/planComidas/solicitud`, datos);
+  }
+  // EDITAR SOLICITUD DE SERVICIO DE ALIMENTACION
+  ActualizarSolicitudComida(datos: any) {
+    return this.http.put(`${environment.url}/planComidas/actualizar-solicitud`, datos);
+  }
+  // EDITAR ESTADO DE SOLICITUD DE COMIDA
+  AprobarComida(datos: any) {
+    return this.http.put(`${environment.url}/planComidas/solicitud-comida/estado`, datos);
+  }
+  // ELIMINAR REGISTRO DE SOLICITUD DE SERVICIO DE ALIMENTACION
+  EliminarSolicitud(id: number) {
+    return this.http.delete(`${environment.url}/planComidas/eliminar/sol-comida/${id}`);
+  }
+
+
+  /** ********************************************************************************************** **
+   ** **               METODO DE MANEJO DE PLANIFICACIONES DE ALIMENTACION                        ** ** 
+   ** ********************************************************************************************** **/
+
+  // CREAR PLANIIFCACIÓN DE SERVICIO DE ALIMENTACION
+  CrearPlanComidas(datos: any) {
+    return this.http.post<any>(`${environment.url}/planComidas/`, datos);
+  }
+  // CREAR ALIMENTACION APROBADA
+  CrearComidaAprobada(datos: any) {
+    return this.http.post(`${environment.url}/planComidas/empleado/solicitud`, datos);
+  }
+  // ELIMINAR PLANIFICACION DE ALIMENTACION
+  EliminarComidaAprobada(id: number, fecha: any, id_empleado: number) {
+    return this.http.delete(`${environment.url}/planComidas/eliminar/plan-solicitud/${id}/${fecha}/${id_empleado}`);
+  }
+  // ELIMINAR REGISTRO DE PLANIFICACION
+  EliminarRegistro(id: number) {
+    return this.http.delete(`${environment.url}/planComidas/eliminar/${id}`);
+  }
+  // ELIMINAR PLANIFICACIÓN DE ALIMENTACIÓN DE UN USUARIO
+  EliminarPlanComida(id: number, id_empleado: number) {
+    return this.http.delete(`${environment.url}/planComidas/eliminar/plan-comida/${id}/${id_empleado}`);
+  }
+  // CREAR PLANIFICACION DE SERVICIO DE ALIMENTACION PARA EMPLEADO
+  CrearPlanComidasEmpleado(datos: any) {
+    return this.http.post(`${environment.url}/planComidas/empleado/plan`, datos);
+  }
+
+
+  /** *********************************************************************************************** **
+   ** **              METODO DE ENVIO DE NOTIFICACIONES DE SERVICIOS DE ALIMENTACION               ** **
+   ** *********************************************************************************************** **/
+
+  // ALERTAS DE NOTIFICACIÓN DE SOLICITUD Y PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN
+  EnviarMensajePlanComida(data: any) {
+    return this.http.post<any>(`${environment.url}/planComidas/send/planifica/`, data);
+  }
+  // ENVIAR CORREO DESDE APLICACION WEB
+  EnviarCorreo(datos: any) {
+    return this.http.post<any>(`${environment.url}/planComidas/mail-noti`, datos);
+  }
+  // ENVIAR CORREO DE PLANIFICACION DE ALIMENTACION
+  EnviarCorreoPlan(datos: any) {
+    return this.http.post<any>(`${environment.url}/planComidas/mail-plan-comida`, datos);
   }
 
 }

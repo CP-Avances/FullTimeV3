@@ -14,13 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TIPO_PERMISOS_CONTROLADOR = void 0;
 const fs_1 = __importDefault(require("fs"));
-const builder = require('xmlbuilder');
 const database_1 = __importDefault(require("../../database"));
+const builder = require('xmlbuilder');
 class TipoPermisosControlador {
-    list(req, res) {
+    Listar(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const rolPermisos = yield database_1.default.query('SELECT * FROM cg_tipo_permisos ORDER BY descripcion');
-            res.jsonp(rolPermisos.rows);
+            const rolPermisos = yield database_1.default.query(`
+      SELECT * FROM cg_tipo_permisos ORDER BY descripcion ASC
+      `);
+            if (rolPermisos.rowCount > 0) {
+                return res.jsonp(rolPermisos.rows);
+            }
+            else {
+                res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
         });
     }
     listAccess(req, res) {

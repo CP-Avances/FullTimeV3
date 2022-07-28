@@ -54,7 +54,13 @@ class EmpleadoCargosControlador {
 
   public async EncontrarIdCargo(req: Request, res: Response): Promise<any> {
     const { id_empleado } = req.params;
-    const CARGO = await pool.query('SELECT ec.id FROM empl_cargos AS ec, empl_contratos AS ce, empleados AS e WHERE ce.id_empleado = e.id AND ec.id_empl_contrato = ce.id AND e.id = $1', [id_empleado]);
+    const CARGO = await pool.query(
+      `
+      SELECT ec.id 
+      FROM empl_cargos AS ec, empl_contratos AS ce, empleados AS e 
+      WHERE ce.id_empleado = e.id AND ec.id_empl_contrato = ce.id AND e.id = $1
+      `
+      , [id_empleado]);
     if (CARGO.rowCount > 0) {
       return res.jsonp(CARGO.rows)
     }
