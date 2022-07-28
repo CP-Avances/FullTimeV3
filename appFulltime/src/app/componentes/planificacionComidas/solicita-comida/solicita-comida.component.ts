@@ -240,6 +240,7 @@ export class SolicitaComidaComponent implements OnInit {
           id_comida: alimentacion.id_comida,
           proceso: 'creado',
           correo: correo_usuarios,
+          estadoc: 'Pendiente de autorización',
           asunto: 'SOLICITUD DE SERVICIO DE ALIMENTACION',
           inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
           final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),

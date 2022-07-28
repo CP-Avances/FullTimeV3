@@ -19,8 +19,8 @@ export const Credenciales =
     img = process.env.LOGO!, img_pie = process.env.PIEF!,
     img_cabecera = process.env.CABECERA!, port = process.env.PUERTO!,
     host = process.env.SERVIDOR!) {
-
-    let credenciales = await DatosCorreo(id_empresa);
+    let credenciales = [];
+    credenciales = await DatosCorreo(id_empresa);
 
     return credenciales.message;
 
@@ -34,7 +34,7 @@ async function DatosCorreo(id_empresa: number): Promise<any> {
     .then(result => {
       return result.rows;
     })
-console.log('correo... ', credenciales)
+  console.log('correo... ', credenciales)
   if (credenciales.length === 0) {
     return { message: 'error' }
   }
@@ -69,6 +69,11 @@ export const enviarMail = function (servidor: any, puerto: number) {
   }
 
   const transporter = nodemailer.createTransport({
+    pool: true,
+    maxConnections: 2,
+    maxMessages: Infinity,
+    //rateLimit: 14, // 14 emails/second max
+    //rateDelta: 1000,
     host: servidor,
     port: puerto,
     secure: seguridad,
@@ -80,7 +85,6 @@ export const enviarMail = function (servidor: any, puerto: number) {
 
   return transporter;
 }
-
 
 export const fechaHora = function () {
   var f = moment();

@@ -22,7 +22,6 @@ class DepartamentoRutas {
         this.router.get('/', verificarToken_1.TokenValidation, planComidasControlador_1.default.ListarPlanComidas);
         this.router.post('/', verificarToken_1.TokenValidation, planComidasControlador_1.default.CrearPlanComidas);
         this.router.get('/fin_registro', verificarToken_1.TokenValidation, planComidasControlador_1.default.ObtenerUltimaPlanificacion);
-        this.router.get('/infoComida/plan/:id_empleado', verificarToken_1.TokenValidation, planComidasControlador_1.default.EncontrarPlanComidaIdEmpleado);
         this.router.put('/', verificarToken_1.TokenValidation, planComidasControlador_1.default.ActualizarPlanComidas);
         this.router.post('/duplicidad/plan', verificarToken_1.TokenValidation, planComidasControlador_1.default.BuscarPlanComidaEmpleadoFechas);
         this.router.post('/duplicidad/solicitud', verificarToken_1.TokenValidation, planComidasControlador_1.default.BuscarSolEmpleadoFechasActualizar);
@@ -59,6 +58,8 @@ class DepartamentoRutas {
         this.router.post('/empleado/plan', verificarToken_1.TokenValidation, planComidasControlador_1.default.CrearPlanEmpleado);
         // BUSQUEDA DE DATOS DE USUARIO POR ID DE PLANIFICACION
         this.router.get('/comida-empleado/plan/:id', verificarToken_1.TokenValidation, planComidasControlador_1.default.EncontrarPlanComidaIdPlan);
+        // BUSQUEDA DE PLANIFICACIONES DE ALIMENTACION POR ID DE USUARIO
+        this.router.get('/infoComida/plan/:id_empleado', verificarToken_1.TokenValidation, planComidasControlador_1.default.EncontrarPlanComidaIdEmpleado);
         /** ************************************************************************************************ **
          ** *                     NOTIFICACIONES DE SERVICIOS DE ALIMENTACIÓN                             ** **
          ** ************************************************************************************************ **/

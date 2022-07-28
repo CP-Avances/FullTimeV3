@@ -72,19 +72,19 @@ export class AutorizaSolicitudComponent implements OnInit {
       id: datos.id
     }
     this.restPlan.AprobarComida(datosEstado).subscribe(alimentacion => {
-       if (estado === true) {
-         this.AprobarComida(alimentacion, estado);
-       } else {
-         if (this.data.datosMultiple.aprobada === null) {
-           this.AprobarComida(alimentacion, estado);
-         }
-         else {
-           this.restPlan.EliminarComidaAprobada(datos.id, datos.fec_comida.split('T')[0], datos.id_empleado)
-             .subscribe(res => {
-               this.AprobarComida(alimentacion, estado);
-             })
-         }
-       }
+      if (estado === true) {
+        this.AprobarComida(alimentacion, estado);
+      } else {
+        if (this.data.datosMultiple.aprobada === null) {
+          this.AprobarComida(alimentacion, estado);
+        }
+        else {
+          this.restPlan.EliminarComidaAprobada(datos.id, datos.fec_comida.split('T')[0], datos.id_empleado)
+            .subscribe(res => {
+              this.AprobarComida(alimentacion, estado);
+            })
+        }
+      }
     })
   }
 
@@ -222,6 +222,7 @@ export class AutorizaSolicitudComponent implements OnInit {
           observacion: alimentacion.observacion,
           id_comida: alimentacion.id_comida,
           proceso: estado_a.toLowerCase(),
+          estadoc: estado_a,
           correo: correo_usuarios,
           asunto: 'SOLICITUD DE SERVICIO DE ALIMENTACION ' + estado_c.toUpperCase(),
           inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
@@ -267,7 +268,7 @@ export class AutorizaSolicitudComponent implements OnInit {
     let mensaje = {
       id_empl_envia: this.data.datosMultiple.id_empleado,
       id_empl_recive: '',
-      tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
+      tipo: 2, // SOLICITUD SERVICIO DE ALIMENTACIÓN REVISADAS
       mensaje: 'Ha ' + estado_a.toLowerCase() + ' su solicitud de alimentación desde ' +
         desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',

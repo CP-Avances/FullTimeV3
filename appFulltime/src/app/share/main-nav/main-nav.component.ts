@@ -319,8 +319,7 @@ export class MainNavComponent implements OnInit {
               { name: 'Configurar HoraExtra', url: '/listaHorasExtras' },
               { name: 'Planificar Hora Extra', url: '/planificaHoraExtra' },
               { name: 'Listar Planificación', url: '/listadoPlanificaciones' },
-              { name: 'Aprobación HE Planificada', url: '/planificacionesHorasExtras' },
-              { name: 'Aprobación HE Solicitada', url: '/horas-extras-solicitadas' },
+              { name: 'Aprobación Múltiple', url: '/horas-extras-solicitadas' },
             ]
           },
           {
@@ -457,7 +456,7 @@ export class MainNavComponent implements OnInit {
         estado: true,
         icono: 'restaurant',
         children: [
-          { name: 'Planificación', url: '/almuerzosEmpleado' },
+          { name: 'Solicitar Servicio', url: '/almuerzosEmpleado' },
         ]
       },
       {

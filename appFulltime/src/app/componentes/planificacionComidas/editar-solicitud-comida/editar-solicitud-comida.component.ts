@@ -297,6 +297,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
           observacion: alimentacion.observacion,
           id_comida: alimentacion.id_comida,
           proceso: 'actualizado',
+          estadoc: 'Pendiente de autorización',
           correo: correo_usuarios,
           asunto: 'ACTUALIZACION DE SOLICITUD DE SERVICIO DE ALIMENTACION',
           inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),

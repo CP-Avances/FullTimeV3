@@ -195,23 +195,6 @@ class PlanComidasControlador {
             }
         });
     }
-    EncontrarPlanComidaIdEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado } = req.params;
-            const PLAN_COMIDAS = yield database_1.default.query('SELECT DISTINCT pc.id, pce.id_empleado, pc.fecha, pc.observacion, ' +
-                'pc.fec_inicio, pc.fec_final, pc.hora_inicio, pc.hora_fin, ' +
-                'ctc.id AS id_menu, ctc.nombre AS nombre_menu, tc.id AS id_servicio, tc.nombre AS nombre_servicio, ' +
-                'dm.id AS id_detalle, dm.valor, dm.nombre AS nombre_plato, dm.observacion AS observa_menu, pc.extra ' +
-                'FROM plan_comidas AS pc, plan_comida_empleado AS pce, cg_tipo_comidas AS ctc, tipo_comida AS tc, ' +
-                'detalle_menu AS dm WHERE pce.id_empleado = $1 AND ctc.tipo_comida = tc.id AND ' +
-                'ctc.id = dm.id_menu AND pc.id_comida = dm.id AND pc.id = pce.id_plan_comida ' +
-                'ORDER BY pc.fec_inicio DESC', [id_empleado]);
-            if (PLAN_COMIDAS.rowCount > 0) {
-                return res.jsonp(PLAN_COMIDAS.rows);
-            }
-            res.status(404).jsonp({ text: 'Registro no encontrado' });
-        });
-    }
     ActualizarPlanComidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { fecha, id_comida, observacion, fec_comida, hora_inicio, hora_fin, extra, id } = req.body;
@@ -554,6 +537,29 @@ class PlanComidasControlador {
             res.jsonp({ message: 'Planificación del almuerzo ha sido guardada con éxito' });
         });
     }
+    // METODO PARA BUSCAR DATOS DE PLANIFICACIÓN DE ALIMENTACIÓN POR ID DE USUARIO
+    EncontrarPlanComidaIdEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado } = req.params;
+            const PLAN_COMIDAS = yield database_1.default.query(`
+      SELECT DISTINCT pc.id, pce.id_empleado, pc.fecha, pc.observacion, pc.fec_inicio, pc.fec_final, 
+        pc.hora_inicio, pc.hora_fin, ctc.id AS id_menu, ctc.nombre AS nombre_menu, tc.id AS id_servicio, 
+        tc.nombre AS nombre_servicio, dm.id AS id_detalle, dm.valor, dm.nombre AS nombre_plato, 
+        dm.observacion AS observa_menu, pc.extra, e.codigo, e.cedula, e.correo, 
+        (e.nombre || ' ' || e.apellido) AS nombre
+      FROM plan_comidas AS pc, plan_comida_empleado AS pce, cg_tipo_comidas AS ctc, tipo_comida AS tc, 
+        detalle_menu AS dm, empleados AS e 
+	    WHERE pce.id_empleado = $1 AND ctc.tipo_comida = tc.id AND 
+        ctc.id = dm.id_menu AND pc.id_comida = dm.id AND pc.id = pce.id_plan_comida AND
+	      e.id = pce.id_empleado
+	    ORDER BY pc.fec_inicio DESC
+      `, [id_empleado]);
+            if (PLAN_COMIDAS.rowCount > 0) {
+                return res.jsonp(PLAN_COMIDAS.rows);
+            }
+            res.status(404).jsonp({ text: 'Registro no encontrado' });
+        });
+    }
     /** ********************************************************************************************** **
      ** *              ENVIO DE NOTIFICACIONES DE SERVICIOS DE ALIMENTACIÓN                          * **
      ** ********************************************************************************************** **/
@@ -587,7 +593,7 @@ class PlanComidasControlador {
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
-                const { id_usua_solicita, correo, fec_solicitud, id_comida, inicio, final, observacion, extra, solicitado_por, asunto, tipo_solicitud, proceso } = req.body;
+                const { id_usua_solicita, correo, fec_solicitud, id_comida, inicio, final, observacion, extra, solicitado_por, asunto, tipo_solicitud, proceso, estadoc } = req.body;
                 var tipo_servicio = 'Extra';
                 if (extra === false) {
                     tipo_servicio = 'Normal';
@@ -642,7 +648,7 @@ class PlanComidasControlador {
                            <b>Servicio desde:</b> ${inicio} <br>
                            <b>Servicio hasta:</b> ${final} <br>
                            <b>Tipo de servicio:</b> ${tipo_servicio} <br>
-                           <b>Estado:</b> Pendiente de autorización <br><br>
+                           <b>Estado:</b> ${estadoc} <br><br>
                            <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
                            <a href="${url}">Dar clic en el siguiente enlace para revisar solicitud de servicio de alimentación.</a> <br><br>
                        </p>
@@ -669,10 +675,12 @@ class PlanComidasControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -690,7 +698,7 @@ class PlanComidasControlador {
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
             if (datos === 'ok') {
-                const { id_usua_solicita, correo, fec_solicitud, id_comida, inicio, final, observacion, extra, solicitado_por } = req.body;
+                const { id_usua_solicita, correo, fec_solicitud, id_comida, inicio, final, observacion, extra, solicitado_por, asunto, tipo_solicitud, proceso, estadoc } = req.body;
                 var tipo_servicio = 'Extra';
                 if (extra === false) {
                     tipo_servicio = 'Normal';
@@ -712,7 +720,7 @@ class PlanComidasControlador {
                 let data = {
                     to: correo,
                     from: settingsMail_1.email,
-                    subject: 'SOLICITUD DE SERVICIO DE ALIMENTACION',
+                    subject: asunto,
                     html: `
                    <body>
                        <div style="text-align: center;">
@@ -720,12 +728,12 @@ class PlanComidasControlador {
                        </div>
                        <br>
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                           El presente correo es para informar que se ha creado la siguiente solicitud de servicio de alimentación: <br>  
+                           El presente correo es para informar que se ha ${proceso} la siguiente solicitud de servicio de alimentación: <br>  
                        </p>
                        <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
-                           <b>Asunto:</b> Solicitud de servicio de alimentación <br> 
+                           <b>Asunto:</b> ${asunto} <br> 
                            <b>Colaborador que envía:</b> ${EMPLEADO_SOLICITA.rows[0].nombre} ${EMPLEADO_SOLICITA.rows[0].apellido} <br>
                            <b>Número de Cédula:</b> ${EMPLEADO_SOLICITA.rows[0].cedula} <br>
                            <b>Cargo:</b> ${EMPLEADO_SOLICITA.rows[0].tipo_cargo} <br>
@@ -744,8 +752,8 @@ class PlanComidasControlador {
                            <b>Servicio desde:</b> ${inicio} <br>
                            <b>Servicio hasta:</b> ${final} <br>
                            <b>Tipo de servicio:</b> ${tipo_servicio} <br>
-                           <b>Estado:</b> Pendiente de autorización <br><br>
-                           <b>Solicitado por:</b> ${solicitado_por} <br><br>
+                           <b>Estado:</b> ${estadoc} <br><br>
+                           <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>
                        </p>
                        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Gracias por la atención</b><br>
@@ -770,10 +778,12 @@ class PlanComidasControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -851,8 +861,8 @@ class PlanComidasControlador {
                            <b>Detalle del servicio:</b> ${SERVICIO_SOLICITADO.rows[0].observacion} <br>
                            <b>Servicio desde:</b> ${inicio} <br>
                            <b>Servicio hasta:</b> ${final} <br>
-                           <b>Tipo de servicio:</b> ${tipo_servicio} <br>
-                           <b>Colabores a los cuales se les ha ${proceso} planificación de servicio de alimentación:</b>
+                           <b>Tipo de servicio:</b> ${tipo_servicio} <br><br>
+                           <b>Colabores a los cuales se les ha ${proceso} una planificación de servicio de alimentación:</b>
                        </p>
                        <div style="text-align: center;"> 
                        <table border=2 cellpadding=10 cellspacing=0 style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px;">
@@ -886,10 +896,12 @@ class PlanComidasControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }

@@ -417,13 +417,13 @@ export class RegistrarVacacionesComponent implements OnInit {
     let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
 
     let notificacion = {
-      id_send_empl: this.datoEmpleado.idEmpleado,
       id_receives_empl: '',
       id_receives_depa: '',
-      estado: 'Pendiente',
-      id_permiso: null,
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
+      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_permiso: null,
+      estado: 'Pendiente',
       mensaje: 'Ha realizado una solicitud de vacaciones desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),

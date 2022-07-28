@@ -10,8 +10,9 @@
     <div *ngIf="noti_real_time.text !== 'Registro no encontrado'">
         <div *ngFor="let n of noti_real_time">
 
-            <!-- NOTIFICACIONES DE SOLICITUDES -->
+            <!-- NOTIFICACIONES VISTAS -->
             <div *ngIf="n.visto == true" style="background: rgb(226, 226, 226);">
+                <!-- NOTIFICACIONES DE PERMISOS -->
                 <a *ngIf="loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
                     mat-menu-item [routerLink]="['/ver-permiso/', n.id_permiso]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -32,6 +33,7 @@
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
+                <!-- NOTIFICACIONES DE VACACIONES -->
                 <a *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
                     [routerLink]="['/ver-vacacion/', n.id_vacaciones]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -52,6 +54,7 @@
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
+                <!-- NOTIFICACIONES DE HORAS EXTRAS -->
                 <a *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
                     [routerLink]="['/ver-hora-extra/', n.id_hora_extra]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -75,8 +78,11 @@
                     <mat-divider class="divider"></mat-divider>
                 </a>
             </div>
+
+            <!-- NOTIFICACIONES NO VISTAS -->
             <div *ngIf="n.visto == false">
-                <a style="background: rgb(241,233,124);"
+                <!-- NOTIFICACIONES DE PERMISOS -->
+                <a style="background: rgb(250, 242, 138);"
                     *ngIf="loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
                     mat-menu-item [routerLink]="['/ver-permiso/', n.id_permiso]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -97,7 +103,8 @@
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
-                <a style="background: rgb(196,217,124);"
+                <!-- NOTIFICACIONES DE VACACIONES -->
+                <a style="background: rgb(216, 249, 198);"
                     *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
                     [routerLink]="['/ver-vacacion/', n.id_vacaciones]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -118,7 +125,8 @@
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
-                <a style="background: rgb(142,161,193);"
+                <!-- NOTIFICACIONES DE HORAS EXTRAS -->
+                <a style="background: rgb(210, 249, 242);"
                     *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
                     [routerLink]="['/ver-hora-extra/', n.id_hora_extra]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
@@ -142,105 +150,6 @@
                     <mat-divider class="divider"></mat-divider>
                 </a>
             </div>
-
-            <!-- NOTIFICACIONES DE AUTORIZACIONES-->
-            <div *ngIf="n.visto == true" style="background: rgb(226, 226, 226);">
-                <a *ngIf="!loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
-                    mat-menu-item [routerLink]="['/solicitarPermiso']" type="submit" class="noti_menu"
-                    (click)="CambiarVistaNotificacion(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</b>
-                            cambio
-                            estado de la</li>
-                        <li style="font-size: 13px; margin-top: -13%;">Solicitud permiso: {{n.estado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-                <a *ngIf="!loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
-                    [routerLink]="['/vacacionesEmpleado']" type="submit" class="noti_menu"
-                    (click)="CambiarVistaNotificacion(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</b>
-                            cambio
-                            estado de la</li>
-                        <li style="font-size: 13px; margin-top: -13%;">Solicitud de vacaciones: {{n.estado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-                <a *ngIf="!loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
-                    [routerLink]="['/horaExtraEmpleado']" type="submit" class="noti_menu"
-                    (click)="CambiarVistaNotificacion(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</b>
-                            cambio
-                            estado de la</li>
-                        <li style="font-size: 13px; margin-top: -13%;">Solicitud de hora extra: {{n.estado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-            </div>
-
-
-            <div *ngIf="n.visto == false" style="background: rgb(98, 192, 61);">
-                <a *ngIf="!loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
-                    mat-menu-item [routerLink]="['/solicitarPermiso']" type="submit" class="noti_menu"
-                    (click)="CambiarVistaNotificacion(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</b>
-                            cambio
-                            estado de la</li>
-                        <li style="font-size: 13px; margin-top: -13%;">Solicitud permiso: {{n.estado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-                <a *ngIf="!loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
-                    [routerLink]="['/vacacionesEmpleado']" type="submit" class="noti_menu"
-                    (click)="CambiarVistaNotificacion(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</b>
-                            cambio
-                            estado de la</li>
-                        <li style="font-size: 13px; margin-top: -13%;">Solicitud de vacaciones: {{n.estado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-                <a *ngIf="!loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
-                    [routerLink]="['/horaExtraEmpleado']" type="submit" class="noti_menu"
-                    (click)="CambiarVistaNotificacion(n.id)">
-                    <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 13px;"><b>{{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}</b>
-                            cambio
-                            estado de la</li>
-                        <li style="font-size: 13px; margin-top: -13%;">Solicitud de hora extra: {{n.estado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
-                        </li>
-                    </ul>
-                    <mat-divider class="divider"></mat-divider>
-                </a>
-            </div>
-
         </div>
     </div>
     <div class="d-flex justify-content-center" *ngIf="loginService.getEstado() == estado">

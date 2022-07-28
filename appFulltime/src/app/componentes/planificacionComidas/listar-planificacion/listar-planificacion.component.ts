@@ -8,13 +8,13 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 
 // LLAMADO A COMPONENTES
+import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
 import { MetodosComponent } from '../../metodoEliminar/metodos.component';
 
 // LLAMADO A SERVICIOS
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
 export interface SolicitudElemento {
@@ -172,6 +172,7 @@ export class ListarPlanificacionComponent implements OnInit {
         this.botonEditar = false;
         this.botonEliminar = false;
         this.selectionUno.clear();
+        this.ObtenerPlanificaciones();
       });
   }
 
@@ -241,6 +242,7 @@ export class ListarPlanificacionComponent implements OnInit {
   // MÉTODO PARA BÚSQUEDA DE DATOS DE EMPLEADOS CON PLANIFICACIÓN
   planEmpleados: any = []; // VARIABLE PARA GUARDAR DATOS DE EMPLEADOS CON PLANIFICACIÓN
   ObtenerEmpleadosPlanificacion(id: any, accion: any, lista_empleados: any, icono: any, editar: any, eliminar: any) {
+
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.planEmpleados = res;
       this.tipo_accion = accion;
@@ -250,10 +252,11 @@ export class ListarPlanificacionComponent implements OnInit {
       this.ver_eliminar = eliminar;
     }, error => {
       this.restC.EliminarRegistro(id).subscribe(res => {
-        this.toastr.error('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
+        this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
           timeOut: 6000,
         })
-        window.location.reload();
+        // window.location.reload();
+        this.ObtenerPlanificaciones();
       });
     });
   }
@@ -352,15 +355,25 @@ export class ListarPlanificacionComponent implements OnInit {
     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
       console.log('ver data obj... ', obj)
       return {
-        nombre: obj.nombre,
-        id_empleado: obj.id_empleado,
-        id: obj.id,
+        alimentacion: obj
       }
     })
+
+    console.log('ver data de empleados ... ', EmpleadosSeleccionados[0].alimentacion)
     if (EmpleadosSeleccionados.length === 1) {
-      this.ConfirmarDeletePlanComidas(EmpleadosSeleccionados[0]);
+      this.ConfirmarDeletePlanComidas(EmpleadosSeleccionados[0].alimentacion);
     } else if (EmpleadosSeleccionados.length > 1) {
-      this.ConfirmarDeletePlanComidasMultiple(EmpleadosSeleccionados)
+
+      this.ContarCorreos(EmpleadosSeleccionados);
+      if (this.cont_correo <= this.correos) {
+        this.ConfirmarDeletePlanComidasMultiple(EmpleadosSeleccionados)
+      }
+      else {
+        this.toastr.warning('Trata de enviar correo de un total de ' + this.cont_correo + ' colaboradores, sin embargo solo tiene permitido enviar un total de ' + this.correos + ' correos.', 'ACCIÓN NO PERMITIDA.', {
+          timeOut: 6000,
+        });
+      }
+
     }
     else {
       this.toastr.info('No ha seleccionado ningún registro.', 'Seleccionar registros.', {
@@ -374,26 +387,31 @@ export class ListarPlanificacionComponent implements OnInit {
   id_plan: any;
   EliminarPlanComidasMultiple(datos: any) {
 
+    var usuario = '';
 
-    datos.map(del => {
-      this.id_plan = del.id;
+    datos.map(obj => {
+
+      console.log('ver eliminar 56666 ', plan)
+      var plan = obj.alimentacion
       // LECTURA DE DATOS DE LA PLANIFICACIÓN
-      /*    let desde = moment.weekdays(moment(del.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-          let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-          let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-          let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
-   
-   
-          */
-      this.restC.EliminarPlanComida(del.id, del.id_empleado).subscribe(res => {
+      let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
+      let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
+      let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
+      let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+
+      // LECTURA DE NOMBRES DE USUARIOS
+      usuario = usuario + '<tr><th>' + plan.nombre + '</th><th>' + plan.cedula + '</th></tr>';
+
+      this.restC.EliminarPlanComida(plan.id, plan.id_empleado).subscribe(res => {
         this.contar_eliminados = this.contar_eliminados + 1;
-        //this.EnviarNotificaciones(del.fec_inicio, del.fec_final, del.hora_inicio, del.hora_fin, this.idEmpleadoLogueado, del.id_empleado)
+        this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, plan.id_empleado);
 
         if (this.contar_eliminados === datos.length) {
+          this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
           this.toastr.error('Se ha eliminado un total de ' + datos.length + ' registros.', '', {
             timeOut: 6000,
           });
-          this.VerificarPlanificacion(this.id_plan, '2', false, true);
+          this.VerificarPlanificacion(plan.id, '2', false, true);
           this.botonSeleccion = false;
           this.botonEditar = false;
           this.botonEliminar = false;
@@ -416,15 +434,16 @@ export class ListarPlanificacionComponent implements OnInit {
     this.contar = 0;
     this.contar_eliminados = 0;
     datos.map(obj => {
+
       // VERIFICAR SI HAY UN REGISTRO CON ESTADO CONSUMIDO DENTRO DE LA PLANIFICACION
       let datosConsumido = {
-        id_plan_comida: obj.id,
-        id_empleado: obj.id_empleado
+        id_plan_comida: obj.alimentacion.id,
+        id_empleado: obj.alimentacion.id_empleado
       }
       this.restC.EncontrarPlanComidaEmpleadoConsumido(datosConsumido).subscribe(consu => {
         this.contar = this.contar + 1;
         this.empleado_conConsumo = this.empleado_conConsumo.concat(obj);
-        this.nota_nombres = this.nota_nombres + ' - ' + obj.nombre;
+        this.nota_nombres = this.nota_nombres + ' - ' + obj.alimentacion.nombre;
         if (this.contar === datos.length) {
           this.MostrarMensajeEliminado(this.empleado_conConsumo, datos, this.nota_nombres);
           this.nota_nombres = '';
@@ -439,6 +458,7 @@ export class ListarPlanificacionComponent implements OnInit {
           this.MetodoEliminar(this.empleado_sinConsumo);
         }
       });
+
     })
   }
 
@@ -449,7 +469,7 @@ export class ListarPlanificacionComponent implements OnInit {
         timeOut: 6000,
       });
     } else if (consumidos.length > 0) {
-      this.toastr.error(nota + '. \nLos usuarios indicados presentan registros de planificación con estado consumido.', 'No es posible eliminar planificación de: ', {
+      this.toastr.error(nota + '. \nLos usuarios indicados presentan tienen planificación con estado consumido.', 'No es posible eliminar planificación de: ', {
         timeOut: 6000,
       });
     }
@@ -483,7 +503,6 @@ export class ListarPlanificacionComponent implements OnInit {
         this.ver_icono = true;
         this.ver_editar = false;
         this.ver_eliminar = false;
-        // window.location.reload();
         this.ObtenerPlanificaciones();
       });
     });
@@ -570,16 +589,19 @@ export class ListarPlanificacionComponent implements OnInit {
   cont_correo: number = 0;
   info_correo: string = '';
   ContarCorreos(data: any) {
+    console.log('ver data correo.... ', data)
     this.cont_correo = 0;
     this.info_correo = '';
     data.forEach((obj: any) => {
+      console.log('ver obj correo.... ', obj.alimentacion.correo)
       this.cont_correo = this.cont_correo + 1;
       if (this.info_correo === '') {
-        this.info_correo = obj.correo;
+        this.info_correo = obj.alimentacion.correo;
       }
       else {
-        this.info_correo = this.info_correo + ', ' + obj.correo;
+        this.info_correo = this.info_correo + ', ' + obj.alimentacion.correo;
       }
+      console.log('ver info correo...', this.info_correo)
     })
   }
 

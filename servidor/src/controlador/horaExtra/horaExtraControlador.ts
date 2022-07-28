@@ -384,6 +384,12 @@ class HorasExtrasPedidasControlador {
       `
       , [id_hora_extra]);
 
+    await pool.query(
+      `
+      DELETE FROM autorizaciones WHERE id_hora_extra = $1
+      `
+      , [id_hora_extra]);
+
     const response: QueryResult = await pool.query(
       `
       DELETE FROM hora_extr_pedidos WHERE id = $1 RETURNING *
@@ -597,9 +603,11 @@ class HorasExtrasPedidasControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }
@@ -699,9 +707,11 @@ class HorasExtrasPedidasControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }

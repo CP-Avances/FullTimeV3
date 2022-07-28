@@ -1049,17 +1049,17 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         console.log('data entra correo usuarios', correo_usuarios)
 
         let datosPermisoCreado = {
-          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
-          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
-          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
-          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
-          id_empl_contrato: permiso.id_empl_contrato,
           tipo_solicitud: 'Permiso solicitado por',
+          id_empl_contrato: permiso.id_empl_contrato,
           horas_permiso: permiso.hora_numero,
-          observacion: permiso.descripcion,
           tipo_permiso: tipo_permiso,
           dias_permiso: permiso.dia,
+          observacion: permiso.descripcion,
+          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
+          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
+          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
+          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
           estado_p: estado_p,
           proceso: 'creado',
           id_dep: e.id_dep,
@@ -1116,13 +1116,13 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     }
 
     let notificacion = {
-      id_send_empl: this.datoEmpleado.idEmpleado,
       id_receives_empl: '',
       id_receives_depa: '',
-      estado: 'Pendiente',
-      id_permiso: permiso.id,
       id_vacaciones: null,
       id_hora_extra: null,
+      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_permiso: permiso.id,
+      estado: 'Pendiente',
       mensaje: 'Ha realizado una solicitud de permiso desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,

@@ -361,6 +361,9 @@ class HorasExtrasPedidasControlador {
             yield database_1.default.query(`
       DELETE FROM realtime_noti WHERE id_hora_extra = $1
       `, [id_hora_extra]);
+            yield database_1.default.query(`
+      DELETE FROM autorizaciones WHERE id_hora_extra = $1
+      `, [id_hora_extra]);
             const response = yield database_1.default.query(`
       DELETE FROM hora_extr_pedidos WHERE id = $1 RETURNING *
       `, [id_hora_extra]);
@@ -544,10 +547,12 @@ class HorasExtrasPedidasControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -636,10 +641,12 @@ class HorasExtrasPedidasControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }

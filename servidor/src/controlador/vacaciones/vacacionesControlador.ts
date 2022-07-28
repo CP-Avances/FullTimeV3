@@ -293,12 +293,20 @@ class VacacionesControlador {
     await pool.query(
       `
       DELETE FROM realtime_noti WHERE id_vacaciones = $1
-           `, [id_vacacion])
+      `
+      , [id_vacacion]);
+
+    await pool.query(
+      `
+        DELETE FROM autorizaciones WHERE id_vacacion = $1
+      `
+      , [id_vacacion])
 
     const response: QueryResult = await pool.query(
       `
       DELETE FROM vacaciones WHERE id = $1 RETURNING *
-        `, [id_vacacion]);
+      `
+      , [id_vacacion]);
 
     const [objetoVacacion] = response.rows;
 
@@ -438,9 +446,11 @@ class VacacionesControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }
@@ -538,9 +548,11 @@ class VacacionesControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }

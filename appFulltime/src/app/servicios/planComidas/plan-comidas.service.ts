@@ -33,12 +33,6 @@ export class PlanComidasService {
     return this.http.get<any>(`${environment.url}/planComidas/enviar/notificacion/${id_departamento}`)
   }
 
-
-
-  EnviarCorreoEliminarSol(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/mail-noti/eliminar-sol`, datos);
-  }
-
   ObtenerUltimaPlanificacion() {
     return this.http.get<any>(`${environment.url}/planComidas/fin_registro`)
   }
@@ -51,9 +45,6 @@ export class PlanComidasService {
     return this.http.get<any>(`${environment.url}/planComidas/comida-empleado/plan/${id}`)
   }
 
-  EliminarRegistro(id: number) {
-    return this.http.delete(`${environment.url}/planComidas/eliminar/${id}`);
-  }
 
   ActualizarDatos(datos: any) {
     return this.http.put(`${environment.url}/planComidas`, datos);
@@ -142,12 +133,14 @@ export class PlanComidasService {
   EliminarComidaAprobada(id: number, fecha: any, id_empleado: number) {
     return this.http.delete(`${environment.url}/planComidas/eliminar/plan-solicitud/${id}/${fecha}/${id_empleado}`);
   }
-
+  // ELIMINAR REGISTRO DE PLANIFICACION
+  EliminarRegistro(id: number) {
+    return this.http.delete(`${environment.url}/planComidas/eliminar/${id}`);
+  }
   // ELIMINAR PLANIFICACIÓN DE ALIMENTACIÓN DE UN USUARIO
   EliminarPlanComida(id: number, id_empleado: number) {
     return this.http.delete(`${environment.url}/planComidas/eliminar/plan-comida/${id}/${id_empleado}`);
   }
-
   // CREAR PLANIFICACION DE SERVICIO DE ALIMENTACION PARA EMPLEADO
   CrearPlanComidasEmpleado(datos: any) {
     return this.http.post(`${environment.url}/planComidas/empleado/plan`, datos);

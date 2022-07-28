@@ -27,7 +27,8 @@ exports.servidor = process.env.SERVIDOR || '';
 exports.puerto = process.env.PUERTO || '';
 const Credenciales = function (id_empresa, correo = process.env.EMAIL, password = process.env.PASSWORD, empresa = process.env.NOMBRE, img = process.env.LOGO, img_pie = process.env.PIEF, img_cabecera = process.env.CABECERA, port = process.env.PUERTO, host = process.env.SERVIDOR) {
     return __awaiter(this, void 0, void 0, function* () {
-        let credenciales = yield DatosCorreo(id_empresa);
+        let credenciales = [];
+        credenciales = yield DatosCorreo(id_empresa);
         return credenciales.message;
     });
 };
@@ -71,6 +72,11 @@ const enviarMail = function (servidor, puerto) {
         seguridad = false;
     }
     const transporter = nodemailer_1.default.createTransport({
+        pool: true,
+        maxConnections: 2,
+        maxMessages: Infinity,
+        //rateLimit: 14, // 14 emails/second max
+        //rateDelta: 1000,
         host: servidor,
         port: puerto,
         secure: seguridad,

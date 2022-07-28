@@ -255,10 +255,12 @@ class NotificacionTiempoRealControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -340,10 +342,12 @@ class NotificacionTiempoRealControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }

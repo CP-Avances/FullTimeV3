@@ -281,10 +281,13 @@ class VacacionesControlador {
             let { id_vacacion } = req.params;
             yield database_1.default.query(`
       DELETE FROM realtime_noti WHERE id_vacaciones = $1
-           `, [id_vacacion]);
+      `, [id_vacacion]);
+            yield database_1.default.query(`
+        DELETE FROM autorizaciones WHERE id_vacacion = $1
+      `, [id_vacacion]);
             const response = yield database_1.default.query(`
       DELETE FROM vacaciones WHERE id = $1 RETURNING *
-        `, [id_vacacion]);
+      `, [id_vacacion]);
             const [objetoVacacion] = response.rows;
             if (objetoVacacion) {
                 return res.status(200).jsonp(objetoVacacion);
@@ -407,10 +410,12 @@ class VacacionesControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }
@@ -498,10 +503,12 @@ class VacacionesControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }

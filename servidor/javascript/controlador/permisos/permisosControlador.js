@@ -417,8 +417,11 @@ class PermisosControlador {
         return __awaiter(this, void 0, void 0, function* () {
             let { id_permiso, doc } = req.params;
             yield database_1.default.query(`
-               DELETE FROM realtime_noti where id_permiso = $1
-               `, [id_permiso]);
+            DELETE FROM realtime_noti where id_permiso = $1
+            `, [id_permiso]);
+            yield database_1.default.query(`
+            DELETE FROM autorizaciones WHERE id_permiso = $1
+            `, [id_permiso]);
             const response = yield database_1.default.query(`
             DELETE FROM permisos WHERE id = $1 RETURNING *
             `, [id_permiso]);
@@ -552,10 +555,12 @@ class PermisosControlador {
                 corr.sendMail(data, function (error, info) {
                     if (error) {
                         console.log('Email error: ' + error);
+                        corr.close();
                         return res.jsonp({ message: 'error' });
                     }
                     else {
                         console.log('Email sent: ' + info.response);
+                        corr.close();
                         return res.jsonp({ message: 'ok' });
                     }
                 });
@@ -643,10 +648,12 @@ class PermisosControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }

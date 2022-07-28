@@ -448,13 +448,21 @@ class PermisosControlador {
 
         await pool.query(
             `
-               DELETE FROM realtime_noti where id_permiso = $1
-               `, [id_permiso])
+            DELETE FROM realtime_noti where id_permiso = $1
+            `
+            , [id_permiso]);
+
+        await pool.query(
+            `
+            DELETE FROM autorizaciones WHERE id_permiso = $1
+            `
+            , [id_permiso]);
 
         const response: QueryResult = await pool.query(
             `
             DELETE FROM permisos WHERE id = $1 RETURNING *
-            `, [id_permiso]);
+            `
+            , [id_permiso]);
 
         if (doc != 'null' && doc != '' && doc != null) {
             console.log(id_permiso, doc, ' entra ');
@@ -603,9 +611,11 @@ class PermisosControlador {
             corr.sendMail(data, function (error: any, info: any) {
                 if (error) {
                     console.log('Email error: ' + error);
+                    corr.close();
                     return res.jsonp({ message: 'error' });
                 } else {
                     console.log('Email sent: ' + info.response);
+                    corr.close();
                     return res.jsonp({ message: 'ok' });
                 }
             });
@@ -702,9 +712,11 @@ class PermisosControlador {
             var corr = enviarMail(servidor, parseInt(puerto));
             corr.sendMail(data, function (error: any, info: any) {
                 if (error) {
+                    corr.close();
                     console.log('Email error: ' + error);
                     return res.jsonp({ message: 'error' });
                 } else {
+                    corr.close();
                     console.log('Email sent: ' + info.response);
                     return res.jsonp({ message: 'ok' });
                 }

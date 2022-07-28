@@ -289,22 +289,22 @@ export class PedidoHoraExtraComponent implements OnInit {
       if (cont === horaExtra.EmpleadosSendNotiEmail.length) {
 
         let datosHoraExtraCreada = {
+          id_empl_contrato: this.id_contrato_loggin,
           tipo_solicitud: 'Realización de Horas Extras solicitadas por',
+          observacion: horaExtra.descripcion,
           solicitud: solicitud + ' ' + moment(horaExtra.fec_solicita).format('DD/MM/YYYY'),
-          desde: desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY'),
+          num_horas: moment(horaExtra.num_hora, 'HH:mm').format('HH:mm'),
+          estado_h: estado_h,
           h_inicio: moment(horaExtra.fec_inicio).format('HH:mm'),
           h_final: moment(horaExtra.fec_final).format('HH:mm'),
-          num_horas: moment(horaExtra.num_hora, 'HH:mm').format('HH:mm'),
-          observacion: horaExtra.descripcion,
-          estado_h: estado_h,
           proceso: 'creado',
           asunto: 'SOLICITUD DE REALIZACION DE HORAS EXTRAS',
           id_dep: e.id_dep,
           id_suc: e.id_suc,
           correo: correo_usuarios,
+          desde: desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY'),
+          hasta: hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY'),
           id: horaExtra.id,
-          id_empl_contrato: this.id_contrato_loggin,
           solicitado_por: this.empleados[0].nombre + ' ' + this.empleados[0].apellido
         }
         console.log('ver horas extras ....   ', datosHoraExtraCreada)

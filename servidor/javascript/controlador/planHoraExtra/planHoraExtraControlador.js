@@ -17,17 +17,6 @@ const settingsMail_1 = require("../../libs/settingsMail");
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
 class PlanHoraExtraControlador {
-    ListarPlanificacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const PLAN = yield database_1.default.query('SELECT * FROM plan_hora_extra ORDER BY fecha_desde DESC');
-            if (PLAN.rowCount > 0) {
-                res.jsonp(PLAN.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
     ListarPlanHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const PLAN = yield database_1.default.query('SELECT e.id AS empl_id, e.codigo, e.cedula, e.nombre, e.apellido, ' +
@@ -88,6 +77,65 @@ class PlanHoraExtraControlador {
             }
         });
     }
+    EncontrarUltimoPlan(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const PLAN = yield database_1.default.query('SELECT MAX(id) AS id_plan_hora FROM plan_hora_extra');
+            if (PLAN.rowCount > 0) {
+                if (PLAN.rows[0]['id_plan_hora'] != null) {
+                    return res.jsonp(PLAN.rows);
+                }
+                else {
+                    return res.status(404).jsonp({ text: 'Registro no encontrado' });
+                }
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registro no encontrado' });
+            }
+        });
+    }
+    // 
+    ObtenerDatosAutorizacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id_plan_extra;
+            const SOLICITUD = yield database_1.default.query('SELECT a.id AS id_autorizacion, a.id_documento AS empleado_estado, ' +
+                'p.id AS id_plan_extra, pe.id AS plan_hora_extra_empleado FROM autorizaciones AS a, plan_hora_extra AS p, ' +
+                'plan_hora_extra_empleado AS pe ' +
+                'WHERE pe.id = a.id_plan_hora_extra AND pe.id_plan_hora = p.id AND p.id = $1', [id]);
+            if (SOLICITUD.rowCount > 0) {
+                return res.json(SOLICITUD.rows);
+            }
+            else {
+                return res.status(404).json({ text: 'No se encuentran registros' });
+            }
+        });
+    }
+    // ACTUALIZAR 
+    TiempoAutorizado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = parseInt(req.params.id);
+            const { hora } = req.body;
+            let respuesta = yield database_1.default.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then(result => {
+                return { message: 'Tiempo de hora autorizada confirmada' };
+            });
+            res.jsonp(respuesta);
+        });
+    }
+    ActualizarObservacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { observacion } = req.body;
+            yield database_1.default.query('UPDATE plan_hora_extra_empleado SET observacion = $1 WHERE id = $2', [observacion, id]);
+            res.jsonp({ message: 'Planificación Actualizada' });
+        });
+    }
+    ActualizarEstado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { estado } = req.body;
+            yield database_1.default.query('UPDATE plan_hora_extra_empleado SET estado = $1 WHERE id = $2', [estado, id]);
+            res.jsonp({ message: 'Estado de Planificación Actualizada' });
+        });
+    }
     /** ************************************************************************************************* **
      ** **                METODOS PARA CREACION DE PLANIFICACION DE HORAS EXTRAS                       ** **
      ** ************************************************************************************************* **/
@@ -116,35 +164,6 @@ class PlanHoraExtraControlador {
             }
         });
     }
-    ActualizarPlanHoraExtra(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { id_empl_planifica, fecha_desde, fecha_hasta, hora_inicio, hora_fin, descripcion, horas_totales } = req.body;
-            yield database_1.default.query('UPDATE plan_hora_extra SET id_empl_planifica = $1, fecha_desde = $2, ' +
-                'fecha_hasta = $3, hora_inicio = $4, hora_fin = $5, descripcion = $6, horas_totales = $7 WHERE id = $8 ', [id_empl_planifica, fecha_desde, fecha_hasta,
-                hora_inicio, hora_fin, descripcion, horas_totales, id]);
-            res.jsonp({ message: 'Planificacion registrada' });
-        });
-    }
-    EncontrarUltimoPlan(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const PLAN = yield database_1.default.query('SELECT MAX(id) AS id_plan_hora FROM plan_hora_extra');
-            if (PLAN.rowCount > 0) {
-                if (PLAN.rows[0]['id_plan_hora'] != null) {
-                    return res.jsonp(PLAN.rows);
-                }
-                else {
-                    return res.status(404).jsonp({ text: 'Registro no encontrado' });
-                }
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registro no encontrado' });
-            }
-        });
-    }
-    /** ************************************************************************************************* **
-     ** **                  METODOS DE PLANIFICACION DE HORAS EXTRAS POR USUARIO                       ** **
-     ** ************************************************************************************************* **/
     // CREAR PLANIFICACION DE HE POR USUARIO
     CrearPlanHoraExtraEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -157,8 +176,9 @@ class PlanHoraExtraControlador {
         `, [id_plan_hora, id_empl_realiza, observacion, id_empl_cargo, id_empl_contrato, estado, codigo]);
                 const [planEmpleado] = response.rows;
                 if (!planEmpleado)
-                    return res.status(400).jsonp({ message: 'Error' });
-                return res.status(200).jsonp({ message: 'Planificación registrada con éxito.', info: planEmpleado });
+                    return res.status(400).jsonp({ message: 'error' });
+                return res.status(200)
+                    .jsonp({ message: 'Planificación registrada con éxito.', info: planEmpleado });
             }
             catch (error) {
                 return res.status(500)
@@ -166,10 +186,12 @@ class PlanHoraExtraControlador {
             }
         });
     }
-    ListarPlanEmpleados(req, res) {
+    // BUSQUEDA DE DATOS DE PLANIFICACIONES DE HORAS EXTRAS
+    ListarPlanificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id_plan_hora;
-            const PLAN = yield database_1.default.query('SELECT * FROM plan_hora_extra_empleado WHERE id_plan_hora = $1', [id]);
+            const PLAN = yield database_1.default.query(`
+      SELECT * FROM plan_hora_extra ORDER BY fecha_desde DESC
+      `);
             if (PLAN.rowCount > 0) {
                 res.jsonp(PLAN.rows);
             }
@@ -178,45 +200,44 @@ class PlanHoraExtraControlador {
             }
         });
     }
-    TiempoAutorizado(req, res) {
+    // BUSQUEDA DE USUARIOS POR ID DE PLANIFICACION
+    ListarPlanEmpleados(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = parseInt(req.params.id);
-            const { hora } = req.body;
-            let respuesta = yield database_1.default.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then(result => {
-                return { message: 'Tiempo de hora autorizada confirmada' };
-            });
-            res.jsonp(respuesta);
-        });
-    }
-    ActualizarObservacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { observacion } = req.body;
-            yield database_1.default.query('UPDATE plan_hora_extra_empleado SET observacion = $1 WHERE id = $2', [observacion, id]);
-            res.jsonp({ message: 'Planificación Actualizada' });
-        });
-    }
-    ActualizarEstado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { estado } = req.body;
-            yield database_1.default.query('UPDATE plan_hora_extra_empleado SET estado = $1 WHERE id = $2', [estado, id]);
-            res.jsonp({ message: 'Estado de Planificación Actualizada' });
-        });
-    }
-    ObtenerDatosAutorizacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id_plan_extra;
-            const SOLICITUD = yield database_1.default.query('SELECT a.id AS id_autorizacion, a.id_documento AS empleado_estado, ' +
-                'p.id AS id_plan_extra, pe.id AS plan_hora_extra_empleado FROM autorizaciones AS a, plan_hora_extra AS p, ' +
-                'plan_hora_extra_empleado AS pe ' +
-                'WHERE pe.id = a.id_plan_hora_extra AND pe.id_plan_hora = p.id AND p.id = $1', [id]);
-            if (SOLICITUD.rowCount > 0) {
-                return res.json(SOLICITUD.rows);
+            const id = req.params.id_plan_hora;
+            const PLAN = yield database_1.default.query(`
+      SELECT p.id AS id_plan, pe.id, p.descripcion, p.fecha_desde, p.fecha_hasta, p.hora_inicio, p.hora_fin,
+        p.horas_totales, e.id AS id_empleado, (e.nombre || ' ' || e.apellido) AS nombre,
+        e.codigo, e.cedula, e.correo, pe.id_empl_cargo AS id_cargo, pe.id_empl_contrato AS id_contrato
+      FROM plan_hora_extra_empleado AS pe, plan_hora_extra AS p, empleados AS e
+      WHERE pe.id_plan_hora = $1 AND pe.id_plan_hora = p.id AND e.id = pe.id_empl_realiza
+      `, [id]);
+            if (PLAN.rowCount > 0) {
+                res.jsonp(PLAN.rows);
             }
             else {
-                return res.status(404).json({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros' });
             }
+        });
+    }
+    // ELIMINAR REGISTRO DE PLANIFICACION HORAS EXTRAS
+    EliminarRegistros(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            yield database_1.default.query(`
+        DELETE FROM plan_hora_extra WHERE id = $1
+        `, [id]);
+            res.jsonp({ message: 'Registro eliminado' });
+        });
+    }
+    // ELIMINAR PLANIFICACION DE UN USUARIO ESPECIFICO
+    EliminarPlanEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const id_empleado = req.params.id_empleado;
+            yield database_1.default.query(`
+        DELETE FROM plan_hora_extra_empleado WHERE id_plan_hora = $1 AND id_empl_realiza = $2
+        `, [id, id_empleado]);
+            res.jsonp({ message: 'Registro eliminado' });
         });
     }
     /** ********************************************************************************************* **
@@ -229,7 +250,7 @@ class PlanHoraExtraControlador {
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
-                const { id_empl_envia, correos, nombres, observacion, desde, hasta, inicio, fin, horas } = req.body;
+                const { id_empl_envia, correos, nombres, observacion, desde, hasta, inicio, fin, horas, asunto, tipo_solicitud, proceso } = req.body;
                 const Envia = yield database_1.default.query(`
         SELECT da.nombre, da.apellido, da.cedula, da.correo, 
         (SELECT tc.cargo FROM tipo_cargo AS tc WHERE tc.id = ec.cargo) AS tipo_cargo,
@@ -240,7 +261,7 @@ class PlanHoraExtraControlador {
                 let data = {
                     from: settingsMail_1.email,
                     to: correos,
-                    subject: 'PLANIFICACION DE HORAS EXTRAS',
+                    subject: asunto,
                     html: `
                <body>
                    <div style="text-align: center;">
@@ -248,12 +269,12 @@ class PlanHoraExtraControlador {
                    </div>
                    <br>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                       El presente correo es para informar que se ha creado la siguiente planificación de horas extras: <br>  
+                       El presente correo es para informar que se ha ${proceso} la siguiente planificación de horas extras: <br>  
                    </p>
-                   <h3 style="font-family: Arial; text-align: center;">DATOS DEL COLABORADOR QUE REALIZA PLANIFICACIÓN HORAS EXTRAS</h3>
+                   <h3 style="font-family: Arial; text-align: center;">DATOS DEL COLABORADOR QUE ${tipo_solicitud} PLANIFICACIÓN HORAS EXTRAS</h3>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
-                       <b>Asunto:</b> Planificación de realización de horas extras <br> 
+                       <b>Asunto:</b> ${asunto} <br> 
                        <b>Colaborador que envía:</b> ${Envia.nombre} ${Envia.apellido} <br>
                        <b>Número de Cédula:</b> ${Envia.cedula} <br>
                        <b>Cargo:</b> ${Envia.tipo_cargo} <br>
@@ -269,8 +290,8 @@ class PlanHoraExtraControlador {
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Horario:</b> ${inicio} a ${fin} <br>
-                       <b>Número de horas planificadas:</b> ${horas} <br>
-                       <b>Colabores que cuenta con planificación de horas extras:</b>
+                       <b>Número de horas planificadas:</b> ${horas} <br><br>
+                       <b>Colabores a los cuales se les ha ${proceso} una planificación de horas extras:</b>
                   </p>
                   <div style="text-align: center;"> 
                       <table border=2 cellpadding=10 cellspacing=0 style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px;">
@@ -304,10 +325,12 @@ class PlanHoraExtraControlador {
                 var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
                 corr.sendMail(data, function (error, info) {
                     if (error) {
+                        corr.close();
                         console.log('Email error: ' + error);
                         return res.jsonp({ message: 'error' });
                     }
                     else {
+                        corr.close();
                         console.log('Email sent: ' + info.response);
                         return res.jsonp({ message: 'ok' });
                     }

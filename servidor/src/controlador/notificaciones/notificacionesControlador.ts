@@ -253,9 +253,11 @@ class NotificacionTiempoRealControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }
@@ -347,9 +349,11 @@ class NotificacionTiempoRealControlador {
       var corr = enviarMail(servidor, parseInt(puerto));
       corr.sendMail(data, function (error: any, info: any) {
         if (error) {
+          corr.close();
           console.log('Email error: ' + error);
           return res.jsonp({ message: 'error' });
         } else {
+          corr.close();
           console.log('Email sent: ' + info.response);
           return res.jsonp({ message: 'ok' });
         }
