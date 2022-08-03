@@ -11,6 +11,8 @@ class CiudadRutas {
     }
 
     configuracion(): void {
+
+        // METODO DE BUSQUEDA DE INFORMACION ACTUAL DEL EMPLEADO
         this.router.get('/datos-actuales/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.DatosActuales);
 
         this.router.post('/buscar-jefes', [TokenValidation, ModuloPermisosValidation], DATOS_GENERALES_CONTROLADOR.BuscarJefes);
@@ -21,6 +23,8 @@ class CiudadRutas {
         // METODO DE ACCESO A CONSULTA DE DATOS DE COLABORADORES ACTIVOS E INACTIVOS
         this.router.get('/informacion-general/:estado', TokenValidation, DATOS_GENERALES_CONTROLADOR.DatosGenerales);
 
+        // METODO DE BUSQUEDA DE INFORMACION DE CONFIGURACIONES DE NOTIFICACIONES
+        this.router.get('/info-configuracion/:id_empleado', TokenValidation, DATOS_GENERALES_CONTROLADOR.BuscarConfigEmpleado);
 
         /** INICIO RUTAS PARA ACCEDER A CONSULTAS PARA FILTRAR INFORMACIÓN */
         this.router.get('/filtros/sucursal/:id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarEmpleadoSucursal);

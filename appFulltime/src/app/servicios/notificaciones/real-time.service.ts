@@ -24,9 +24,7 @@ export class RealTimeService {
     return this.http.get(`${environment.url}/noti-real-time/send/${id_empleado}`);
   }
 
-  ObtenerNotificacionesReceives(id_empleado: number) {
-    return this.http.get(`${environment.url}/noti-real-time/receives/${id_empleado}`);
-  }
+
 
   ObtenerNotificacionesAllReceives(id_empleado: number) {
     return this.http.get(`${environment.url}/noti-real-time/all-receives/${id_empleado}`);
@@ -45,16 +43,14 @@ export class RealTimeService {
     return this.http.put<any>(`${environment.url}/noti-real-time/eliminar-multiples/avisos`, Seleccionados); //Eliminacion de datos seleccionados.
   }
 
-  /*
-    METODOS PARA CONFIG_NOTI
-  */
 
   /** ************************************************************************************ **
    ** **                        MÉTODOS PARA CONFIG_NOTI                                ** ** 
    ** ************************************************************************************ **/
 
-  ObtenerConfigNotiEmpleado(id_empleado: number) {
-    return this.http.get(`${environment.url}/noti-real-time/config/${id_empleado}`);
+  // METODO DE BUSQUEDA DE CONFIGURACION DE RECEPCION DE NOTIFICACIONES
+  ObtenerConfiguracionEmpleado(id_empleado: number) {
+    return this.http.get<any>(`${environment.url}/noti-real-time/config/${id_empleado}`);
   }
 
   IngresarConfigNotiEmpleado(datos: any) {
@@ -65,6 +61,10 @@ export class RealTimeService {
     return this.http.put(`${environment.url}/noti-real-time/config/noti-put/${id_empleado}`, datos);
   }
 
+  // METODO PARA BUSCAR NOTIFICACIONES RECIBIDAS POR UN USUARIO
+  ObtenerNotasUsuario(id_empleado: number) {
+    return this.http.get(`${environment.url}/noti-real-time/receives/${id_empleado}`);
+  }
 
   /** ************************************************************************************ **
    ** **                 MÉTODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 

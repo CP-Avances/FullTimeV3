@@ -1,21 +1,16 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
-
-interface Estado {
-  id: number,
-  nombre: string
-}
+import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
+import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 
 @Component({
   selector: 'app-registrar-vacaciones',
@@ -23,28 +18,22 @@ interface Estado {
   styleUrls: ['./registrar-vacaciones.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
 
 export class RegistrarVacacionesComponent implements OnInit {
 
-  estados: Estado[] = [
-    { id: 1, nombre: 'Pendiente' },
-    { id: 2, nombre: 'Pre-autorizado' },
-    { id: 3, nombre: 'Autorizado' },
-    { id: 4, nombre: 'Negado' },
-  ];
-
   empleados: any = [];
   calcular = false;
   FechaActual: any;
 
-  // DATOS DEL EMPLEADO LOGUEADO
-  empleadoLogueado: any = [];
-  idEmpleado: number;
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'una solicitud';
+  user = '';
 
   nombreEmpleado = new FormControl('', [Validators.required]);
   fechaInicio = new FormControl('', Validators.required);
@@ -52,21 +41,19 @@ export class RegistrarVacacionesComponent implements OnInit {
   fechaIngreso = new FormControl('', Validators.required);
   dialibreF = new FormControl('', [Validators.required]);
   dialaborableF = new FormControl('', [Validators.required]);
-  estadoF = new FormControl('', [Validators.required]);
   legalizadoF = new FormControl('', [Validators.required]);
   calcularF = new FormControl('');
   totalF = new FormControl('');
   diasTF = new FormControl('');
 
   public VacacionesForm = new FormGroup({
-    fecInicioForm: this.fechaInicio,
-    fecFinalForm: this.fechaFinal,
     nombreEmpleadoForm: this.nombreEmpleado,
     fechaIngresoForm: this.fechaIngreso,
-    diaLibreForm: this.dialibreF,
     dialaborableForm: this.dialaborableF,
-    estadoForm: this.estadoF,
     legalizadoForm: this.legalizadoF,
+    fecInicioForm: this.fechaInicio,
+    fecFinalForm: this.fechaFinal,
+    diaLibreForm: this.dialibreF,
     calcularForm: this.calcularF,
     totalForm: this.totalF,
     diasTForm: this.diasTF
@@ -79,10 +66,10 @@ export class RegistrarVacacionesComponent implements OnInit {
     private realTime: RealTimeService,
     private informacion: DatosGeneralesService,
     public restAutoriza: AutorizacionService,
-    public dialogRef: MatDialogRef<RegistrarVacacionesComponent>,
+    public ventana: MatDialogRef<RegistrarVacacionesComponent>,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
   ) {
-    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
@@ -90,30 +77,34 @@ export class RegistrarVacacionesComponent implements OnInit {
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
 
+    this.obtenerInformacionEmpleado();
     this.ObtenerEmpleados(this.datoEmpleado.idEmpleado);
-    this.VacacionesForm.patchValue({
-      estadoForm: 1
-    });
-
-    this.ObtenerEmpleadoLogueado(this.idEmpleado);
-    this.ObtenerDatos();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
-  ObtenerEmpleadoLogueado(idemploy: any) {
-    this.empleadoLogueado = [];
-    this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
-      this.empleadoLogueado = data;
-    })
-  }
-
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.datoEmpleado.idEmpleado).subscribe(datos => {
-      this.actuales = datos;
-    });
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.datoEmpleado.idEmpleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          vaca_mail: res.vaca_mail,
+          vaca_noti: res.vaca_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+        if (this.datoEmpleado.idEmpleado != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   fechasTotales: any = [];
@@ -277,23 +268,22 @@ export class RegistrarVacacionesComponent implements OnInit {
   NotifiRes: any;
   arrayNivelesDepa: any = [];
   InsertarVacaciones(form) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosVacaciones = {
-      fec_inicio: form.fecInicioForm,
-      fec_final: form.fecFinalForm,
-      fec_ingreso: form.fechaIngresoForm,
-      estado: form.estadoForm,
-      dia_libre: form.diaLibreForm + form.diasTForm,
-      dia_laborable: form.dialaborableForm,
-      legalizado: form.legalizadoForm,
       id_peri_vacacion: this.datoEmpleado.idPerVacacion,
-      depa_user_loggin: depa_user_loggin,
+      depa_user_loggin: this.solInfo.id_dep,
+      dia_laborable: form.dialaborableForm,
       id_empl_cargo: this.datoEmpleado.idCargo,
-      codigo: parseInt(this.empleados[0].codigo)
+      fec_ingreso: form.fechaIngresoForm,
+      legalizado: form.legalizadoForm,
+      fec_inicio: form.fecInicioForm,
+      dia_libre: form.diaLibreForm + form.diasTForm,
+      fec_final: form.fecFinalForm,
+      codigo: parseInt(this.empleados[0].codigo),
+      estado: 1,
     };
     console.log(datosVacaciones);
     this.restV.RegistrarVacaciones(datosVacaciones).subscribe(vacacion => {
-
+      vacacion.EmpleadosSendNotiEmail.push(this.solInfo);
       this.IngresarAutorizacion(vacacion);
       this.EnviarNotificacion(vacacion);
       this.EnviarCorreoEmpleados(vacacion);
@@ -314,8 +304,7 @@ export class RegistrarVacacionesComponent implements OnInit {
 
   CerrarVentanaRegistroVacaciones() {
     this.LimpiarCampos();
-    this.dialogRef.close();
-    //window.location.reload();
+    this.ventana.close();
   }
 
   IngresarSoloNumeros(evt) {
@@ -383,7 +372,7 @@ export class RegistrarVacacionesComponent implements OnInit {
           correo: correo_usuarios,
           asunto: 'SOLICITUD DE VACACIONES',
           id: vacacion.id,
-          solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido
+          solicitado_por: localStorage.getItem('fullname_print'),
         }
         if (correo_usuarios != '') {
           this.restV.EnviarCorreoVacaciones(datosVacacionCreada).subscribe(
@@ -421,10 +410,10 @@ export class RegistrarVacacionesComponent implements OnInit {
       id_receives_depa: '',
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
-      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_send_empl: this.idEmpleadoIngresa,
       id_permiso: null,
       estado: 'Pendiente',
-      mensaje: 'Ha realizado una solicitud de vacaciones desde ' +
+      mensaje: 'Ha realizado ' + this.nota + ' de vacaciones ' + this.user + ' desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
     }

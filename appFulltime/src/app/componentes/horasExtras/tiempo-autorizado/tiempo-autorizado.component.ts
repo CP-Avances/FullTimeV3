@@ -55,8 +55,30 @@ export class TiempoAutorizadoComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('data de la hora', this.data);
+    this.obtenerInformacionEmpleado();
     this.MostrarProceso();
-    this.ObtenerDatos();
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.horaExtra.id_usua_solicita).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          hora_extra_mail: res.hora_extra_mail,
+          hora_extra_noti: res.hora_extra_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+      })
   }
 
   // METODO PARA MOSTRAR PROCESO
@@ -71,16 +93,6 @@ export class TiempoAutorizadoComponent implements OnInit {
     else if (this.data.proceso === 'observacion') {
       this.observacion = true;
     }
-  }
-
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.horaExtra.id_usua_solicita).subscribe(datos => {
-      this.actuales = datos;
-      console.log('ver info usuario ', this.actuales)
-    });
   }
 
   // METODO DE APROBACION DE SOLICITUD
@@ -127,9 +139,8 @@ export class TiempoAutorizadoComponent implements OnInit {
 
   // METODO DE ENVIO DE NOTIFICACIONES RESPECTO A LA APROBACION
   NotificarAprobacion(estado: number, valor: any) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     var datos = {
-      depa_user_loggin: depa_user_loggin,
+      depa_user_loggin: this.solInfo.id_dep,
       objeto: this.data.horaExtra,
     }
 
@@ -151,6 +162,7 @@ export class TiempoAutorizadoComponent implements OnInit {
     }
     this.informacion.BuscarJefes(datos).subscribe(horaExtra => {
       console.log(horaExtra);
+      horaExtra.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreo(horaExtra, estado_h, estado_c, valor, estado_n);
       this.EnviarNotificacion(horaExtra, estado_h, valor, estado_n);
       this.toastr.success('', 'Proceso realizado exitosamente.', {
@@ -270,7 +282,8 @@ export class TiempoAutorizadoComponent implements OnInit {
     let mensaje = {
       id_empl_envia: this.idEmpleado,
       id_empl_recive: '',
-      mensaje: 'Ha ' + estado_h.toLowerCase() + ' su solicitud de horas extras desde ' +
+      mensaje: 'Ha ' + estado_h.toLowerCase() + ' la solicitud de horas extras de ' +
+        this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
         ' horario de ' + h_inicio + ' a ' + h_final +
@@ -307,7 +320,7 @@ export class TiempoAutorizadoComponent implements OnInit {
   EnviarCorreoJustificacion(horaExtra: any, mensaje: string) {
     console.log('ver horas extras ....   ', horaExtra)
 
-    var correo_usuarios = this.actuales[0].correo;
+    var correo_usuarios = this.solInfo.correo;
 
     if (this.data.horaExtra.estado === 1) {
       var estado_h = 'Pendiente de autorización'
@@ -380,8 +393,9 @@ export class TiempoAutorizadoComponent implements OnInit {
 
     let mensaje = {
       id_empl_envia: this.idEmpleado,
-      id_empl_recive: parseInt(this.actuales[0].id),
-      mensaje: 'Justificar su solicitud de horas extras desde ' +
+      id_empl_recive: parseInt(this.solInfo.empleado),
+      mensaje: 'Solicita justificar la solicitud de horas extras de ' +
+        this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
         ' horario de ' + h_inicio + ' a ' + h_final +

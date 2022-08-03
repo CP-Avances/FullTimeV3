@@ -536,16 +536,15 @@ export class VerEmpleadoComponent implements OnInit {
   permisosTotales: any;
   obtenerPermisos(id_empleado: number) {
     this.permisosTotales = [];
-    this.restEmpleado.getOneEmpleadoRest(id_empleado).subscribe(datos => {
-      this.restPermiso.BuscarPermisoCodigo(datos[0].codigo).subscribe(datos => {
-        this.permisosTotales = datos;
-      }, err => {
-        const { access, message } = err.error.message;
-        if (access === false) {
-          this.toastr.error(message)
-        }
-      })
-    });
+    this.restPermiso.BuscarPermisoEmpleado(id_empleado).subscribe(datos => {
+      this.permisosTotales = datos;
+      console.log('permisos ver ... ', this.permisosTotales)
+    }, err => {
+      const { access, message } = err.error.message;
+      if (access === false) {
+        this.toastr.error(message)
+      }
+    })
   }
 
   // MÉTODO PARA IMPRIMIR DATOS DE VACACIONES 

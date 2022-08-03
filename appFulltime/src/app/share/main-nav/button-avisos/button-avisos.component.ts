@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { TimbresService } from '../../../servicios/timbres/timbres.service';
-import { LoginService } from '../../../servicios/login/login.service';
 import * as moment from 'moment';
 
 @Component({
@@ -12,11 +11,10 @@ export class ButtonAvisosComponent implements OnInit {
 
   estadoTimbres: boolean = true;
   num_timbre_false: number = 0;
-  timbres_noti: any = [];
+  avisos: any = [];
   id_empleado_logueado: number;
 
   constructor(
-    public loginService: LoginService,
     private timbresNoti: TimbresService,
   ) { }
 
@@ -32,16 +30,23 @@ export class ButtonAvisosComponent implements OnInit {
     }
   }
 
-  mensaje_inicio: string = '';
-  mensaje_fin: string = '';
   LlamarNotificacionesAvisos(id: number) {
-    this.timbresNoti.EnviarNotiRealTime(id).subscribe(res => {
-      this.timbres_noti = res;
-      console.log(this.timbres_noti, ' verificando vista de timbres ' + this.timbres_noti.message);
-      if (!this.timbres_noti.message) {
-        if (this.timbres_noti.length > 0) {
-          this.timbres_noti.forEach(obj => {
+    this.timbresNoti.BuscarAvisosGenerales(id).subscribe(res => {
+      this.avisos = res;
+      if (!this.avisos.message) {
+        if (this.avisos.length > 0) {
+          this.avisos.forEach(obj => {
             obj.create_at = moment(obj.create_at).format('DD/MM/YYYY') + ' ' + moment(obj.create_at).format('HH:mm:ss')
+
+            if (obj.descripcion.split('para')[0] != undefined && obj.descripcion.split('para')[1] != undefined) {
+              obj.aviso = obj.descripcion.split('para')[0];;
+              obj.usuario = 'del usuario ' + obj.descripcion.split('para')[1].split('desde')[0];
+            }
+            else {
+              obj.aviso = obj.descripcion.split('desde')[0];
+              obj.usuario = '';
+            }
+
             if (obj.visto === false) {
               this.num_timbre_false = this.num_timbre_false + 1;
               this.estadoTimbres = false;
@@ -49,17 +54,13 @@ export class ButtonAvisosComponent implements OnInit {
           });
         }
       }
-    }, err => {
-      console.log(err);
     });
   }
 
 
   ActualizarVista(id_realtime: number) {
     this.timbresNoti.PutVistaTimbre(id_realtime).subscribe(res => {
-      console.log(res);
-    }, err => {
-      console.log(err);
+      this.LlamarNotificacionesAvisos(this.id_empleado_logueado);
     });
   }
 

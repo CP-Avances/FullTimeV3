@@ -1,7 +1,7 @@
 <br>
 <div class="container" style="padding-bottom: 25px;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div class="barraTitulo d-flex bd-highlight">
+        <div class="d-flex bd-highlight" id="titulo">
             <div class="w-100 bd-highlight">
                 <h5>SOLICITUDES DE PERMISOS</h5>
             </div>
@@ -45,15 +45,25 @@
                     </div>
                     <div class="col-sm">
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Descripción:</label>
-                            <label>{{pt.descripcion}}</label>
+                            <label id="datosF">Días permiso:</label>
+                            <label>{{pt.dia}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Horas permiso:</label>
+                            <label>{{pt.hora_numero}}</label>
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Descripción:</label>
+                            <label>{{pt.descripcion}}</label>
+                        </div>
+                    </div>
+                    <div class="col-sm" *ngIf="pt.documento != null">
+                        <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Documento:</label>
                             <a matSuffix matTooltipPosition="right"
-                                matTooltip="Dar click para descargar contrato de trabajo"
+                                matTooltip="Descargar documento de respaldo de permiso."
                                 href="{{hipervinculo}}/empleadoPermiso/documentos/{{pt.documento}}" target="_blank">
                                 <label style="font-size: 13px;">{{pt.docu_nombre}}</label>
                             </a>

@@ -8,12 +8,12 @@ import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 // IMPORTACIÓN DE SERVICIOS 
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 // CREACIÓN DE LISTA DE OPCIONES DE SOLICITUD DE PERMISO 
 interface opcionesDiasHoras {
@@ -35,6 +35,11 @@ interface opcionesDiasHoras {
 })
 
 export class EditarPermisoEmpleadoComponent implements OnInit {
+
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'su solicitud';
+  user = '';
 
   datoNumPermiso: any = []; // ARREGLOS PARA GUARDAR ÚLTIMO NÚMERO DE PERMISOS REGISTRADO POR EMPLEADO
   tipoPermisos: any = []; // ARREGLOS PARA SELECCIONAR EL TIPO DE PERMISO DE ACUERDO AL PEDIDO EMPLEADO / ADMINISTRADOR
@@ -105,7 +110,9 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     private informacion: DatosGeneralesService,
     private loginServise: LoginService,
     @Inject(MAT_DIALOG_DATA) public info: any
-  ) { }
+  ) {
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
 
@@ -114,11 +121,38 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     this.FechaActual = f.format('YYYY-MM-DD');
     console.log(this.info);
     this.num = this.info.dataPermiso.num_permiso
-    this.MostrarDatos();
-    this.ObtenerTiposPermiso();
+    this.obtenerInformacionEmpleado();
     this.ComparacionSolicitud();
+    this.ObtenerTiposPermiso();
     this.ObtenerEmpleado(this.info.id_empleado);
     this.ObtenerDatos();
+    this.MostrarDatos();
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.info.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          permiso_mail: res.permiso_mail,
+          permiso_noti: res.permiso_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+        if (this.info.id_empleado != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   // MÉTODO PARA OBTENER DATOS DEL EMPLEADO 
@@ -771,6 +805,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
               timeOut: 6000,
             });
             this.SubirRespaldo(this.info.dataPermiso.id);
+            permiso.EmpleadosSendNotiEmail.push(this.solInfo);
             this.EnviarCorreo(permiso);
             this.EnviarNotificacion(permiso);
             this.CerrarVentanaPermiso();
@@ -800,6 +835,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
         this.toastr.success('Operación Exitosa', 'Permiso Editado', {
           timeOut: 6000,
         });
+        permiso.EmpleadosSendNotiEmail.push(this.solInfo);
         this.EnviarCorreo(permiso);
         this.EnviarNotificacion(permiso);
         this.CerrarVentanaPermiso();
@@ -1037,7 +1073,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
         if (correo_usuarios != '') {
           console.log('data entra enviar correo')
 
-          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+          this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(
             resp => {
               console.log('data entra enviar correo', resp)
               if (resp.message === 'ok') {
@@ -1080,14 +1116,14 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     }
 
     let notificacion = {
-      id_send_empl: this.info.id_empleado,
+      id_send_empl: this.idEmpleadoIngresa,
       id_receives_empl: '',
       id_receives_depa: '',
       estado: 'Pendiente',
       id_permiso: permiso.id,
       id_vacaciones: null,
       id_hora_extra: null,
-      mensaje: 'Ha actualizado su solicitud de permiso desde ' +
+      mensaje: 'Ha actualizado ' + this.nota + ' de permiso ' + this.user + ' desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
     }

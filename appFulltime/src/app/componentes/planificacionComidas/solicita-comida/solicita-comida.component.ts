@@ -11,6 +11,7 @@ import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/t
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 @Component({
   selector: 'app-solicita-comida',
@@ -25,6 +26,11 @@ import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 })
 
 export class SolicitaComidaComponent implements OnInit {
+
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'un servicio';
+  user = '';
 
   fechaPlanificacionF = new FormControl('', Validators.required);
   observacionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
@@ -57,6 +63,7 @@ export class SolicitaComidaComponent implements OnInit {
   FechaActual: any;
 
   constructor(
+    private informacion: DatosGeneralesService,
     private toastr: ToastrService,
     private rest: TipoComidasService,
     public restE: EmpleadoService,
@@ -66,6 +73,7 @@ export class SolicitaComidaComponent implements OnInit {
     public restUsuario: UsuarioService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
     this.departamento = parseInt(localStorage.getItem("departamento"));
   }
 
@@ -73,9 +81,36 @@ export class SolicitaComidaComponent implements OnInit {
     console.log('datos', this.data, 'departamento', this.departamento)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.ObtenerServicios();
+    this.obtenerInformacionEmpleado();
     this.ObtenerEmpleados(this.data.idEmpleado);
+    this.ObtenerServicios();
 
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.idEmpleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          comida_mail: res.comida_mail,
+          comida_noti: res.comida_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+        if (this.data.idEmpleado != this.idEmpleadoIngresa) {
+          this.nota = 'el servicio';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   // METODO PARA OBTENER LISTA DE SERVICIOS DE ALIMENTACION
@@ -140,7 +175,7 @@ export class SolicitaComidaComponent implements OnInit {
   InsertarPlanificacion(form) {
     // DATOS DE PLANIFICACION
     let datosPlanComida = {
-      id_departamento: parseInt(localStorage.getItem('departamento')),
+      id_departamento: this.solInfo.id_dep,
       id_empleado: this.data.idEmpleado,
       observacion: form.observacionForm,
       hora_inicio: form.horaInicioForm,
@@ -165,6 +200,7 @@ export class SolicitaComidaComponent implements OnInit {
     }, error => {
       // METODO PARA CREAR SOLICITUD DE ALIMENTACION
       this.restPlan.CrearSolicitudComida(datosPlanComida).subscribe(alimentacion => {
+        alimentacion.EmpleadosSendNotiEmail.push(this.solInfo);
         this.EnviarCorreo(alimentacion);
         this.NotificarPlanificacion(alimentacion);
         this.toastr.success('Operación Exitosa', 'Solicitud registrada.', {
@@ -186,10 +222,10 @@ export class SolicitaComidaComponent implements OnInit {
     let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
 
     let mensaje = {
-      id_empl_envia: parseInt(this.data.idEmpleado),
+      id_empl_envia: this.idEmpleadoIngresa,
       id_empl_recive: '',
       tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
-      mensaje: 'Ha solicitado un servicio de alimentación desde ' +
+      mensaje: 'Ha solicitado ' + this.nota + ' de alimentación ' + this.user + ' desde ' +
         desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',
       id_comida: alimentacion.id_comida

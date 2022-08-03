@@ -155,7 +155,7 @@ import { VerDocumentacionComponent } from './componentes/rolEmpleado/ver-documen
 import { InformacionJefeComponent } from './componentes/rolEmpleado/informacion-jefe/informacion-jefe.component';
 import { HomeEmpleadoComponent } from './componentes/rolEmpleado/home-empleado/home-empleado.component';
 import { HoraExtraEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/hora-extra-empleado/hora-extra-empleado.component';
-import { PlanificacionComidasEmpleadoComponent } from './componentes/rolEmpleado/planificacion-comidas-empleado/planificacion-comidas-empleado.component';
+import { PlanificacionComidasEmpleadoComponent } from './componentes/rolEmpleado/comidas-empleado/planificacion-comidas-empleado/planificacion-comidas-empleado.component';
 import { ProcesosEmpleadoComponent } from './componentes/rolEmpleado/procesos-empleado/procesos-empleado.component';
 import { AutorizaEmpleadoComponent } from './componentes/rolEmpleado/autoriza-empleado/autoriza-empleado.component';
 import { CancelarHoraExtraComponent } from './componentes/rolEmpleado/horasExtras-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
@@ -307,6 +307,7 @@ import { CancelarPermisoComponent } from './componentes/rolEmpleado/permisos-emp
 import { CancelarVacacionesComponent } from './componentes/rolEmpleado/vacacion-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
 import { EditarVacacionesEmpleadoComponent } from './componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { EditarHoraExtraEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
+import { CancelarComidaComponent } from './componentes/rolEmpleado/comidas-empleado/cancelar-comida/cancelar-comida.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -557,6 +558,7 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     VerCoordenadasComponent,
     ComunicadosComponent,
     ConfiguracionComponent,
+    CancelarComidaComponent,
 
   ],
 

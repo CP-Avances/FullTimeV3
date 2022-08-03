@@ -8,6 +8,7 @@ import * as moment from 'moment';
 
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 interface Estado {
   id: number,
@@ -59,6 +60,7 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
   id_contrato_loggin: number;
 
   constructor(
+    private informacion: DatosGeneralesService,
     private realTime: RealTimeService,
     private restHE: PedHoraExtraService,
     private toastr: ToastrService,
@@ -87,6 +89,30 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
       horaFinForm: this.datos.fec_final.split("T")[1].split(".")[0],
       horasForm: this.datos.num_hora.split(":")[0] + ":" + this.datos.num_hora.split(":")[1],
     });
+
+    this.obtenerInformacionEmpleado();
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.id_user_loggin).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          hora_extra_mail: res.hora_extra_mail,
+          hora_extra_noti: res.hora_extra_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+      })
   }
 
   InsertarHoraExtra(form1) {
@@ -108,6 +134,7 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
       this.toastr.success('Operación Exitosa', 'Hora extra solicitada', {
         timeOut: 6000,
       });
+      horaExtra.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreo(horaExtra);
       this.EnviarNotificacion(horaExtra);
       this.ventana.close(true);

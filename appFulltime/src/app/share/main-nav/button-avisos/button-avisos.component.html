@@ -6,8 +6,8 @@
     <div class="container" style="text-align: center;">
         <h4>Avisos</h4>
     </div>
-    <div *ngIf="timbres_noti.message !== 'No se encuentran registros'">
-        <div *ngFor="let n of timbres_noti">
+    <div *ngIf="avisos.message !== 'No se encuentran registros'">
+        <div *ngFor="let n of avisos">
 
             <!-- Forma de aviso para 'Te falta timbre de entrada' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Te falta timbre de entrada'"
@@ -100,23 +100,33 @@
                 </a>
             </div>
 
+
+
+
             <!-- NOTIFICACIÓN DE SOLICITUD DE ALIMENTACION -->
             <div *ngIf="n.visto === false && n.tipo === 1" style="background: rgb(251, 212, 166)"
                 [routerLink]="['/listaPlanComida']">
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Tipo de servicio:
-                            </b>{{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[1]}}
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.empleado}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            para el {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                            <b>{{n.aviso}}</b>
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario:
-                            </b>{{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[0]}}
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Tipo de servicio:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Para el día:</b> {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
@@ -132,18 +142,25 @@
                 [routerLink]="['/listaPlanComida']">
                 <a mat-menu-item type="submit" class="noti_menu">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.empleado}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b> Tipo de servicio:
                             </b>{{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[1]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            para el {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                            <b>Para el día:</b> {{n.descripcion.split('desde')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario:
-                            </b>{{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[0]}}
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
@@ -154,23 +171,109 @@
                 </a>
             </div>
 
+
+
+
+            <!-- NOTIFICACIÓN DE APROBACION DE SOLICITUD DE ALIMENTACION -->
+            <div *ngIf="n.visto === false && n.tipo === 2" style="background: rgb(252, 227, 206)"
+                [routerLink]="['/listaPlanComida']">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
+                    <ul style="list-style: none; margin-left: -15%;">
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.empleado}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Tipo de servicio:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Para el día:</b> {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
+                        </li>
+                    </ul>
+                    <mat-divider class="divider"></mat-divider>
+                </a>
+            </div>
+
+            <!-- NOTIFICACIÓN VISTA DE APROBACION DE SOLICITUD DE ALIMENTACION -->
+            <div *ngIf="n.visto === true && n.tipo === 2" style="background: rgb(226, 226, 226)"
+                [routerLink]="['/listaPlanComida']">
+                <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
+                    <ul style="list-style: none; margin-left: -15%;">
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.empleado}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Tipo de servicio:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Para el día:</b> {{n.descripcion.split('desde')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('horario')[1].split('servicio')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
+                        </li>
+                    </ul>
+                    <mat-divider class="divider"></mat-divider>
+                </a>
+            </div>
+
+
+
+
+
             <!-- NOTIFICACIÓN DE PLANIFICACION DE ALIMENTACION -->
             <div *ngIf="n.visto === false && n.tipo === 20" style="background: rgb(251, 212, 169)"
                 [routerLink]="['/listaPlanComida']">
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px;">
+                            <b>Enviado por:</b> {{n.empleado}}
+                        </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Tipo de servicio: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Tipo de servicio:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('servicio')[1]}}
                         </li>
                         <li style="font-size: 11px; margin-top: -13%;">
-                            <b> desde: </b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}<b> al </b>
-                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 11px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('servicio')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
@@ -187,18 +290,29 @@
                 [routerLink]="['/listaPlanComida']">
                 <a mat-menu-item type="submit" class="noti_menu">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px;">
+                            <b>Enviado por:</b> {{n.empleado}}
+                        </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Tipo de servicio: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Tipo de servicio:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('servicio')[1]}}
                         </li>
                         <li style="font-size: 11px; margin-top: -13%;">
-                            <b> desde: </b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}<b> al </b>
-                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 11px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('servicio')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
@@ -210,20 +324,34 @@
                 </a>
             </div>
 
+
+
+
+
             <!-- NOTIFICACIONES DE PLANIFICACIÓN DE HORAS EXTRAS -->
             <div *ngIf="n.visto === false && n.tipo === 10" style="background: rgb(187, 246, 250)"
                 [routerLink]="['/listaSolicitaComida']">
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px;">
+                            <b>Enviado por:</b> {{n.empleado}}
+                        </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            {{n.descripcion.split('desde')[1].split('hasta')[0]}}<b> al </b>
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b>
                             {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
-                            de')[1]}}
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario de')[1]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
@@ -239,15 +367,25 @@
                 [routerLink]="['/listaSolicitaComida']">
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px;">
+                            <b>Enviado por:</b> {{n.empleado}}
+                        </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            {{n.descripcion.split('desde')[1].split('hasta')[0]}}<b> al </b>
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b>
                             {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
-                            de')[1]}}
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario de')[1]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
@@ -258,24 +396,38 @@
                 </a>
             </div>
 
+
+
+
             <!-- NOTIFICACIONES NO VISTAS DE JUSTIFICACION DE HORAS EXTRAS -->
             <div *ngIf="n.visto === false && n.tipo === 11" style="background: rgb(187, 246, 250)"
                 [routerLink]="['/listaSolicitaComida']">
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>desde</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}} <b>al</b>
+                        <li style="font-size: 12px;">
+                            <b>Enviado por:</b> {{n.empleado}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b>
                             {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('horas')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Num. horas solicitadas:
-                            </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>Num. horas solicitadas:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('horas')[1]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
@@ -292,19 +444,30 @@
                 [routerLink]="['/listaSolicitaComida']">
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
+                        <li style="font-size: 12px;">
+                            <b>Enviado por:</b> {{n.empleado}}
+                        </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b>desde</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}} <b>al</b>
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b>
                             {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>Horario:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('horas')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Num. horas solicitadas:
-                            </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
+                            <b>Num. horas solicitadas:</b>
+                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('horas')[1]}}
                         </li>
                     </ul>
@@ -318,10 +481,17 @@
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
-                        <li style="font-size: 11px; margin-top: -13%;">
-                            <b>desde</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}} <b>al</b>
-                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
@@ -348,10 +518,17 @@
                 <a mat-menu-item type="submit" class="noti_menu" (click)="ActualizarVista(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
                         <li style="font-size: 12px;"><b>Enviado por:</b> {{n.empleado}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.descripcion.split('desde')[0]}}</b></li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b>desde</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}} <b>al</b>
-                            {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                            <b>{{n.aviso}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.descripcion.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
                             <b> Horario: </b>{{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
@@ -362,6 +539,10 @@
                                 de')[1].split('estado')[1].split('horas')[0]}}:</b>
                             {{n.descripcion.split('desde')[1].split('hasta')[1].split('horario
                             de')[1].split('estado')[1].split('horas')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>

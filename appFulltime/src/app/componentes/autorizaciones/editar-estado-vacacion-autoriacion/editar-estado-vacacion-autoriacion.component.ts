@@ -28,6 +28,9 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
     { id: 4, nombre: 'Negado' },
   ];
 
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+
   estado = new FormControl('', Validators.required);
 
   public estadoAutorizacionesForm = new FormGroup({
@@ -64,12 +67,34 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
     }
 
     this.ObtenerTiempo();
-    this.ObtenerDatos();
+    this.obtenerInformacionEmpleado();
   }
 
   ObtenerTiempo() {
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.vacacion.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          vaca_mail: res.vaca_mail,
+          vaca_noti: res.vaca_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+      })
   }
 
   // METODO DE APROBACION DE SOLICITUD DE VACACIONES
@@ -95,9 +120,8 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
 
   // METODO DE ENVIO DE NOTIFICACIONES RESPECTO A LA APROBACION
   NotificarAprobacion(estado: number) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     var datos = {
-      depa_user_loggin: depa_user_loggin,
+      depa_user_loggin: this.solInfo.id_dep,
       objeto: this.data.vacacion,
     }
 
@@ -116,21 +140,13 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
     }
     this.informacion.BuscarJefes(datos).subscribe(vacacion => {
       console.log(vacacion);
+      vacacion.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreoEmpleados(vacacion, estado_v, estado_c);
       this.EnviarNotificacion(vacacion, estado_v);
       this.toastr.success('', 'Proceso realizado exitosamente.', {
         timeOut: 6000,
       });
       this.ventana.close(true);
-    });
-  }
-
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.vacacion.id_empleado).subscribe(datos => {
-      this.actuales = datos;
     });
   }
 
@@ -216,10 +232,11 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
       id_receives_depa: '',
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
-      id_send_empl: vacaciones.id_empleado,
+      id_send_empl: this.idEmpleadoIngresa,
       id_permiso: null,
       estado: estado_v,
-      mensaje: 'Ha ' + estado_v.toLowerCase() + ' su solicitud de vacaciones desde ' +
+      mensaje: 'Ha ' + estado_v.toLowerCase() + ' la solicitud de vacaciones de ' +
+        this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
     }

@@ -90,10 +90,11 @@ export class PedHoraExtraService {
 
 
   // SERVICIOS DE CONSULTA DE DATOS DE PLANIFICACIONES DE HORAS EXTRAS
-
   BuscarHorasPlanificadas(datos: any, desde: string, hasta: string) {
     return this.http.put(`${environment.url}/horas-extras-pedidas/horas-planificadas/${desde}/${hasta}`, datos);
   }
+
+
 
 
   // ENVIAR CORREO DE SOLICITUD
@@ -101,8 +102,9 @@ export class PedHoraExtraService {
     return this.http.post<any>(`${environment.url}/horas-extras-pedidas/mail-noti`, datos);
   }
 
+  // EDITAR SOLICITUD DE HORAS EXTRAS
   EditarHoraExtra(id: number, datos: any) {
-    return this.http.put(`${environment.url}/horas-extras-pedidas/${id}/solicitud`, datos);
+    return this.http.put<any>(`${environment.url}/horas-extras-pedidas/${id}/solicitud`, datos);
   }
 
 

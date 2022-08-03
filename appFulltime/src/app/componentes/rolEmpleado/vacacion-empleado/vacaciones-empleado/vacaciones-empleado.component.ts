@@ -1,21 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
-import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { CancelarVacacionesComponent } from '../cancelar-vacaciones/cancelar-vacaciones.component';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+
 import { EditarVacacionesEmpleadoComponent } from '../editar-vacaciones-empleado/editar-vacaciones-empleado.component';
+import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
+import { CancelarVacacionesComponent } from '../cancelar-vacaciones/cancelar-vacaciones.component';
 
 @Component({
   selector: 'app-vacaciones-empleado',
   templateUrl: './vacaciones-empleado.component.html',
   styleUrls: ['./vacaciones-empleado.component.css']
 })
+
 export class VacacionesEmpleadoComponent implements OnInit {
 
   idEmpleado: string;
@@ -24,17 +26,17 @@ export class VacacionesEmpleadoComponent implements OnInit {
   idPerVacacion: any = [];
   cont: number;
 
-  /* Items de paginación de la tabla */
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA 
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   constructor(
-    public restEmpleado: EmpleadoService,
-    public restPerV: PeriodoVacacionesService,
-    public restCargo: EmplCargosService,
-    public vistaRegistrarDatos: MatDialog,
     public restVacaciones: VacacionesService,
+    public restEmpleado: EmpleadoService,
+    public restCargo: EmplCargosService,
+    public restPerV: PeriodoVacacionesService,
+    public ventana: MatDialog,
     private toastr: ToastrService,
   ) {
     this.idEmpleado = localStorage.getItem('empleado');
@@ -50,7 +52,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  /** Método para ver la información del empleado */
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO  
   empleadoUno: any = [];
   verEmpleado(idemploy: any) {
     this.empleadoUno = [];
@@ -60,11 +62,9 @@ export class VacacionesEmpleadoComponent implements OnInit {
     })
   }
 
-  /* 
-     * ***************************************************************************************************
-     *                               MÉTODO PARA MOSTRAR DATOS
-     * ***************************************************************************************************
-    */
+  /** ************************************************************************************************ **
+   ** **                              MÉTODO PARA MOSTRAR DATOS                                     ** **
+   ** ************************************************************************************************ **/
 
   vacaciones: any = [];
   obtenerVacaciones(id_empleado: number) {
@@ -79,7 +79,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
     });
   }
 
-  /* Método para imprimir datos del periodo de vacaciones */
+  // MÉTODO PARA IMPRIMIR DATOS DEL PERIODO DE VACACIONES 
   peridoVacaciones: any;
   obtenerPeriodoVacaciones() {
     this.peridoVacaciones = [];
@@ -88,13 +88,11 @@ export class VacacionesEmpleadoComponent implements OnInit {
     })
   }
 
-  /* 
-  ****************************************************************************************************
-  *                               ABRIR VENTANAS DE SOLICITUDES
-  ****************************************************************************************************
-  */
+  /** ********************************************************************************************** **
+   ** **                              ABRIR VENTANAS DE SOLICITUDES                               ** **
+   ** ********************************************************************************************** **/
 
-  /* Ventana para registrar vacaciones del empleado */
+  // VENTANA PARA REGISTRAR VACACIONES DEL EMPLEADO 
   AbrirVentanaVacaciones(): void {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.idContrato = datos;
@@ -103,7 +101,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
         this.idCargo = datos;
         this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
           this.idPerVacacion = datos;
-          this.vistaRegistrarDatos.open(RegistrarVacacionesComponent,
+          this.ventana.open(RegistrarVacacionesComponent,
             { width: '900px', data: { idEmpleado: this.idEmpleado, idPerVacacion: this.idPerVacacion[0].id, idContrato: this.idPerVacacion[0].idcontrato, idCargo: this.idCargo[0].max, idContratoActual: this.idContrato[0].max } })
             .afterClosed().subscribe(item => {
               this.obtenerVacaciones(parseInt(this.idEmpleado));
@@ -127,7 +125,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
 
   CancelarVacaciones(v) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(contrato => {
-      this.vistaRegistrarDatos.open(CancelarVacacionesComponent,
+      this.ventana.open(CancelarVacacionesComponent,
         {
           width: '300px',
           data: { id: v.id, id_empleado: parseInt(this.idEmpleado), id_contrato: contrato[0].max }
@@ -144,7 +142,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
 
   EditarVacaciones(v) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(contrato => {
-      this.vistaRegistrarDatos.open(EditarVacacionesEmpleadoComponent,
+      this.ventana.open(EditarVacacionesEmpleadoComponent,
         {
           width: '900px',
           data: { info: v, id_empleado: parseInt(this.idEmpleado), id_contrato: contrato[0].max }

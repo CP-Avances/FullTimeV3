@@ -12,8 +12,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import { EditarEstadoAutorizaccionComponent } from '../../autorizaciones/editar-estado-autorizaccion/editar-estado-autorizaccion.component';
 
 // IMPORTAR SERVICIOS
-import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { ValidacionesService } from '../../../servicios/validaciones/validaciones.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';

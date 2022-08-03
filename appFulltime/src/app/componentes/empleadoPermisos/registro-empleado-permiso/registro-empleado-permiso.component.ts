@@ -9,6 +9,7 @@ import * as moment from 'moment';
 
 // INVOCACIÓN A LOS SERVICIOS
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
@@ -16,15 +17,9 @@ import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.serv
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
-import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 interface opcionesDiasHoras {
   valor: string;
-  nombre: string
-}
-
-interface Estado {
-  id: number,
   nombre: string
 }
 
@@ -43,18 +38,13 @@ interface Estado {
 
 export class RegistroEmpleadoPermisoComponent implements OnInit {
 
-  estados: Estado[] = [
-    { id: 1, nombre: 'Pendiente' },
-    { id: 2, nombre: 'Pre-autorizado' },
-    { id: 3, nombre: 'Autorizado' },
-    { id: 4, nombre: 'Negado' },
-  ];
-
   permiso: any = [];
 
-  // DATOS DEL EMPLEADO LOGUEADO
-  empleadoLogueado: any = [];
-  idEmpleado: number;
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'una solicitud';
+  user = '';
+  codigo: number;
 
   // USADO PARA IMPRIMIR DATOS
   datosPermiso: any = [];
@@ -104,7 +94,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   legalizarF = new FormControl('', [Validators.required]);
   diaLaboralF = new FormControl('');
   diaLibreF = new FormControl('');
-  estadoF = new FormControl('');
   horasF = new FormControl('');
   diasF = new FormControl('');
 
@@ -122,7 +111,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     legalizarForm: this.legalizarF,
     diaLaboralForm: this.diaLaboralF,
     diaLibreForm: this.diaLibreF,
-    estadoForm: this.estadoF,
     horasForm: this.horasF,
     diasForm: this.diasF,
   });
@@ -141,7 +129,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     public restAutoriza: AutorizacionService,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any,
   ) {
-    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
@@ -150,13 +138,11 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     // ASIGNACIÓN DE ESTADO PENDIENTE EN LA SOLICITUD DE PERMISO
     this.PermisoForm.patchValue({
       fecCreacionForm: this.FechaActual,
-      estadoForm: 1
     });
-    this.ObtenerTiposPermiso();
+    this.obtenerInformacionEmpleado();
     this.ImprimirNumeroPermiso();
+    this.ObtenerTiposPermiso();
     this.ObtenerEmpleado(this.datoEmpleado.idEmpleado);
-    this.ObtenerEmpleadoLogueado(this.idEmpleado);
-    this.ObtenerDatos();
   }
 
   empleado: any = [];
@@ -168,21 +154,30 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion_.ObtenerDatosActuales(this.datoEmpleado.idEmpleado).subscribe(datos => {
-      this.actuales = datos;
-    });
-  }
-
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
-  ObtenerEmpleadoLogueado(idemploy: any) {
-    this.empleadoLogueado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
-      this.empleadoLogueado = data;
-    })
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion_.ObtenerInfoConfiguracion(this.datoEmpleado.idEmpleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          permiso_mail: res.permiso_mail,
+          permiso_noti: res.permiso_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+        if (this.datoEmpleado.idEmpleado != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   ObtenerTiposPermiso() {
@@ -546,27 +541,26 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   InsertarPermiso(form) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosPermiso = {
-      fec_creacion: form.fecCreacionForm,
-      descripcion: form.descripcionForm,
-      fec_inicio: form.fechaInicioForm,
-      fec_final: form.fechaFinalForm,
-      dia: parseInt(form.diasForm),
-      legalizado: form.legalizarForm,
-      estado: form.estadoForm,
-      dia_libre: form.diaLibreForm,
-      id_tipo_permiso: form.idPermisoForm,
       id_empl_contrato: this.datoEmpleado.idContrato,
       id_peri_vacacion: this.datoEmpleado.idPerVacacion,
+      depa_user_loggin: this.solInfo.id_dep,
+      id_tipo_permiso: form.idPermisoForm,
+      id_empl_cargo: this.datoEmpleado.idCargo,
+      fec_creacion: form.fecCreacionForm,
+      hora_ingreso: form.horasIngresoForm,
+      descripcion: form.descripcionForm,
       hora_numero: form.horasForm,
       num_permiso: this.num,
       docu_nombre: form.nombreCertificadoForm,
-      depa_user_loggin: depa_user_loggin,
-      id_empl_cargo: this.datoEmpleado.idCargo,
       hora_salida: form.horaSalidaForm,
-      hora_ingreso: form.horasIngresoForm,
-      codigo: this.empleado[0].codigo
+      legalizado: form.legalizarForm,
+      fec_inicio: form.fechaInicioForm,
+      fec_final: form.fechaFinalForm,
+      dia_libre: form.diaLibreForm,
+      codigo: this.empleado[0].codigo,
+      estado: 1,
+      dia: parseInt(form.diasForm),
     }
     console.log(datosPermiso);
     this.CambiarValoresDiasHoras(form, datosPermiso);
@@ -826,9 +820,10 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           this.toastr.success('Operación Exitosa', 'Permiso registrado', {
             timeOut: 6000,
           });
+          permiso.EmpleadosSendNotiEmail.push(this.solInfo);
           this.ImprimirNumeroPermiso();
           console.log('ver datos de permiso......', permiso)
-          this.SendEmailsEmpleados(permiso);
+          this.EnviarCorreoPermiso(permiso);
           this.IngresarAutorizacion(permiso);
           this.EnviarNotificacion(permiso);
           this.CerrarVentanaPermiso();
@@ -848,9 +843,10 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       this.toastr.success('Operación Exitosa.', 'Permiso registrado.', {
         timeOut: 6000,
       });
+      permiso.EmpleadosSendNotiEmail.push(this.solInfo);
       this.ImprimirNumeroPermiso();
       this.SubirRespaldo(permiso);
-      this.SendEmailsEmpleados(permiso);
+      this.EnviarCorreoPermiso(permiso);
       this.IngresarAutorizacion(permiso);
       this.EnviarNotificacion(permiso);
       this.CerrarVentanaPermiso();
@@ -997,7 +993,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
    ** **                   METODOS ENVIO DE NOTIFICACIONES DE PERMISOS                     ** ** 
    ** *************************************************************************************** **/
 
-  SendEmailsEmpleados(permiso: any) {
+  EnviarCorreoPermiso(permiso: any) {
 
     console.log('entra correo')
     var cont = 0;
@@ -1067,12 +1063,12 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           correo: correo_usuarios,
           asunto: 'SOLICITUD DE PERMISO',
           id: permiso.id,
-          solicitado_por: this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido,
+          solicitado_por: localStorage.getItem('fullname_print'),
         }
         if (correo_usuarios != '') {
           console.log('data entra enviar correo')
 
-          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+          this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(
             resp => {
               console.log('data entra enviar correo', resp)
               if (resp.message === 'ok') {
@@ -1120,10 +1116,10 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       id_receives_depa: '',
       id_vacaciones: null,
       id_hora_extra: null,
-      id_send_empl: this.datoEmpleado.idEmpleado,
+      id_send_empl: this.idEmpleadoIngresa,
       id_permiso: permiso.id,
       estado: 'Pendiente',
-      mensaje: 'Ha realizado una solicitud de permiso desde ' +
+      mensaje: 'Ha realizado ' + this.nota + ' de permiso ' + this.user + ' desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
     }

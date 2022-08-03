@@ -72,30 +72,6 @@ class NotificacionTiempoRealControlador {
     }
   }
 
-  public async ListaPorJefe(req: Request, res: Response): Promise<any> {
-    const id = req.params.id_receive;
-    console.log(id);
-    if (id != 'NaN') {
-      const REAL_TIME_NOTIFICACION = await pool.query(
-        `
-          SELECT r.id, r.id_send_empl, r.id_receives_empl, 
-            r.id_receives_depa, r.estado, to_char(r.create_at, \'yyyy-MM-dd HH:mi:ss\') AS create_at, 
-            r.id_permiso, r.id_vacaciones, r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido 
-          FROM realtime_noti AS r, empleados AS e 
-          WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC LIMIT 5
-      `, [id]);
-      if (REAL_TIME_NOTIFICACION.rowCount > 0) {
-        console.log('notifica', REAL_TIME_NOTIFICACION.rows)
-        return res.jsonp(REAL_TIME_NOTIFICACION.rows)
-      }
-      else {
-        return res.status(404).jsonp({ text: 'Registro no encontrado' });
-      }
-    }
-    else {
-      return res.status(404).jsonp({ message: 'sin registros' });
-    }
-  }
 
   public async ObtenerUnaNotificacion(req: Request, res: Response): Promise<any> {
     const id = req.params.id;
@@ -153,22 +129,6 @@ class NotificacionTiempoRealControlador {
     res.jsonp({ message: 'Configuracion guardada' });
   }
 
-  // MÉTODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
-  public async ObtenerConfigEmpleado(req: Request, res: Response): Promise<any> {
-    const id_empleado = req.params.id;
-    console.log(id_empleado);
-    if (id_empleado != 'NaN') {
-      const CONFIG_NOTI = await pool.query('SELECT * FROM config_noti WHERE id_empleado = $1', [id_empleado]);
-      if (CONFIG_NOTI.rowCount > 0) {
-        return res.jsonp(CONFIG_NOTI.rows);
-      }
-      else {
-        return res.status(404).jsonp({ text: 'Registro no encontrado' });
-      }
-    } else {
-      res.status(404).jsonp({ text: 'Sin registros encontrado' });
-    }
-  }
 
   // MÉTODO PARA ACTUALIZAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
   public async ActualizarConfigEmpleado(req: Request, res: Response): Promise<void> {
@@ -181,6 +141,59 @@ class NotificacionTiempoRealControlador {
       [vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail, hora_extra_noti,
         comida_mail, comida_noti, comunicado_mail, comunicado_noti, id_empleado]);
     res.jsonp({ message: 'Configuración Actualizada' });
+  }
+
+
+
+
+  /** ******************************************************************************************** **
+   ** **                               CONSULTAS DE NOTIFICACIONES                              ** ** 
+   ** ******************************************************************************************** **/
+
+  // MÉTODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+  public async ObtenerConfigEmpleado(req: Request, res: Response): Promise<any> {
+    const id_empleado = req.params.id;
+    console.log(id_empleado);
+    if (id_empleado != 'NaN') {
+      const CONFIG_NOTI = await pool.query(
+        `
+        SELECT * FROM config_noti WHERE id_empleado = $1
+        `
+        , [id_empleado]);
+      if (CONFIG_NOTI.rowCount > 0) {
+        return res.jsonp(CONFIG_NOTI.rows);
+      }
+      else {
+        return res.status(404).jsonp({ text: 'Registro no encontrados.' });
+      }
+    } else {
+      res.status(404).jsonp({ text: 'Sin registros encontrados.' });
+    }
+  }
+
+  public async ListarNotificacionUsuario(req: Request, res: Response): Promise<any> {
+    const id = req.params.id_receive;
+    if (id != 'NaN') {
+      const REAL_TIME_NOTIFICACION = await pool.query(
+        `
+        SELECT r.id, r.id_send_empl, r.id_receives_empl, r.id_receives_depa, r.estado, 
+          to_char(r.create_at, 'yyyy-MM-dd HH:mi:ss') AS create_at, r.id_permiso, r.id_vacaciones, 
+          r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido 
+        FROM realtime_noti AS r, empleados AS e 
+        WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl 
+        ORDER BY id DESC LIMIT 10
+        `
+        , [id]);
+      if (REAL_TIME_NOTIFICACION.rowCount > 0) {
+        return res.jsonp(REAL_TIME_NOTIFICACION.rows)
+      }
+      else {
+        return res.status(404).jsonp({ text: 'Registro no encontrado' });
+      }
+    }
+    else {
+      return res.status(404).jsonp({ message: 'sin registros' });
+    }
   }
 
 

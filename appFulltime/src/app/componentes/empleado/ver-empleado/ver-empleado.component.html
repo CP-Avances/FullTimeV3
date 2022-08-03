@@ -1154,9 +1154,9 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight barraTitulo">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Solicitar Permiso</h5>
+                                <h5>SOLICITUDES DE PERMISO</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -1202,6 +1202,14 @@
                                     <label>{{pt.hora_ingreso}}</label>
                                 </div>
                                 <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Días permiso:</label>
+                                    <label>{{pt.dia}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start">
+                                    <label id="datosF">Horas permiso:</label>
+                                    <label>{{pt.hora_numero}}</label>
+                                </div>
+                                <div class="caja1 d-flex justify-content-start" *ngIf="pt.documento != null">
                                     <label id="datosF">Documento:</label>
                                     <a matSuffix matTooltipPosition="right"
                                         matTooltip="Dar click para descargar contrato de trabajo"

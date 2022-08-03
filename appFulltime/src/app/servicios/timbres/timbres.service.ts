@@ -12,11 +12,13 @@ export class TimbresService {
   ) { }
 
   /**
-   * Metodo para traer las notificaciones de atrasos o salidas antes solo vienen 5 notificaciones
-   * @param id_empleado Id del empleado loggeado
+   * METODO PARA TRAER LAS NOTIFICACIONES DE ATRASOS O SALIDAS ANTES SOLO VIENEN 5 NOTIFICACIONES
+   * @param id_empleado Id DEL EMPLEADO QUE INICIA SESION
    */
-  EnviarNotiRealTime(id_empleado: number) {
-    return this.http.get(`${environment.url}/timbres/noti-timbres/${id_empleado}`);
+
+  // METODO DE CONSULTA DE AVISOS GENERALES
+  BuscarAvisosGenerales(id_empleado: number) {
+    return this.http.get(`${environment.url}/timbres/avisos-generales/${id_empleado}`);
   }
 
   PutVistaTimbre(id_noti_timbre: number) {

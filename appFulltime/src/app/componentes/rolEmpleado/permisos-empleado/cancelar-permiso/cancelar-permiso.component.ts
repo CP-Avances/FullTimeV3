@@ -1,9 +1,9 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
-import { ToastrService } from 'ngx-toastr';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
@@ -16,6 +16,10 @@ import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-ge
 
 export class CancelarPermisoComponent implements OnInit {
 
+  idEmpleadoIngresa: number;
+  nota = 'su solicitud';
+  user = '';
+
   constructor(
     private restP: PermisosService,
     private toastr: ToastrService,
@@ -24,12 +28,14 @@ export class CancelarPermisoComponent implements OnInit {
     public ventana: MatDialogRef<CancelarPermisoComponent>,
     public informacion: DatosGeneralesService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     console.log(this.data);
     this.ObtenerTiposPermiso();
-    this.ObtenerDatos();
+    this.obtenerInformacionEmpleado();
   }
 
   // MÉTODO PARA MOSTRAR LISTA DE PERMISOS DE ACUERDO AL ROL 
@@ -41,25 +47,44 @@ export class CancelarPermisoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.id_empleado).subscribe(datos => {
-      this.actuales = datos;
-    });
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          permiso_mail: res.permiso_mail,
+          permiso_noti: res.permiso_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+          id_contrato: res.id_contrato,
+        }
+
+        if (this.data.id_empleado != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   aceptarAdvertencia() {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     this.restP.EliminarPermiso(this.data.info.id, this.data.info.documento).subscribe(res => {
       console.log(res);
       var datos = {
-        depa_user_loggin: depa_user_loggin,
+        depa_user_loggin: parseInt(this.solInfo.id_dep),
         objeto: res,
       }
       this.informacion.BuscarJefes(datos).subscribe(permiso => {
         console.log(permiso);
+        permiso.EmpleadosSendNotiEmail.push(this.solInfo);
         this.EnviarCorreo(permiso);
         this.EnviarNotificacion(permiso);
         this.toastr.error('Solicitud de permiso eliminada.', '', {
@@ -149,7 +174,7 @@ export class CancelarPermisoComponent implements OnInit {
         if (correo_usuarios != '') {
           console.log('data entra enviar correo')
 
-          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+          this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(
             resp => {
               console.log('data entra enviar correo', resp)
               if (resp.message === 'ok') {
@@ -192,14 +217,14 @@ export class CancelarPermisoComponent implements OnInit {
     }
 
     let notificacion = {
-      id_send_empl: this.data.id_empleado,
+      id_send_empl: this.idEmpleadoIngresa,
       id_receives_empl: '',
       id_receives_depa: '',
       estado: 'Pendiente',
       id_permiso: permiso.id,
       id_vacaciones: null,
       id_hora_extra: null,
-      mensaje: 'Ha eliminado su solicitud de permiso desde ' +
+      mensaje: 'Ha eliminado ' + this.nota + ' de permiso ' + this.user + ' desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
     }

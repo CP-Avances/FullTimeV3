@@ -53,11 +53,14 @@ export class EditarSolicitudComidaComponent implements OnInit {
     tipoForm: this.tipoF,
   });
 
-  idEmpleadoLogueado: any; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIO SESIÓN
-  departamento: any; // VARIABLE DE ALMACENAMIENTO DE ID DE DEPARTAMENTO DE EMPLEADO QUE INICIO SESIÓN
   FechaActual: any; // VARIABLE DE ALAMCENAMIENTO DE FECHA DEL DÍA DE HOY
   tipoComidas: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE TIPO DE COMIDAS
   empleados: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE EMPLEADO
+
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'su solicitud';
+  user = '';
 
   constructor(
     public restUsuario: UsuarioService, // SERVICIO DE DATOS DE USUARIO
@@ -65,30 +68,46 @@ export class EditarSolicitudComidaComponent implements OnInit {
     public ventana: MatDialogRef<EditarSolicitudComidaComponent>, // VARIABLE VENTANA DE DIÁLOGO
     public restH: EmpleadoHorariosService, // SERVICIO DE DATOS DE HORARIOS DE EMPLEADO
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
-    private informacion: DatosGeneralesService,
-    private toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
     private rest: TipoComidasService, // SERVICIO DE DATOS DE TIPO DE COMIDAS
+    private toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
+    private informacion: DatosGeneralesService,
     @Inject(MAT_DIALOG_DATA) public data: any, // VARIABLE CON DATOS PASADOS DE LA VENTANA ANTERIOR
   ) {
-    this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
-    this.departamento = parseInt(localStorage.getItem("departamento"));
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
     console.log('ver data de actualizacion ', this.data)
     this.ObtenerEmpleados(this.data.solicitud.id_empleado);
+    this.obtenerInformacionEmpleado();
     this.ObtenerServicios();
     this.CargarDatos();
-    this.ObtenerDatos();
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.solicitud.id_empleado).subscribe(datos => {
-      this.actuales = datos;
-    });
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.solicitud.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          comida_mail: res.comida_mail,
+          comida_noti: res.comida_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+        if (this.data.solicitud.id_empleado != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   // MÉTODO PARA MOSTRAR LA INFORMCIÓN DEL EMPLEADO 
@@ -182,9 +201,9 @@ export class EditarSolicitudComidaComponent implements OnInit {
   InsertarPlanificacion(form) {
     let datosDuplicados = {
       id_sol_comida: this.data.solicitud.id,
-      id: this.data.solicitud.id_empleado,
       fecha_inicio: form.fechaInicioForm,
       fecha_fin: form.fechaFinForm,
+      id: this.data.solicitud.id_empleado,
     }
     this.restPlan.BuscarDuplicadosSolFechasActualizar(datosDuplicados).subscribe(plan => {
       console.log('datos fechas', plan)
@@ -235,7 +254,6 @@ export class EditarSolicitudComidaComponent implements OnInit {
 
   // MÉTODO PARA ACTUALIZAR LA SOLICITUD SELECCIONADA
   ActualizarSolicitud(form) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosPlanComida = {
       id_empleado: this.data.solicitud.id_empleado,
       fec_comida: form.fechaPlanificacionForm,
@@ -246,12 +264,12 @@ export class EditarSolicitudComidaComponent implements OnInit {
       id: this.data.solicitud.id,
       fecha: form.fechaForm,
       extra: form.extraForm,
-      id_departamento: depa_user_loggin,
+      id_departamento: this.solInfo.id_dep,
     };
     this.restPlan.ActualizarSolicitudComida(datosPlanComida).subscribe(alimentacion => {
 
       console.log('ver data actualizada ', alimentacion)
-
+      alimentacion.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreo(alimentacion);
       this.NotificarPlanificacion(alimentacion);
 
@@ -341,10 +359,10 @@ export class EditarSolicitudComidaComponent implements OnInit {
     let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
 
     let mensaje = {
-      id_empl_envia: this.data.solicitud.id_empleado,
+      id_empl_envia: this.idEmpleadoIngresa,
       id_empl_recive: '',
       tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
-      mensaje: 'Ha actualizado su solicitud de alimentación desde ' +
+      mensaje: 'Ha actualizado ' + this.nota + ' de alimentación ' + this.user + ' desde ' +
         desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',
       id_comida: alimentacion.id_comida

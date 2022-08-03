@@ -129,18 +129,7 @@
                             matTooltip="Número de días libres dentro de la solicitud de permiso.">
                             help_outline</mat-icon>
                     </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Estado</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Indicar cual es el estado del permiso">
-                            help_outline
-                        </mat-icon>
-                        <mat-select [formControl]="estadoF" disabled required>
-                            <mat-option *ngFor="let e of estados" [value]="e.id">
-                                {{e.nombre}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+
                     <mat-radio-group aria-label="Select an option" [formControl]="legalizarF" required
                         [disabled]="true">
                         <label class="d-flex justify-content-between">
