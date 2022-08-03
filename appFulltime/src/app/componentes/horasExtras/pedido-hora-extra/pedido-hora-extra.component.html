@@ -26,17 +26,6 @@
                     help_outline</mat-icon>
             </mat-form-field>
             <mat-form-field>
-                <mat-label>Estado</mat-label>
-                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                    matTooltip="Indica atraso o puntualidad de ingreso a trabajar">
-                    help_outline</mat-icon>
-                <mat-select [formControl]="estadoF" disabled required>
-                    <mat-option *ngFor="let e of estados" [value]="e.id">
-                        {{e.nombre}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field>
                 <mat-label>Fecha Inicio Actividades</mat-label>
                 <input matInput [matDatepicker]="picker2" [formControl]="fechaInicioF" required>
                 <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" matTooltipPosition="right"

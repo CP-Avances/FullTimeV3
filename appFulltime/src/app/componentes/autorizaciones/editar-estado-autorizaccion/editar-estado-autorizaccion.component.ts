@@ -34,8 +34,9 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     estadoF: this.estado
   });
 
+  idEmpleadoIngresa: number;
+
   NotifiRes: any;
-  id_empleado_loggin: number;
   FechaActual: any;
 
   constructor(
@@ -46,7 +47,9 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     public informacion: DatosGeneralesService,
     public ventana: MatDialogRef<EditarEstadoAutorizaccionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     console.log(this.data);
@@ -64,14 +67,36 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       });
     }
 
-    this.id_empleado_loggin = parseInt(localStorage.getItem('empleado'));
-    this.ObtenerDatos();
+    this.obtenerInformacionEmpleado();
     this.ObtenerTiempo();
   }
 
   ObtenerTiempo() {
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.permiso.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          permiso_mail: res.permiso_mail,
+          permiso_noti: res.permiso_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+          id_contrato: res.id_contrato,
+        }
+      })
   }
 
   // METODO DE APROBACION DE SOLICITUD DE PERMISO
@@ -98,9 +123,8 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
 
   // METODO DE ENVIO DE NOTIFICACIONES RESPECTO A LA APROBACION
   NotificarAprobacion(estado: number) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     var datos = {
-      depa_user_loggin: depa_user_loggin,
+      depa_user_loggin: this.solInfo.id_dep,
       objeto: this.data.permiso,
     }
 
@@ -119,21 +143,13 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
     }
     this.informacion.BuscarJefes(datos).subscribe(permiso => {
       console.log(permiso);
+      permiso.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreo(permiso, estado_p, estado_c);
       this.EnviarNotificacion(permiso, estado_p);
       this.toastr.success('', 'Proceso realizado exitosamente.', {
         timeOut: 6000,
       });
       this.ventana.close(true);
-    });
-  }
-
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.permiso.id_empleado).subscribe(datos => {
-      this.actuales = datos;
     });
   }
 
@@ -202,7 +218,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
         if (correo_usuarios != '') {
           console.log('data entra enviar correo')
 
-          this.restP.SendMailNoti(datosPermisoCreado).subscribe(
+          this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(
             resp => {
               console.log('data entra enviar correo', resp)
               if (resp.message === 'ok') {
@@ -249,10 +265,11 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       id_receives_depa: '',
       id_vacaciones: null,
       id_hora_extra: null,
-      id_send_empl: this.id_empleado_loggin,
+      id_send_empl: this.idEmpleadoIngresa,
       id_permiso: permiso.id,
       estado: estado_p,
-      mensaje: 'Ha ' + estado_p.toLowerCase() + ' su solicitud de permiso desde ' +
+      mensaje: 'Ha ' + estado_p.toLowerCase() + ' su solicitud de permiso de ' +
+        this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
     }

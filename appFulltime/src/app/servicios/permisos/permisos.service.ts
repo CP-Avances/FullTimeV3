@@ -36,16 +36,14 @@ export class PermisosService {
     return this.http.put(`${environment.url}/empleadoPermiso/${id}/estado`, datos);
   }
 
-  EditarPermiso(id: number, datos: any) {
-    return this.http.put(`${environment.url}/empleadoPermiso/${id}/permiso-solicitado`, datos);
-  }
+
 
   ConsultarEmpleadoPermisos() {
     return this.http.get(`${environment.url}/empleadoPermiso`);
   }
 
   IngresarEmpleadoPermisos(datos: any) {
-    return this.http.post(`${environment.url}/empleadoPermiso`, datos);
+    return this.http.post<any>(`${environment.url}/empleadoPermiso`, datos);
   }
 
   ObtenerUnPermiso(id: number) {
@@ -76,17 +74,7 @@ export class PermisosService {
     return this.http.get(`${environment.url}/empleadoPermiso/datosAutorizacion/${id_permiso}`);
   }
 
-  EliminarPermiso(id_permiso: number, doc: string) {
-    return this.http.delete(`${environment.url}/empleadoPermiso/eliminar/${id_permiso}/${doc}`);
-  }
 
-  SendMailNoti(datos: any) {
-    return this.http.post<any>(`${environment.url}/empleadoPermiso/mail-noti`, datos);
-  }
-
-  BuscarPermisoCodigo(codigo: any) {
-    return this.http.get(`${environment.url}/empleadoPermiso/permisoCodigo/${codigo}`);
-  }
 
   BuscarFechasPermiso(datos: any, codigo: number) {
     return this.http.post(`${environment.url}/empleadoPermiso/fechas_permiso/${codigo}`, datos);
@@ -94,6 +82,26 @@ export class PermisosService {
 
   BuscarPermisosSolicitados(datos: any) {
     return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados`, datos);
+  }
+
+  // METODO USADO PAR EDITAR DATOS DE PERMISO
+  EditarPermiso(id: number, datos: any) {
+    return this.http.put<any>(`${environment.url}/empleadoPermiso/${id}/permiso-solicitado`, datos);
+  }
+
+  // METODO DE BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
+  BuscarPermisoEmpleado(id_empleado: any) {
+    return this.http.get(`${environment.url}/empleadoPermiso/permiso-usuario/${id_empleado}`);
+  }
+
+  // METODO PARA ELIMINAR PERMISOS
+  EliminarPermiso(id_permiso: number, doc: string) {
+    return this.http.delete(`${environment.url}/empleadoPermiso/eliminar/${id_permiso}/${doc}`);
+  }
+
+  // METODO PARA ENVIAR NOTIFICACION DE PERMISOS
+  EnviarCorreoWeb(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/mail-noti`, datos);
   }
 
 }

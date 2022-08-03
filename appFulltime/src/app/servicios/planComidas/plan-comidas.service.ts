@@ -101,11 +101,11 @@ export class PlanComidasService {
 
   // CREAR SOLICITUD DE ALIMENTACION
   CrearSolicitudComida(datos: any) {
-    return this.http.post(`${environment.url}/planComidas/solicitud`, datos);
+    return this.http.post<any>(`${environment.url}/planComidas/solicitud`, datos);
   }
   // EDITAR SOLICITUD DE SERVICIO DE ALIMENTACION
   ActualizarSolicitudComida(datos: any) {
-    return this.http.put(`${environment.url}/planComidas/actualizar-solicitud`, datos);
+    return this.http.put<any>(`${environment.url}/planComidas/actualizar-solicitud`, datos);
   }
   // EDITAR ESTADO DE SOLICITUD DE COMIDA
   AprobarComida(datos: any) {

@@ -14,23 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.timbresControlador = void 0;
 const database_1 = __importDefault(require("../../database"));
-// import { ContarHoras } from '../../libs/contarHoras'
 class TimbresControlador {
+    // METODO DE BUSQUEDA DE AVISOS GENERALES POR EMPLEADO
     ObtenerAvisosColaborador(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empleado } = req.params;
-            console.log('OBTENER REAL TIME TIMBRES EMPLEADO: Id empleado = ', id_empleado);
             const TIMBRES_NOTIFICACION = yield database_1.default.query(`
-            SELECT id, to_char(create_at, \'yyyy-MM-dd HH24:mi:ss\') AS create_at, id_send_empl, visto, 
+            SELECT id, to_char(create_at, 'yyyy-MM-dd HH24:mi:ss') AS create_at, id_send_empl, visto, 
             descripcion, id_timbre, tipo
             FROM realtime_timbres WHERE id_receives_empl = $1 
-            ORDER BY create_at DESC LIMIT 5
+            ORDER BY create_at DESC LIMIT 10
             `, [id_empleado])
                 .then((result) => __awaiter(this, void 0, void 0, function* () {
                 if (result.rowCount > 0) {
                     return yield Promise.all(result.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {
-                        let nombre = yield database_1.default.query('SELECT nombre, apellido FROM empleados WHERE id = $1', [obj.id_send_empl]).then(ele => {
-                            console.log(ele.rows[0].nombre + ele.rows[0].apellido);
+                        let nombre = yield database_1.default.query(`
+                            SELECT nombre, apellido FROM empleados WHERE id = $1
+                            `, [obj.id_send_empl]).then(ele => {
                             return ele.rows[0].nombre + ' ' + ele.rows[0].apellido;
                         });
                         return {

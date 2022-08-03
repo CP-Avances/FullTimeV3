@@ -8,11 +8,9 @@ import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPe
 import { EditarPermisoEmpleadoComponent } from '../editar-permiso-empleado/editar-permiso-empleado.component';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { CancelarPermisoComponent } from '../cancelar-permiso/cancelar-permiso.component';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
-
 
 @Component({
   selector: 'app-solicitar-permisos-empleado',
@@ -28,7 +26,7 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
   idCargo: any = [];
   cont: number;
 
-  /* Items de paginación de la tabla */
+  // ITEMS DE PAGINACIÓN DE LA TABLA 
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
@@ -36,13 +34,12 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
   hipervinculo: string = environment.url
 
   constructor(
-    public restEmpleado: EmpleadoService,
-    public restPerV: PeriodoVacacionesService,
-    public vistaRegistrarDatos: MatDialog,
     public restPermiso: PermisosService,
-    public restCargo: EmplCargosService,
+    public restPerV: PeriodoVacacionesService,
+    public ventana: MatDialog,
     private toastr: ToastrService,
-    private validacionesService: ValidacionesService
+    private validar: ValidacionesService,
+    private informacion: DatosGeneralesService,
   ) {
     this.idEmpleado = localStorage.getItem('empleado');
   }
@@ -56,81 +53,65 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  /* 
-   * ***************************************************************************************************
-   *                               MÉTODO PARA MOSTRAR DATOS
-   * ***************************************************************************************************
-  */
 
-  /* Método para imprimir datos del permiso */
+  /** ******************************************************************************************** **
+   ** **                             MÉTODO PARA MOSTRAR DATOS                                  ** **
+   ** ******************************************************************************************** **/
+
+  // MÉTODO PARA IMPRIMIR DATOS DEL PERMISO
   permisosTotales: any;
   obtenerPermisos(id_empleado: number) {
     this.permisosTotales = [];
-    this.restEmpleado.getOneEmpleadoRest(id_empleado).subscribe(datos => {
-      this.restPermiso.BuscarPermisoCodigo(datos[0].codigo).subscribe(datos => {
-        this.permisosTotales = datos;
-      }, err => {
-        return this.validacionesService.RedireccionarEstadisticas(err.error)
-      })
+    this.restPermiso.BuscarPermisoEmpleado(id_empleado).subscribe(datos => {
+      this.permisosTotales = datos;
+    }, err => {
+      return this.validar.RedireccionarEstadisticas(err.error)
     });
   }
 
   // VENTANA PARA REGISTRAR PERMISOS DEL EMPLEADO 
   AbrirVentanaPermiso(): void {
-    this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idContrato = datos;
-      console.log("idContrato ", this.idContrato[0].max)
-      this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-        this.idCargo = datos;
-        console.log("idcontrato ", this.idCargo[0].max)
-        this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
-          this.idPerVacacion = datos;
-          console.log("idPerVaca ", this.idPerVacacion[0].id)
-          this.vistaRegistrarDatos.open(RegistroEmpleadoPermisoComponent,
-            {
-              width: '1200px',
-              data: { idEmpleado: this.idEmpleado, idContrato: this.idContrato[0].max, idPerVacacion: this.idPerVacacion[0].id, idCargo: this.idCargo[0].max }
-            }).afterClosed().subscribe(item => {
-              this.obtenerPermisos(parseInt(this.idEmpleado));
-            });
-        }, error => {
-          this.toastr.info('El empleado no tiene registrado Periodo de Vacaciones', 'Primero Registrar Periodo de Vacaciones', {
-            timeOut: 6000,
-          })
-        });
+    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(actual => {
+      this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
+        this.idPerVacacion = datos;
+        this.ventana.open(RegistroEmpleadoPermisoComponent,
+          {
+            width: '1200px',
+            data: {
+              idEmpleado: this.idEmpleado, idContrato: actual[0].id_contrato,
+              idPerVacacion: this.idPerVacacion[0].id, idCargo: actual[0].id_cargo
+            }
+          }).afterClosed().subscribe(item => {
+            this.obtenerPermisos(parseInt(this.idEmpleado));
+          });
       }, error => {
-        this.toastr.info('El empleado no tiene registrado un Cargo', 'Primero Registrar Cargo', {
+        this.toastr.info('El usuario no tiene registrado Periodo de Vacaciones.', '', {
           timeOut: 6000,
         })
       });
     }, error => {
-      this.toastr.info('El empleado no tiene registrado un Contrato', 'Primero Registrar Contrato', {
+      this.toastr.info('Revisar que el usuario tenga un contrato y un cargo.', '', {
         timeOut: 6000,
       })
     });
   }
 
   CancelarPermiso(dataPermiso) {
-
-    this.vistaRegistrarDatos.open(CancelarPermisoComponent,
+    this.ventana.open(CancelarPermisoComponent,
       {
         width: '300px',
         data: { info: dataPermiso, id_empleado: parseInt(this.idEmpleado) }
       }).afterClosed().subscribe(items => {
-        if (items === true) {
-          this.obtenerPermisos(parseInt(this.idEmpleado));
-        }
+        this.obtenerPermisos(parseInt(this.idEmpleado));
       });
   }
 
   EditarPermiso(permisos) {
-    this.vistaRegistrarDatos.open(EditarPermisoEmpleadoComponent, {
+    this.ventana.open(EditarPermisoEmpleadoComponent, {
       width: '1200px',
       data: { dataPermiso: permisos, id_empleado: parseInt(this.idEmpleado) }
     }).afterClosed().subscribe(items => {
-      if (items === true) {
-        this.obtenerPermisos(parseInt(this.idEmpleado));
-      }
+      this.obtenerPermisos(parseInt(this.idEmpleado));
     });
   }
 }

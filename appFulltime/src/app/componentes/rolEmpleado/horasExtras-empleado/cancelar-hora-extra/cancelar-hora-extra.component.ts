@@ -15,9 +15,10 @@ import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.serv
 
 export class CancelarHoraExtraComponent implements OnInit {
 
-  id_user_loggin: number;
-  id_cargo_loggin: number;
-  id_contrato_loggin: number;
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'su solicitud';
+  user = '';
 
   constructor(
     private informacion: DatosGeneralesService,
@@ -28,24 +29,51 @@ export class CancelarHoraExtraComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     // VARIABLES DEL EMPLEADO QUE SOLICITA
-    this.id_user_loggin = parseInt(localStorage.getItem("empleado"));
-    this.id_cargo_loggin = parseInt(localStorage.getItem("ultimoCargo"));
-    this.id_contrato_loggin = parseInt(localStorage.getItem("ultimoContrato"));
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem("empleado"));
   }
 
   ngOnInit(): void {
-    console.log(this.data);
+    console.log('hora extra ... ', this.data);
+    this.obtenerInformacionEmpleado();
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.id_usua_solicita).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          hora_extra_mail: res.hora_extra_mail,
+          hora_extra_noti: res.hora_extra_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+          id_contrato: res.id_contrato,
+        }
+        if (this.data.id_usua_solicita != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   aceptarAdvertencia() {
-    this.restHE.EliminarHoraExtra(this.data).subscribe(res => {
+    this.restHE.EliminarHoraExtra(this.data.id).subscribe(res => {
       console.log(res);
       var datos = {
-        depa_user_loggin: localStorage.getItem('departamento'),
+        depa_user_loggin: this.solInfo.id_dep,
         objeto: res,
       }
       this.informacion.BuscarJefes(datos).subscribe(horaExtra => {
         console.log(horaExtra);
+        horaExtra.EmpleadosSendNotiEmail.push(this.solInfo);
         this.EnviarCorreo(horaExtra);
         this.EnviarNotificacion(horaExtra);
         this.toastr.error('Solicitud de Horas Extras eliminada.', '', {
@@ -118,7 +146,7 @@ export class CancelarHoraExtraComponent implements OnInit {
           id_suc: e.id_suc,
           correo: correo_usuarios,
           id: horaExtra.id,
-          id_empl_contrato: this.id_contrato_loggin,
+          id_empl_contrato: this.solInfo.id_contrato,
           solicitado_por: localStorage.getItem('fullname_print')
         }
         console.log('ver horas extras ....   ', datosHoraExtraCreada)
@@ -159,14 +187,14 @@ export class CancelarHoraExtraComponent implements OnInit {
     let h_final = moment(horaExtra.fec_final).format('HH:mm');
 
     let notificacion = {
-      id_send_empl: this.id_user_loggin,
+      id_send_empl: this.idEmpleadoIngresa,
       id_receives_empl: '',
       id_receives_depa: '',
       estado: 'Pendiente',
       id_permiso: null,
       id_vacaciones: null,
       id_hora_extra: horaExtra.id,
-      mensaje: 'Ha eliminado su solicitud de horas extras desde ' +
+      mensaje: 'Ha eliminado ' + this.nota + ' de horas extras ' + this.user + ' desde ' +
         desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
         ' horario de ' + h_inicio + ' a ' + h_final,

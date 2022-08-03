@@ -83,21 +83,6 @@ class PermisosControlador {
         }
     }
 
-    public async ObtenerPermisoCodigo(req: Request, res: Response) {
-        try {
-            const { codigo } = req.params;
-            const PERMISO = await pool.query('SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio, ' +
-                'p.fec_final, p.dia, p.hora_numero, p.legalizado, p.estado, p.dia_libre, p.id_tipo_permiso, ' +
-                'p.id_empl_contrato, p.id_peri_vacacion, p.num_permiso, p.documento, p.docu_nombre, ' +
-                'p.hora_salida, p.hora_ingreso, p.codigo, ' +
-                't.descripcion AS nom_permiso FROM permisos AS p, cg_tipo_permisos AS t ' +
-                'WHERE p.id_tipo_permiso = t.id AND p.codigo = $1 ORDER BY p.num_permiso DESC', [codigo]);
-            return res.jsonp(PERMISO.rows)
-        } catch (error) {
-            return res.jsonp(null);
-        }
-    }
-
     public async ObtenerPermisoEditar(req: Request, res: Response) {
         try {
             const { id } = req.params;
@@ -514,6 +499,26 @@ class PermisosControlador {
         }
     }
 
+    // METODO DE BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
+    public async ObtenerPermisoEmpleado(req: Request, res: Response) {
+        try {
+            const { id_empleado } = req.params;
+            const PERMISO = await pool.query(
+                `
+                SELECT p.id, p.fec_creacion, p.descripcion, p.fec_inicio,
+                    p.fec_final, p.dia, p.hora_numero, p.legalizado, p.estado, p.dia_libre, 
+                    p.id_tipo_permiso, p.id_empl_contrato, p.id_peri_vacacion, p.num_permiso, 
+                    p.documento, p.docu_nombre, p.hora_salida, p.hora_ingreso, p.codigo, 
+                    t.descripcion AS nom_permiso 
+                FROM permisos AS p, cg_tipo_permisos AS t, empleados AS e
+                WHERE p.id_tipo_permiso = t.id AND p.codigo::character varying = e.codigo AND e.id = $1 
+                ORDER BY p.num_permiso DESC
+                    `, [id_empleado]);
+            return res.jsonp(PERMISO.rows)
+        } catch (error) {
+            return res.jsonp(null);
+        }
+    }
 
     /** ********************************************************************************************* **
      ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * ** 

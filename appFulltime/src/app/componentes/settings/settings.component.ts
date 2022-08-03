@@ -40,7 +40,7 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.data)
-    this.restN.ObtenerConfigNotiEmpleado(this.data.id_empleado).subscribe(res => {
+    this.restN.ObtenerConfiguracionEmpleado(this.data.id_empleado).subscribe(res => {
       console.log(res);
       this.btnActualizar = true;
       this.formGroup.patchValue({

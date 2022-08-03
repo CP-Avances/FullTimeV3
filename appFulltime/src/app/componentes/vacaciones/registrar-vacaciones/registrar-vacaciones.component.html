@@ -90,18 +90,6 @@
                             matTooltip="Número de días totales que se toman de vacaciones">
                             help_outline</mat-icon>
                     </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Estado</mat-label>
-                        <mat-icon id="icono_emple" matSuffix matTooltipPosition="right"
-                            matTooltip="Indicar el estado de vacaciones">
-                            help_outline
-                        </mat-icon>
-                        <mat-select [formControl]="estadoF" disabled required>
-                            <mat-option *ngFor="let e of estados" [value]="e.id">
-                                {{e.nombre}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
                     <mat-radio-group aria-label="Select an option" [formControl]="legalizadoF" required>
                         <label class="d-flex justify-content-between">
                             <span>Legalizado *</span>

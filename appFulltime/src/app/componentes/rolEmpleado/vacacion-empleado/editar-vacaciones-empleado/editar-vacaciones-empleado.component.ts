@@ -24,6 +24,11 @@ import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-ge
 
 export class EditarVacacionesEmpleadoComponent implements OnInit {
 
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+  nota = 'su solicitud';
+  user = '';
+
   calcular = false;
   habilitarCalculados: boolean = false;
 
@@ -54,28 +59,47 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
     private informacion: DatosGeneralesService,
     public ventana: MatDialogRef<EditarVacacionesEmpleadoComponent>,
     @Inject(MAT_DIALOG_DATA) public dato: any
-  ) { }
+  ) {
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     console.log('vacacion', this.dato);
     this.VacacionesForm.patchValue({
+      fechaIngresoForm: this.dato.info.fec_ingreso,
+      dialaborableForm: this.dato.info.dia_laborable,
       fecInicioForm: this.dato.info.fec_inicio,
       fecFinalForm: this.dato.info.fec_final,
-      fechaIngresoForm: this.dato.info.fec_ingreso,
       diaLibreForm: this.dato.info.dia_libre,
-      dialaborableForm: this.dato.info.dia_laborable,
       calcularForm: true
     });
-    this.ObtenerDatos();
+    this.obtenerInformacionEmpleado();
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.dato.id_empleado).subscribe(datos => {
-      this.actuales = datos;
-    });
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.dato.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          vaca_mail: res.vaca_mail,
+          vaca_noti: res.vaca_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+        if (this.dato.id_empleado != this.idEmpleadoIngresa) {
+          this.nota = 'la solicitud';
+          this.user = 'para ' + this.solInfo.fullname;
+        }
+      })
   }
 
   fechasTotales: any = [];
@@ -231,9 +255,8 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
   }
 
   InsertarVacaciones(form) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosVacaciones = {
-      depa_user_loggin: depa_user_loggin,
+      depa_user_loggin: this.solInfo.id_dep,
       dia_laborable: form.dialaborableForm,
       fec_ingreso: form.fechaIngresoForm,
       fec_inicio: form.fecInicioForm,
@@ -245,6 +268,7 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
       this.toastr.success('Operación Exitosa', 'Vacaciones del Empleado registradas', {
         timeOut: 6000,
       })
+      vacaciones.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreoEmpleados(vacaciones);
       this.EnviarNotificacion(vacaciones);
       this.CerrarVentanaRegistroVacaciones();
@@ -340,14 +364,14 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
     let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
 
     let notificacion = {
-      id_send_empl: this.dato.id_empleado,
+      id_send_empl: this.idEmpleadoIngresa,
       id_receives_empl: '',
       id_receives_depa: '',
       estado: 'Pendiente',
       id_permiso: null,
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
-      mensaje: 'Ha actualizado su solicitud de vacaciones desde ' +
+      mensaje: 'Ha actualizado ' + this.nota + ' de vacaciones ' + this.user + ' desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
     }

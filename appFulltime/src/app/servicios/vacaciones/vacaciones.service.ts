@@ -36,9 +36,7 @@ export class VacacionesService {
 
 
 
-  RegistrarVacaciones(datos: any) {
-    return this.http.post(`${environment.url}/vacaciones`, datos);
-  }
+
 
   ObtenerVacacionesPorIdPeriodo(id_peri_perido: number) {
     return this.http.get<any>(`${environment.url}/vacaciones/${id_peri_perido}`)
@@ -60,9 +58,9 @@ export class VacacionesService {
     return this.http.delete(`${environment.url}/vacaciones/eliminar/${id_vacacion}`);
   }
 
-  EditarVacacion(id: number, datos: any) {
-    return this.http.put(`${environment.url}/vacaciones/${id}/vacacion-solicitada`, datos);
-  }
+
+
+
 
   // REPORTE DE VACACIONES DE FORMA MÚLTIPLE
   BuscarSolicitudVacacion(datos: any, desde: string, hasta: string) {
@@ -74,10 +72,23 @@ export class VacacionesService {
     return this.http.get(`${environment.url}/vacaciones/listar/vacacion/${id}`);
   }
 
+
+
+
+  // CREAR SOLIICTUD DE VACACIONES
+  RegistrarVacaciones(datos: any) {
+    return this.http.post<any>(`${environment.url}/vacaciones`, datos);
+  }
+
+  // EDITAR SOLICITUD DE VACACIONES
+  EditarVacacion(id: number, datos: any) {
+    return this.http.put<any>(`${environment.url}/vacaciones/${id}/vacacion-solicitada`, datos);
+  }
+
   // ENVIAR CORREOS DE SOLICITUDES DE VACACIONES
   EnviarCorreoVacaciones(datos: any) {
     return this.http.post<any>(`${environment.url}/vacaciones/mail-noti`, datos);
   }
-  
+
 
 }

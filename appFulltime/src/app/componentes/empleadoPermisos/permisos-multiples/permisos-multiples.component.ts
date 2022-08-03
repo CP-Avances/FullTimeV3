@@ -745,7 +745,7 @@ export class PermisosMultiplesComponent implements OnInit {
         let datosPermisoCreado = this.LeerDatosMail(obj, datos);
 
         // MÉTODO PARA ENVÍO DE CORREOS
-        this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
+        this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(res => {
           this.idPermisoRes = res;
 
           // MÉTODO PARA REGISTRO DE AUTORIZACIÓN
@@ -781,7 +781,7 @@ export class PermisosMultiplesComponent implements OnInit {
         let datosPermisoCreado = this.LeerDatosMail(obj, datos);
 
         // MÉTODO PARA ENVÍO DE CORREOS
-        this.restP.SendMailNoti(datosPermisoCreado).subscribe(res => {
+        this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(res => {
           this.idPermisoRes = res;
 
           this.SubirRespaldo(this.idPermisoRes.id);

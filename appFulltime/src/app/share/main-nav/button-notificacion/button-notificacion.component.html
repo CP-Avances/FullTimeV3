@@ -7,72 +7,93 @@
     <div class="container" style="text-align: center;">
         <h4>Notificaciones</h4>
     </div>
-    <div *ngIf="noti_real_time.text !== 'Registro no encontrado'">
-        <div *ngFor="let n of noti_real_time">
+    <div *ngIf="avisos.text !== 'Registro no encontrado'">
+        <div *ngFor="let n of avisos">
 
             <!-- NOTIFICACIONES VISTAS -->
             <div *ngIf="n.visto == true" style="background: rgb(226, 226, 226);">
+
                 <!-- NOTIFICACIONES DE PERMISOS -->
-                <a *ngIf="loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
-                    mat-menu-item [routerLink]="['/ver-permiso/', n.id_permiso]" type="submit" class="noti_menu"
+                <a *ngIf="n.id_vacaciones === null && n.id_hora_extra === null" mat-menu-item
+                    [routerLink]="['/ver-permiso/', n.id_permiso]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split('
-                            ')[0]}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.mensaje.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">desde el
-                            <b>{{n.mensaje.split('desde')[1].split('hasta')[0]}}</b>
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;">hasta el
-                            <b>{{n.mensaje.split('desde')[1].split('hasta')[1]}}</b>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.mensaje.split('desde')[1].split('hasta')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
                 <!-- NOTIFICACIONES DE VACACIONES -->
-                <a *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
+                <a *ngIf="n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
                     [routerLink]="['/ver-vacacion/', n.id_vacaciones]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split('
-                            ')[0]}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.mensaje.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">desde el
-                            {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;">hasta el
-                            {{n.mensaje.split('desde')[1].split('hasta')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.mensaje.split('desde')[1].split('hasta')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
                 <!-- NOTIFICACIONES DE HORAS EXTRAS -->
-                <a *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
+                <a *ngIf="n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
                     [routerLink]="['/ver-hora-extra/', n.id_hora_extra]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split('
-                            ')[0]}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.mensaje.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">
-                            {{n.mensaje.split('desde')[1].split('hasta')[0]}}<b> a </b>
-                            {{n.mensaje.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.mensaje.split('desde')[1].split('hasta')[1].split('horario
-                            de')[1]}}
+                            <b>{{n.aviso}}</b>
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.mensaje.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Horario: </b>
+                            {{n.mensaje.split('desde')[1].split('hasta')[1].split('horario de')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>
@@ -82,69 +103,86 @@
             <!-- NOTIFICACIONES NO VISTAS -->
             <div *ngIf="n.visto == false">
                 <!-- NOTIFICACIONES DE PERMISOS -->
-                <a style="background: rgb(250, 242, 138);"
-                    *ngIf="loginService.getEstado() && n.id_vacaciones === null && n.id_hora_extra === null"
+                <a style="background: rgb(250, 242, 138);" *ngIf="n.id_vacaciones === null && n.id_hora_extra === null"
                     mat-menu-item [routerLink]="['/ver-permiso/', n.id_permiso]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split('
-                            ')[0]}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.mensaje.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">desde el
-                            <b>{{n.mensaje.split('desde')[1].split('hasta')[0]}}</b>
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;">hasta el
-                            <b>{{n.mensaje.split('desde')[1].split('hasta')[1]}}</b>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.mensaje.split('desde')[1].split('hasta')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
                 <!-- NOTIFICACIONES DE VACACIONES -->
-                <a style="background: rgb(216, 249, 198);"
-                    *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_hora_extra === null" mat-menu-item
-                    [routerLink]="['/ver-vacacion/', n.id_vacaciones]" type="submit" class="noti_menu"
+                <a style="background: rgb(216, 249, 198);" *ngIf="n.id_permiso === null && n.id_hora_extra === null"
+                    mat-menu-item [routerLink]="['/ver-vacacion/', n.id_vacaciones]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split('
-                            ')[0]}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.mensaje.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">desde el
-                            {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;">hasta el
-                            {{n.mensaje.split('desde')[1].split('hasta')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.aviso}}</b>
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.mensaje.split('desde')[1].split('hasta')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>
                 </a>
                 <!-- NOTIFICACIONES DE HORAS EXTRAS -->
-                <a style="background: rgb(210, 249, 242);"
-                    *ngIf="loginService.getEstado() && n.id_permiso === null && n.id_vacaciones === null" mat-menu-item
-                    [routerLink]="['/ver-hora-extra/', n.id_hora_extra]" type="submit" class="noti_menu"
+                <a style="background: rgb(210, 249, 242);" *ngIf="n.id_permiso === null && n.id_vacaciones === null"
+                    mat-menu-item [routerLink]="['/ver-hora-extra/', n.id_hora_extra]" type="submit" class="noti_menu"
                     (click)="CambiarVistaNotificacion(n.id)">
                     <ul style="list-style: none; margin-left: -15%;">
-                        <li style="font-size: 12px;"><b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split('
-                            ')[0]}}</li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>{{n.mensaje.split('desde')[0]}}</b></li>
-                        <li style="font-size: 12px; margin-top: -13%;">
-                            {{n.mensaje.split('desde')[1].split('hasta')[0]}}<b> a </b>
-                            {{n.mensaje.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        <li style="font-size: 12px;">
+                            <b>Colaborador:</b> {{n.nombre.split(' ')[0]}} {{n.apellido.split(' ')[0]}}
                         </li>
                         <li style="font-size: 12px; margin-top: -13%;">
-                            <b> Horario: </b>{{n.mensaje.split('desde')[1].split('hasta')[1].split('horario
-                            de')[1]}}
+                            <b>{{n.aviso}}</b>
                         </li>
-                        <li style="font-size: 12px; margin-top: -13%;"><b>Fecha:</b> {{n.create_at.split(' ')[0]}}
-                            <b>Hora:</b>
-                            {{n.create_at.split(' ')[1]}}
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>{{n.usuario}}</b>
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Inicia:</b> {{n.mensaje.split('desde')[1].split('hasta')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Finaliza:</b> {{n.mensaje.split('desde')[1].split('hasta')[1].split('horario')[0]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b> Horario: </b>
+                            {{n.mensaje.split('desde')[1].split('hasta')[1].split('horario de')[1]}}
+                        </li>
+                        <li style="font-size: 12px; margin-top: -13%;">
+                            <b>Fecha:</b> {{n.create_at.split(' ')[0]}}
+                            <b>Hora:</b> {{n.create_at.split(' ')[1]}}
                         </li>
                     </ul>
                     <mat-divider class="divider"></mat-divider>

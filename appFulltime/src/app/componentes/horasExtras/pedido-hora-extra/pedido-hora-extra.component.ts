@@ -40,7 +40,6 @@ export class PedidoHoraExtraComponent implements OnInit {
   horaInicioF = new FormControl('');
   FechaFinF = new FormControl('', [Validators.required]);
   horaFinF = new FormControl('', [Validators.required]);
-  estadoF = new FormControl('', [Validators.required]);
   horasF = new FormControl('', [Validators.required]);
 
   // VARIABLES DEL FORMULARIO DONDE SE REGISTRA LOS DATOS INGRESADOS
@@ -51,7 +50,6 @@ export class PedidoHoraExtraComponent implements OnInit {
     horaInicioForm: this.horaInicioF,
     FechaFinForm: this.FechaFinF,
     horaFinForm: this.horaFinF,
-    estadoForm: this.estadoF,
     horasForm: this.horasF,
   });
 
@@ -62,6 +60,7 @@ export class PedidoHoraExtraComponent implements OnInit {
   id_contrato_loggin: number;
 
   constructor(
+    private informacion: DatosGeneralesService,
     private realTime: RealTimeService,
     private validar: ValidacionesService,
     private restHE: PedHoraExtraService,
@@ -82,13 +81,36 @@ export class PedidoHoraExtraComponent implements OnInit {
     this.FechaActual = f.format('YYYY-MM-DD');
     this.PedirHoraExtraForm.patchValue({
       fechaSolicitudForm: this.FechaActual,
-      estadoForm: 1
     });
 
     // OBTENER EL HORARIO DEL EMPLEADO
     this.HorarioEmpleadoSemanal(this.id_cargo_loggin);
     // OBTENER LOS DATOS GENERALES DEL EMPLEADO
     this.ObtenerEmpleados(this.id_user_loggin);
+
+    this.obtenerInformacionEmpleado();
+  }
+
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.id_user_loggin).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          hora_extra_mail: res.hora_extra_mail,
+          hora_extra_noti: res.hora_extra_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+      })
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
@@ -181,13 +203,14 @@ export class PedidoHoraExtraComponent implements OnInit {
       fec_solicita: form1.fechaSolicitudForm,
       num_hora: form1.horasForm + ":00",
       descripcion: form1.descripcionForm,
-      estado: form1.estadoForm,
+      estado: 1,
       observacion: false,
       tipo_funcion: 0,
       depa_user_loggin: parseInt(localStorage.getItem('departamento')),
       codigo: this.empleados[0].codigo
     }
     this.restHE.GuardarHoraExtra(dataPedirHoraExtra).subscribe(horaExtra => {
+      horaExtra.EmpleadosSendNotiEmail.push(this.solInfo);
       this.IngresarAutorizacion(horaExtra);
       this.EnviarNotificacion(horaExtra);
       this.EnviarCorreo(horaExtra);

@@ -43,7 +43,7 @@ export class HoraExtraEmpleadoComponent implements OnInit {
   ObtenerlistaHorasExtrasEmpleado() {
     this.hora_extra = [];
     this.restHE.ObtenerListaEmpleado(this.id_user_loggin).subscribe(res => {
-      console.log('estado', res);
+      console.log('estado -------------', res);
       this.hora_extra = res;
       for (var i = 0; i <= this.hora_extra.length - 1; i++) {
         if (this.hora_extra[i].estado === 1) {
@@ -75,7 +75,7 @@ export class HoraExtraEmpleadoComponent implements OnInit {
 
   CancelarHoraExtra(h) {
     this.ventana.open(CancelarHoraExtraComponent,
-      { width: '300px', data: h.id }).afterClosed().subscribe(items => {
+      { width: '300px', data: h }).afterClosed().subscribe(items => {
         console.log(items);
         if (items === true) {
           this.ObtenerlistaHorasExtrasEmpleado();

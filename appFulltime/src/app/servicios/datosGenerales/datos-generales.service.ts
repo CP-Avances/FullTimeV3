@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment'
 
@@ -11,7 +10,6 @@ export class DatosGeneralesService {
 
   constructor(
     private http: HttpClient,
-    private socket: Socket
   ) { }
 
   ObtenerDatosActuales(id_empleado: number) {
@@ -20,6 +18,11 @@ export class DatosGeneralesService {
 
   BuscarJefes(datos: any) {
     return this.http.post<any>(`${environment.url}/generalidades/buscar-jefes`, datos);
+  }
+
+  // METODO DE ACCESO A INFORMACION DE CONFIGURACION DE NOTIFICACIONES
+  ObtenerInfoConfiguracion(id_empleado: number) {
+    return this.http.get<any>(`${environment.url}/generalidades/info-configuracion/${id_empleado}`);
   }
 
   AutorizaEmpleado(id_empleado: number) {

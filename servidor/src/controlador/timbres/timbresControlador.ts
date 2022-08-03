@@ -1,18 +1,18 @@
-import pool from '../../database';
 import { Request, Response } from 'express';
-// import { ContarHoras } from '../../libs/contarHoras'
+import pool from '../../database';
 
 class TimbresControlador {
 
+    // METODO DE BUSQUEDA DE AVISOS GENERALES POR EMPLEADO
     public async ObtenerAvisosColaborador(req: Request, res: Response) {
         const { id_empleado } = req.params
-        console.log('OBTENER REAL TIME TIMBRES EMPLEADO: Id empleado = ', id_empleado);
+
         const TIMBRES_NOTIFICACION = await pool.query(
             `
-            SELECT id, to_char(create_at, \'yyyy-MM-dd HH24:mi:ss\') AS create_at, id_send_empl, visto, 
+            SELECT id, to_char(create_at, 'yyyy-MM-dd HH24:mi:ss') AS create_at, id_send_empl, visto, 
             descripcion, id_timbre, tipo
             FROM realtime_timbres WHERE id_receives_empl = $1 
-            ORDER BY create_at DESC LIMIT 5
+            ORDER BY create_at DESC LIMIT 10
             `,
             [id_empleado])
             .then(async (result) => {
@@ -20,10 +20,13 @@ class TimbresControlador {
                 if (result.rowCount > 0) {
                     return await Promise.all(result.rows.map(async (obj): Promise<any> => {
 
-                        let nombre = await pool.query('SELECT nombre, apellido FROM empleados WHERE id = $1', [obj.id_send_empl]).then(ele => {
-                            console.log(ele.rows[0].nombre + ele.rows[0].apellido);
-                            return ele.rows[0].nombre + ' ' + ele.rows[0].apellido
-                        })
+                        let nombre = await pool.query(
+                            `
+                            SELECT nombre, apellido FROM empleados WHERE id = $1
+                            `
+                            , [obj.id_send_empl]).then(ele => {
+                                return ele.rows[0].nombre + ' ' + ele.rows[0].apellido
+                            })
                         return {
                             create_at: obj.create_at,
                             descripcion: obj.descripcion,

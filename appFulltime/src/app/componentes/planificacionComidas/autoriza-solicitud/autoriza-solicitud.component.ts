@@ -5,7 +5,6 @@ import * as moment from 'moment';
 
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-autoriza-solicitud',
@@ -15,6 +14,9 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 export class AutorizaSolicitudComponent implements OnInit {
 
+  // DATOS DEL EMPLEADO QUE INICIA SESION
+  idEmpleadoIngresa: number;
+
   constructor(
     public restPlan: PlanComidasService,
     public ventana: MatDialogRef<AutorizaSolicitudComponent>,
@@ -22,12 +24,11 @@ export class AutorizaSolicitudComponent implements OnInit {
     private toastr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
+    this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
   }
 
   multiple: boolean = false;
   individual: boolean = false;
-  idEmpleadoLogueado: any;
   boton_autorizar: boolean = true;
   boton_negar: boolean = true;
 
@@ -51,17 +52,29 @@ export class AutorizaSolicitudComponent implements OnInit {
         this.boton_negar = true;
       }
     }
-
-    this.ObtenerDatos();
+    this.obtenerInformacionEmpleado();
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
-  actuales: any = [];
-  ObtenerDatos() {
-    this.actuales = [];
-    this.informacion.ObtenerDatosActuales(this.data.datosMultiple.id_empleado).subscribe(datos => {
-      this.actuales = datos;
-    });
+  // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
+  solInfo: any;
+  obtenerInformacionEmpleado() {
+    this.informacion.ObtenerInfoConfiguracion(this.data.datosMultiple.id_empleado).subscribe(
+      res => {
+        if (res.estado === 1) {
+          var estado = true;
+        }
+        this.solInfo = [];
+        this.solInfo = {
+          comida_mail: res.comida_mail,
+          comida_noti: res.comida_noti,
+          empleado: res.id_empleado,
+          id_dep: res.id_departamento,
+          id_suc: res.id_sucursal,
+          estado: estado,
+          correo: res.correo,
+          fullname: res.fullname,
+        }
+      })
   }
 
   ActualizarEstado(estado: boolean) {
@@ -159,13 +172,10 @@ export class AutorizaSolicitudComponent implements OnInit {
   }
 
 
-
-
   // METODO DE ENVIO DE NOTIFICACIONES RESPECTO A LA APROBACION
   NotificarAprobacion(estado: boolean, datos_a: any) {
-    var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     var datos = {
-      depa_user_loggin: depa_user_loggin,
+      depa_user_loggin: this.solInfo.id_dep,
       objeto: datos_a,
     }
 
@@ -180,6 +190,7 @@ export class AutorizaSolicitudComponent implements OnInit {
     }
     this.informacion.BuscarJefes(datos).subscribe(alimentacion => {
       console.log(alimentacion);
+      alimentacion.EmpleadosSendNotiEmail.push(this.solInfo);
       this.EnviarCorreo(alimentacion, estado_a, estado_c);
       this.NotificarEvento(alimentacion, estado_a);
       this.toastr.success('', 'Proceso realizado exitosamente.', {
@@ -269,7 +280,8 @@ export class AutorizaSolicitudComponent implements OnInit {
       id_empl_envia: this.data.datosMultiple.id_empleado,
       id_empl_recive: '',
       tipo: 2, // SOLICITUD SERVICIO DE ALIMENTACIÓN REVISADAS
-      mensaje: 'Ha ' + estado_a.toLowerCase() + ' su solicitud de alimentación desde ' +
+      mensaje: 'Ha ' + estado_a.toLowerCase() + ' su solicitud de alimentación de ' +
+        this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',
       id_comida: alimentacion.id_comida

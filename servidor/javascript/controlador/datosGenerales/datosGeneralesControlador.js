@@ -86,6 +86,131 @@ class DatosGeneralesControlador {
             }
         });
     }
+    /**
+       * MÉTODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
+       * Realiza un array de sucursales con departamentos y empleados dependiendo del estado del
+       * empleado si busca empleados activos o inactivos.
+       * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
+       */
+    DatosGenerales(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let estado = req.params.estado;
+            // CONSULTA DE BUSQUEDA DE SUCURSALES
+            let suc = yield database_1.default.query(`
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
+            `).then(result => { return result.rows; });
+            if (suc.length === 0)
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+            // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
+            let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
+                dep.departamentos = yield database_1.default.query(`
+                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
+                WHERE d.id_sucursal = $1
+                `, [dep.id_suc]).then(result => {
+                    return result.rows.filter(obj => {
+                        return obj.name_dep != 'Ninguno';
+                    });
+                });
+                return dep;
+            })));
+            let depa = departamentos.filter(obj => {
+                return obj.departamentos.length > 0;
+            });
+            if (depa.length === 0)
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+            // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
+            let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
+                obj.departamentos = yield Promise.all(obj.departamentos.map((empl) => __awaiter(this, void 0, void 0, function* () {
+                    if (estado === '1') {
+                        empl.empleado = yield database_1.default.query(`
+                        SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
+                            e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
+                            co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
+                            d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
+                            s.nombre AS sucursal
+                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
+                            tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
+                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
+                            da.id = e.id) 
+                            AND tc.id = ca.cargo
+                            AND ca.id_departamento = $1
+                            AND ca.id_departamento = d.id
+                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
+                            da.id = e.id) 
+                            AND s.id = d.id_sucursal
+                            AND co.id_regimen = r.id AND e.estado = $2
+                            ORDER BY name_empleado ASC
+                        `, [empl.id_depa, estado])
+                            .then(result => { return result.rows; });
+                    }
+                    else {
+                        empl.empleado = yield database_1.default.query(`
+                        SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
+                            e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
+                            co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
+                            d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
+                            s.nombre AS sucursal, ca.fec_final
+                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
+                            tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
+                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
+                            da.id = e.id) 
+                            AND tc.id = ca.cargo
+                            AND ca.id_departamento = $1
+                            AND ca.id_departamento = d.id
+                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
+                            da.id = e.id) 
+                            AND s.id = d.id_sucursal
+                            AND co.id_regimen = r.id AND e.estado = $2
+                            ORDER BY name_empleado ASC
+                        `, [empl.id_depa, estado])
+                            .then(result => { return result.rows; });
+                    }
+                    return empl;
+                })));
+                return obj;
+            })));
+            if (lista.length === 0)
+                return res.status(404)
+                    .jsonp({ message: 'No se han encontrado registros.' });
+            let respuesta = lista.map(obj => {
+                obj.departamentos = obj.departamentos.filter((ele) => {
+                    return ele.empleado.length > 0;
+                });
+                return obj;
+            }).filter(obj => {
+                return obj.departamentos.length > 0;
+            });
+            if (respuesta.length === 0)
+                return res.status(404)
+                    .jsonp({ message: 'No se han encontrado registros.' });
+            return res.status(200).jsonp(respuesta);
+        });
+    }
+    BuscarConfigEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id_empleado } = req.params;
+                const response = yield database_1.default.query(`
+                SELECT da.id_departamento,  cn.* , (da.nombre || ' ' || da.apellido) as fullname, 
+                da.cedula, da.correo, CAST (da.codigo AS INTEGER), da.estado, da.id_sucursal, 
+                da.id_contrato,
+                (SELECT cd.nombre FROM cg_departamentos AS cd WHERE cd.id = da.id_departamento) AS ndepartamento,
+                (SELECT s.nombre FROM sucursales AS s WHERE s.id = da.id_sucursal) AS nsucursal
+                FROM datos_actuales_empleado AS da, config_noti AS cn 
+                WHERE da.id = $1 AND cn.id_empleado = da.id
+                `, [id_empleado]);
+                const [infoEmpleado] = response.rows;
+                console.log(infoEmpleado);
+                return res.status(200).jsonp(infoEmpleado);
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
+    ;
     ListarDatosEmpleadoAutoriza(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { empleado_id } = req.params;
@@ -475,108 +600,6 @@ class DatosGeneralesControlador {
             else {
                 return res.status(404).jsonp({ text: 'error' });
             }
-        });
-    }
-    /** FIN DE CONSULTAS PARA FILTRAR INFORMACIÓN */
-    /**
-       * MÉTODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
-       * Realiza un array de sucursales con departamentos y empleados dependiendo del estado del
-       * empleado si busca empleados activos o inactivos.
-       * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
-       */
-    DatosGenerales(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let estado = req.params.estado;
-            // CONSULTA DE BUSQUEDA DE SUCURSALES
-            let suc = yield database_1.default.query(`
-            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
-            `).then(result => { return result.rows; });
-            if (suc.length === 0)
-                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
-            // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
-            let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
-                dep.departamentos = yield database_1.default.query(`
-                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
-                WHERE d.id_sucursal = $1
-                `, [dep.id_suc]).then(result => {
-                    return result.rows.filter(obj => {
-                        return obj.name_dep != 'Ninguno';
-                    });
-                });
-                return dep;
-            })));
-            let depa = departamentos.filter(obj => {
-                return obj.departamentos.length > 0;
-            });
-            if (depa.length === 0)
-                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
-            // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
-            let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
-                obj.departamentos = yield Promise.all(obj.departamentos.map((empl) => __awaiter(this, void 0, void 0, function* () {
-                    if (estado === '1') {
-                        empl.empleado = yield database_1.default.query(`
-                        SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
-                            e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
-                            co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
-                            d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
-                            s.nombre AS sucursal
-                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
-                            tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
-                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND tc.id = ca.cargo
-                            AND ca.id_departamento = $1
-                            AND ca.id_departamento = d.id
-                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND s.id = d.id_sucursal
-                            AND co.id_regimen = r.id AND e.estado = $2
-                            ORDER BY name_empleado ASC
-                        `, [empl.id_depa, estado])
-                            .then(result => { return result.rows; });
-                    }
-                    else {
-                        empl.empleado = yield database_1.default.query(`
-                        SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
-                            e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
-                            co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
-                            d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
-                            s.nombre AS sucursal, ca.fec_final
-                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
-                            tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
-                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND tc.id = ca.cargo
-                            AND ca.id_departamento = $1
-                            AND ca.id_departamento = d.id
-                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND s.id = d.id_sucursal
-                            AND co.id_regimen = r.id AND e.estado = $2
-                            ORDER BY name_empleado ASC
-                        `, [empl.id_depa, estado])
-                            .then(result => { return result.rows; });
-                    }
-                    return empl;
-                })));
-                return obj;
-            })));
-            if (lista.length === 0)
-                return res.status(404)
-                    .jsonp({ message: 'No se han encontrado registros.' });
-            let respuesta = lista.map(obj => {
-                obj.departamentos = obj.departamentos.filter((ele) => {
-                    return ele.empleado.length > 0;
-                });
-                return obj;
-            }).filter(obj => {
-                return obj.departamentos.length > 0;
-            });
-            if (respuesta.length === 0)
-                return res.status(404)
-                    .jsonp({ message: 'No se han encontrado registros.' });
-            return res.status(200).jsonp(respuesta);
         });
     }
 }
