@@ -6,13 +6,13 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 
 // LLAMADO A LOS COMPONENTES
-import { EditarSolicitudComidaComponent } from '../../../planificacionComidas/editar-solicitud-comida/editar-solicitud-comida.component';
-import { SolicitaComidaComponent } from '../../../planificacionComidas/solicita-comida/solicita-comida.component';
 
 // LLAMADO A LOS SERVICIOS
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { CancelarComidaComponent } from '../cancelar-comida/cancelar-comida.component';
+import { SolicitaComidaComponent } from 'src/app/componentes/modulos/alimentacion/solicita-comida/solicita-comida.component';
+import { EditarSolicitudComidaComponent } from 'src/app/componentes/modulos/alimentacion/editar-solicitud-comida/editar-solicitud-comida.component';
 
 @Component({
   selector: 'app-planificacion-comidas-empleado',
@@ -33,8 +33,8 @@ export class PlanificacionComidasEmpleadoComponent implements OnInit {
 
   constructor(
     public restP: PlanComidasService, // SERVICIO DE DATOS PLAN COMIDAS
-    public ventana: MatDialog, // VARIABLE DE VENTANA DE DIÁLOGO
     public router: Router, // VARIABLE PARA NAVEGAR ENTRE PÁGINAS
+    public ventana: MatDialog, // VARIABLE DE VENTANA DE DIÁLOGO
     private informacion: DatosGeneralesService,
 
   ) {
@@ -72,15 +72,40 @@ export class PlanificacionComidasEmpleadoComponent implements OnInit {
       this.planComidas = res;
       this.restP.ObtenerSolComidaPorIdEmpleado(id_empleado).subscribe(sol => {
         this.planComidas = this.planComidas.concat(sol);
-
-        console.log('ver lista de comidas ', this.planComidas)
+        this.FormatearFechas(this.planComidas);
+        console.log('ver lista de comidas 1', this.planComidas)
       });
     }, error => {
       this.restP.ObtenerSolComidaPorIdEmpleado(id_empleado).subscribe(sol2 => {
         this.planComidas = sol2;
-        console.log('ver lista de comidas ', this.planComidas)
+        this.FormatearFechas(this.planComidas);
+        console.log('ver lista de comidas 2', this.planComidas)
       });
     });
+  }
+
+  FormatearFechas(datos: any) {
+    datos.forEach(c => {
+      // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+      c.fecha = moment.weekdays(moment(c.fecha).day()).charAt(0).toUpperCase() +
+        moment.weekdays(moment(c.fecha).day()).slice(1) +
+        ' ' + moment(c.fecha).format('DD/MM/YYYY');
+
+      if (c.fec_comida != undefined) {
+        c.fec_comida = moment.weekdays(moment(c.fec_comida).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(c.fec_comida).day()).slice(1) +
+          ' ' + moment(c.fec_comida).format('DD/MM/YYYY');
+      }
+      else {
+        c.fec_inicio = moment.weekdays(moment(c.fec_inicio).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(c.fec_inicio).day()).slice(1) +
+          ' ' + moment(c.fec_inicio).format('DD/MM/YYYY');
+
+        c.fec_final = moment.weekdays(moment(c.fec_final).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(c.fec_final).day()).slice(1) +
+          ' ' + moment(c.fec_final).format('DD/MM/YYYY');
+      }
+    })
   }
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 

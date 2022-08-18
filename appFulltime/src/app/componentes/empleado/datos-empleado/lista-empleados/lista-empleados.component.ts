@@ -1,18 +1,18 @@
 // IMPORTACIÓN DE LIBRERIAS
-import { environment } from 'src/environments/environment';
-import { SelectionModel } from '@angular/cdk/collections';
 import { Validators, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import pdfMake from 'pdfmake/build/pdfmake';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR COMPONENTES
 import { ConfirmarDesactivadosComponent } from '../confirmar-desactivados/confirmar-desactivados.component';
@@ -63,12 +63,17 @@ export class ListaEmpleadosComponent implements OnInit {
   selectionUno = new SelectionModel<EmpleadoElemento>(true, []);
   selectionDos = new SelectionModel<EmpleadoElemento>(true, []);
 
+  // ACTIVAR BOTONES DE LISTAS DE USUARIOS
+  lista_activos: boolean = false;
+  tabla_activos: boolean = true;
+  lista_inactivos: boolean = true;
+
   constructor(
-    public vistaRegistrarDatos: MatDialog, // VARIABLE MANEJO DE VENTANAS DE DIÁLOGO
     public restEmpre: EmpresaService, // SERVICIO DATOS DE EMPRESA
-    private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
-    public rest: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    public ventana: MatDialog, // VARIABLE MANEJO DE VENTANAS DE DIÁLOGO
     public router: Router, // VARIABLE DE USO DE PÁGINAS CON URL
+    public rest: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -115,16 +120,19 @@ export class ListaEmpleadosComponent implements OnInit {
   }
 
   desactivados: any = [];
-  ListaEmpleadosDeshabilitados() {
-    this.desactivados = [];
-    if (this.Hab_Deshabilitados == false) {
-      this.Hab_Deshabilitados = true;
-      this.rest.ListaEmpleadosDesactivados().subscribe(res => {
-        this.desactivados = res;
-      });
-    } else if (this.Hab_Deshabilitados == true) {
-      this.Hab_Deshabilitados = false;
-    }
+  ListarInactivos() {
+    this.tabla_activos = false;
+    this.lista_activos = true;
+    this.lista_inactivos = false;
+    this.Hab_Deshabilitados = true;
+  }
+
+
+  ListarActivos() {
+    this.tabla_activos = true;
+    this.lista_activos = false;
+    this.lista_inactivos = true;
+    this.Hab_Deshabilitados = false;
   }
 
   // MÉTODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE TABLA EMPLEADOS DESACTIVADOS
@@ -184,13 +192,11 @@ export class ListaEmpleadosComponent implements OnInit {
         }
       })
     }
-    this.vistaRegistrarDatos.open(ConfirmarDesactivadosComponent, { width: '500px', data: { opcion: opcion, lista: EmpleadosSeleccionados } }).afterClosed().subscribe(item => {
+    this.ventana.open(ConfirmarDesactivadosComponent, { width: '500px', data: { opcion: opcion, lista: EmpleadosSeleccionados } }).afterClosed().subscribe(item => {
       if (item === true) {
         this.GetEmpleados();
-        this.ListaEmpleadosDeshabilitados();
         this.btnCheckHabilitar = false;
         this.btnCheckDeshabilitado = false;
-        this.Hab_Deshabilitados = false;
         this.selectionUno.clear();
         this.selectionDos.clear();
         EmpleadosSeleccionados = [];
@@ -283,6 +289,10 @@ export class ListaEmpleadosComponent implements OnInit {
       this.OrdenarDatos(this.empleado);
       console.log('datos empleado', this.empleado);
     })
+    this.desactivados = [];
+    this.rest.ListaEmpleadosDesactivados().subscribe(res => {
+      this.desactivados = res;
+    });
   }
 
   // ORDENAR LOS DATOS SEGÚN EL  CODIGO

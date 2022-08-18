@@ -9,10 +9,10 @@ import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl
 import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
 import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
 
-import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
-import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/detallePlanHorarios/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
-import { EditarPlanificacionComponent } from 'src/app/componentes/planHorarios/editar-planificacion/editar-planificacion.component';
+import { RegistroPlanHorarioComponent } from 'src/app/componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
+import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horarios/detallePlanHorario/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { EditarPlanificacionComponent } from 'src/app/componentes/horarios/planificacionHorario/editar-planificacion/editar-planificacion.component';
 
 
 @Component({

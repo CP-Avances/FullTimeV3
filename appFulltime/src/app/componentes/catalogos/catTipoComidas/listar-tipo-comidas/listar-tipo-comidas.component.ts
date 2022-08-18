@@ -16,7 +16,7 @@ import * as xlsx from 'xlsx';
 // IMPORTAR COMPONENTES
 import { EditarTipoComidasComponent } from 'src/app/componentes/catalogos/catTipoComidas/editar-tipo-comidas/editar-tipo-comidas.component';
 import { TipoComidasComponent } from 'src/app/componentes/catalogos/catTipoComidas/tipo-comidas/tipo-comidas.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { DetalleMenuComponent } from '../detalle-menu/detalle-menu.component';
 
 // IMPORTAR SERVICIOS

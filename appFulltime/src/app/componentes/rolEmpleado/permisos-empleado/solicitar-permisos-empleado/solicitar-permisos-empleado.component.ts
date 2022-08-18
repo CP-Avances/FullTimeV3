@@ -3,14 +3,15 @@ import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import * as moment from 'moment';
 
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarPermisoEmpleadoComponent } from '../editar-permiso-empleado/editar-permiso-empleado.component';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { CancelarPermisoComponent } from '../cancelar-permiso/cancelar-permiso.component';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
+import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
 
 @Component({
   selector: 'app-solicitar-permisos-empleado',
@@ -64,6 +65,25 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
     this.permisosTotales = [];
     this.restPermiso.BuscarPermisoEmpleado(id_empleado).subscribe(datos => {
       this.permisosTotales = datos;
+      this.permisosTotales.forEach(p => {
+        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+        p.fec_creacion = moment.weekdays(moment(p.fec_creacion).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(p.fec_creacion).day()).slice(1) +
+          ' ' + moment(p.fec_creacion).format('DD/MM/YYYY');
+
+        p.fec_inicio = moment.weekdays(moment(p.fec_inicio).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(p.fec_inicio).day()).slice(1) +
+          ' ' + moment(p.fec_inicio).format('DD/MM/YYYY');
+
+        p.fec_final = moment.weekdays(moment(p.fec_final).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(p.fec_final).day()).slice(1) +
+          ' ' + moment(p.fec_final).format('DD/MM/YYYY');
+
+        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format('HH:mm:ss');
+
+        p.hora_salida = moment(p.hora_salida, 'HH:mm').format('HH:mm:ss');
+
+      })
     }, err => {
       return this.validar.RedireccionarEstadisticas(err.error)
     });
@@ -99,7 +119,7 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
   CancelarPermiso(dataPermiso) {
     this.ventana.open(CancelarPermisoComponent,
       {
-        width: '300px',
+        width: '450px',
         data: { info: dataPermiso, id_empleado: parseInt(this.idEmpleado) }
       }).afterClosed().subscribe(items => {
         this.obtenerPermisos(parseInt(this.idEmpleado));

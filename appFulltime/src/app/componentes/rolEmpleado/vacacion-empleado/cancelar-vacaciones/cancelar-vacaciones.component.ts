@@ -173,6 +173,7 @@ export class CancelarVacacionesComponent implements OnInit {
       id_permiso: null,
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
+      tipo: 3,
       mensaje: 'Ha eliminado ' + this.nota + ' de vacaciones ' + this.user + ' desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),

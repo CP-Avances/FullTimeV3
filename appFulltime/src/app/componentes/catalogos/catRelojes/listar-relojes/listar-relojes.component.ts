@@ -16,7 +16,7 @@ import * as FileSaver from 'file-saver';
 
 import { RelojesComponent } from 'src/app/componentes/catalogos/catRelojes/relojes/relojes.component';
 import { EditarRelojComponent } from 'src/app/componentes/catalogos/catRelojes/editar-reloj/editar-reloj.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';

@@ -16,7 +16,7 @@ import * as xlsx from 'xlsx';
 // IMPORTAR COMPONENTES
 import { EditarRegimenComponent } from 'src/app/componentes/catalogos/catRegimen/editar-regimen/editar-regimen.component';
 import { RegimenComponent } from 'src/app/componentes/catalogos/catRegimen/regimen/regimen.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 // IMPORTAR SERVICIOS
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';

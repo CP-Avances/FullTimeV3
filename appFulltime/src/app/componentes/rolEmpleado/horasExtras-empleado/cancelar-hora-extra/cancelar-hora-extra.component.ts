@@ -194,6 +194,7 @@ export class CancelarHoraExtraComponent implements OnInit {
       id_permiso: null,
       id_vacaciones: null,
       id_hora_extra: horaExtra.id,
+      tipo: 3,
       mensaje: 'Ha eliminado ' + this.nota + ' de horas extras ' + this.user + ' desde ' +
         desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +

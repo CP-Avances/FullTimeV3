@@ -28,7 +28,7 @@ export class PermisosService {
     return this.http.get(`${environment.url}/empleadoPermiso/lista-autorizados`);
   }
 
-  obtenerUnPermisoEmleado(id_permiso: number) {
+  obtenerUnPermisoEmpleado(id_permiso: number) {
     return this.http.get(`${environment.url}/empleadoPermiso/un-permiso/${id_permiso}`);
   }
 

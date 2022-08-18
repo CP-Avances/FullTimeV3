@@ -4,7 +4,8 @@ import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
-import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';;
+import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 
 @Component({
   selector: 'app-cancelar-comida',
@@ -21,6 +22,7 @@ export class CancelarComidaComponent implements OnInit {
 
   constructor(
     private toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
+    public aviso: RealTimeService,
     public restP: PlanComidasService, // SERVICIO DE DATOS PLAN COMIDAS
     public ventana: MatDialogRef<CancelarComidaComponent>,
     public informacion: DatosGeneralesService,
@@ -173,6 +175,7 @@ export class CancelarComidaComponent implements OnInit {
       if (e.comida_noti) {
         this.restP.EnviarMensajePlanComida(mensaje).subscribe(res => {
           console.log(res.message);
+          this.aviso.RecibirNuevosAvisos(res.respuesta);
         })
       }
     })

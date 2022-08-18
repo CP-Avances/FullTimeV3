@@ -14,7 +14,7 @@ import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';

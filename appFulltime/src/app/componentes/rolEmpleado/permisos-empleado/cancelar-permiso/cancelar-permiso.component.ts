@@ -224,6 +224,7 @@ export class CancelarPermisoComponent implements OnInit {
       id_permiso: permiso.id,
       id_vacaciones: null,
       id_hora_extra: null,
+      tipo: 3,
       mensaje: 'Ha eliminado ' + this.nota + ' de permiso ' + this.user + ' desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,

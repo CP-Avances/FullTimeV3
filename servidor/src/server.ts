@@ -89,6 +89,7 @@ class Servidor {
         this.configuracion();
         this.rutas();
         this.server = createServer(this.app);
+        //this.server = require("http").createServer(this.app);
         this.io = socketIo(this.server);
         this.app.use(cors());
 
@@ -245,6 +246,7 @@ class Servidor {
 
 
 
+
         this.io.on('connection', (socket: any) => {
             console.log('Connected client on port %s.', this.app.get('puerto'));
 
@@ -258,10 +260,29 @@ class Servidor {
                     create_at: data.create_at,
                     id_permiso: data.id_permiso,
                     id_vacaciones: data.id_vacaciones,
-                    id_hora_extra: data.id_hora_extra
+                    id_hora_extra: data.id_hora_extra,
+                    mensaje: data.mensaje,
+                    tipo: data.tipo
                 }
                 console.log('server', data_llega);
-                socket.broadcast.emit('enviar_notification', data_llega);
+                socket.broadcast.emit('recibir_notificacion', data_llega);
+                socket.emit('recibir_notificacion', data_llega);
+            });
+
+            socket.on("nuevo_aviso", (data: any) => {
+                let data_llega = {
+                    id: data.id,
+                    create_at: data.create_at,
+                    id_send_empl: data.id_send_empl,
+                    id_receives_empl: data.id_receives_empl,
+                    visto: data.visto,
+                    descripcion: data.descripcion,
+                    id_timbre: data.id_timbre,
+                    tipo: data.tipo
+                }
+                console.log('server aviso .......', data_llega);
+                socket.broadcast.emit('recibir_aviso', data_llega);
+                socket.emit('recibir_aviso', data_llega);
             });
         });
 

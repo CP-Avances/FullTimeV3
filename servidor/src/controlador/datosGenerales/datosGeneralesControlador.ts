@@ -140,7 +140,7 @@ class DatosGeneralesControlador {
                             e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
                             co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
                             d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
-                            s.nombre AS sucursal
+                            s.nombre AS sucursal, ca.hora_trabaja
                         FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
                             tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
                         WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
@@ -164,7 +164,7 @@ class DatosGeneralesControlador {
                             e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
                             co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
                             d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
-                            s.nombre AS sucursal, ca.fec_final
+                            s.nombre AS sucursal, ca.fec_final, ca.hora_trabaja
                         FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
                             tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
                         WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
@@ -235,7 +235,15 @@ class DatosGeneralesControlador {
 
     public async ListarDatosEmpleadoAutoriza(req: Request, res: Response) {
         const { empleado_id } = req.params;
-        const DATOS = await pool.query('SELECT * FROM datosCargoActual ($1)', [empleado_id]);
+        const DATOS = await pool.query(
+            `
+            SELECT (da.nombre ||' '|| da.apellido) AS fullname, da.cedula, tc.cargo, 
+                cd.nombre AS departamento
+            FROM datos_actuales_empleado AS da, empl_cargos AS ec, tipo_cargo AS tc,
+                cg_departamentos AS cd
+            WHERE da.id_cargo = ec.id AND ec.cargo = tc.id AND cd.id = da.id_departamento AND 
+            da.id = $1
+            `, [empleado_id]);
         if (DATOS.rowCount > 0) {
             return res.jsonp(DATOS.rows)
         }
@@ -243,6 +251,11 @@ class DatosGeneralesControlador {
             return res.status(404).jsonp({ text: 'error' });
         }
     }
+
+
+
+
+    
 
     public async ListarDatosActualesEmpleado(req: Request, res: Response) {
         const DATOS = await pool.query('SELECT e_datos.id, e_datos.cedula, e_datos.apellido, e_datos.nombre, ' +

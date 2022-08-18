@@ -9,9 +9,9 @@ import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl
 import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
 
-import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
-import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/horarios/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
+import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/horarios/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { environment } from '../../../../environments/environment';
 

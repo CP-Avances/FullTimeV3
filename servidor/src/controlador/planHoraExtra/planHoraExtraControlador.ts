@@ -376,7 +376,7 @@ class PlanHoraExtraControlador {
 
       if (!notificiacion) return res.status(400).jsonp({ message: 'error' });
 
-      return res.status(200).jsonp({ message: 'ok' });
+      return res.status(200).jsonp({ message: 'ok', respuesta: notificiacion  });
 
     } catch (error) {
       return res.status(500)

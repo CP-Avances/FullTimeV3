@@ -14,10 +14,16 @@ class CiudadRutas {
 
         // METODO DE BUSQUEDA DE INFORMACION ACTUAL DEL EMPLEADO
         this.router.get('/datos-actuales/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.DatosActuales);
+        
+        // METODO DE BUSQUEDA DE DATOS DE USUARIO QUE APRUEBA SOLICITUDES
+        this.router.get('/empleadoAutoriza/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosEmpleadoAutoriza);
+
+
+
 
         this.router.post('/buscar-jefes', [TokenValidation, ModuloPermisosValidation], DATOS_GENERALES_CONTROLADOR.BuscarJefes);
 
-        this.router.get('/empleadoAutoriza/:empleado_id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosEmpleadoAutoriza);
+
         this.router.get('/info_actual', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarDatosActualesEmpleado);
 
         // METODO DE ACCESO A CONSULTA DE DATOS DE COLABORADORES ACTIVOS E INACTIVOS

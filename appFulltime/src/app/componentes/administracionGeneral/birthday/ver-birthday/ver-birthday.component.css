@@ -1,12 +1,5 @@
-.btn { margin: 5px 10px 5px 10px;} 
-
-.barraTitulo { 
-    font-size: 25px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white;  
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+.btn {
+    margin: 5px 10px 5px 10px;
 }
 
 .caja {
@@ -15,10 +8,17 @@
 }
 
 label {
-    font-weight: bold; 
+    font-weight: bold;
     margin-right: 7px;
 }
 
-.fa-edit { color:green; margin-left: 20px; cursor: pointer; }
+.fa-edit {
+    color: green;
+    margin-left: 20px;
+    cursor: pointer;
+    text-align: center;
+}
 
-p { font-size: x-small; }
+p {
+    font-size: x-small;
+}

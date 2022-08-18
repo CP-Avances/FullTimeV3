@@ -625,7 +625,7 @@ class PlanComidasControlador {
    ** ********************************************************************************************** **/
 
   // NOTIFICACIONES DE SOLICITUDES Y PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN
-  public async EnviarNotificacionComidas(req: Request, res: Response): Promise<void> {
+  public async EnviarNotificacionComidas(req: Request, res: Response): Promise<Response> {
     let { id_empl_envia, id_empl_recive, mensaje, tipo, id_comida } = req.body;
     var tiempo = fechaHora();
     let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
@@ -640,14 +640,20 @@ class PlanComidasControlador {
 
     let notifica = mensaje + SERVICIO_SOLICITADO.rows[0].servicio;
 
-    await pool.query(
+    const response: QueryResult = await pool.query(
       `
       INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
-      VALUES($1, $2, $3, $4, $5)
+      VALUES($1, $2, $3, $4, $5) RETURNING *
       `,
       [create_at, id_empl_envia, id_empl_recive, notifica, tipo]);
 
-    res.jsonp({ message: 'Notificación enviada con éxito.' })
+    const [notificiacion] = response.rows;
+
+    if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+
+    return res.status(200)
+      .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
+
   }
 
 

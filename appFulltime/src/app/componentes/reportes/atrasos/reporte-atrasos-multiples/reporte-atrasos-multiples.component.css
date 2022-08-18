@@ -1,12 +1,3 @@
-#resulEmpleados { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
 table { width: 100%; font-size: 14px;}
 
 tr { text-align: center; }

@@ -1,38 +1,37 @@
-td { padding-top: 10px; text-align: center; }
-
-h5 { text-align: center; }
-
-p { font-size: x-small;}
-
-.btn { background-color: rgb(80,87,97); color: white; }
-
-.button {margin: 5px 10px 5px 10px;}
-
-.upload {cursor: pointer; }
-
-.barraTituloF { 
-    font-size: 20px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+table {
+    width: 100%;
 }
 
-#resultados { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+p {
+    font-size: x-small;
 }
 
-table {width: 100%;}
+h5 {
+    text-align: center;
+}
 
+.upload {
+    cursor: pointer;
+}
 
+.button {
+    margin: 5px 10px 5px 10px;
+}
 
-#desc { text-align: center; font-size: 14px;}
+td {
+    padding-top: 10px;
+    text-align: center;
+}
+
+#desc {
+    text-align: center;
+    font-size: 14px;
+}
+
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
 [type="file"] {
     height: 0;
@@ -40,7 +39,7 @@ table {width: 100%;}
     width: 0;
 }
 
-[type="file"] + label {
+[type="file"]+label {
     background: #f15d22;
     border: none;
     border-radius: 5px;
@@ -59,12 +58,12 @@ table {width: 100%;}
     vertical-align: middle;
 }
 
-[type="file"] + label.btn-2 {
+[type="file"]+label.btn-2 {
     background-color: rgb(150, 243, 141);
     overflow: hidden;
 }
 
-[type="file"] + label.btn-2::before {
+[type="file"]+label.btn-2::before {
     color: #fff;
     content: "\f382";
     font-family: "Font Awesome 5 Pro";
@@ -79,35 +78,35 @@ table {width: 100%;}
     transition: all 0.3s;
 }
 
-[type="file"] + label.btn-2:hover {
+[type="file"]+label.btn-2:hover {
     background-color: rgb(21, 130, 1);
 }
 
-[type="file"] + label.btn-2:hover::before {
+[type="file"]+label.btn-2:hover::before {
     right: 80%
 }
 
-#descargar:hover { 
-    font-weight: bold; 
-    font-size: 14px; 
-    font-family: "Poppins", sans-serif; 
-    border-radius: 5px; 
-    height: 58px; 
+#descargar:hover {
+    font-weight: bold;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    border-radius: 5px;
+    height: 58px;
     background-color: rgb(0, 76, 255);
-    padding-top: 10px; 
+    padding-top: 10px;
     padding-bottom: 6px;
     margin-left: 5px;
 }
 
-#descargar { 
-    font-weight: bold; 
-    font-size: 14px; 
-    font-family: "Poppins", sans-serif; 
-    border-radius: 5px; 
-    height: 55px; 
-    background-color: #93a3c7; 
+#descargar {
+    font-weight: bold;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    border-radius: 5px;
+    height: 55px;
+    background-color: #93a3c7;
     overflow: hidden;
-    padding-top: 10px; 
+    padding-top: 10px;
     padding-bottom: 6px;
     margin-left: 5px;
 }

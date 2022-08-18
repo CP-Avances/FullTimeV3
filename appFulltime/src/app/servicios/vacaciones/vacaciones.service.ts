@@ -30,9 +30,7 @@ export class VacacionesService {
     return this.http.get(`${environment.url}/vacaciones/estado-solicitud`);
   }
 
-  ObtenerUnaVacacion(id: number) {
-    return this.http.get(`${environment.url}/vacaciones/one/${id}`);
-  }
+
 
 
 
@@ -73,9 +71,12 @@ export class VacacionesService {
   }
 
 
+  // BUSQUEDA DE VACACIONES POR ID DE VACACIONES
+  ObtenerUnaVacacion(id: number) {
+    return this.http.get(`${environment.url}/vacaciones/one/${id}`);
+  }
 
-
-  // CREAR SOLIICTUD DE VACACIONES
+  // CREAR SOLICITUD DE VACACIONES
   RegistrarVacaciones(datos: any) {
     return this.http.post<any>(`${environment.url}/vacaciones`, datos);
   }

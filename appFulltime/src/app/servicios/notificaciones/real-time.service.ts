@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment'
+import { Socket } from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root'
@@ -9,15 +10,21 @@ export class RealTimeService {
 
   constructor(
     private http: HttpClient,
-    // private socket: Socket
+    private socket: Socket
   ) { }
+
+  // realtime
+  RecibirNuevosAvisos(data: any) {
+    console.log('entra ---- ', data)
+    this.socket.emit('nuevo_aviso', data);
+  }
 
   ObtenerTodasNotificaciones() {
     return this.http.get(`${environment.url}/noti-real-time/`);
   }
 
-  ObtenerUnaNotificaciones(id: number) {
-    return this.http.get(`${environment.url}/noti-real-time/one/${id}`);
+  ObtenerUnaNotificacion(id: number) {
+    return this.http.get<any>(`${environment.url}/noti-real-time/one/${id}`);
   }
 
   ObtenerNotificacionesSend(id_empleado: number) {

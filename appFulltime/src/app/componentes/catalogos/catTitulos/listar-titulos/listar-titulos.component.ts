@@ -14,7 +14,7 @@ import * as moment from 'moment';
 import * as xlsx from 'xlsx';
 
 // IMPORTAR COMPONENTES
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarTitulosComponent } from '../editar-titulos/editar-titulos.component'
 import { TitulosComponent } from '../titulos/titulos.component'
 

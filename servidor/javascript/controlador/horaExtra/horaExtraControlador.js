@@ -66,18 +66,6 @@ class HorasExtrasPedidasControlador {
             }
         });
     }
-    ObtenerUnaHoraExtraPedida(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const HORAS_EXTRAS_PEDIDAS = yield database_1.default.query('SELECT h.id_empl_cargo, h.id_usua_solicita, h.fec_inicio, h.fec_final, h.fec_solicita, h.descripcion, h.estado, h.tipo_funcion, h.num_hora, h.id, h.tiempo_autorizado, c.cargo, c.id_empl_contrato AS id_contrato, c.id_departamento, e.nombre, e.apellido FROM hora_extr_pedidos AS h, empl_cargos AS c, empleados AS e WHERE h.id = $1 AND h.id_empl_cargo = c.id AND e.id = h.id_usua_solicita', [id]);
-            if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
-                return res.jsonp(HORAS_EXTRAS_PEDIDAS.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
     ObtenerSolicitudHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_emple_hora;
@@ -460,6 +448,25 @@ class HorasExtrasPedidasControlador {
             catch (error) {
                 return res.status(500)
                     .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
+    // BUSCAR DATOS DE UNA SOLICITUD DE HORA EXTRA POR SU ID
+    ObtenerUnaSolicitudHE(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const HORAS_EXTRAS_PEDIDAS = yield database_1.default.query(`
+      SELECT h.id_empl_cargo, h.id_usua_solicita, h.fec_inicio, h.fec_final, h.fec_solicita, 
+        h.descripcion, h.estado, h.tipo_funcion, h.num_hora, h.id, h.tiempo_autorizado,
+        (e.nombre || ' ' || e.apellido) AS fullname, e.cedula     
+      FROM hora_extr_pedidos AS h, empleados AS e 
+      WHERE h.id = $1 AND e.id = h.id_usua_solicita
+      `, [id]);
+            if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
+                return res.jsonp(HORAS_EXTRAS_PEDIDAS.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros' });
             }
         });
     }

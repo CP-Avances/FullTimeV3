@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import * as moment from 'moment';
 
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
@@ -9,8 +10,8 @@ import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 import { EditarVacacionesEmpleadoComponent } from '../editar-vacaciones-empleado/editar-vacaciones-empleado.component';
-import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
 import { CancelarVacacionesComponent } from '../cancelar-vacaciones/cancelar-vacaciones.component';
+import { RegistrarVacacionesComponent } from 'src/app/componentes/modulos/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
 
 @Component({
   selector: 'app-vacaciones-empleado',
@@ -71,10 +72,26 @@ export class VacacionesEmpleadoComponent implements OnInit {
     this.vacaciones = [];
     this.restPerV.BuscarIDPerVacaciones(id_empleado).subscribe(datos => {
       this.idPerVacacion = datos;
-      console.log('datos', datos)
+      console.log('periodo .. ', this.idPerVacacion)
       this.restVacaciones.ObtenerVacacionesPorIdPeriodo(this.idPerVacacion[0].id).subscribe(res => {
         this.vacaciones = res;
-        console.log('datos', this.vacaciones)
+
+        this.vacaciones.forEach(v => {
+          // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+          v.fec_inicio = moment.weekdays(moment(v.fec_inicio).day()).charAt(0).toUpperCase() +
+            moment.weekdays(moment(v.fec_inicio).day()).slice(1) +
+            ' ' + moment(v.fec_inicio).format('DD/MM/YYYY');
+
+          v.fec_final = moment.weekdays(moment(v.fec_final).day()).charAt(0).toUpperCase() +
+            moment.weekdays(moment(v.fec_final).day()).slice(1) +
+            ' ' + moment(v.fec_final).format('DD/MM/YYYY');
+
+          v.fec_ingreso = moment.weekdays(moment(v.fec_ingreso).day()).charAt(0).toUpperCase() +
+            moment.weekdays(moment(v.fec_ingreso).day()).slice(1) +
+            ' ' + moment(v.fec_ingreso).format('DD/MM/YYYY');
+
+        })
+
       });
     });
   }
@@ -85,6 +102,19 @@ export class VacacionesEmpleadoComponent implements OnInit {
     this.peridoVacaciones = [];
     this.restPerV.ObtenerPeriodoVacaciones(this.empleadoUno[0].codigo).subscribe(datos => {
       this.peridoVacaciones = datos;
+      console.log('ver priodo ... ', this.peridoVacaciones)
+
+      this.peridoVacaciones.forEach(v => {
+        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+        v.fec_inicio = moment.weekdays(moment(v.fec_inicio).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(v.fec_inicio).day()).slice(1) +
+          ' ' + moment(v.fec_inicio).format('DD/MM/YYYY');
+
+        v.fec_final = moment.weekdays(moment(v.fec_final).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(v.fec_final).day()).slice(1) +
+          ' ' + moment(v.fec_final).format('DD/MM/YYYY');
+
+      })
     })
   }
 
@@ -127,7 +157,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(contrato => {
       this.ventana.open(CancelarVacacionesComponent,
         {
-          width: '300px',
+          width: '450px',
           data: { id: v.id, id_empleado: parseInt(this.idEmpleado), id_contrato: contrato[0].max }
         })
         .afterClosed().subscribe(items => {

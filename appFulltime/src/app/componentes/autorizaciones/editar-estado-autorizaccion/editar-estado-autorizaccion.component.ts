@@ -268,7 +268,8 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       id_send_empl: this.idEmpleadoIngresa,
       id_permiso: permiso.id,
       estado: estado_p,
-      mensaje: 'Ha ' + estado_p.toLowerCase() + ' su solicitud de permiso de ' +
+      tipo: 2,
+      mensaje: 'Ha ' + estado_p.toLowerCase() + ' la solicitud de permiso para ' +
         this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
         hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
@@ -295,10 +296,5 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       }
     })
   }
-
-
-
-
-
 
 }

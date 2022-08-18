@@ -10,7 +10,7 @@ import { HorarioService } from 'src/app/servicios/catalogos/catHorarios/horario.
 import { DetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/detalle-cat-horario/detalle-cat-horario.component';
 import { EditarHorarioComponent } from 'src/app/componentes/catalogos/catHorario/editar-horario/editar-horario.component';
 import { EditarDetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/editar-detalle-cat-horario/editar-detalle-cat-horario.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-ver-horario-detalle',

@@ -9,7 +9,7 @@ import { EnroladosRelojesService } from 'src/app/servicios/enroladosRelojes/enro
 import { EnroladoRelojComponent } from 'src/app/componentes/catalogos/catEnrolados/enrolado-reloj/enrolado-reloj.component';
 import { EditarEnroladosComponent } from 'src/app/componentes/catalogos/catEnrolados/editar-enrolados/editar-enrolados.component';
 import { EditarDispositivoEnroladoComponent } from 'src/app/componentes/catalogos/catEnrolados/editar-dispositivo-enrolado/editar-dispositivo-enrolado.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-dispositivos-enrolados',

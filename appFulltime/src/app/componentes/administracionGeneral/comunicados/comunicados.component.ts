@@ -420,6 +420,7 @@ export class ComunicadosComponent implements OnInit {
       tipo: 6,  // ES EL TIPO DE NOTIFICACIÓN - COMUNICADOS
     }
     this.realTime.EnviarMensajeGeneral(mensaje).subscribe(res => {
+      this.realTime.RecibirNuevosAvisos(res.respuesta);
     })
   }
 

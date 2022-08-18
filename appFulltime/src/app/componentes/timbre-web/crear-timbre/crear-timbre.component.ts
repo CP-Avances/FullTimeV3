@@ -76,8 +76,9 @@ export class CrearTimbreComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('data de timbres ... ', this.data, ' length .. ', this.data.length)
     if (this.data.length === undefined) {
-      this.nombre = this.data.empleado;
+      this.nombre = this.data.name_empleado;
     }
     this.VerDatosEmpleado(this.idEmpleadoLogueado);
     console.log(this.data);

@@ -1,43 +1,49 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 15px;">
     <div class="row">
         <div class="col-md">
-            <div class="tituloEmpleados">
-                <span>EMPLEADOS</span>
+            <div id="titulo">
+                <span>USUARIOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z8">
                 <div class="d-flex flex-wrap justify-content-around">
-                    <button mat-button type="button" class="btn btn-sm" [routerLink]="['/registrarEmpleado']">Crear
-                        nuevo Empleado
+                    <button style="margin-bottom: 10px;" class="btn btn-sm" [routerLink]="['/registrarEmpleado']">Crear
+                        nuevo usuario
                     </button>
-                    <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
+                </div>
+                <div class="d-flex flex-wrap justify-content-around">
+                    <button style="margin-bottom: 10px;" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Cancelar
                     </button>
                 </div>
-                <br>
                 <div class="d-flex flex-wrap justify-content-around">
-                    <button (click)="ListaEmpleadosDeshabilitados()" class="btn btn-primary"
-                        style="margin-bottom: 30px;" matSuffix matTooltipPosition="right"
-                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">Lista de empleados
-                        inactivos</button>
+                    <button *ngIf="lista_inactivos" (click)="ListarInactivos()" class="btn btn-primary"
+                        style="margin-bottom: 20px;" matSuffix matTooltipPosition="right"
+                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">LISTAR USUARIOS
+                        INACTIVOS</button>
+                    <button *ngIf="lista_activos" (click)="ListarActivos()" class="btn btn-primary"
+                        style="margin-bottom: 20px;" matSuffix matTooltipPosition="right"
+                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">LISTAR USUARIOS
+                        ACTIVOS</button>
                 </div>
             </mat-card>
         </div>
         <div class="col-md">
-            <div class="tituloEmpleados">
-                <span>REGISTRO MÚLTIPLE DE EMPLEADOS</span>
+            <div id="titulo">
+                <span>REGISTRO MÚLTIPLE DE USUARIOS</span>
             </div>
-            <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-center" id="carta1">
-                <form method="post" enctype="multipart/form-data">
+            <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-around" id="carta1">
+                <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around">
                     <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                        matTooltip="Dar click para selecionar plantilla y cargar registros.">Subir Empleados</label>
+                        matTooltip="Dar click para selecionar plantilla y cargar registros.">Subir plantilla</label>
                 </form>
-                <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
+                <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
                     matTooltip="Dar click para ver o descargar el documento." href="{{link}}">
-                    <span class="material-icons">cloud_download</span> Descargar Plantilla Empleados
+                    <span class="material-icons">cloud_download</span>
+                    <br>
+                    Descargar plantilla usuarios
                 </a>
             </mat-card>
         </div>
@@ -55,7 +61,7 @@
             <button *ngIf="btnCheckDeshabilitado" class="btn btn-outline-light" style="float: left; margin-left: 10px;"
                 (click)="Deshabilitar(3)">Reincorporar</button>
             <span class="w-100 bd-highlight">
-                Empleados Inactivos</span>
+                LISTA DE USUARIOS INACTIVOS</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -117,7 +123,7 @@
     </div>
 </div>
 <!-- LISTA DE EMPLEADOS QUE FORMAN PARTE DE LA EMPRESA -->
-<div class="container" style="padding-bottom: 50px; text-align: center;">
+<div *ngIf="tabla_activos" class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <mat-icon class="flex-shrink-1 bd-highlight" (click)="HabilitarSeleccion()" matSuffix
@@ -126,7 +132,7 @@
             <button *ngIf="btnCheckHabilitar" class="btn btn-primary" style="float: left; margin-left: 10px;"
                 (click)="Deshabilitar(1)">Confirmar</button>
             <span class="w-100 bd-highlight">
-                RESULTADO DE BÚSQUEDA</span>
+                LISTA DE USUARIOS ACTIVOS</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -211,8 +217,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="empleado.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="empleado.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">
             <i (click)="GenerarPdf('download', 1)" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"

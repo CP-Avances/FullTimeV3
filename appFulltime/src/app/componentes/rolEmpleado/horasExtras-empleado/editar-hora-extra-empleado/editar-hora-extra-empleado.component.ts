@@ -308,6 +308,7 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
       id_permiso: null,
       id_vacaciones: null,
       id_hora_extra: horaExtra.id,
+      tipo: 1,
       mensaje: 'Ha actualizado su solicitud de horas extras desde ' +
         desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +

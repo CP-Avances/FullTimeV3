@@ -14,7 +14,7 @@ import * as FileSaver from 'file-saver';
 
 import { RegistroEmpresaComponent } from 'src/app/componentes/catalogos/catEmpresa/registro-empresa/registro-empresa.component';
 import { EditarEmpresaComponent } from 'src/app/componentes/catalogos/catEmpresa/editar-empresa/editar-empresa.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { LogosComponent } from '../logos/logos.component';
 
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';

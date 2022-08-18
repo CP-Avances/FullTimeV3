@@ -1,9 +1,12 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 15px;">
+    <div id="titulo">
+        <span>REPORTE DE TIMBRES</span>
+    </div>
+    <br>
     <div class="row">
         <div class="col-md">
             <div id="titulo">
-                <span>Búsqueda Rango Fechas</span>
+                <span>BÚSQUEDA RANGO FECHAS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <form [formGroup]="fechasForm">
@@ -11,8 +14,7 @@
                         <mat-form-field>
                             <mat-label>Fecha Inicial</mat-label>
                             <input matInput [matDatepicker]="picker1" [formControl]="fechaInicialF" required>
-                            <mat-datepicker-toggle matSuffix [for]="picker1" id="permiso"
-                                 matTooltipPosition="right"
+                            <mat-datepicker-toggle matSuffix [for]="picker1" id="permiso" matTooltipPosition="right"
                                 matTooltip="Fecha de inicio de periodo.">
                             </mat-datepicker-toggle>
                             <mat-datepicker touchUi #picker1></mat-datepicker>
@@ -20,8 +22,7 @@
                         <mat-form-field>
                             <mat-label>Fecha Final</mat-label>
                             <input matInput [matDatepicker]="picker2" [formControl]="fechaFinalF" required>
-                            <mat-datepicker-toggle matSuffix [for]="picker2" id="permiso"
-                                 matTooltipPosition="right"
+                            <mat-datepicker-toggle matSuffix [for]="picker2" id="permiso" matTooltipPosition="right"
                                 matTooltip="Fecha de fin de periodo.">
                             </mat-datepicker-toggle>
                             <mat-datepicker touchUi #picker2></mat-datepicker>
@@ -38,7 +39,7 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">REPORTE DE TIMBRES</div>
+        <div id="titulo">LISTA DE USUARIOS</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
@@ -111,8 +112,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="datosEmpleado.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="datosEmpleado.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>

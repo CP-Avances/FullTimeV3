@@ -1,8 +1,7 @@
 <!-- PANTALLA DE LECTURA DE DATOS DE PLANIFICACIONES DE COMIDAS ROL EMPLEADO -->
-<br>
-<div class="container" style="padding-bottom: 25px;">
+<div class="container" style="padding-top: 15px;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div class="barraTitulo d-flex bd-highlight">
+        <div class="d-flex bd-highlight" id="titulo">
             <div class="w-100 bd-highlight">
                 <h5>SERVICIOS DE ALIMENTACIÓN</h5>
             </div>
@@ -12,62 +11,72 @@
             </div>
         </div>
         <div *ngFor="let pc of planComidas | paginate:tamanio_pagina:numero_pagina" style="padding-top: 15px;">
-            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Fecha Registro:</label>
-                    <label>{{pc.fecha.split("T")[0]}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Servicio:</label>
-                    <label>{{pc.nombre_servicio}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Menú:</label>
-                    <label>{{pc.nombre_menu}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Nombre Plato:</label>
-                    <label>{{pc.nombre_plato}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Precio Plato:</label>
-                    <label>$ {{pc.valor}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Observación:</label>
-                    <label>{{pc.observacion}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Fecha Inicia:</label>
-                    <label *ngIf="pc.fec_inicio != undefined">{{pc.fec_inicio.split("T")[0]}}</label>
-                    <label *ngIf="pc.fec_inicio === undefined">{{pc.fec_comida.split("T")[0]}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Fecha Finaliza:</label>
-                    <label *ngIf="pc.fec_final != undefined">{{pc.fec_final.split("T")[0]}}</label>
-                    <label *ngIf="pc.fec_final === undefined">{{pc.fec_comida.split("T")[0]}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Hora Inicio:</label>
-                    <label>{{pc.hora_inicio}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Hora Fin:</label>
-                    <label>{{pc.hora_fin}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Tipo:</label>
-                    <label *ngIf="pc.extra === false">Normal</label>
-                    <label *ngIf="pc.extra === true">Extra</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label *ngIf="pc.fec_final != undefined" id="datosF">Servicio Solicitado</label>
+                            <label *ngIf="pc.fec_final === undefined" id="datosF">Servicio Planificado</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha:</label>
+                            <label>{{pc.fecha}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Motivo:</label>
+                            <label>{{pc.observacion}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Tipo:</label>
+                            <label *ngIf="pc.extra === false">Normal</label>
+                            <label *ngIf="pc.extra === true">Extra</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Servicio:</label>
+                            <label>{{pc.nombre_servicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Menú:</label>
+                            <label>{{pc.nombre_menu}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Alimentación:</label>
+                            <label>{{pc.nombre_plato}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Precio Plato:</label>
+                            <label>$ {{pc.valor}}</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Desde:</label>
+                            <label *ngIf="pc.fec_inicio != undefined">{{pc.fec_inicio}}</label>
+                            <label *ngIf="pc.fec_inicio === undefined">{{pc.fec_comida}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Hasta:</label>
+                            <label *ngIf="pc.fec_final != undefined">{{pc.fec_final}}</label>
+                            <label *ngIf="pc.fec_final === undefined">{{pc.fec_comida}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora Inicio:</label>
+                            <label>{{pc.hora_inicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora Fin:</label>
+                            <label>{{pc.hora_fin}}</label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div style="text-align: right;" *ngIf="pc.fec_final === undefined && 
                 (pc.aprobada === false || pc.aprobada === null) && 
                 (pc.fec_comida.split('T')[0]) > FechaActual">
-                <i class="fas fa-edit" id="edit" (click)="AbrirVentanaEditar(pc)" matSuffix
-                    matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro">
+                <i class="fas fa-edit" id="edit" (click)="AbrirVentanaEditar(pc)" matSuffix matTooltipPosition="right"
+                    matTooltip="Modificar los datos generales de este registro">
                     <p>Editar</p>
                 </i>
                 <i style="margin-right: 20px;" (click)="ConfirmarEliminar(pc)" class=" far fa-trash-alt"

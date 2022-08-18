@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentosService } from 'src/app/servicios/documentos/documentos.service';
 import { EditarDocumentoComponent } from 'src/app/componentes/documentos/editar-documento/editar-documento.component'
 import { SubirDocumentoComponent } from 'src/app/componentes/documentos/subir-documento/subir-documento.component'
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { environment } from '../../../../environments/environment';
 
 @Component({

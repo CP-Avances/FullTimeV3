@@ -30,9 +30,7 @@ export class PedHoraExtraService {
     return this.http.get(`${environment.url}/horas-extras-pedidas/observaciones`);
   }
 
-  ObtenerUnHoraExtra(id: number) {
-    return this.http.get(`${environment.url}/horas-extras-pedidas/${id}`);
-  }
+
 
   ObtenerListaEmpleado(id: number) {
     return this.http.get(`${environment.url}/horas-extras-pedidas/lista/${id}`);
@@ -94,8 +92,10 @@ export class PedHoraExtraService {
     return this.http.put(`${environment.url}/horas-extras-pedidas/horas-planificadas/${desde}/${hasta}`, datos);
   }
 
-
-
+  // BUSCAR UNA SOLICITUD DE HORA EXTRA POR ID
+  ObtenerUnHoraExtra(id: number) {
+    return this.http.get(`${environment.url}/horas-extras-pedidas/${id}`);
+  }
 
   // ENVIAR CORREO DE SOLICITUD
   EnviarCorreo(datos: any) {

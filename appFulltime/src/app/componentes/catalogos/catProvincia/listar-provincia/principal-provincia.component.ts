@@ -7,7 +7,7 @@ import { PageEvent } from '@angular/material/paginator';
 
 import { RegistroProvinciaComponent } from '../registro-provincia/registro-provincia.component';
 
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ProvinciaService } from '../../../../servicios/catalogos/catProvincias/provincia.service'
 
 @Component({

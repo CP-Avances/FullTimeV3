@@ -38,43 +38,43 @@ import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.ser
 import { ScriptService } from 'src/app/servicios/empleado/script.service';
 
 // IMPORTAR COMPONENTES
-import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/detallePlanHorarios/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
+import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horarios/detallePlanHorario/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
 import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
-import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/registro-autorizacion-depa/registro-autorizacion-depa.component';
-import { EditarPeriodoVacacionesComponent } from 'src/app/componentes/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
-import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizacionDepartamento/editar-autorizacion-depa/editar-autorizacion-depa.component';
-import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
+import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizaciones/autorizaDepartamentos/registro-autorizacion-depa/registro-autorizacion-depa.component';
+import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizaciones/autorizaDepartamentos/editar-autorizacion-depa/editar-autorizacion-depa.component';
+import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/horarios/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
 import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
-import { RegistrarEmpleProcesoComponent } from 'src/app/componentes/empleadoProcesos/registrar-emple-proceso/registrar-emple-proceso.component';
-import { EditarEmpleadoProcesoComponent } from 'src/app/componentes/empleadoProcesos/editar-empleado-proceso/editar-empleado-proceso.component';
-import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
-import { EditarSolicitudComidaComponent } from '../../planificacionComidas/editar-solicitud-comida/editar-solicitud-comida.component';
-import { PlanificacionComidasComponent } from 'src/app/componentes/planificacionComidas/planificacion-comidas/planificacion-comidas.component';
-import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
-import { EditarPlanificacionComponent } from 'src/app/componentes/planHorarios/editar-planificacion/editar-planificacion.component';
-import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
+import { EditarHorarioEmpleadoComponent } from 'src/app/componentes/horarios/empleadoHorario/editar-horario-empleado/editar-horario-empleado.component';
+import { RegistroPlanHorarioComponent } from 'src/app/componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
+import { EditarPlanificacionComponent } from 'src/app/componentes/horarios/planificacionHorario/editar-planificacion/editar-planificacion.component';
 import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
 import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/horasExtras-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
-import { EditarPlanComidasComponent } from 'src/app/componentes/planificacionComidas/editar-plan-comidas/editar-plan-comidas.component';
-import { RegistrarPeriodoVComponent } from 'src/app/componentes/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { CambiarContrasenaComponent } from '../../rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
 import { RegistroContratoComponent } from 'src/app/componentes/empleado/contrato/registro-contrato/registro-contrato.component';
-import { AdministraComidaComponent } from '../../administra-comida/administra-comida.component';
-import { PedidoHoraExtraComponent } from '../../horasExtras/pedido-hora-extra/pedido-hora-extra.component';
 import { CancelarPermisoComponent } from '../../rolEmpleado/permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { EditarEmpleadoComponent } from '../datos-empleado/editar-empleado/editar-empleado.component';
-import { FraseSeguridadComponent } from '../../frase-administrar/frase-seguridad/frase-seguridad.component';
+import { FraseSeguridadComponent } from '../../administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
 import { TituloEmpleadoComponent } from '../titulos/titulo-empleado/titulo-empleado.component';
 import { EditarContratoComponent } from '../contrato/editar-contrato/editar-contrato.component';
 import { EditarTituloComponent } from '../titulos/editar-titulo/editar-titulo.component';
-import { CambiarFraseComponent } from '../../frase-administrar/cambiar-frase/cambiar-frase.component';
-import { EmplLeafletComponent } from '../../settings/leaflet/empl-leaflet/empl-leaflet.component';
+import { CambiarFraseComponent } from '../../administracionGeneral/frase-seguridad/cambiar-frase/cambiar-frase.component';
+import { EmplLeafletComponent } from '../../modulos/geolocalizacion/empl-leaflet/empl-leaflet.component';
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { switchMap } from 'rxjs/operators';
 import { EditarHoraExtraEmpleadoComponent } from '../../rolEmpleado/horasExtras-empleado/editar-hora-extra-empleado/editar-hora-extra-empleado.component';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { RegistrarPeriodoVComponent } from '../../modulos/vacaciones/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
+import { RegistrarVacacionesComponent } from '../../modulos/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
+import { PlanificacionComidasComponent } from '../../modulos/alimentacion/planificacion-comidas/planificacion-comidas.component';
+import { RegistrarEmpleProcesoComponent } from '../../modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
+import { AdministraComidaComponent } from '../../modulos/alimentacion/administra-comida/administra-comida.component';
+import { RegistroEmpleadoPermisoComponent } from '../../modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
+import { PedidoHoraExtraComponent } from '../../modulos/horasExtras/pedido-hora-extra/pedido-hora-extra.component';
+import { EditarEmpleadoProcesoComponent } from '../../modulos/accionesPersonal/procesos/editar-empleado-proceso/editar-empleado-proceso.component';
+import { EditarPeriodoVacacionesComponent } from '../../modulos/vacaciones/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
+import { EditarPlanComidasComponent } from '../../modulos/alimentacion/editar-plan-comidas/editar-plan-comidas.component';
+import { EditarSolicitudComidaComponent } from '../../modulos/alimentacion/editar-solicitud-comida/editar-solicitud-comida.component';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -537,7 +537,29 @@ export class VerEmpleadoComponent implements OnInit {
   obtenerPermisos(id_empleado: number) {
     this.permisosTotales = [];
     this.restPermiso.BuscarPermisoEmpleado(id_empleado).subscribe(datos => {
+
       this.permisosTotales = datos;
+
+      this.permisosTotales.forEach(p => {
+        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+        p.fec_creacion = moment.weekdays(moment(p.fec_creacion).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(p.fec_creacion).day()).slice(1) +
+          ' ' + moment(p.fec_creacion).format('DD/MM/YYYY');
+
+        p.fec_inicio = moment.weekdays(moment(p.fec_inicio).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(p.fec_inicio).day()).slice(1) +
+          ' ' + moment(p.fec_inicio).format('DD/MM/YYYY');
+
+        p.fec_final = moment.weekdays(moment(p.fec_final).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(p.fec_final).day()).slice(1) +
+          ' ' + moment(p.fec_final).format('DD/MM/YYYY');
+
+        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format('HH:mm:ss');
+
+        p.hora_salida = moment(p.hora_salida, 'HH:mm').format('HH:mm:ss');
+
+      })
+
       console.log('permisos ver ... ', this.permisosTotales)
     }, err => {
       const { access, message } = err.error.message;
@@ -555,6 +577,21 @@ export class VerEmpleadoComponent implements OnInit {
       console.log("idPerVaca------ ", this.idPerVacacion[0].id);
       this.restVacaciones.ObtenerVacacionesPorIdPeriodo(this.idPerVacacion[0].id).subscribe(res => {
         this.vacaciones = res;
+        this.vacaciones.forEach(v => {
+          // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+          v.fec_inicio = moment.weekdays(moment(v.fec_inicio).day()).charAt(0).toUpperCase() +
+            moment.weekdays(moment(v.fec_inicio).day()).slice(1) +
+            ' ' + moment(v.fec_inicio).format('DD/MM/YYYY');
+
+          v.fec_final = moment.weekdays(moment(v.fec_final).day()).charAt(0).toUpperCase() +
+            moment.weekdays(moment(v.fec_final).day()).slice(1) +
+            ' ' + moment(v.fec_final).format('DD/MM/YYYY');
+
+          v.fec_ingreso = moment.weekdays(moment(v.fec_ingreso).day()).charAt(0).toUpperCase() +
+            moment.weekdays(moment(v.fec_ingreso).day()).slice(1) +
+            ' ' + moment(v.fec_ingreso).format('DD/MM/YYYY');
+
+        })
       });
     });
   }
@@ -625,14 +662,40 @@ export class VerEmpleadoComponent implements OnInit {
       console.log('comidas 1', this.planComidas);
       this.restPlanComidas.ObtenerSolComidaPorIdEmpleado(id_empleado).subscribe(sol => {
         this.planComidas = this.planComidas.concat(sol);
+        this.FormatearFechas(this.planComidas);
         console.log('comidas 2', this.planComidas);
       });
     }, error => {
       this.restPlanComidas.ObtenerSolComidaPorIdEmpleado(id_empleado).subscribe(sol2 => {
         this.planComidas = sol2;
+        this.FormatearFechas(this.planComidas);
         console.log('comidas 3', this.planComidas);
       });
     });
+  }
+
+  FormatearFechas(datos: any) {
+    datos.forEach(c => {
+      // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+      c.fecha = moment.weekdays(moment(c.fecha).day()).charAt(0).toUpperCase() +
+        moment.weekdays(moment(c.fecha).day()).slice(1) +
+        ' ' + moment(c.fecha).format('DD/MM/YYYY');
+
+      if (c.fec_comida != undefined) {
+        c.fec_comida = moment.weekdays(moment(c.fec_comida).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(c.fec_comida).day()).slice(1) +
+          ' ' + moment(c.fec_comida).format('DD/MM/YYYY');
+      }
+      else {
+        c.fec_inicio = moment.weekdays(moment(c.fec_inicio).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(c.fec_inicio).day()).slice(1) +
+          ' ' + moment(c.fec_inicio).format('DD/MM/YYYY');
+
+        c.fec_final = moment.weekdays(moment(c.fec_final).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(c.fec_final).day()).slice(1) +
+          ' ' + moment(c.fec_final).format('DD/MM/YYYY');
+      }
+    })
   }
 
   // MÉTODO PARA IMPRIMIR DATOS DEL PERIODO DE VACACIONES 
@@ -641,6 +704,18 @@ export class VerEmpleadoComponent implements OnInit {
     this.peridoVacaciones = [];
     this.restPerV.ObtenerPeriodoVacaciones(this.empleadoUno[0].codigo).subscribe(datos => {
       this.peridoVacaciones = datos;
+
+      this.peridoVacaciones.forEach(v => {
+        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+        v.fec_inicio = moment.weekdays(moment(v.fec_inicio).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(v.fec_inicio).day()).slice(1) +
+          ' ' + moment(v.fec_inicio).format('DD/MM/YYYY');
+
+        v.fec_final = moment.weekdays(moment(v.fec_final).day()).charAt(0).toUpperCase() +
+          moment.weekdays(moment(v.fec_final).day()).slice(1) +
+          ' ' + moment(v.fec_final).format('DD/MM/YYYY');
+
+      })
     })
   }
 
@@ -1017,23 +1092,22 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   CancelarHoraExtra(h) {
-    this.ventana.open(CancelarHoraExtraComponent, { width: '300px', data: h.id }).afterClosed().subscribe(items => {
-      console.log(items);
-      if (items === true) {
-        this.ObtenerlistaHorasExtrasEmpleado();
-      }
-    });
+    this.ventana.open(CancelarHoraExtraComponent,
+      { width: '450px', data: h.id }).afterClosed().subscribe(items => {
+        console.log(items);
+        if (items === true) {
+          this.ObtenerlistaHorasExtrasEmpleado();
+        }
+      });
   }
 
   CancelarPermiso(dataPermiso) {
     this.ventana.open(CancelarPermisoComponent,
       {
-        width: '300px',
+        width: '450px',
         data: { info: dataPermiso, id_empleado: parseInt(this.idEmpleado) }
       }).afterClosed().subscribe(items => {
-        if (items === true) {
-          this.obtenerPermisos(parseInt(this.idEmpleado));
-        }
+        this.obtenerPermisos(parseInt(this.idEmpleado));
       });
   }
 
@@ -1041,7 +1115,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.ventana.open(CancelarVacacionesComponent,
         {
-          width: '300px',
+          width: '450px',
           data: { id: v.id, id_empleado: parseInt(this.idEmpleado), id_contrato: datos[0].max }
         }).afterClosed().subscribe(items => {
           this.obtenerVacaciones(parseInt(this.idEmpleado));
@@ -1461,9 +1535,7 @@ export class VerEmpleadoComponent implements OnInit {
       width: '1200px',
       data: { dataPermiso: permisos, id_empleado: parseInt(this.idEmpleado) }
     }).afterClosed().subscribe(items => {
-      if (items === true) {
-        this.obtenerPermisos(parseInt(this.idEmpleado));
-      }
+      this.obtenerPermisos(parseInt(this.idEmpleado));
     });
   }
 

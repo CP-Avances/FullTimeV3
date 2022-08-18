@@ -14,7 +14,7 @@ class NotificacionTiempoRealRutas {
 
 
         this.router.get('/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ListarNotificacion);
-        this.router.get('/one/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerUnaNotificacion);
+
         this.router.get('/send/:id_send', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ListaPorEmpleado);
 
         this.router.get('/all-receives/:id_receive', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ListaNotificacionesRecibidas);
@@ -41,6 +41,8 @@ class NotificacionTiempoRealRutas {
         // RUTA PARA CREAR NOTIFICACIÓN
         this.router.post('/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.CrearNotificacion);
 
+        // RUTA DE BÚSQUEDA DE UNA NOTIFICACION ESPECIFICA
+        this.router.get('/one/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerUnaNotificacion);
 
     }
 }

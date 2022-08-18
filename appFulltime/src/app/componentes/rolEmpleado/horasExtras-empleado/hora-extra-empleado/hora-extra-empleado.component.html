@@ -11,42 +11,53 @@
             </div>
         </div>
         <div *ngFor="let h of hora_extra | paginate:tamanio_pagina:numero_pagina" style="padding-top: 15px;">
-            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Código:</label>
-                    <label>{{h.id}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Descripción:</label>
-                    <label>{{h.descripcion}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Estado:</label>
-                    <label>{{h.estado}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Fecha Solicita:</label>
-                    <label>{{h.fec_solicita.split("T")[0]}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Tiempo hora extra:</label>
-                    <label>{{h.num_hora}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Fecha Inicio:</label>
-                    <label>{{h.fec_inicio.split("T")[0]}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                    <label id="datosF">Fecha Final:</label>
-                    <label>{{h.fec_final.split("T")[0]}}</label>
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                </div>
-                <div class="caja1 d-flex justify-content-start">
-                </div>
-                <div class="caja1 d-flex justify-content-start">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha:</label>
+                            <label>{{h.fec_solicita}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Motivo:</label>
+                            <label>{{h.descripcion}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Desde:</label>
+                            <label>{{h.fecha_inicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha Hasta:</label>
+                            <label>{{h.fecha_fin}}</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora Desde:</label>
+                            <label>{{h.hora_inicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora Hasta:</label>
+                            <label>{{h.hora_fin}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Horas Solicitadas:</label>
+                            <label>{{h.num_hora}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start" *ngIf="h.estado != 'Pendiente' && h.estado != 'Negado'">
+                            <label id="datosF">Horas Aprobadas:</label>
+                            <label>{{h.tiempo_autorizado}}</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Estado:</label>
+                            <label>{{h.estado}}</label>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div style="text-align: right;" *ngIf="h.estado === 'Pendiente'">
                 <i class="fas fa-edit" id="edit" (click)="EditarHoraExtra(h)" matSuffix matTooltipPosition="right"
                     matTooltip="Modificar los datos generales de este registro">

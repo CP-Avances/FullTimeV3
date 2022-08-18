@@ -22,7 +22,7 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 // IMPORTAR COMPONENTES
 import { DetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/detalle-cat-horario/detalle-cat-horario.component';
 import { RegistroHorarioComponent } from 'src/app/componentes/catalogos/catHorario/registro-horario/registro-horario.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarHorarioComponent } from '../editar-horario/editar-horario.component';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 

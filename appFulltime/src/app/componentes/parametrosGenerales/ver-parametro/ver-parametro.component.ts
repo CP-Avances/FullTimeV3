@@ -6,7 +6,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
 // SECCIÓN DE SERVICIOS
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EditarParametroComponent } from '../editar-parametro/editar-parametro.component';
 import { CrearDetalleParametroComponent } from '../crear-detalle-parametro/crear-detalle-parametro.component';

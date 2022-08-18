@@ -1,14 +1,13 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 15px;">
     <div class="row">
         <div class="col-md">
-            <div class="barraTituloReloj">
+            <div id="titulo">
                 <span>DISPOSITIVOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
                     <input type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarReloj()"
-                        value="Crear nuevo Dispositivo">
+                        value="Crear nuevo dispositivo">
                     <input type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos." value="Cancelar">
@@ -16,7 +15,7 @@
             </mat-card>
         </div>
         <div class="col-md">
-            <div class="barraTituloReloj">
+            <div id="titulo">
                 <span>REGISTRO MULTIPLE DE DISPOSITIVOS</span>
             </div>
             <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-center" id="carta1">
@@ -25,12 +24,12 @@
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
                         matTooltip="Presionar para seleccionar Plantilla con nombre Dispositivos.">Subir
-                        Dispositivos</label>
+                        dispositivos</label>
                 </form>
                 <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
                     matTooltip="Dar click para ver o descargar el documento."
                     href="{{hipervinculo}}/plantillaD/documento/Dispositivos.xlsx">
-                    <span class="material-icons">cloud_download</span> Descargar Plantilla Dispositivos
+                    <span class="material-icons">cloud_download</span> Descargar plantilla dispositivos
                 </a>
             </mat-card>
         </div>
@@ -38,7 +37,7 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="resultadosRelojes">RESULTADO DE BÚSQUEDA</div>
+        <div id="resultados">RESULTADO DE BÚSQUEDA</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
@@ -126,8 +125,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="relojes.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="relojes.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">
             <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"

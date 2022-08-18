@@ -5,9 +5,9 @@ import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
 
 import { EditarEmpresaComponent } from 'src/app/componentes/catalogos/catEmpresa/editar-empresa/editar-empresa.component';
-import { EditarSucursalComponent } from 'src/app/componentes/sucursales/editar-sucursal/editar-sucursal.component';
-import { RegistrarSucursalesComponent } from 'src/app/componentes/sucursales/registrar-sucursales/registrar-sucursales.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { EditarSucursalComponent } from 'src/app/componentes/catalogos/catSucursal/editar-sucursal/editar-sucursal.component';
+import { RegistrarSucursalesComponent } from 'src/app/componentes/catalogos/catSucursal/registrar-sucursales/registrar-sucursales.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ColoresEmpresaComponent } from 'src/app/componentes/catalogos/catEmpresa/colores-empresa/colores-empresa.component';
 import { LogosComponent } from 'src/app/componentes/catalogos/catEmpresa/logos/logos.component';
 

@@ -17,7 +17,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { KardexService } from 'src/app/servicios/reportes/kardex.service';
 
 // IMPORTAR COMPONENTES
-import { ConfigAsistenciaComponent } from '../../reportes-Configuracion/config-report-asistencia/config-asistencia.component';
+import { ConfigAsistenciaComponent } from '../configuracion-reportes/config-report-asistencia/config-asistencia.component';
 import { EmpleadoElemento } from 'src/app/model/empleado.model';
 import { SelectionModel } from '@angular/cdk/collections';
 
