@@ -7,15 +7,16 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import * as moment from 'moment';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-
 // IMPORTAR SERVICIOS
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+
 import { EditarEstadoVacacionAutoriacionComponent } from 'src/app/componentes/autorizaciones/editar-estado-vacacion-autoriacion/editar-estado-vacacion-autoriacion.component';
 import { VacacionAutorizacionesComponent } from 'src/app/componentes/autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-ver-vacacion',
@@ -51,6 +52,7 @@ export class VerVacacionComponent implements OnInit {
     private router: Router, // VARIABLE DE MANEJO DE RUTAS
     private restA: AutorizacionService, // SERVICIO DE DATOS DE AUTORIZACIÓN
     private restV: VacacionesService, // SERVICIO DE DATOS DE SOLICITUD DE VACACIONES
+    private parametro: ParametrosService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
     this.id_vacacion = this.router.url.split('/')[2];
@@ -61,9 +63,41 @@ export class VerVacacionComponent implements OnInit {
     var fecha = f.format('YYYY-MM-DD')
     this.fechaActual = moment.weekdays(moment(fecha).day()).charAt(0).toUpperCase() +
       moment.weekdays(moment(fecha).day()).slice(1) + ' ' + f.format('DD-MM-YYYY');
-    this.BuscarDatos();
     this.ObtenerLogo();
     this.ObtenerColores();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.BuscarDatos(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.BuscarDatos(fecha, this.formato_hora);
+      });
   }
 
   // VARIABE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
@@ -73,7 +107,7 @@ export class VerVacacionComponent implements OnInit {
   cont: number;
 
   // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
-  BuscarDatos() {
+  BuscarDatos(f_fecha: string, f_hora: string) {
     this.vacacion = [];
 
     // BÚSQUEDA DE DATOS DE VACACIONES
@@ -84,15 +118,15 @@ export class VerVacacionComponent implements OnInit {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
         v.fec_inicio = moment.weekdays(moment(v.fec_inicio).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(v.fec_inicio).day()).slice(1) +
-          ' ' + moment(v.fec_inicio).format('DD/MM/YYYY');
+          ' ' + moment(v.fec_inicio).format(f_fecha);
 
         v.fec_final = moment.weekdays(moment(v.fec_final).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(v.fec_final).day()).slice(1) +
-          ' ' + moment(v.fec_final).format('DD/MM/YYYY');
+          ' ' + moment(v.fec_final).format(f_fecha);
 
         v.fec_ingreso = moment.weekdays(moment(v.fec_ingreso).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(v.fec_ingreso).day()).slice(1) +
-          ' ' + moment(v.fec_ingreso).format('DD/MM/YYYY');
+          ' ' + moment(v.fec_ingreso).format(f_fecha);
       })
 
       this.ObtenerAutorizacion(this.vacacion[0].id);
@@ -233,14 +267,14 @@ export class VerVacacionComponent implements OnInit {
     this.ventana.open(EditarEstadoVacacionAutoriacionComponent,
       { width: '350px', data: { auto: datosSeleccionados, vacacion: this.vacacion[0] } })
       .afterClosed().subscribe(item => {
-        this.BuscarDatos();
+        this.BuscarParametro();
       });
   }
 
   AbrirAutorizaciones(datosSeleccionados: any): void {
     this.ventana.open(VacacionAutorizacionesComponent,
       { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(item => {
-        this.BuscarDatos();
+        this.BuscarParametro();
         this.HabilitarAutorizacion = true;
       });
   }

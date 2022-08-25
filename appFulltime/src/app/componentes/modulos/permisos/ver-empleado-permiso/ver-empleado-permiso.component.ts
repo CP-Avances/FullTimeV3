@@ -1,5 +1,6 @@
 // IMPORTAR LIBRERIAS
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -11,18 +12,13 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // IMPORTAR SERVICIOS
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { environment } from 'src/environments/environment';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { EditarEstadoAutorizaccionComponent } from 'src/app/componentes/autorizaciones/editar-estado-autorizaccion/editar-estado-autorizaccion.component';
 
-// VARIABLE MANEJO DE ESTADOS
-interface Estado {
-  id: number,
-  nombre: string
-}
+import { EditarEstadoAutorizaccionComponent } from 'src/app/componentes/autorizaciones/editar-estado-autorizaccion/editar-estado-autorizaccion.component';
 
 @Component({
   selector: 'app-ver-empleado-permiso',
@@ -46,8 +42,6 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   empleado: any = [];
   idEmpleado: number;
 
-  formato: string = 'DD/MM/YYYY';
-
   // VARIABLES USADAS PARA BÚSQUEDA DE DATOS DE PERMISO
   id_permiso: string;
   datoSolicitud: any = [];
@@ -58,26 +52,56 @@ export class VerEmpleadoPermisoComponent implements OnInit {
 
   constructor(
 
-    private validacionesService: ValidacionesService, // VALIDACIONES DE ACCESO
+    private parametro: ParametrosService,
+    private validar: ValidacionesService, // VALIDACIONES DE ACCESO
     private router: Router, // VARIABLE DE MANEJO DE RUTAS O NAVEGACIÓN
     private restA: AutorizacionService, // SERVICIO DE DATOS DE AUTORIZACIONES 
     private restP: PermisosService, // SERVICIO DE DATOS DE PERMISO
-
     public restGeneral: DatosGeneralesService, // SERVICIO DE DATOS GENERALES DE EMPLEADO
     public restEmpre: EmpresaService, // SERVICIO DE DATOS DE EMPRESA
     public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
-    this.formato = sessionStorage.getItem('fechas');
     this.id_permiso = this.router.url.split('/')[2];
   }
 
   ngOnInit(): void {
-    this.BuscarDatos();
     this.ObtenerLogo();
     this.ObtenerColores();
-    console.log('ver fecha .. ', this.formato)
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.BuscarDatos(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.BuscarDatos(fecha, this.formato_hora);
+      });
   }
 
   // VARIABE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
@@ -87,7 +111,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   cont: number;
 
   // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
-  BuscarDatos() {
+  BuscarDatos(f_fecha: string, f_hora: string) {
     this.InfoPermiso = [];
 
     // BÚSQUEDA DE DATOS DE PERMISO
@@ -98,19 +122,19 @@ export class VerEmpleadoPermisoComponent implements OnInit {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
         p.fec_creacion = moment.weekdays(moment(p.fec_creacion).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(p.fec_creacion).day()).slice(1) +
-          ' ' + moment(p.fec_creacion).format(this.formato);
+          ' ' + moment(p.fec_creacion).format(f_fecha);
 
         p.fec_inicio = moment.weekdays(moment(p.fec_inicio).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(p.fec_inicio).day()).slice(1) +
-          ' ' + moment(p.fec_inicio).format(this.formato);
+          ' ' + moment(p.fec_inicio).format(f_fecha);
 
         p.fec_final = moment.weekdays(moment(p.fec_final).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(p.fec_final).day()).slice(1) +
-          ' ' + moment(p.fec_final).format(this.formato);
+          ' ' + moment(p.fec_final).format(f_fecha);
 
-        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format('hh:mm:ss a');
+        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format(f_hora);
 
-        p.hora_salida = moment(p.hora_salida, 'HH:mm').format('hh:mm:ss a');
+        p.hora_salida = moment(p.hora_salida, 'HH:mm').format(f_hora);
 
       })
 
@@ -118,7 +142,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
       this.ObtenerAutorizacion(this.InfoPermiso[0].id);
 
     }, err => {
-      return this.validacionesService.RedireccionarMixto(err.error)
+      return this.validar.RedireccionarMixto(err.error)
     });
     this.ObtenerEmpleados(this.idEmpleado);
     this.ObtenerSolicitud(this.id_permiso);
@@ -256,7 +280,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
         }
       });
     }, err => {
-      return this.validacionesService.RedireccionarMixto(err.error)
+      return this.validar.RedireccionarMixto(err.error)
     })
   }
 
@@ -264,7 +288,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     this.ventana.open(EditarEstadoAutorizaccionComponent,
       { width: '350px', data: { auto: autoriza, permiso: this.InfoPermiso[0] } })
       .afterClosed().subscribe(item => {
-        this.BuscarDatos();
+        this.BuscarParametro();
       });
   }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../login/login.service';
+import { ParametrosService } from '../parametrosGenerales/parametros.service';
 
 
 @Injectable({
@@ -16,9 +17,9 @@ export class ValidacionesService {
   ) { }
 
 
-  /**
-   * REDIRECCION POR ACCESO A MODULOS NO AUTORIZADOS
-   */
+  /** ********************************************************************************* **
+   ** **                REDIRECCION POR ACCESO A MODULOS NO AUTORIZADOS              ** **
+   ** ********************************************************************************* **/
 
   RedireccionarEstadisticas(error) {
     const { access, message, text } = error;

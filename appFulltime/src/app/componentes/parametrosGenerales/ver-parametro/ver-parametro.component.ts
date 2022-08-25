@@ -6,8 +6,9 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
 // SECCIÓN DE SERVICIOS
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarParametroComponent } from '../editar-parametro/editar-parametro.component';
 import { CrearDetalleParametroComponent } from '../crear-detalle-parametro/crear-detalle-parametro.component';
 import { EditarDetalleParametroComponent } from '../editar-detalle-parametro/editar-detalle-parametro.component';
@@ -31,6 +32,8 @@ export class VerParametroComponent implements OnInit {
 
   // ACTIVADORES
   formato: boolean = true;
+  formato_fecha: boolean = false;
+  formato_hora: boolean = false;
 
   constructor(
     private toastr: ToastrService,
@@ -46,13 +49,19 @@ export class VerParametroComponent implements OnInit {
   ngOnInit(): void {
     this.BuscarParametros(this.idParametro);
     this.ListarDetalles(this.idParametro);
-    this.ActivarnBoton();
+    this.ActivarBoton();
   }
 
-  ActivarnBoton() {
+  ActivarBoton() {
     if (this.idParametro === '25') {
       this.formato = false;
+      this.formato_fecha = true;
     }
+    if (this.idParametro === '26') {
+      this.formato = false;
+      this.formato_hora = true;
+    }
+
   }
 
   // MÉTODO PARA MANEJAR PAGINACIÓN DE TABLAS
@@ -135,7 +144,7 @@ export class VerParametroComponent implements OnInit {
    ** **             REGISTRAR O EDITAR DETALLE DE PARAMETRO FORMATO DE FECHA                  ** ** 
    ** ******************************************************************************************* **/
 
-  GuardarDatos(seleccion: number) {
+  GuardarDatos(seleccion: number, tipo: string) {
     let formato = '';
     if (seleccion === 1) {
       formato = 'DD/MM/YYYY';
@@ -146,17 +155,23 @@ export class VerParametroComponent implements OnInit {
     else if (seleccion === 3) {
       formato = 'YYYY-MM-DD';
     }
+    else if (seleccion === 4) {
+      formato = 'hh:mm:ss A';
+    }
+    else if (seleccion === 5) {
+      formato = 'HH:mm:ss';
+    }
 
     this.restP.ListarDetalleParametros(parseInt(this.idParametro)).subscribe(datos => {
-      this.ActualizarDetalle(datos[0].id_detalle, formato);
+      this.ActualizarDetalle(datos[0].id_detalle, formato, tipo);
     }, vacio => {
-      this.CrearDetalle(formato);
+      this.CrearDetalle(formato, tipo);
     })
 
   }
 
   // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
-  CrearDetalle(formato: string) {
+  CrearDetalle(formato: string, tipo: string) {
     let datos = {
       id_tipo: this.idParametro,
       descripcion: formato
@@ -166,14 +181,11 @@ export class VerParametroComponent implements OnInit {
         '', {
         timeOut: 2000,
       })
-      sessionStorage.removeItem('fechas');
-      sessionStorage.setItem('fechas', formato);
-      this.BuscarParametros(this.idParametro);
-      this.ListarDetalles(this.idParametro);
+      this.LeerFormato(formato, tipo);
     });
   }
 
-  ActualizarDetalle(id_detalle: number, formato: string) {
+  ActualizarDetalle(id_detalle: number, formato: string, tipo: string) {
     let datos = {
       id: id_detalle,
       descripcion: formato
@@ -183,11 +195,23 @@ export class VerParametroComponent implements OnInit {
         '', {
         timeOut: 2000,
       })
-      sessionStorage.removeItem('fechas');
-      sessionStorage.setItem('fechas', formato);
+      this.LeerFormato(formato, tipo);
+    });
+  }
+
+  LeerFormato(tipo: string, formato: string) {
+    if (tipo === 'fecha') {
+      localStorage.removeItem('fechas');
+      localStorage.setItem('fechas', formato);
       this.BuscarParametros(this.idParametro);
       this.ListarDetalles(this.idParametro);
-    });
+    }
+    else {
+      localStorage.removeItem('horas');
+      localStorage.setItem('horas', formato);
+      this.BuscarParametros(this.idParametro);
+      this.ListarDetalles(this.idParametro);
+    }
   }
 
 }
