@@ -358,7 +358,12 @@ class PlanHoraExtraControlador {
                 const [notificiacion] = response.rows;
                 if (!notificiacion)
                     return res.status(400).jsonp({ message: 'error' });
-                return res.status(200).jsonp({ message: 'ok' });
+                const USUARIO = yield database_1.default.query(`
+        SELECT (nombre || ' ' || apellido) AS usuario
+        FROM empleados WHERE id = $1
+        `, [id_empl_envia]);
+                notificiacion.usuario = USUARIO.rows[0].usuario;
+                return res.status(200).jsonp({ message: 'ok', respuesta: notificiacion });
             }
             catch (error) {
                 return res.status(500)

@@ -15,7 +15,7 @@ import * as FileSaver from 'file-saver';
 import { RegistroEnroladosComponent } from '../registro-enrolados/registro-enrolados.component';
 import { EnroladoRelojComponent } from '../enrolado-reloj/enrolado-reloj.component';
 import { EditarEnroladosComponent } from 'src/app/componentes/catalogos/catEnrolados/editar-enrolados/editar-enrolados.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EnroladoService } from 'src/app/servicios/catalogos/catEnrolados/enrolado.service';

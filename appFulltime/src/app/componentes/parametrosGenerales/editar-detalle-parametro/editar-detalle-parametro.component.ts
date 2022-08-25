@@ -67,6 +67,8 @@ export class EditarDetalleParametroComponent implements OnInit {
         '', {
         timeOut: 2000,
       })
+      sessionStorage.removeItem('fechas');
+      sessionStorage.setItem('fechas', datos.descripcion)
       this.CerrarVentana();
       this.router.navigate(['/mostrar/parametros/', this.data.parametros.id_tipo]);
     });

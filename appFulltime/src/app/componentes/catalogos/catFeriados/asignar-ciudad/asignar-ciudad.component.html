@@ -1,9 +1,8 @@
 <div class="scrollbar scrollbar-primary">
-    <div class="d-flex bd-highlight barraTituloC">
-        <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-        <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag
-            cdkDragRootElement=".cdk-overlay-pane">
-            Asignar Ciudad a:</h5>
+    <div id="titulo">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            ASIGNAR CIUDAD A:</span>
     </div>
     <h4 style="text-align: center; margin-top: 10px;">{{data.feriado.descripcion}}</h4>
     <div style="text-align: center">
@@ -17,8 +16,8 @@
                     <div class="d-flex flex-wrap justify-content-around">
                         <mat-form-field>
                             <mat-label>Seleccionar Continente</mat-label>
-                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
-                                matTooltipPosition="right" matTooltip="Lista de continentes">help_outline</mat-icon>
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Lista de continentes">help_outline</mat-icon>
                             <mat-select [formControl]="nombreContinenteF" [(ngModel)]="seleccionarContinente" required>
                                 <mat-option *ngFor="let c of continentes" [value]="c.continente"
                                     (click)="FiltrarPaises(asignarCiudadForm.value)">
@@ -36,8 +35,8 @@
                                     {{option.nombre}}
                                 </mat-option>
                             </mat-autocomplete>
-                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
-                                matTooltipPosition="right" matTooltip="Lista de países del continente seleccionado">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Lista de países del continente seleccionado">
                                 help_outline</mat-icon>
                         </mat-form-field>
                         <mat-form-field>
@@ -50,8 +49,7 @@
                                     {{option.nombre}}
                                 </mat-option>
                             </mat-autocomplete>
-                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Lista de provincias, departamentos o estados del país seleccionado">
                                 help_outline</mat-icon>
                         </mat-form-field>
@@ -65,14 +63,14 @@
                                     {{option.descripcion}}
                                 </mat-option>
                             </mat-autocomplete>
-                            <mat-icon id="feriado" matSuffix matTooltipClass="feriado-tooltip"
+                            <mat-icon id="i-cursor" matSuffix 
                                 matTooltipPosition="right"
                                 matTooltip="Lista de ciudades de la provincia, departamento o estado seleccionado">
                                 help_outline</mat-icon>
                         </mat-form-field>
                                 <div *ngIf="!Habilitar">
                             <label style="margin-right: 15px; font-weight: bold; font-size: 20px;">Lista de Ciudades</label>
-                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar la ciudad en la que rige el feriado.">help_outline
                             </mat-icon>
                             <div class="row" *ngFor="let n of nombreCiudades">
@@ -89,8 +87,7 @@
                             <div class="container-fluid">
                                 <label style="margin-right: 15px; font-weight: bold; font-size: 20px;">Lista de
                                     Ciudades</label>
-                                <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip"
-                                    matTooltipPosition="right"
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Seleccionar la ciudad en la que rige el feriado.">help_outline
                                 </mat-icon>
                                 <br>
@@ -123,10 +120,6 @@
 </div>
 
 <div class="pantalla-progress" *ngIf="habilitarprogress">
-    <mat-progress-spinner
-        class="progress"
-        [color]="color"
-        [mode]="mode"
-        [value]="value">
+    <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">
     </mat-progress-spinner>
 </div>

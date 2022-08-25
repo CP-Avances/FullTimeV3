@@ -14,7 +14,6 @@ class HorasExtrasPedidasRutas {
         this.router.get('/', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ListarHorasExtrasPedidas);
         this.router.get('/pedidos_autorizados', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ListarHorasExtrasPedidasAutorizadas);
         this.router.get('/observaciones', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ListarHorasExtrasPedidasObservacion);
-        this.router.get('/:id', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ObtenerUnaHoraExtraPedida);
 
         this.router.get('/datosSolicitud/:id_emple_hora', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ObtenerSolicitudHoraExtra);
 
@@ -49,6 +48,8 @@ class HorasExtrasPedidasRutas {
         this.router.put('/:id/estado', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ActualizarEstado);
         // EDITAR OBSERVACION DE SOLICITUD DE HORAS EXTRAS
         this.router.put('/observacion/:id', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ActualizarObservacion);
+        // BUSCAR DATOS DE UNA SOLICITUD DE HORA EXTRA POR SU ID
+        this.router.get('/:id', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ObtenerUnaSolicitudHE);
 
 
         /** ************************************************************************************************** ** 

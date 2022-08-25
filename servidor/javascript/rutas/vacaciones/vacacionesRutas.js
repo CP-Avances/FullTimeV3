@@ -15,7 +15,6 @@ class VacacionesRutas {
         this.router.get('/', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarVacaciones);
         this.router.get('/estado-solicitud', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarVacacionesAutorizadas);
         this.router.get('/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.VacacionesIdPeriodo);
-        this.router.get('/one/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarUnaVacacion);
         this.router.post('/fechasFeriado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerFechasFeriado);
         this.router.get('/datosSolicitud/:id_emple_vacacion', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerSolicitudVacaciones);
         this.router.get('/datosAutorizacion/:id_vacaciones', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ObtenerAutorizacionVacaciones);
@@ -32,6 +31,8 @@ class VacacionesRutas {
         this.router.delete('/eliminar/:id_vacacion', verificarToken_1.TokenValidation, vacacionesControlador_1.default.EliminarVacaciones);
         // EDITAR ESTADO DE VACACIONES
         this.router.put('/:id/estado', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ActualizarEstado);
+        // BUSCAR DATOS DE VACACIONES POR ID DE VACACION
+        this.router.get('/one/:id', verificarToken_1.TokenValidation, vacacionesControlador_1.default.ListarUnaVacacion);
         /** ************************************************************************************************* **
          ** **                        METODO DE ENVIO DE NOTIFICACIONES                                    ** **
          ** ************************************************************************************************* **/

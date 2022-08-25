@@ -13,7 +13,7 @@ class VacacionesRutas {
         this.router.get('/', TokenValidation, VACACIONES_CONTROLADOR.ListarVacaciones);
         this.router.get('/estado-solicitud', TokenValidation, VACACIONES_CONTROLADOR.ListarVacacionesAutorizadas);
         this.router.get('/:id', TokenValidation, VACACIONES_CONTROLADOR.VacacionesIdPeriodo);
-        this.router.get('/one/:id', TokenValidation, VACACIONES_CONTROLADOR.ListarUnaVacacion);
+
         this.router.post('/fechasFeriado', TokenValidation, VACACIONES_CONTROLADOR.ObtenerFechasFeriado);
 
 
@@ -35,6 +35,8 @@ class VacacionesRutas {
         this.router.delete('/eliminar/:id_vacacion', TokenValidation, VACACIONES_CONTROLADOR.EliminarVacaciones);
         // EDITAR ESTADO DE VACACIONES
         this.router.put('/:id/estado', TokenValidation, VACACIONES_CONTROLADOR.ActualizarEstado);
+        // BUSCAR DATOS DE VACACIONES POR ID DE VACACION
+        this.router.get('/one/:id', TokenValidation, VACACIONES_CONTROLADOR.ListarUnaVacacion);
 
         /** ************************************************************************************************* **
          ** **                        METODO DE ENVIO DE NOTIFICACIONES                                    ** ** 

@@ -14,7 +14,7 @@
                     <mat-form-field>
                         <mat-label>Nombre de la Empresa</mat-label>
                         <input matInput placeholder="Nombre empresa" [formControl]="nombreF" required>
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar nombre de la nueva Empresa">
                             help_outline</mat-icon>
                         <mat-error *ngIf="nombreF.invalid">{{ObtenerMensajeErrorNombreRequerido()}}</mat-error>
@@ -26,7 +26,7 @@
                         <input matInput placeholder="Ingresar RUC" [formControl]="rucF" maxlength="13"
                             oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                             (keypress)="IngresarSoloNumeros($event)" required>
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar el RUC de la Empresa">
                             help_outline
                         </mat-icon>
@@ -39,7 +39,7 @@
                             (keypress)="IngresarSoloNumeros($event)"
                             oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                             required>
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar número de contacto de la Empresa">
                             help_outline</mat-icon>
                         <mat-error *ngIf="telefonoF.invalid">{{ObtenerMensajeErrorTelefonoRequerido()}}
@@ -49,7 +49,7 @@
                     <mat-form-field>
                         <mat-label>Dirección</mat-label>
                         <input matInput placeholder="Ingresar dirección" [formControl]="direccionF" required>
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar dirección de ubicación de la Empresa">
                             help_outline
                         </mat-icon>
@@ -61,7 +61,7 @@
                     <mat-form-field>
                         <mat-label>Correo</mat-label>
                         <input matInput placeholder="Ingresar correo" [formControl]="correoF" required>
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar correo electrónico de la Empresa">
                             help_outline
                         </mat-icon>
@@ -73,7 +73,7 @@
                     <div class="col-sm" style="text-align: left;">
                         <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
                             <label>Tipo de Empresa *</label>
-                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar el tipo al que corresponde su empresa">help_outline
                             </mat-icon>
                             <div class="container">
@@ -105,7 +105,7 @@
                         <mat-label>Tipo de Empresa</mat-label>
                         <input matInput placeholder="Ingresar nombre" [formControl]="otroF" [ngStyle]="estiloOtro"
                             id="otro">
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar el nombre del tipo de empresa">
                             help_outline
                         </mat-icon>
@@ -117,7 +117,7 @@
                         </mat-label>
                         <input matInput placeholder="Ingresar nombre" [formControl]="representanteF" required
                             [ngStyle]="estiloRepre" id="repre">
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar el nombre del representante de la empresa">
                             help_outline
                         </mat-icon>
@@ -129,7 +129,7 @@
                     <div class="col-sm" style="text-align: left;">
                         <mat-radio-group aria-label="Select an option" [formControl]="establecimientoF" required>
                             <label>Establecimiento *</label>
-                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar el nombre de establecimientos que tiene la empresa">help_outline
                             </mat-icon>
                             <div class="container">
@@ -153,7 +153,7 @@
                     <mat-form-field *ngIf="!HabilitarOtroE">
                         <mat-label>Nombre Establecimiento</mat-label>
                         <input matInput placeholder="Ingresar nombre" [formControl]="otroE" [ngStyle]="estiloOtroE">
-                        <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar el nombre del establecimiento">
                             help_outline
                         </mat-icon>

@@ -8,15 +8,6 @@ p {
     color: white;
 }
 
-.barraTituloD {
-    font-size: 25px;
-    text-align: center;
-    background: rgb(52, 65, 84);
-    color: white;
-    padding-top: 10px;
-    padding-bottom: 6px;
-}
-
 #editarF {
     color: green;
     cursor: pointer;
@@ -42,15 +33,6 @@ p {
 #ver {
     color: rgb(78, 20, 238);
     cursor: pointer;
-}
-
-#resulSucursales {
-    font-size: 17px;
-    text-align: center;
-    background: rgb(52, 65, 84);
-    color: white;
-    padding-top: 10px;
-    padding-bottom: 6px;
 }
 
 td {
@@ -84,8 +66,6 @@ figure {
     overflow: hidden;
     cursor: pointer;
 }
-
-
 
 a {
     position: absolute;

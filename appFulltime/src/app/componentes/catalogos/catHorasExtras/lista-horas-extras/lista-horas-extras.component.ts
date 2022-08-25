@@ -14,7 +14,7 @@ import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
 
 import { EditarHorasExtrasComponent } from 'src/app/componentes/catalogos/catHorasExtras/editar-horas-extras/editar-horas-extras.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { HorasExtrasService } from 'src/app/servicios/catalogos/catHorasExtras/horas-extras.service';

@@ -52,23 +52,6 @@ class VacacionesControlador {
             }
         });
     }
-    ListarUnaVacacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const VACACIONES = yield database_1.default.query(`
-    SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, 
-    v.id, v.id_peri_vacacion, v.id_empl_cargo, pv.id_empl_contrato AS id_contrato, ec.id_empleado 
-    FROM vacaciones AS v, peri_vacaciones AS pv, empl_contratos AS ec 
-    WHERE v.id = $1 AND v.id_peri_vacacion = pv.id AND ec.id = pv.id_empl_contrato
-    `, [id]);
-            if (VACACIONES.rowCount > 0) {
-                return res.jsonp(VACACIONES.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
     VacacionesIdPeriodo(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
@@ -325,6 +308,25 @@ class VacacionesControlador {
       `, [estado, id]);
             if (3 === estado) {
                 (0, CargarVacacion_1.RestarPeriodoVacacionAutorizada)(parseInt(id));
+            }
+        });
+    }
+    // METODO DE BUSQUEDA DE DATOS DE VACACION POR ID DE VACACION  
+    ListarUnaVacacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const VACACIONES = yield database_1.default.query(`
+      SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, 
+        v.legalizado, v.id, v.id_peri_vacacion, v.id_empl_cargo, e.id AS id_empleado,
+        (e.nombre || ' ' || e.apellido) AS fullname, e.cedula
+      FROM vacaciones AS v, empleados AS e 
+      WHERE v.id = $1 AND e.codigo = v.codigo::character varying
+      `, [id]);
+            if (VACACIONES.rowCount > 0) {
+                return res.jsonp(VACACIONES.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros' });
             }
         });
     }

@@ -914,4 +914,22 @@ export class SalidasAntesComponent implements OnInit, OnDestroy {
     return this.validacionService.IngresarSoloNumeros(evt)
   }
 
+  MostrarLista() {
+    if (this.opcion === 1) {
+      /*this.nombre_suc.reset();
+      this.Filtrar('', 1)*/
+    }
+    else if (this.opcion === 2) {
+      /*this.nombre_dep.reset();
+      this.Filtrar('', 2)*/
+    }
+    else if (this.opcion === 3) {
+      /*this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 3)
+      this.Filtrar('', 4)
+      this.Filtrar('', 5)*/
+    }
+  }
 }

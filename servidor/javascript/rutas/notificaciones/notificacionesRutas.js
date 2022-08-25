@@ -13,7 +13,6 @@ class NotificacionTiempoRealRutas {
     }
     configuracion() {
         this.router.get('/', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ListarNotificacion);
-        this.router.get('/one/:id', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ObtenerUnaNotificacion);
         this.router.get('/send/:id_send', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ListaPorEmpleado);
         this.router.get('/all-receives/:id_receive', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ListaNotificacionesRecibidas);
         this.router.put('/vista/:id', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ActualizarVista);
@@ -32,6 +31,8 @@ class NotificacionTiempoRealRutas {
         this.router.post('/noti-comunicado-movil/', notificacionesControlador_1.default.EnviarNotificacionGeneral);
         // RUTA PARA CREAR NOTIFICACIÓN
         this.router.post('/', verificarToken_1.TokenValidation, notificacionesControlador_1.default.CrearNotificacion);
+        // RUTA DE BÚSQUEDA DE UNA NOTIFICACION ESPECIFICA
+        this.router.get('/one/:id', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ObtenerUnaNotificacion);
     }
 }
 const NOTIFICACION_TIEMPO_REAL_RUTAS = new NotificacionTiempoRealRutas();

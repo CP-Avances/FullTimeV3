@@ -1,42 +1,36 @@
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
-
-mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
-
-.button {margin: 5px 10px 5px 10px;}
-
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    margin-left: 10px;
+.btn {
+    margin-left: 15px;
+    background-color: rgb(80, 87, 97);
+    color: white;
 }
 
-label { font-size: small; }
-
-#diasIncre { font-size: 12px; }
-
-#anioAnti { font-size: 12px; }
-
-.tituloRegimen { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    height: 50px; 
+mat-form-field {
+    width: 250px;
+    padding: 10px 10px 0px 10px;
 }
 
-#iReg { cursor: pointer; }
+.button {
+    margin: 5px 10px 5px 10px;
+}
 
-/*.regimen-tooltip { background-color : rgb(35, 3, 122); }*/
+label {
+    font-size: small;
+}
 
-#maxD { font-size: 13px;}
+#diasIncre {
+    font-size: 12px;
+}
 
-#anio { font-size: 14px; }
+#anioAnti {
+    font-size: 12px;
+}
 
-.nota {
-    font-size: 12px; 
-    font-weight: bold; 
-    text-align: justify;
-    padding: 13px 5px 10px 5px; 
-    color: rgb(52,65,84);
+#maxD {
+    font-size: 13px;
+}
+
+#anio {
+    font-size: 14px;
 }
 
 .scrollbar {
@@ -51,7 +45,9 @@ label { font-size: small; }
 
 .scrollbar-primary::-webkit-scrollbar {
     width: 10px;
-    background-color: #F5F5F5; 
+    background-color: #F5F5F5;
 }
 
-#seleccionadoR { font-size: 14px; }
+#seleccionadoR {
+    font-size: 14px;
+}

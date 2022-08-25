@@ -1,22 +1,21 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 20px;">
     <div class="row">
         <div class="col-md">
-            <div class="barraTituloF">
+            <div id="titulo">
                 <span>FERIADOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
                     <input type="submit" class="btn btn-sm button" (click)="AbrirVentanaRegistrarFeriado()"
-                        value="Crear nuevo Feriado">
-                    <input type="submit" class="btn btn-sm button" (click)="LimpiarCampos()" value="Cancelar" matSuffix
-                        matTooltipPosition="right"
+                        value="Crear nuevo feriado">
+                    <input type="submit" class="btn btn-sm button" (click)="LimpiarCampos()" value="Mostrar lista"
+                        matSuffix matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
                 </div>
             </mat-card>
         </div>
         <div class="col-md">
-            <div class="barraTituloF">
+            <div id="titulo">
                 <span>REGISTRO MULTIPLE DE FERIADOS</span>
             </div>
             <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-center" id="carta1">
@@ -24,12 +23,12 @@
                     <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                        matTooltip="Presionar para seleccionar Plantilla con nombre Feriados.">Subir Feriados</label>
+                        matTooltip="Presionar para seleccionar Plantilla con nombre Feriados.">Subir feriados</label>
                 </form>
                 <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
                     matTooltip="Dar click para ver o descargar el documento."
                     href="{{hipervinculo}}/plantillaD/documento/Feriados.xlsx">
-                    <span class="material-icons">cloud_download</span> Descargar Plantilla Feriados
+                    <span class="material-icons">cloud_download</span> Descargar plantilla feriados
                 </a>
             </mat-card>
         </div>
@@ -37,7 +36,7 @@
 </div>
 <div class="container" style="padding-bottom: 10px; margin-bottom: 35px;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="resultados">RESULTADO DE BÚSQUEDA</div>
+        <div id="titulo">LISTA DE FERIADOS</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
@@ -80,8 +79,8 @@
                                 <p>Ver</p>
                             </i>
                             <i matSuffix matTooltipPosition="right"
-                                matTooltip="Asignar ciudad en la que rige este feriado." class="fas fa-city" id="t-detalles"
-                                (click)="AbrirVentanaAsignarCiudad(f)">
+                                matTooltip="Asignar ciudad en la que rige este feriado." class="fas fa-city"
+                                id="t-detalles" (click)="AbrirVentanaAsignarCiudad(f)">
                                 <p>Ciudad</p>
                             </i>
                             <i matSuffix matTooltipPosition="right"
@@ -98,8 +97,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="feriados.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="feriados.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">
             <i (click)="GenerarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"

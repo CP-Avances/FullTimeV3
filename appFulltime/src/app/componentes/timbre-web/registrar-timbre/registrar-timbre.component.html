@@ -1,6 +1,8 @@
 <div class="scrollbar scrollbar-primary">
     <div id="titulo">
-        <span>REGISTRAR TIMBRE</span>
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            REGISTRAR TIMBRE</span>
     </div>
     <br>
     <div class="container d-flex flex-wrap justify-content-start">
@@ -9,7 +11,6 @@
     </div>
     <form [formGroup]="TimbreForm">
         <div class="container">
-            <br>
             <div class="nota">
                 <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                     enviar timbre.</span>
@@ -47,7 +48,7 @@
         </div>
     </form>
     <div class="d-flex flex-wrap justify-content-around" style="margin-top: 15px;">
-        <button mat-button class="btn" [disabled]="!TimbreForm.valid" (click)="insertarTimbre(TimbreForm.value)">Enviar
+        <button class="btn" [disabled]="!TimbreForm.valid" (click)="insertarTimbre(TimbreForm.value)">Enviar
             Timbre</button>
         <button mat-button class="btn" (click)="ventana.close({close: true})">Salir</button>
     </div>

@@ -2,12 +2,12 @@
     <div id="titulo">
         <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
         <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            EDITAR SOLICITUD DE VACACIÓN</span>
+            MODIFICAR SOLICITUD DE VACACIÓN</span>
     </div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="VacacionesForm">
         <mat-card-content>
-            <div class="container" style="padding-top: 15px; text-align: center;">
+            <div class="container" style="text-align: center;">
                 <div class="nota">
                     <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                         Guardar.</span>
@@ -53,7 +53,7 @@
                         <mat-label id="dias">Vacaciones: días laborables</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento"
                             [formControl]="dialaborableF" required (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Número de días laborables que se toman para vacaciones">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -61,15 +61,15 @@
                         <mat-label>Vacaciones: días libres</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento" [formControl]="dialibreF"
                             required (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Número de días libres que estan dentro de las vacaciones">
                             help_outline</mat-icon>
                     </mat-form-field>
                     <mat-form-field *ngIf="habilitarCalculados">
-                        <mat-label id="Feriado">Vacaciones: días Feriados</mat-label>
+                        <mat-label id="i-cursor">Vacaciones: días Feriados</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento" [formControl]="diasTF"
                             required (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Número de días Feriados que estan dentro de las vacaciones">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -77,7 +77,7 @@
                         <mat-label>Días totales</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento" [formControl]="totalF"
                             required (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Número de días totales que se toman de vacaciones">
                             help_outline</mat-icon>
                     </mat-form-field>

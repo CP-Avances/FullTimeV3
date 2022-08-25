@@ -1,20 +1,12 @@
 <div class="container" *ngFor="let p of datosPermiso" style="padding-top: 15px;">
         <mat-card class="example-card mat-elevation-z8">
-                <div class="barraTituloD">
-                        <span>DATOS GENERALES</span>
+                <div id="titulo">
+                        <span>TIPO DE PERMISO {{p.descripcion.toUpperCase()}}</span>
                 </div>
                 <mat-card-content>
                         <div class="container" style="padding-top: 15px;">
                                 <div class="row">
-                                        <br>
-                                        <div class="col">
-                                                <label id="datosF"
-                                                        class="col-sm col-form-label text-center">{{p.descripcion.toUpperCase()}}</label>
-                                        </div>
-                                </div>
-                                <br>
-                                <div class="row">
-                                        <div class="col" id="verticalLine">
+                                        <div class="col-md" id="verticalLine">
                                                 <label id="datosF"
                                                         class="col-sm col-form-label text-center">INFORMACIÓN</label>
                                                 <br>
@@ -42,8 +34,7 @@
                                                         *ngIf="p.almu_incluir == false"><b>Incluye
                                                                 almuerzo:</b> No</label>
                                         </div>
-                                        <br>
-                                        <div class="col" id="verticalLine">
+                                        <div class="col-md" id="verticalLine">
                                                 <label id="datosF" class="col-sm col-form-label text-center">EFECTOS DEL
                                                         PERMISO</label>
                                                 <br>
@@ -89,8 +80,7 @@
                                                         *ngIf="p.tipo_descuento == 2"><b>Tipo
                                                                 Descuento:</b> Ninguno</label>
                                         </div>
-                                        <br>
-                                        <div class="col" id="verticalLine">
+                                        <div class="col-md" id="verticalLine">
                                                 <label id="datosF" class="col-sm col-form-label text-center">CONDICIONES
                                                         DEL PERMISO</label>
                                                 <br>
@@ -136,14 +126,14 @@
                                 </div>
                                 <div style="text-align: right;">
                                         <i id="editarF" (click)="EditarDatosPermiso(p)" matSuffix
-                                                 matTooltipPosition="right"
-                                                matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                                                matTooltipPosition="right" matTooltip="Modificar datos de este registro"
+                                                class="fas fa-edit">
                                                 <p>Editar</p>
                                         </i>
                                 </div>
                         </div>
                         <input type="submit" class="btn btn-sm" [routerLink]="['/verTipoPermiso/']"
-                                value="Ir a la Lista de Permisos">
+                                value="Ir a lista tipo de permisos">
                 </mat-card-content>
         </mat-card>
 </div>

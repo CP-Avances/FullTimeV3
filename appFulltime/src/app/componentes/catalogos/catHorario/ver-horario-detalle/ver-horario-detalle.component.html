@@ -1,29 +1,26 @@
 <div class="container" *ngFor="let h of datosHorario" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>DATOS GENERALES</span>
         </div>
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
-                    <br>
-                    <div class="col-6">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Nombre:</label>
                         <label class="col-form-label">{{h.nombre}}</label>
                     </div>
-                    <div class="col-6">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Min. de Alimentación:</label>
                         <label class="col-form-label">{{h.min_almuerzo}}</label>
                     </div>
                 </div>
                 <div class="row">
-                    <br>
-                    <div class="col-6">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Horas de Trabajo:</label>
                         <label class="col-form-label">{{h.hora_trabajo}}</label>
                     </div>
-
-                    <div class="col-6">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Horario Nocturno:</label>
                         <label class="col-form-label">{{h.nocturno.toString() | i18nSelect:
                             booleanMap}}</label>
@@ -44,7 +41,7 @@
                         matTooltip="Modificar datos de este registro." class="fas fa-edit">
                         <p>Editar</p>
                     </i>
-                    <mat-icon (click)="CalcularHorasTrabaja()" style="margin: 0px 10px; cursor: pointer;"
+                    <mat-icon (click)="CalcularHorasTrabaja()" style="margin: 0px 10px; cursor: pointer; color: blue;"
                         matTooltip="Verificar que detalle de horario se encuentre acorde a los datos de horario registrados.">
                         calculate</mat-icon>
                 </div>
@@ -52,7 +49,7 @@
             <hr>
             <div class="container" style="padding-bottom: 50px; text-align: center;">
                 <div class="mat-elevation-z8" style="background: white;">
-                    <div id="resulCiudades">DETALLES DE HORARIO</div>
+                    <div id="resultados">DETALLES DE HORARIO</div>
                     <div class="table-responsive">
                         <table class="table table-hover table-sm">
                             <thead class="thead-light">
@@ -91,10 +88,8 @@
                     </mat-paginator>
                 </div>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/horario/']" value="Ir a la Lista de Horarios">
-            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(h)" value="Registrar Detalle">
+            <input type="submit" class="btn btn-sm" [routerLink]="['/horario/']" value="Ir a lista de horarios">
+            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(h)" value="Registrar detalle">
         </mat-card-content>
     </mat-card>
 </div>
-
-

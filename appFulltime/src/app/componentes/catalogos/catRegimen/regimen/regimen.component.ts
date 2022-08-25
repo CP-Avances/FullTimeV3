@@ -58,7 +58,7 @@ export class RegimenComponent implements OnInit {
   constructor(
     private rest: RegimenService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegimenComponent>,
+    public ventana: MatDialogRef<RegimenComponent>,
   ) { }
 
   ngOnInit(): void {
@@ -257,7 +257,7 @@ export class RegimenComponent implements OnInit {
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
       return true;
     }
@@ -272,9 +272,9 @@ export class RegimenComponent implements OnInit {
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6];
     let tecla_especial = false
     for (var i in especiales) {
@@ -334,8 +334,7 @@ export class RegimenComponent implements OnInit {
 
   CerrarVentanaRegistroRegimen() {
     this.LimpiarCampos();
-    this.dialogRef.close();
-    window.location.reload();
+    this.ventana.close();
   }
 
   LimpiarDiasMeses() {

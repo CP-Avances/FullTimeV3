@@ -74,7 +74,8 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">LISTA DE TIMBRES DE {{selec_nombre.toUpperCase()}} <mat-icon (click)="CerrarTabla()" matSuffix
+        <div id="titulo">LISTA DE TIMBRES DE {{selec_nombre.toUpperCase()}}
+            <mat-icon style="float: right; margin-right: 10px;" (click)="CerrarTabla()" matSuffix
                 matTooltipPosition="right" matTooltip="Cerrar lista de datos seleccionada." id="cerrar">
                 close</mat-icon>
         </div>
@@ -126,8 +127,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="timbres.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="timbres.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>

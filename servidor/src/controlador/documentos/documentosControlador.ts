@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { DescargarArchivo, listaCarpetas } from '../../libs/listarArchivos';
+import { DescargarArchivo, EliminarArchivo, listaCarpetas } from '../../libs/listarArchivos';
 
 class DocumentosControlador {
 
@@ -19,15 +19,24 @@ class DocumentosControlador {
         let nombre = req.params.nom_carpeta;
         res.status(200).jsonp(await listaCarpetas(nombre));
     }
-    
+
     public async DownLoadFile(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
         let filename = req.params.filename;
         console.log(nombre, '==========', filename);
         const path = DescargarArchivo(nombre, filename);
         console.log(path);
-        
+
         res.status(200).sendFile(path);
+    }
+
+    public async EliminarDocumento(req: Request, res: Response) {
+        let nombre = req.params.nom_carpeta;
+        let filename = req.params.filename;
+        console.log(nombre, '==========', filename);
+        const path = EliminarArchivo(nombre, filename);
+        console.log(path);
+        res.jsonp({ message: 'Documento eliminado' });
     }
 
     public async ListarDocumentos(req: Request, res: Response) {
@@ -72,10 +81,6 @@ class DocumentosControlador {
     }
 
     public async GuardarDocumentos(req: Request, res: Response): Promise<void> {
-        let list: any = req.files;
-        let doc = list.uploads[0].path.split("\\")[1];
-        let id = req.params.id
-        await pool.query('UPDATE documentacion SET documento = $2 WHERE id = $1', [id, doc]);
         res.jsonp({ message: 'Documento Guardado' });
     }
 

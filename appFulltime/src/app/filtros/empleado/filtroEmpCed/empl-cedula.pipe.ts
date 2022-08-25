@@ -7,12 +7,14 @@ export class EmplCedulaPipe implements PipeTransform {
 
   transform(value: any, arg: any): any {
 
-    if(arg === undefined || arg === null || arg.length < 2 ) return value;
+    console.log('ver data .. ', value, 'ddd... ', arg)
+
+    if (arg === undefined || arg === null || arg.length < 2) return value;
 
     const resultadoEmpleado = [];
 
-    for(const empleado of value){
-      if(empleado.cedula.toLowerCase().indexOf(arg.toLowerCase()) > -1){
+    for (const empleado of value) {
+      if (empleado.cedula.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
         resultadoEmpleado.push(empleado);
       };
     };

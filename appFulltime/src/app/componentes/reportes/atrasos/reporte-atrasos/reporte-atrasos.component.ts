@@ -22,7 +22,7 @@ import { HorasExtrasRealesService } from 'src/app/servicios/reportes/horasExtras
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 // Importación de componentes
-import { ConfigurarAtrasosComponent } from 'src/app/componentes/configurar-atrasos/configurar-atrasos.component';
+import { ConfigurarAtrasosComponent } from 'src/app/componentes/reportes/configuracion-reportes/configurar-atrasos/configurar-atrasos.component';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { HorarioTimbre } from 'src/app/model/timbres.model';
 

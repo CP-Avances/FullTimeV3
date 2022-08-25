@@ -1,10 +1,10 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ProcesoService } from 'src/app/servicios/catalogos/catProcesos/proceso.service';
 import { ToastrService } from 'ngx-toastr';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-// ayuda para crear los niveles
+// AYUDA PARA CREAR LOS NIVELES
 interface Nivel {
   valor: string;
   nombre: string
@@ -18,23 +18,23 @@ interface Nivel {
 
 export class EditarCatProcesosComponent implements OnInit {
 
-  // Control de los campos del formulario
+  // CONTROL DE LOS CAMPOS DEL FORMULARIO
+  procesoPadre = new FormControl('', Validators.required);
   nombre = new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z ]*')]);
   nivel = new FormControl('', Validators.required);
-  procesoPadre = new FormControl('', Validators.required);
 
   procesos: any = [];
   seleccionarNivel;
   seleccionarProceso;
 
-  // asignar los campos en un formulario en grupo
+  // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
   public nuevoProcesoForm = new FormGroup({
-    procesoNombreForm: this.nombre,
     procesoNivelForm: this.nivel,
+    procesoNombreForm: this.nombre,
     procesoProcesoPadreForm: this.procesoPadre
   });
 
-  // Arreglo de niveles existentes
+  // ARREGLO DE NIVELES EXISTENTES
   niveles: Nivel[] = [
     { valor: '1', nombre: '1' },
     { valor: '2', nombre: '2' },
@@ -46,7 +46,7 @@ export class EditarCatProcesosComponent implements OnInit {
   constructor(
     private rest: ProcesoService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<EditarCatProcesosComponent>,
+    public ventana: MatDialogRef<EditarCatProcesosComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
   }
@@ -81,9 +81,9 @@ export class EditarCatProcesosComponent implements OnInit {
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -153,14 +153,15 @@ export class EditarCatProcesosComponent implements OnInit {
   }
 
   CerrarVentanaRegistroProceso() {
+    this.getProcesos();
     this.limpiarCampos();
-    this.dialogRef.close();
-    window.location.reload();
+    this.ImprimirDatos();
+    this.ventana.close();
   }
 
   Salir() {
     this.limpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
 }

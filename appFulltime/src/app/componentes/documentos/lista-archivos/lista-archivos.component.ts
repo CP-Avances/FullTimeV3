@@ -1,8 +1,9 @@
-import { Route } from '@angular/compiler/src/core';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLinkActive } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { DocumentosService } from 'src/app/servicios/documentos/documentos.service';
 import { environment } from '../../../../environments/environment';
+import { SubirDocumentoComponent } from '../subir-documento/subir-documento.component';
 
 @Component({
   selector: 'app-lista-archivos',
@@ -14,18 +15,30 @@ export class ListaArchivosComponent implements OnInit {
   archivos: any = [];
   Dirname: string;
   hipervinculo: string = environment.url
+  subir: boolean = false;
 
   constructor(
     private rest: DocumentosService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public ventana: MatDialog,
   ) { }
 
   ngOnInit(): void {
+    this.MostrarArchivos();
+  }
+
+  MostrarArchivos() {
     this.route.params.subscribe(obj => {
       console.log(obj);
       this.Dirname = obj.filename
       this.ObtenerArchivos(obj.filename)
     })
+
+    if (this.Dirname === 'documentacion') {
+      this.subir = true;
+    } else {
+      this.subir = false;
+    }
   }
 
   ObtenerArchivos(nombre_carpeta) {
@@ -37,11 +50,25 @@ export class ListaArchivosComponent implements OnInit {
 
   DescargarArchivo(filename: string) {
     console.log('llego');
-    
-    this.rest.DownloadFile(this.Dirname, filename).subscribe(res=>{
+    this.rest.DownloadFile(this.Dirname, filename).subscribe(res => {
       console.log(res);
-      
     })
+  }
+
+  EliminarArchivo(filename: string) {
+    console.log('llego');
+    this.rest.EliminarArchivo(this.Dirname, filename).subscribe(res => {
+      console.log(res);
+      this.MostrarArchivos();
+    })
+
+  }
+
+  AbrirVentanaRegistrar(): void {
+    this.ventana.open(SubirDocumentoComponent, { width: '400px' })
+      .afterClosed().subscribe(item => {
+        this.MostrarArchivos();
+      });
   }
 
 }

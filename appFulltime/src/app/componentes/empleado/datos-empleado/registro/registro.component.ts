@@ -15,7 +15,6 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { RolesService } from 'src/app/servicios/catalogos/catRoles/roles.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { EmplLeafletComponent } from 'src/app/componentes/settings/leaflet/empl-leaflet/empl-leaflet.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({

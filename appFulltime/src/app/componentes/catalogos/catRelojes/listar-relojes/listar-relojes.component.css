@@ -6,35 +6,7 @@ p { font-size: x-small; }
 
 td { padding-top: 10px; text-align: center; }
 
-#nombre { font-size: x-small; }
-
-h4 { font-weight: bold; text-align: center; }
-
-h5 { text-align: center; }
-
-#dispositivo { cursor: pointer; }
-
-.barraTituloReloj { 
-    font-size: 20px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
-#resultadosRelojes { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
 table { width: 100%; font-size: 12px;}
-
-
 
 .scrollme { 
     overflow-x: scroll; 

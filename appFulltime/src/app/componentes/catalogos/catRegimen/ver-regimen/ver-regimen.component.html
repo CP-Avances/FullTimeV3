@@ -1,6 +1,6 @@
 <div class="container" *ngFor="let r of datosRegimen" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>DATOS GENERALES</span>
         </div>
         <mat-card-content>
@@ -41,14 +41,14 @@
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <i id="editarF" (click)="EditarDatosRegimen(r)" matSuffix 
-                        matTooltipPosition="right" matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                    <i id="editarF" (click)="EditarDatosRegimen(r)" matSuffix matTooltipPosition="right"
+                        matTooltip="Modificar datos de este registro" class="fas fa-edit">
                         <p>Editar</p>
                     </i>
                 </div>
             </div>
             <input type="submit" class="btn btn-sm" [routerLink]="['/listarRegimen/']"
-                value="Ir a la Lista de Régimenes Laborales">
+                value="Ir a lista de régimen laboral">
         </mat-card-content>
     </mat-card>
 </div>

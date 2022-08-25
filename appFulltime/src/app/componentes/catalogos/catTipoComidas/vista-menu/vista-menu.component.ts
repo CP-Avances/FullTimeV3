@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
 
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
 import { EditarTipoComidasComponent } from '../editar-tipo-comidas/editar-tipo-comidas.component';
 import { DetalleMenuComponent } from '../detalle-menu/detalle-menu.component';

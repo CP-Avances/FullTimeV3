@@ -8,26 +8,6 @@ tr { text-align: center; }
 
 td { padding-top: 10px; text-align: center; }
 
-#negrita_dep { font-weight: bold; }
-
-.tituloDepartamentos { 
-    font-size: 20px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
-#resulDepartamentos { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
 table {width: 100%;}
 
 

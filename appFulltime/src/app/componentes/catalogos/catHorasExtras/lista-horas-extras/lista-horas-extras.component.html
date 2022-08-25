@@ -2,16 +2,16 @@
 <div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
     <div class="row">
         <div class="col-md">
-            <div class="barraTitulo">
+            <div id="titulo">
                 <span>CONFIGURACIÓN DE HORAS EXTRAS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
-                    <button mat-button class="btn btn-sm" [routerLink]="['/horasExtras']">Crear nueva Hora Extra
+                    <button mat-button class="btn btn-sm" [routerLink]="['/horasExtras']">Configurar hora extra
                     </button>
                     <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Cancelar
+                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Mostrar lista
                     </button>
                 </div>
             </mat-card>
@@ -20,7 +20,7 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="resultados">RESULTADO DE BÚSQUEDA</div>
+        <div id="resultados">LISTA DE CONFIGURACIÓN DE HORAS EXTRAS</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
@@ -65,9 +65,8 @@
                         <td style="padding-top: 10px;text-align: center;">{{he.hora_jornada}}</td>
                         <td style="padding-top: 10px;text-align: center;">{{he.tipo_dia}}</td>
                         <td style="padding-top: 10px;text-align: center;" class="d-flex justify-content-center">
-                            <i matSuffix  matTooltipPosition="right"
-                                matTooltip="Ver datos generales de este registro." class="fas fa-eye" id="t-ver"
-                                [routerLink]="['/verHoraExtra/', he.id]">
+                            <i matSuffix matTooltipPosition="right" matTooltip="Ver datos generales de este registro."
+                                class="fas fa-eye" id="t-ver" [routerLink]="['/verHoraExtra/', he.id]">
                                 <p>Ver</p>
                             </i>
                             <i id="t-editar" class="fas fa-edit" matSuffix matTooltipPosition="right"
@@ -83,8 +82,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="horasExtras.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="horasExtras.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">
             <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"

@@ -4,23 +4,6 @@ mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
 
 .caja { width: 250px;padding: 10px 10px 0px 10px; }
 
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    margin-left: 10px;
-}
-
-.detalleHorario { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    height: 50px;
-}
-
-
-
-
-
 .progress {
     margin: 250px auto auto auto;
     opacity: 1

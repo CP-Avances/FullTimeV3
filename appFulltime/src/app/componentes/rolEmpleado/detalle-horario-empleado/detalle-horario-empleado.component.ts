@@ -6,10 +6,10 @@ import { FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
 import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
-import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/detallePlanHorarios/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
+import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horarios/detallePlanHorario/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
 import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
-import { EditarDetallePlanComponent } from 'src/app/componentes/detallePlanHorarios/editar-detalle-plan/editar-detalle-plan.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { EditarDetallePlanComponent } from 'src/app/componentes/horarios/detallePlanHorario/editar-detalle-plan/editar-detalle-plan.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { environment } from '../../../../environments/environment';
 
 

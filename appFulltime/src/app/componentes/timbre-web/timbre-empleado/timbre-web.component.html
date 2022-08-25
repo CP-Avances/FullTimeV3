@@ -1,7 +1,7 @@
 <div class="container" style="margin: 25px 0px 10px 0px;">
     <div class="row">
-        <div class="col-sm-6" *ngFor="let c of cuenta">
-            <mat-card>
+        <div class="col-md" *ngFor="let c of cuenta">
+            <mat-card style="background-color: rgb(220, 240, 245);">
                 <mat-card-header>
                     <mat-card-title style="font-weight: bold; text-align: center;">TIMBRES TOTALES</mat-card-title>
                 </mat-card-header>
@@ -12,10 +12,9 @@
                     <b>Cantidad de timbres: </b> <span>{{c.total_timbres}} </span>
                 </mat-card-content>
             </mat-card>
-            <br>
         </div>
-        <div class="col-sm-6" *ngFor="let i of info">
-            <mat-card>
+        <div class="col-md" *ngFor="let i of info">
+            <mat-card style="background-color: rgb(232, 243, 225);">
                 <mat-card-header>
                     <mat-card-title style="font-weight: bold; text-align: center;">INFORMACIÓN PERSONAL</mat-card-title>
                 </mat-card-header>
@@ -28,7 +27,7 @@
         </div>
     </div>
 </div>
-<div class="container" style="margin: 0px 0px 10px 0px;">
+<div class="container" style="margin: 0px 0px 10px 0px; padding-top: 10px;">
     <div class="row">
         <div class="col-sm-4">
         </div>
@@ -91,8 +90,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="timbres.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="timbres.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>

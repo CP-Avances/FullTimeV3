@@ -1,0 +1,5 @@
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+
+.mat-radio-button ~ .mat-radio-button { margin-left: 30px; }
+
+#letras { font-size: 14px; }

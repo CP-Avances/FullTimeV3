@@ -7,7 +7,7 @@ import { IReporteEmpleados, IRestListEmpl } from 'src/app/model/reportes.model';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { KardexService } from 'src/app/servicios/reportes/kardex.service';
-import { ConfigEmpleadosComponent } from '../../../reportes-Configuracion/config-report-empleados/config-empleados.component';
+import { ConfigEmpleadosComponent } from '../../configuracion-reportes/config-report-empleados/config-empleados.component';
 import * as xlsx from 'xlsx';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';

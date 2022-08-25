@@ -1,0 +1,22 @@
+.mat-radio-button ~ .mat-radio-button { margin-left: 20px; }
+
+.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+
+#nomEmple { font-size: 12px; }
+
+#selEmpre { font-size: 15px; }
+
+.scrollbar {
+    float: left;
+    height: 450px;
+    width: 100%;
+    background: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-bottom: 25px;
+}
+
+.scrollbar-primary::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5; 
+}

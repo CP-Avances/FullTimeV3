@@ -288,9 +288,9 @@ class EmpleadoControlador {
                         console.log(result.command, 'USUARIO ====>', obj);
                     });
                 }));
-                return res.jsonp({ message: 'Todos los empleados han sido desactivados' });
+                return res.jsonp({ message: 'Todos los usuarios han sido inhabilitados.' });
             }
-            return res.jsonp({ message: 'No ha sido desactivado ningún empleado' });
+            return res.jsonp({ message: 'Upss !!! ocurrio un error.' });
         });
     }
     // MÉTODO QUE LISTA EMPLEADOS INHABILITADOS
@@ -316,9 +316,9 @@ class EmpleadoControlador {
                         console.log(result.command, 'USUARIO ====>', obj);
                     });
                 }));
-                return res.jsonp({ message: 'Todos los empleados han sido activados' });
+                return res.jsonp({ message: 'Todos los usuarios han sido habilitados.' });
             }
-            return res.jsonp({ message: 'No ha sido activado ningún empleado' });
+            return res.jsonp({ message: 'Upss !!! ocurrio un error.' });
         });
     }
     // MÉTODO PARA HABILITAR TODA LA INFORMACIÓN DEL EMPLEADO
@@ -338,9 +338,9 @@ class EmpleadoControlador {
                     });
                     (0, MetodosHorario_1.EstadoHorarioPeriVacacion)(obj);
                 }));
-                return res.jsonp({ message: 'Todos los empleados seleccionados han sido reactivados' });
+                return res.jsonp({ message: 'Todos los usuarios seleccionados han sido habilitados.' });
             }
-            return res.jsonp({ message: 'No ha sido reactivado ningún empleado' });
+            return res.jsonp({ message: 'Upps !!! osurrio un error.' });
         });
     }
     // MÉTODO PARA TOMAR DATOS DE LA UBICACIÓN DEL DOMICILIO DEL EMPLEADO

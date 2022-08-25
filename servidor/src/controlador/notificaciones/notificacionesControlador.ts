@@ -73,19 +73,7 @@ class NotificacionTiempoRealControlador {
   }
 
 
-  public async ObtenerUnaNotificacion(req: Request, res: Response): Promise<any> {
-    const id = req.params.id;
-    const REAL_TIME_NOTIFICACION_VACACIONES = await pool.query('SELECT r.id, r.id_send_empl, ' +
-      'r.id_receives_empl, r.id_receives_depa, r.estado, r.create_at, r.id_permiso, r.id_vacaciones, ' +
-      'r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido FROM realtime_noti AS r, empleados AS e ' +
-      'WHERE r.id = $1 AND e.id = r.id_send_empl', [id]);
-    if (REAL_TIME_NOTIFICACION_VACACIONES.rowCount > 0) {
-      return res.jsonp(REAL_TIME_NOTIFICACION_VACACIONES.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Registro no encontrado' });
-    }
-  }
+
 
 
 
@@ -178,10 +166,10 @@ class NotificacionTiempoRealControlador {
         `
         SELECT r.id, r.id_send_empl, r.id_receives_empl, r.id_receives_depa, r.estado, 
           to_char(r.create_at, 'yyyy-MM-dd HH:mi:ss') AS create_at, r.id_permiso, r.id_vacaciones, 
-          r.id_hora_extra, r.visto, r.mensaje, e.nombre, e.apellido 
+          r.id_hora_extra, r.visto, r.mensaje, r.tipo, e.nombre, e.apellido 
         FROM realtime_noti AS r, empleados AS e 
         WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl 
-        ORDER BY id DESC LIMIT 10
+        ORDER BY (visto is TRUE) DESC, id DESC LIMIT 20
         `
         , [id]);
       if (REAL_TIME_NOTIFICACION.rowCount > 0) {
@@ -196,6 +184,25 @@ class NotificacionTiempoRealControlador {
     }
   }
 
+  // METODO DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
+  public async ObtenerUnaNotificacion(req: Request, res: Response): Promise<any> {
+    const id = req.params.id;
+    const REAL_TIME_NOTIFICACION_VACACIONES = await pool.query(
+      `
+      SELECT r.id, r.id_send_empl, r.id_receives_empl, r.id_receives_depa, r.estado, 
+      r.create_at, r.id_permiso, r.id_vacaciones, r.tipo, r.id_hora_extra, r.visto, 
+      r.mensaje, e.nombre, e.apellido 
+      FROM realtime_noti AS r, empleados AS e 
+      WHERE r.id = $1 AND e.id = r.id_send_empl
+      `
+      , [id]);
+    if (REAL_TIME_NOTIFICACION_VACACIONES.rowCount > 0) {
+      return res.jsonp(REAL_TIME_NOTIFICACION_VACACIONES.rows[0])
+    }
+    else {
+      return res.status(404).jsonp({ text: 'Registro no encontrado' });
+    }
+  }
 
   /** ******************************************************************************************** ** 
    ** **                      MÉTODOS PARA ENVIOS DE COMUNICADOS                                ** ** 
@@ -238,7 +245,7 @@ class NotificacionTiempoRealControlador {
                   <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
-                  <b>Hora de envío:</b> Sistema Web <br>
+                  <b>Generado mediante:</b> Sistema Web <br>
                   <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
                   <b>Hora de envío:</b> ${tiempo.hora} <br><br>                  
                   <b>Mensaje:</b> ${mensaje} <br><br>
@@ -282,19 +289,34 @@ class NotificacionTiempoRealControlador {
   }
 
   // NOTIFICACIÓNES GENERALES
-  public async EnviarNotificacionGeneral(req: Request, res: Response): Promise<void> {
+  public async EnviarNotificacionGeneral(req: Request, res: Response): Promise<Response> {
     let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
     var tiempo = fechaHora();
     let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
 
-    await pool.query(
+    const response: QueryResult = await pool.query(
       `
         INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
-        VALUES($1, $2, $3, $4, $5)
+        VALUES($1, $2, $3, $4, $5) RETURNING *
       `,
       [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
 
-    res.jsonp({ message: 'Comunicado enviado exitosamente.' })
+    const [notificiacion] = response.rows;
+
+    if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+
+    const USUARIO = await pool.query(
+      `
+      SELECT (nombre || ' ' || apellido) AS usuario
+      FROM empleados WHERE id = $1
+      `,
+      [id_empl_envia]);
+
+    notificiacion.usuario = USUARIO.rows[0].usuario;
+
+    return res.status(200)
+      .jsonp({ message: 'Comunicado enviado exitosamente.', respuesta: notificiacion });
+
   }
 
   // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
@@ -384,22 +406,31 @@ class NotificacionTiempoRealControlador {
       var tiempo = fechaHora();
 
       const { id_send_empl, id_receives_empl, id_receives_depa, estado, id_permiso,
-        id_vacaciones, id_hora_extra, mensaje } = req.body;
+        id_vacaciones, id_hora_extra, mensaje, tipo } = req.body;
 
       let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
 
       const response: QueryResult = await pool.query(
         `
             INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
-              id_permiso, id_vacaciones, id_hora_extra, mensaje ) 
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING * 
+              id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo ) 
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING * 
         `,
         [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
-          id_hora_extra, mensaje]);
+          id_hora_extra, mensaje, tipo]);
 
       const [notificiacion] = response.rows;
 
       if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+
+      const USUARIO = await pool.query(
+        `
+        SELECT (nombre || ' ' || apellido) AS usuario
+        FROM empleados WHERE id = $1
+        `,
+        [id_send_empl]);
+  
+      notificiacion.usuario = USUARIO.rows[0].usuario;
 
       return res.status(200)
         .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });

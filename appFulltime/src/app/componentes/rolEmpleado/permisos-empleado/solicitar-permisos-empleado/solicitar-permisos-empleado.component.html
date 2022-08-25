@@ -11,39 +11,56 @@
             </div>
         </div>
         <div *ngFor="let pt of permisosTotales | paginate:tamanio_pagina:numero_pagina" style="padding-top: 15px;">
-            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
+            <div class="container">
                 <div class="row">
-                    <div class="col-sm">
+                    <div class="col-md">
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Permiso N°:</label>
+                            <label id="datosF">N° Permiso:</label>
                             <label>{{pt.num_permiso}}</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-start" style="width: 300px;">
-                            <label id="datosF">Tipo Permiso:</label>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Motivo:</label>
                             <label>{{pt.nom_permiso}}</label>
                         </div>
-                    </div>
-                    <div class="col-sm">
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Fecha Salida:</label>
-                            <label>{{pt.fec_inicio.split("T")[0]}}</label>
+                            <label id="datosF">Descripción:</label>
+                            <label>{{pt.descripcion}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Fecha Ingreso:</label>
-                            <label>{{pt.fec_final.split("T")[0]}}</label>
+                            <label id="datosF">Fecha:</label>
+                            <label>{{pt.fec_creacion}}</label>
                         </div>
+
                     </div>
-                    <div class="col-sm">
+                    <div class="col-md">
+
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Hora Salida:</label>
+                            <label id="datosF">Fecha desde:</label>
+                            <label>{{pt.fec_inicio}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Fecha hasta:</label>
+                            <label>{{pt.fec_final}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Hora inicia:</label>
                             <label>{{pt.hora_salida}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Hora Ingreso:</label>
+                            <label id="datosF">Hora finaliza:</label>
                             <label>{{pt.hora_ingreso}}</label>
                         </div>
+
                     </div>
-                    <div class="col-sm">
+                    <div class="col-md">
+
+                        <div class="caja1 d-flex justify-content-start">
+                            <label id="datosF">Estado:</label>
+                            <label *ngIf="pt.estado === 1">Pendiente</label>
+                            <label *ngIf="pt.estado === 2">Pre-autorizado</label>
+                            <label *ngIf="pt.estado === 3">Autorizado</label>
+                            <label *ngIf="pt.estado === 4">Negado</label>
+                        </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Días permiso:</label>
                             <label>{{pt.dia}}</label>
@@ -52,31 +69,15 @@
                             <label id="datosF">Horas permiso:</label>
                             <label>{{pt.hora_numero}}</label>
                         </div>
-                    </div>
-                    <div class="col-sm">
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Descripción:</label>
-                            <label>{{pt.descripcion}}</label>
-                        </div>
-                    </div>
-                    <div class="col-sm" *ngIf="pt.documento != null">
-                        <div class="caja1 d-flex justify-content-start">
+                        <div class="caja1 d-flex justify-content-start" *ngIf="pt.documento != null">
                             <label id="datosF">Documento:</label>
                             <a matSuffix matTooltipPosition="right"
-                                matTooltip="Descargar documento de respaldo de permiso."
+                                matTooltip="Dar click para descargar contrato de trabajo"
                                 href="{{hipervinculo}}/empleadoPermiso/documentos/{{pt.documento}}" target="_blank">
-                                <label style="font-size: 13px;">{{pt.docu_nombre}}</label>
+                                <label style="font-size: 14px;">{{pt.docu_nombre}}</label>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-sm">
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Estado:</label>
-                            <label *ngIf="pt.estado === 1">Pendiente</label>
-                            <label *ngIf="pt.estado === 2">Pre-autorizado</label>
-                            <label *ngIf="pt.estado === 3">Autorizado</label>
-                            <label *ngIf="pt.estado === 4">Negado</label>
-                        </div>
+
                     </div>
                 </div>
             </div>

@@ -11,8 +11,9 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight barraTitulo">
-                            <h5 class="w-100 bd-highlight align-self-center">{{e.nombre}} {{e.apellido}}</h5>
+                        <div class="d-flex bd-highlight" id="titulo">
+                            <h5 class="w-100 bd-highlight align-self-center">{{e.nombre.toUpperCase()}}
+                                {{e.apellido.toUpperCase()}}</h5>
                         </div>
                         <mat-card-content>
                             <div class="container" style="padding-top: 15px;">
@@ -188,11 +189,11 @@
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
-                <div class="col-md">
+                <div class="col-md" style="padding-bottom: 20px;">
                     <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight barraTitulo2">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Títulos</h5>
+                                <h5>TÍTULO PROFESIONAL</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -248,9 +249,9 @@
                 </div>
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
-                        <div class="d-flex bd-highlight barraTitulo1">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Discapacidad</h5>
+                                <h5>DISCAPACIDAD</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -322,9 +323,9 @@
                         </app-editar-vacuna>
                     </div>
                     <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
-                        <div class="d-flex bd-highlight barraTitulo1">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Registro de Vacunación</h5>
+                                <h5>REGISTRO DE VACUNACIÓN</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -413,11 +414,11 @@
 
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
-                <div class="col-md">
+                <div class="col-md" style="padding-bottom: 20px;">
                     <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight barraTitulo">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Contrato Actual</h5>
+                                <h5>CONTRATO ACTUAL</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -489,11 +490,11 @@
                     </mat-card>
                     <br>
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo">
+                        <div id="titulo">
                             <div class="container">
                                 <div class="row">
                                     <div class="col" style="text-align: center;">
-                                        <h5>Contratos Anteriores</h5>
+                                        <h5>CONTRATOS ANTERIORES</h5>
                                     </div>
                                 </div>
                             </div>
@@ -503,8 +504,8 @@
                                 <form [formGroup]="contratoForm">
                                     <mat-form-field>
                                         <mat-label>Período del Contrato</mat-label>
-                                        <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                            matTooltipPosition="right" matTooltip="Lista de contratos del empleado">
+                                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                            matTooltip="Lista de contratos del empleado">
                                             help_outline</mat-icon>
                                         <mat-select [formControl]="fechaContrato">
                                             <mat-option *ngFor="let c of contratoBuscado" [value]="c.id"
@@ -575,11 +576,11 @@
                     </mat-card>
                 </div>
 
-                <div class="col-md" style="padding-top: 20px">
+                <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight barraTitulo">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Cargo Actual</h5>
+                                <h5>CARGO ACTUAL</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -638,11 +639,11 @@
                     </mat-card>
                     <br>
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo">
+                        <div id="titulo">
                             <div class="container">
                                 <div class="row">
                                     <div class="col" style="text-align: center;">
-                                        <h5>Cargos Anteriores</h5>
+                                        <h5>CARGOS ANTERIORES</h5>
                                     </div>
                                 </div>
                             </div>
@@ -652,8 +653,7 @@
                                 <form [formGroup]="cargoForm">
                                     <mat-form-field>
                                         <mat-label>Período del Cargo</mat-label>
-                                        <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                            matTooltipPosition="right"
+                                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                             matTooltip="Seleccionar contrato para obtener la lista de sus respectivos cargos">
                                             help_outline</mat-icon>
                                         <mat-select [formControl]="fechaICargo">
@@ -722,41 +722,30 @@
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
-                <div class="col-sm" style="padding-bottom: 30px">
-                    <div class="barraTitulo">
-                        <h5>Horarios del Empleado</h5>
-                    </div>
-                    <mat-card class="example-card mat-elevation-z9" id="carta1">
-                        <mat-card-actions style="text-align: center">
-                            <button type="submit" class="btn btn-sm" id="boton"
-                                (click)="AbrirVentanaEmplHorario()">Añadir</button>
-                        </mat-card-actions>
-                    </mat-card>
-                </div>
                 <div class="col-md">
-                    <div class="barraTitulo">
-                        <h5>Carga múltiple de horarios</h5>
+                    <div id="titulo">
+                        <h5>ASIGNACIÓN DE HORARIO LABORAL</h5>
                     </div>
                     <mat-card class="example-card mat-elevation-z9" id="carta1">
                         <div class="container">
                             <div class="row">
-                                <div class="col-md" style="width: 700px;">
+                                <div class="col-md" style="text-align: center;">
                                     <form method="post" enctype="multipart/form-data">
                                         <input (change)="FileChangeHorario($event)" type="file"
                                             [formControl]="archivoHorarioForm" id="file"
                                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                                         <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
                                             matTooltip="Presionar para cargar plantilla con nombre Horario Empleado">Subir
-                                            Horario</label>
+                                            horario</label>
                                     </form>
                                 </div>
-                                <div class="col-md">
+                                <div class="col-md" style="text-align: center;">
                                     <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
                                         matTooltipPosition="right"
                                         matTooltip="Dar click para ver o descargar el documento"
                                         href="{{hipervinculo}}/plantillaD/documento/Horario Empleado.xlsx">
-                                        <span class="material-icons">cloud_download</span> Descargar Plantilla Horario
-                                        Empleado
+                                        <span class="material-icons">cloud_download</span> Descargar plantilla horario
+                                        usuarios
                                     </a>
                                 </div>
                             </div>
@@ -765,10 +754,14 @@
                 </div>
             </div>
         </div>
-        <br>
         <div class="container" style="padding-bottom: 50px; text-align: center;">
             <div class="mat-elevation-z8" style="background: white;">
-                <div id="titulo">Lista de Horarios</div>
+                <div class="d-flex bd-highlight" id="titulo">
+                    <span class="w-100 bd-highlight">
+                        LISTA DE HORARIOS DEL USUARIO</span>
+                    <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
+                        (click)="AbrirVentanaEmplHorario()">Añadir</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm ">
                         <thead class="thead-light">
@@ -813,8 +806,7 @@
                                     </i>
                                     <i class="far fa-trash-alt" (click)="ConfirmarDeleteHorario(h)"
                                         style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
-                                        matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
-                                        matTooltip="Eliminar registro">
+                                        matTooltipPosition="right" matTooltip="Eliminar registro">
                                         <p>Eliminar</p>
                                     </i>
                                 </td>
@@ -838,9 +830,9 @@
 
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <mat-card class="mat-elevation-z8">
-                <div class="d-flex bd-highlight barraTitulo">
+                <div class="d-flex bd-highlight" id="titulo">
                     <div class="w-100 bd-highlight">
-                        <h5>Periodo de Vacaciones</h5>
+                        <h5>PERIODO DE VACACIONES</h5>
                     </div>
                     <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                         <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -849,49 +841,51 @@
                 </div>
                 <mat-card-content>
                     <div *ngFor="let p of peridoVacaciones" style="padding-top: 15px;">
-                        <div class="d-flex flex-wrap justify-content-center" style="margin-bottom: 10px;">
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Descripción:</label>
-                                <label>{{p.descripcion}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Inicio de Periodo:</label>
-                                <label>{{p.fec_inicio.split("T")[0]}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Fin de Periodo:</label>
-                                <label>{{p.fec_final.split("T")[0]}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Horas de Vacaciones:</label>
-                                <label>{{p.horas_vacaciones}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Minutos de Vacaciones:</label>
-                                <label>{{p.min_vacaciones}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Vacaciones usadas:</label>
-                                <label *ngIf="p.estado == 1">Sí</label>
-                                <label *ngIf="p.estado == 2">No</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Días por Antiguedad:</label>
-                                <label>{{p.dia_antiguedad}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Días de Vacaciones:</label>
-                                <label>{{p.dia_vacacion}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Días Perdidos:</label>
-                                <label>{{p.dia_perdido}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Descripción:</label>
+                                        <label>{{p.descripcion}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Inicia Periodo:</label>
+                                        <label>{{p.fec_inicio}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Finaliza Periodo:</label>
+                                        <label>{{p.fec_final}}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Vacaciones usadas:</label>
+                                        <label *ngIf="p.estado == 1">Sí</label>
+                                        <label *ngIf="p.estado == 2">No</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Días por Antiguedad:</label>
+                                        <label>{{p.dia_antiguedad}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Días Perdidos:</label>
+                                        <label>{{p.dia_perdido}}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Días de Vacaciones:</label>
+                                        <label>{{p.dia_vacacion}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Horas de Vacaciones:</label>
+                                        <label>{{p.horas_vacaciones}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Minutos de Vacaciones:</label>
+                                        <label>{{p.min_vacaciones}}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div style="text-align: right; margin-right: 1px;">
@@ -906,11 +900,11 @@
             </mat-card>
         </div>
 
-        <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+        <div class="container" style="padding-bottom: 25px;">
             <mat-card class="mat-elevation-z8">
-                <div class="d-flex bd-highlight barraTitulo">
+                <div class="d-flex bd-highlight" id="titulo">
                     <div class="w-100 bd-highlight">
-                        <h5>Solicitar Vacaciones</h5>
+                        <h5>SOLICITUDES VACACIONES</h5>
                     </div>
                     <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                         <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -919,39 +913,46 @@
                 </div>
                 <mat-card-content>
                     <div *ngFor="let v of vacaciones" style="padding-top: 15px;">
-                        <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Codigo:</label>
-                                <label>{{v.id}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Fecha de Inicio:</label>
-                                <label>{{v.fec_inicio.split("T")[0]}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Fecha Final:</label>
-                                <label>{{v.fec_final.split("T")[0]}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Fecha de Ingreso:</label>
-                                <label>{{v.fec_ingreso.split("T")[0]}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Días Laborables:</label>
-                                <label>{{v.dia_laborable}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Días Libres:</label>
-                                <label>{{v.dia_libre}}</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Legalizado:</label>
-                                <label *ngIf="v.legalizado == true">Sí</label>
-                                <label *ngIf="v.legalizado == false">No</label>
-                            </div>
-                            <div class="caja1 d-flex justify-content-start">
-                                <label id="datosF">Estado:</label>
-                                <label>{{v.estado}}</label>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Fecha Desde:</label>
+                                        <label>{{v.fec_inicio}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Fecha Hasta:</label>
+                                        <label>{{v.fec_final}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Fecha Ingreso:</label>
+                                        <label>{{v.fec_ingreso}}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Días Laborables:</label>
+                                        <label>{{v.dia_laborable}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Días Libres:</label>
+                                        <label>{{v.dia_libre}}</label>
+                                    </div>
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Legalizado:</label>
+                                        <label *ngIf="v.legalizado == true">Sí</label>
+                                        <label *ngIf="v.legalizado == false">No</label>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="espacio d-flex justify-content-start">
+                                        <label id="datosF">Estado:</label>
+                                        <label *ngIf="v.estado === 1">Pendiente</label>
+                                        <label *ngIf="v.estado === 2">Pre-autorizado</label>
+                                        <label *ngIf="v.estado === 3">Autorizado</label>
+                                        <label *ngIf="v.estado === 4">Negado</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="float-right" *ngIf="v.estado === 1">
@@ -981,14 +982,14 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">today</mat-icon>
-            Planificacion Horarios
+            Horarios Rotativos
         </ng-template>
 
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <mat-card class="mat-elevation-z8">
-                <div class="d-flex bd-highlight barraTitulo">
+                <div class="d-flex bd-highlight" id="titulo">
                     <div class="w-100 bd-highlight">
-                        <h5>Planificación Horario</h5>
+                        <h5>HORARIOS ROTATIVOS</h5>
                     </div>
                     <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                         <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
@@ -1016,8 +1017,8 @@
                                         <p>Detalle</p>
                                     </i>
                                     <i *ngFor="let e of empleadoUno" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ver datos generales de la planificación" class="fas fa-eye" id="ver"
-                                        [routerLink]="['/verDetalles/', h.id, e.id]">
+                                        matTooltip="Ver datos generales de la planificación" class="fas fa-eye"
+                                        id="t-ver" [routerLink]="['/verDetalles/', h.id, e.id]">
                                         <p>Ver</p>
                                     </i>
                                     <i class="fas fa-edit" style="color:green; margin-left: 15px;"
@@ -1027,8 +1028,7 @@
                                     </i>
                                     <i class="far fa-trash-alt" (click)="ConfirmarDeletePlanificacion(h)"
                                         style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
-                                        matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
-                                        matTooltip="Eliminar registro">
+                                        matTooltipPosition="right" matTooltip="Eliminar registro">
                                         <p>Eliminar</p>
                                     </i>
                                 </td>
@@ -1051,7 +1051,7 @@
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <mat-card class="mat-elevation-z8">
-                <div class="d-flex bd-highlight barraTitulo">
+                <div class="d-flex bd-highlight" id="titulo">
                     <div class="w-100 bd-highlight">
                         <h5>SERVICIOS DE ALIMENTACIÓN</h5>
                     </div>
@@ -1061,55 +1061,65 @@
                     </div>
                 </div>
                 <div *ngFor="let pc of planComidas | paginate:tamanio_pagina:numero_pagina" style="padding-top: 15px;">
-                    <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Fecha Registro:</label>
-                            <label>{{pc.fecha.split("T")[0]}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Servicio:</label>
-                            <label>{{pc.nombre_servicio}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Menú:</label>
-                            <label>{{pc.nombre_menu}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Nombre Plato:</label>
-                            <label>{{pc.nombre_plato}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Precio Plato:</label>
-                            <label>$ {{pc.valor}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Observación:</label>
-                            <label>{{pc.observacion}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Fecha Inicia:</label>
-                            <label *ngIf="pc.fec_inicio != undefined">{{pc.fec_inicio.split("T")[0]}}</label>
-                            <label *ngIf="pc.fec_inicio === undefined">{{pc.fec_comida.split("T")[0]}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Fecha Finaliza:</label>
-                            <label *ngIf="pc.fec_final != undefined">{{pc.fec_final.split("T")[0]}}</label>
-                            <label *ngIf="pc.fec_final === undefined">{{pc.fec_comida.split("T")[0]}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Hora Inicio:</label>
-                            <label>{{pc.hora_inicio}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Hora Fin:</label>
-                            <label>{{pc.hora_fin}}</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Tipo:</label>
-                            <label *ngIf="pc.extra === false">Normal</label>
-                            <label *ngIf="pc.extra === true">Extra</label>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md">
+                                <div class="espacio d-flex justify-content-start">
+                                    <label *ngIf="pc.fec_final != undefined" id="datosF">Servicio Solicitado</label>
+                                    <label *ngIf="pc.fec_final === undefined" id="datosF">Servicio Planificado</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Fecha:</label>
+                                    <label>{{pc.fecha}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Motivo:</label>
+                                    <label>{{pc.observacion}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Tipo:</label>
+                                    <label *ngIf="pc.extra === false">Normal</label>
+                                    <label *ngIf="pc.extra === true">Extra</label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Servicio:</label>
+                                    <label>{{pc.nombre_servicio}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Menú:</label>
+                                    <label>{{pc.nombre_menu}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Alimentación:</label>
+                                    <label>{{pc.nombre_plato}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Precio Plato:</label>
+                                    <label>$ {{pc.valor}}</label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Fecha Desde:</label>
+                                    <label *ngIf="pc.fec_inicio != undefined">{{pc.fec_inicio}}</label>
+                                    <label *ngIf="pc.fec_inicio === undefined">{{pc.fec_comida}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Fecha Hasta:</label>
+                                    <label *ngIf="pc.fec_final != undefined">{{pc.fec_final}}</label>
+                                    <label *ngIf="pc.fec_final === undefined">{{pc.fec_comida}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Hora Inicio:</label>
+                                    <label>{{pc.hora_inicio}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Hora Fin:</label>
+                                    <label>{{pc.hora_fin}}</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div style="text-align: right;"
@@ -1151,65 +1161,73 @@
             Permisos
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
-            <div class="row">
-                <div class="col-md">
-                    <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight" id="titulo">
-                            <div class="w-100 bd-highlight">
-                                <h5>SOLICITUDES DE PERMISO</h5>
-                            </div>
-                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
-                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
-                                    (click)="AbrirVentanaPermiso()">{{btnTitulo}}</button>
-                            </div>
-                        </div>
-                        <div *ngFor="let pt of permisosTotales | paginate:tamanio_pagina:numero_pagina"
-                            style="padding-top: 15px;">
-                            <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                                <div class="caja1 d-flex justify-content-start">
+            <mat-card class="mat-elevation-z8">
+                <div class="d-flex bd-highlight" id="titulo">
+                    <div class="w-100 bd-highlight">
+                        <h5>SOLICITUDES DE PERMISO</h5>
+                    </div>
+                    <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                        <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                            (click)="AbrirVentanaPermiso()">{{btnTitulo}}</button>
+                    </div>
+                </div>
+                <div *ngFor="let pt of permisosTotales | paginate:tamanio_pagina:numero_pagina"
+                    style="padding-top: 15px;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md">
+                                <div class="espacio d-flex justify-content-start">
                                     <label id="datosF">N° Permiso:</label>
                                     <label>{{pt.num_permiso}}</label>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start">
-                                    <label id="datosF">Permiso:</label>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Motivo:</label>
                                     <label>{{pt.nom_permiso}}</label>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start">
+                                <div class="espacio d-flex justify-content-start">
                                     <label id="datosF">Descripción:</label>
                                     <label>{{pt.descripcion}}</label>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start">
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Fecha:</label>
+                                    <label>{{pt.fec_creacion}}</label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Fecha desde:</label>
+                                    <label>{{pt.fec_inicio}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Fecha hasta:</label>
+                                    <label>{{pt.fec_final}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Hora inicia:</label>
+                                    <label>{{pt.hora_salida}}</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Hora finaliza:</label>
+                                    <label>{{pt.hora_ingreso}}</label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="espacio d-flex justify-content-start">
                                     <label id="datosF">Estado:</label>
                                     <label *ngIf="pt.estado === 1">Pendiente</label>
                                     <label *ngIf="pt.estado === 2">Pre-autorizado</label>
                                     <label *ngIf="pt.estado === 3">Autorizado</label>
                                     <label *ngIf="pt.estado === 4">Negado</label>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start">
-                                    <label id="datosF">Fecha Salida:</label>
-                                    <label>{{pt.fec_inicio.split("T")[0]}}</label>
-                                </div>
-                                <div class="caja1 d-flex justify-content-start">
-                                    <label id="datosF">Fecha Ingreso:</label>
-                                    <label>{{pt.fec_final.split("T")[0]}}</label>
-                                </div>
-                                <div class="caja1 d-flex justify-content-start">
-                                    <label id="datosF">Hora Salida:</label>
-                                    <label>{{pt.hora_salida}}</label>
-                                </div>
-                                <div class="caja1 d-flex justify-content-start">
-                                    <label id="datosF">Hora Ingreso:</label>
-                                    <label>{{pt.hora_ingreso}}</label>
-                                </div>
-                                <div class="caja1 d-flex justify-content-start">
+                                <div class="espacio d-flex justify-content-start">
                                     <label id="datosF">Días permiso:</label>
                                     <label>{{pt.dia}}</label>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start">
+                                <div class="espacio d-flex justify-content-start">
                                     <label id="datosF">Horas permiso:</label>
                                     <label>{{pt.hora_numero}}</label>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start" *ngIf="pt.documento != null">
+                                <div class="espacio d-flex justify-content-start" *ngIf="pt.documento != null">
                                     <label id="datosF">Documento:</label>
                                     <a matSuffix matTooltipPosition="right"
                                         matTooltip="Dar click para descargar contrato de trabajo"
@@ -1218,29 +1236,26 @@
                                         <label style="font-size: 14px;">{{pt.docu_nombre}}</label>
                                     </a>
                                 </div>
-                                <div class="caja1 d-flex justify-content-start">
-                                </div>
                             </div>
-                            <div style="text-align: right;" *ngIf="pt.estado === 1">
-                                <i class="fas fa-edit" id="edit" style="margin-right: 20px;" (click)="EditarPermiso(pt)"
-                                    matSuffix matTooltipPosition="right"
-                                    matTooltip="Modificar los datos generales de este registro">
-                                    <p>Editar</p>
-                                </i>
-                                <i class="fas fa-backspace" id="cancel" (click)="CancelarPermiso(pt)" matSuffix
-                                    matTooltipPosition="right" matTooltip="Cancelar solicitud de permiso">
-                                    <p>Cancelar</p>
-                                </i>
-                            </div>
-                            <mat-divider style="margin-bottom: 10px;"></mat-divider>
                         </div>
-                        <!-- <mat-paginator id="pagina" [length]="permisosTotales.length" [pageSize]="tamanio_pagina"
-                            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
-                            showFirstLastButtons>
-                        </mat-paginator> -->
-                    </mat-card>
+                        <div style="text-align: right;" *ngIf="pt.estado === 1">
+                            <i class="fas fa-edit" id="edit" style="margin-right: 20px;" (click)="EditarPermiso(pt)"
+                                matSuffix matTooltipPosition="right"
+                                matTooltip="Modificar los datos generales de este registro">
+                                <p>Editar</p>
+                            </i>
+                            <i class="fas fa-backspace" id="cancel" (click)="CancelarPermiso(pt)" matSuffix
+                                matTooltipPosition="right" matTooltip="Cancelar solicitud de permiso">
+                                <p>Cancelar</p>
+                            </i>
+                        </div>
+                    </div>
+                    <mat-divider style="margin-bottom: 10px;"></mat-divider>
                 </div>
-            </div>
+                <mat-paginator id="pagina" [length]="permisosTotales.length" [pageSize]="tamanio_pagina"
+                    [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+                </mat-paginator>
+            </mat-card>
         </div>
     </mat-tab>
 
@@ -1255,7 +1270,7 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="d-flex bd-highlight barraTitulo">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
                                 <h5>Solicitar Hora Extra</h5>
                             </div>
@@ -1331,11 +1346,11 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo">
+                        <div id="titulo">
                             <div class="container">
                                 <div class="row">
                                     <div class="col" style="text-align: center;">
-                                        <h5>Administrar Módulo Alimentación</h5>
+                                        <h5>ADMINISTRAR MÓDULO ALIMENTACIÓN</h5>
                                     </div>
                                     <div class="col" style="text-align: right;">
                                         <button type="submit" class="btn btn-outline-light btn-sm"
@@ -1364,11 +1379,11 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo">
+                        <div id="titulo">
                             <div class="container">
                                 <div class="row">
                                     <div class="col" style="text-align: center;">
-                                        <h5>Autorización Departamentos</h5>
+                                        <h5>AUTORIZACIÓN DEPARTAMENTOS</h5>
                                     </div>
                                     <div class="col" style="text-align: right;">
                                         <button type="submit" class="btn btn-outline-light btn-sm"
@@ -1380,30 +1395,36 @@
                         <mat-card-content>
                             <div class="container" *ngFor="let autoD of autorizacionesTotales"
                                 style="padding-top: 15px;">
-                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                                    <div class="caja1 d-flex justify-content-start">
-                                        <label id="datosF">Departamento de:</label>
-                                        <label>{{autoD.nom_depar}}</label>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Departamento de:</label>
+                                                <label>{{autoD.nom_depar}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Autoriza:</label>
+                                                <label *ngIf="autoD.estado == true">Sí</label>
+                                                <label *ngIf="autoD.estado == false">No</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="caja1 d-flex justify-content-start">
-                                        <label id="datosF">Autoriza:</label>
-                                        <label *ngIf="autoD.estado == true">Sí</label>
-                                        <label *ngIf="autoD.estado == false">No</label>
+                                    <div style="text-align: right;">
+                                        <i class="fas fa-edit" id="edit" (click)="AbrirEditarAutorizar(autoD)" matSuffix
+                                            matTooltipPosition="right"
+                                            matTooltip="Modificar los datos generales de este registro">
+                                            <p>Editar</p>
+                                        </i>
+                                        <i style="color:red; margin-left: 15px;"
+                                            (click)="ConfirmarDeleteAutorizacion(autoD)" class=" far fa-trash-alt"
+                                            matTooltipPosition="right" id="delete" matTooltip="Eliminar registro">
+                                            <p>Eliminar</p>
+                                        </i>
                                     </div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <i class="fas fa-edit" id="edit" (click)="AbrirEditarAutorizar(autoD)" matSuffix
-                                        matTooltipPosition="right"
-                                        matTooltip="Modificar los datos generales de este registro">
-                                        <p>Editar</p>
-                                    </i>
-                                    <i style="color:red; margin-left: 15px;"
-                                        (click)="ConfirmarDeleteAutorizacion(autoD)" class=" far fa-trash-alt"
-                                        matTooltipPosition="right" id="delete" matTooltip="Eliminar registro">
-                                        <p>Eliminar</p>
-                                    </i>
-                                </div>
-                                <mat-divider></mat-divider>
+                                <mat-divider style="margin-bottom: 10px;"></mat-divider>
                             </div>
                         </mat-card-content>
                     </mat-card>
@@ -1422,11 +1443,11 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo">
+                        <div id="titulo">
                             <div class="container">
                                 <div class="row">
                                     <div class="col" style="text-align: center;">
-                                        <h5>Procesos</h5>
+                                        <h5>PROCESOS</h5>
                                     </div>
                                     <div class="col" style="text-align: right;">
                                         <button type="submit" class="btn btn-outline-light btn-sm"
@@ -1439,33 +1460,41 @@
                             <div class="container"
                                 *ngFor="let e of empleadoProcesos | paginate:tamanio_pagina:numero_pagina"
                                 style="padding-top: 15px;">
-                                <div class="d-flex flex-wrap justify-content-between" style="margin-bottom: 10px;">
-                                    <div class="caja1 d-flex justify-content-start">
-                                        <label id="datosF">Proceso:</label>
-                                        <label>{{e.proceso}}</label>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Proceso:</label>
+                                                <label>{{e.proceso}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Fecha Inicio:</label>
+                                                <label>{{e.fec_inicio.split("T")[0]}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Fecha Final:</label>
+                                                <label>{{e.fec_final.split("T")[0]}}</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="caja1 d-flex justify-content-start">
-                                        <label id="datosF">Fecha Inicio:</label>
-                                        <label>{{e.fec_inicio.split("T")[0]}}</label>
-                                    </div>
-                                    <div class="caja1 d-flex justify-content-start">
-                                        <label id="datosF">Fecha Final:</label>
-                                        <label>{{e.fec_final.split("T")[0]}}</label>
+                                    <div style="text-align: right;">
+                                        <i class="fas fa-edit" id="edit" (click)="AbrirVentanaEditarProceso(e)"
+                                            matSuffix matTooltipPosition="right"
+                                            matTooltip="Modificar los datos generales de este registro">
+                                            <p>Editar</p>
+                                        </i>
+                                        <i style="color:red; margin-left: 15px;" (click)="ConfirmarDeleteProceso(e)"
+                                            class=" far fa-trash-alt" matTooltipPosition="right" id="delete"
+                                            matTooltip="Eliminar registro">
+                                            <p>Eliminar</p>
+                                        </i>
                                     </div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <i class="fas fa-edit" id="edit" (click)="AbrirVentanaEditarProceso(e)" matSuffix
-                                        matTooltipPosition="right"
-                                        matTooltip="Modificar los datos generales de este registro">
-                                        <p>Editar</p>
-                                    </i>
-                                    <i style="color:red; margin-left: 15px;" (click)="ConfirmarDeleteProceso(e)"
-                                        class=" far fa-trash-alt" matTooltipPosition="right" id="delete"
-                                        matTooltip="Eliminar registro">
-                                        <p>Eliminar</p>
-                                    </i>
-                                </div>
-                                <mat-divider></mat-divider>
+                                <mat-divider style="margin-bottom: 10px;"></mat-divider>
                             </div>
                             <mat-paginator id="pagina" [length]="empleadoProcesos.length" [pageSize]="tamanio_pagina"
                                 [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"

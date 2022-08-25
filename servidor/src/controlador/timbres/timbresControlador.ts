@@ -10,9 +10,9 @@ class TimbresControlador {
         const TIMBRES_NOTIFICACION = await pool.query(
             `
             SELECT id, to_char(create_at, 'yyyy-MM-dd HH24:mi:ss') AS create_at, id_send_empl, visto, 
-            descripcion, id_timbre, tipo
+            descripcion, id_timbre, tipo, id_receives_empl
             FROM realtime_timbres WHERE id_receives_empl = $1 
-            ORDER BY create_at DESC LIMIT 10
+            ORDER BY (visto is TRUE) DESC, id DESC LIMIT 20
             `,
             [id_empleado])
             .then(async (result) => {
@@ -30,6 +30,7 @@ class TimbresControlador {
                         return {
                             create_at: obj.create_at,
                             descripcion: obj.descripcion,
+                            id_receives_empl: obj.id_receives_empl,
                             visto: obj.visto,
                             id_timbre: obj.id_timbre,
                             empleado: nombre,
@@ -47,6 +48,26 @@ class TimbresControlador {
 
         return res.status(404).jsonp({ message: 'No se encuentran registros' });
     }
+
+    // METODO DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
+    public async ObtenerUnAviso(req: Request, res: Response): Promise<any> {
+        const id = req.params.id;
+        const AVISOS = await pool.query(
+            `
+            SELECT r.id, r.id_send_empl, r.id_receives_empl, r.create_at, r.tipo, r.visto, 
+            r.id_timbre, r.descripcion, (e.nombre || ' ' || e.apellido) AS empleado 
+            FROM realtime_timbres AS r, empleados AS e 
+            WHERE r.id = $1 AND e.id = r.id_send_empl
+            `
+            , [id]);
+        if (AVISOS.rowCount > 0) {
+            return res.jsonp(AVISOS.rows[0])
+        }
+        else {
+            return res.status(404).jsonp({ text: 'Registro no encontrado' });
+        }
+    }
+
 
     public async ObtenerAvisosTimbresEmpleado(req: Request, res: Response) {
         const { id_empleado } = req.params

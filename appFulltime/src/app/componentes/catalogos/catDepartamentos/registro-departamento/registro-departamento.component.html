@@ -1,6 +1,7 @@
-<div class="d-flex bd-highlight barraTituloRegDepa">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center">Registrar Departamento</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR DEPARTAMENTO</span>
 </div>
 <form [formGroup]="nuevoDepartamentoForm">
     <div style="text-align: center">
@@ -11,7 +12,7 @@
         <div class="d-flex flex-wrap justify-content-between">
             <mat-form-field *ngIf="!Habilitar">
                 <mat-label id="depSup">Seleccionar Establecimiento</mat-label>
-                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Lista de Sucursales que pertenecen a la Empresa seleccionada">help_outline
                 </mat-icon>
                 <mat-select [formControl]="idSucursalF" required>
@@ -25,13 +26,13 @@
                 <mat-label>Departamento</mat-label>
                 <input matInput placeholder="Ej: Contabilidad" [formControl]="nombre"
                     (keypress)="IngresarSoloLetras($event)" [(ngModel)]="nombreD" required>
-                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ingresar nombre del nuevo departamento">help_outline</mat-icon>
                 <mat-error *ngIf="nombre.invalid">{{ObtenerMensajeErrorNombre()}}</mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Nivel</mat-label>
-                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Seleccionar niveles del departamento">help_outline</mat-icon>
                 <mat-select [formControl]="nivel" [(ngModel)]="selectNivel" required>
                     <mat-option *ngFor="let n of niveles" [value]="n.nombre">
@@ -41,7 +42,7 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label id="depSup">Departamento Superior</mat-label>
-                <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Seleccionar Departamento Superior del nuevo departamento">help_outline
                 </mat-icon>
                 <mat-select [formControl]="departamentoPadre" [(ngModel)]="selectPadre">
@@ -61,10 +62,6 @@
 </div>
 
 <div class="pantalla-progress" *ngIf="habilitarprogress">
-    <mat-progress-spinner
-        class="progress"
-        [color]="color"
-        [mode]="mode"
-        [value]="value">
+    <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">
     </mat-progress-spinner>
 </div>

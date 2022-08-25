@@ -21,7 +21,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { ScriptService } from 'src/app/servicios/empleado/script.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-principal-departamento',

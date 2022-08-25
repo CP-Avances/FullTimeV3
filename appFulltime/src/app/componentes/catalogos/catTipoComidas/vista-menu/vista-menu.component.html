@@ -1,50 +1,46 @@
 <div class="container" *ngFor="let m of datosMenu" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>DATOS GENERALES DEL MENÚ</span>
         </div>
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Tipo de Servicio:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{m.tipo}}</label>
                     </div>
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Nombre:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{m.nombre}}</label>
                     </div>
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Hora Inicio:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{m.hora_inicio}}</label>
                     </div>
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Hora Fin:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{m.hora_fin}}</label>
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <i id="editarF" (click)="AbrirVentanaEditar(m)" matSuffix 
-                        matTooltipPosition="right" matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                    <i id="editarF" (click)="AbrirVentanaEditar(m)" matSuffix matTooltipPosition="right"
+                        matTooltip="Modificar datos de este registro" class="fas fa-edit">
                         <p>Editar</p>
                     </i>
                 </div>
                 <div style="text-align: center;">
-                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(m)" value="Registrar Detalle">
+                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(m)" value="Registrar detalle">
                 </div>
             </div>
             <hr>
             <div class="container" style="padding-bottom: 50px; text-align: center;">
                 <div class="mat-elevation-z8" style="background: white;">
-                    <div id="resulCiudades">DETALLES DEL MENÚ</div>
+                    <div id="resultados">DETALLES DEL MENÚ</div>
                     <div class="table-responsive">
                         <table class="table table-hover table-sm">
                             <thead class="thead-light">
@@ -62,8 +58,8 @@
                                     <td>{{dm.observacion}}</td>
                                     <td>
                                         <i id="editarI" (click)="AbrirVentanaEditarDetalle(dm)" matSuffix
-                                             matTooltipPosition="right"
-                                            matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                                            matTooltipPosition="right" matTooltip="Modificar datos de este registro"
+                                            class="fas fa-edit">
                                             <p>Editar</p>
                                         </i>
                                         <i matSuffix matTooltipPosition="right" matTooltip="Eliminar registro"
@@ -82,8 +78,7 @@
                     </mat-paginator>
                 </div>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/listarTipoComidas/']"
-                value="Ir a la Lista de Menús">
+            <input type="submit" class="btn btn-sm" [routerLink]="['/listarTipoComidas/']" value="Ir a lista de menús">
         </mat-card-content>
     </mat-card>
 </div>

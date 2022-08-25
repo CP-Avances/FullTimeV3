@@ -9,7 +9,7 @@ import { CiudadFeriadosService } from 'src/app/servicios/ciudadFeriados/ciudad-f
 import { AsignarCiudadComponent } from 'src/app/componentes/catalogos/catFeriados/asignar-ciudad/asignar-ciudad.component';
 import { EditarFeriadosComponent } from 'src/app/componentes/catalogos/catFeriados/editar-feriados/editar-feriados.component';
 import { EditarCiudadComponent } from 'src/app/componentes/catalogos/catFeriados/editar-ciudad/editar-ciudad.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-listar-ciudad-feriados',

@@ -26,14 +26,13 @@ import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { AutorizaDepartamentoService } from 'src/app/servicios/autorizaDepartamento/autoriza-departamento.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
-import { RegistrarVacacionesComponent } from 'src/app/componentes/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
-import { RegistroPlanHorarioComponent } from 'src/app/componentes/planHorarios/registro-plan-horario/registro-plan-horario.component';
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/empleadoPermisos/registro-empleado-permiso/registro-empleado-permiso.component';
+import { RegistroPlanHorarioComponent } from 'src/app/componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
 import { CambiarContrasenaComponent } from 'src/app/componentes/rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
 // import { NavbarComponent } from '../../../share/main-nav/navbar/navbar.component';
 import { environment } from 'src/environments/environment';
 import { VacunacionService } from 'src/app/servicios/empleado/empleadoVacunas/vacunacion.service';
-import { MetodosComponent } from '../../metodoEliminar/metodos.component';
+import { MetodosComponent } from '../../administracionGeneral/metodoEliminar/metodos.component';
+import { RegistrarVacacionesComponent } from '../../modulos/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
 
 @Component({
   selector: 'app-datos-empleado',
@@ -152,7 +151,7 @@ export class DatosEmpleadoComponent implements OnInit {
      * ***************************************************************************************************
     */
   /** Método para ver la información del empleado */
-  textoBoton: string = 'Subir Foto';
+  textoBoton: string = 'Subir foto';
   verEmpleado(idemploy: any) {
     this.empleadoUno = [];
     let idEmpleadoActivo = localStorage.getItem('empleado');
@@ -163,7 +162,7 @@ export class DatosEmpleadoComponent implements OnInit {
         this.urlImagen = `${environment.url}/empleado/img/` + data[0]['imagen'];
         this.mostrarImagen = true;
         this.mostrarIniciales = false;
-        this.textoBoton = 'Editar Foto';
+        this.textoBoton = 'Editar foto';
         if (idEmpleadoActivo === idemploy) {
           // this.Main.urlImagen = this.urlImagen;
         }
@@ -171,7 +170,7 @@ export class DatosEmpleadoComponent implements OnInit {
         this.iniciales = data[0].nombre.split(" ")[0].slice(0, 1) + data[0].apellido.split(" ")[0].slice(0, 1);
         this.mostrarIniciales = true
         this.mostrarImagen = false;
-        this.textoBoton = 'Subir Foto';
+        this.textoBoton = 'Subir foto';
       }
     })
   }

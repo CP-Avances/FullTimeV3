@@ -1,18 +1,17 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 15px;">
     <div class="row">
         <div class="col-md">
-            <div class="barraTitulo">
+            <div id="titulo">
                 <span>TIPO DE PERMISOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
                     <button mat-button type="submit" class="btn btn-sm" [routerLink]="['/tipoPermisos']">Crear nuevo
-                        Permiso
+                        permiso
                     </button>
                     <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Cancelar
+                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Mostrar lista
                     </button>
                 </div>
             </mat-card>
@@ -21,7 +20,7 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="resultados">RESULTADO DE BÚSQUEDA</div>
+        <div id="resultados">LISTA DE TIPO DE PERMISOS</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
@@ -75,8 +74,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="tipoPermiso.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="tipoPermiso.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">
             <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"

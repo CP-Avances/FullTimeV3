@@ -1,7 +1,8 @@
 <div class="scrollbar scrollbar-primary">
-    <div class="d-flex bd-highlight barraTituloRelojR">
-        <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-        <h5 class="w-100 bd-highlight align-self-center">Modificar Datos del Dispositivo</h5>
+    <div id="titulo">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            MODIFICAR DISPOSITIVO</span>
     </div>
     <!-- Formulario Completo -->
     <form [formGroup]="RelojesForm">
@@ -39,7 +40,7 @@
                 <mat-radio-group aria-label="Select an option" formControlName="funcionesForm" required>
                     <label class="d-flex justify-content-start">
                         <span style="margin-left: 10px;">Tiene acciones *</span>
-                        <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                        <mat-icon id="i-cursor" matSuffix 
                             matTooltipPosition="right" matTooltip="El dispositivo tiene o no funciones">
                             help_outline
                         </mat-icon>
@@ -61,7 +62,7 @@
                 <mat-form-field>
                     <mat-label>Nombre del Dispositivo</mat-label>
                     <input matInput placeholder="Nombre del dispositivo" [formControl]="nombreF" required>
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar nombre del nuevo dispositivo">
                         help_outline</mat-icon>
                     <mat-error *ngIf="nombreF.invalid">{{ObtenerMensajeErrorNombreRequerido()}}</mat-error>
@@ -71,7 +72,7 @@
                     <mat-label>IP</mat-label>
                     <input matInput placeholder="Ingresar IP del reloj" [formControl]="ipF"
                         (keypress)="IngresarIp($event)" required>
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar dirección IP del dispositivo">
                         help_outline</mat-icon>
                     <mat-error *ngIf="ipF.invalid">{{ObtenerMensajeErrorIp()}}</mat-error>
@@ -80,7 +81,7 @@
                     <mat-label>Puerto</mat-label>
                     <input matInput placeholder="Ingresar puerto" [formControl]="puertoF"
                         (keypress)="IngresarSoloNumeros($event)" required>
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar puerto que usa el dispositivo">
                         help_outline</mat-icon>
                     <mat-error *ngIf="puertoF.invalid">{{ObtenerMensajeErrorPuerto()}}</mat-error>
@@ -88,7 +89,7 @@
                 <mat-form-field>
                     <mat-label>Contraseña</mat-label>
                     <input matInput placeholder="Ingresar contraseña" [formControl]="contraseniaF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar contraseña del dispositivo">vpn_key
                     </mat-icon>
                     <mat-error *ngIf="contraseniaF.invalid">Ingresar una contraseña válida</mat-error>
@@ -96,7 +97,7 @@
                 <mat-form-field>
                     <mat-label>Marca</mat-label>
                     <input matInput placeholder="Ingresar marca" [formControl]="marcaF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar la marca del dispositivo">help_outline
                     </mat-icon>
                     <mat-error *ngIf="marcaF.invalid">Ingresar una marca válida</mat-error>
@@ -104,7 +105,7 @@
                 <mat-form-field>
                     <mat-label>Modelo</mat-label>
                     <input matInput placeholder="Ingresar modelo" [formControl]="modeloF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar el modelo del dispositivo">help_outline
                     </mat-icon>
                     <mat-error *ngIf="modeloF.invalid">Ingresar un modelo válido</mat-error>
@@ -112,7 +113,7 @@
                 <mat-form-field>
                     <mat-label>Serie</mat-label>
                     <input matInput placeholder="Ingresar serie" [formControl]="serieF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="right" matTooltip="Ingresar la serie del dispositivo">help_outline
                     </mat-icon>
                     <mat-error *ngIf="serieF.invalid">Ingresar una serie válida</mat-error>
@@ -120,7 +121,7 @@
                 <mat-form-field>
                     <mat-label>ID de fabricación</mat-label>
                     <input matInput placeholder="Ingresar id fabricación" [formControl]="idFabricacionF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="left" matTooltip="Ingresar ID de fabricación del dispositivo">
                         help_outline</mat-icon>
                     <mat-error id="idFabrica" *ngIf="idFabricacionF.invalid">Ingresar un id de fabricación
@@ -130,7 +131,7 @@
                 <mat-form-field>
                     <mat-label>Fabricante</mat-label>
                     <input matInput placeholder="Ingresar fabricante" [formControl]="fabricanteF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="left"
                         matTooltip="Ingresar nombre de empresa fabricante del dispositivo">help_outline
                     </mat-icon>
@@ -139,7 +140,7 @@
                 <mat-form-field>
                     <mat-label>Dirección Física MAC</mat-label>
                     <input matInput placeholder="Ingresar dirección MAC" [formControl]="macF">
-                    <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
+                    <mat-icon id="i-cursor" matSuffix 
                         matTooltipPosition="left" matTooltip="Ingresar dirección física (MAC) del dispositivo ">
                         help_outline</mat-icon>
                     <mat-error *ngIf="macF.invalid">Ingresar una dirección MAC válida</mat-error>

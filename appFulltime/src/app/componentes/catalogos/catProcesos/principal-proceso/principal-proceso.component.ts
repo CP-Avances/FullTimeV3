@@ -16,7 +16,7 @@ import * as FileSaver from 'file-saver';
 
 import { RegistroProcesoComponent } from '../registro-proceso/registro-proceso.component';
 import { EditarCatProcesosComponent } from 'src/app/componentes/catalogos/catProcesos/editar-cat-procesos/editar-cat-procesos.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ProcesoService } from 'src/app/servicios/catalogos/catProcesos/proceso.service';

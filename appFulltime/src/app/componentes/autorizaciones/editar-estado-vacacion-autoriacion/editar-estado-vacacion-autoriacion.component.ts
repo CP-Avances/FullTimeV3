@@ -235,7 +235,8 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
       id_send_empl: this.idEmpleadoIngresa,
       id_permiso: null,
       estado: estado_v,
-      mensaje: 'Ha ' + estado_v.toLowerCase() + ' la solicitud de vacaciones de ' +
+      tipo: 2,
+      mensaje: 'Ha ' + estado_v.toLowerCase() + ' la solicitud de vacaciones para ' +
         this.solInfo.fullname + ' desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),

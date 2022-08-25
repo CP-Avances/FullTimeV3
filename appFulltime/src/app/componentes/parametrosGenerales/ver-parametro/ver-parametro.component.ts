@@ -6,7 +6,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
 // SECCIÓN DE SERVICIOS
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EditarParametroComponent } from '../editar-parametro/editar-parametro.component';
 import { CrearDetalleParametroComponent } from '../crear-detalle-parametro/crear-detalle-parametro.component';
@@ -20,14 +20,17 @@ import { EditarDetalleParametroComponent } from '../editar-detalle-parametro/edi
 
 export class VerParametroComponent implements OnInit {
 
-  idParametro: string;
   parametros: any = [];
+  idParametro: string;
   datosDetalle: any = [];
 
   // ITEMS DE PAGINACIÓN DE LA TABLA
   numero_pagina: number = 1;
   tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
+
+  // ACTIVADORES
+  formato: boolean = true;
 
   constructor(
     private toastr: ToastrService,
@@ -43,6 +46,13 @@ export class VerParametroComponent implements OnInit {
   ngOnInit(): void {
     this.BuscarParametros(this.idParametro);
     this.ListarDetalles(this.idParametro);
+    this.ActivarnBoton();
+  }
+
+  ActivarnBoton() {
+    if (this.idParametro === '25') {
+      this.formato = false;
+    }
   }
 
   // MÉTODO PARA MANEJAR PAGINACIÓN DE TABLAS
@@ -59,6 +69,7 @@ export class VerParametroComponent implements OnInit {
     })
   }
 
+  id_detalle: number;
   // MÉTODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
   ListarDetalles(id: any) {
     this.datosDetalle = [];
@@ -118,6 +129,65 @@ export class VerParametroComponent implements OnInit {
           this.router.navigate(['/mostrar/parametros/', this.idParametro]);
         }
       });
+  }
+
+  /** ******************************************************************************************* **
+   ** **             REGISTRAR O EDITAR DETALLE DE PARAMETRO FORMATO DE FECHA                  ** ** 
+   ** ******************************************************************************************* **/
+
+  GuardarDatos(seleccion: number) {
+    let formato = '';
+    if (seleccion === 1) {
+      formato = 'DD/MM/YYYY';
+    }
+    else if (seleccion === 2) {
+      formato = 'MM/DD/YYYY';
+    }
+    else if (seleccion === 3) {
+      formato = 'YYYY-MM-DD';
+    }
+
+    this.restP.ListarDetalleParametros(parseInt(this.idParametro)).subscribe(datos => {
+      this.ActualizarDetalle(datos[0].id_detalle, formato);
+    }, vacio => {
+      this.CrearDetalle(formato);
+    })
+
+  }
+
+  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  CrearDetalle(formato: string) {
+    let datos = {
+      id_tipo: this.idParametro,
+      descripcion: formato
+    };
+    this.restP.IngresarDetalleParametro(datos).subscribe(response => {
+      this.toastr.success('Detalle registrado exitosamente.',
+        '', {
+        timeOut: 2000,
+      })
+      sessionStorage.removeItem('fechas');
+      sessionStorage.setItem('fechas', formato);
+      this.BuscarParametros(this.idParametro);
+      this.ListarDetalles(this.idParametro);
+    });
+  }
+
+  ActualizarDetalle(id_detalle: number, formato: string) {
+    let datos = {
+      id: id_detalle,
+      descripcion: formato
+    };
+    this.restP.ActualizarDetalleParametro(datos).subscribe(response => {
+      this.toastr.success('Detalle registrado exitosamente.',
+        '', {
+        timeOut: 2000,
+      })
+      sessionStorage.removeItem('fechas');
+      sessionStorage.setItem('fechas', formato);
+      this.BuscarParametros(this.idParametro);
+      this.ListarDetalles(this.idParametro);
+    });
   }
 
 }

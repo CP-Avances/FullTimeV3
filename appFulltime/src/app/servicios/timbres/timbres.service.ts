@@ -21,6 +21,11 @@ export class TimbresService {
     return this.http.get(`${environment.url}/timbres/avisos-generales/${id_empleado}`);
   }
 
+  // METODO DE CONSULTA DE AVISOS ESPECIFICOS
+  ObtenerUnAviso(id: number) {
+    return this.http.get<any>(`${environment.url}/timbres/aviso-individual/${id}`);
+  }
+
   PutVistaTimbre(id_noti_timbre: number) {
     let data = { visto: true };
     return this.http.put(`${environment.url}/timbres/noti-timbres/vista/${id_noti_timbre}`, data);

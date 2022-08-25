@@ -1,12 +1,5 @@
 .btn { background-color: rgb(80,87,97); color: white; margin-top: 5px; margin-left: 15px; }
 
-.barraTitulo { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px; 
-    padding-bottom: 6px; }
-
 .alinear { margin-top: 5px; }
 
 mat-form-field { padding: 10px 15px 0px 15px; }

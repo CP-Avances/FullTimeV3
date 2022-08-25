@@ -6,12 +6,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../material/material.module';
 import { FiltrosModule } from '../../filtros/filtros.module';
 
-import { RangoFechasComponent } from './rango-fechas/rango-fechas.component';
+import { RangoFechasComponent } from './configuracion-reportes/rango-fechas/rango-fechas.component';
 import { ReporteFaltasComponent } from './reporte-faltas/reporte-faltas.component';
-import { CriteriosBusquedaComponent } from './criterios-busqueda/criterios-busqueda.component';
+import { CriteriosBusquedaComponent } from './configuracion-reportes/criterios-busqueda/criterios-busqueda.component';
 import { ReporteTimbresMultiplesComponent } from './timbres/reporte-timbres-multiples/reporte-timbres-multiples.component';
 
-import { ListaReportesComponent } from './lista-reportes/lista-reportes.component';
 import { ReporteEmpleadosComponent } from './empleados/reporte-empleados/reporte-empleados.component';
 import { ReporteKardexComponent } from './vacaciones/reporte-kardex/reporte-kardex.component';
 import { ReporteHorasPedidasComponent } from './horas-extras/reporte-horas-pedidas/reporte-horas-pedidas.component';
@@ -30,7 +29,7 @@ import { ReporteEntradaSalidaComponent } from './entradas-salidas/reporte-entrad
 import { AppRoutingModule } from '../../app-routing.module';
 import { AdministradorTodasComponent } from './notificaciones/administrador-todas/administrador-todas.component';
 import { PorUsuarioComponent } from './notificaciones/por-usuario/por-usuario.component';
-import { OptionTimbreServidorComponent } from './option-timbre-servidor/option-timbre-servidor.component';
+import { OptionTimbreServidorComponent } from './configuracion-reportes/option-timbre-servidor/option-timbre-servidor.component';
 import { TimbreAbiertosComponent } from './timbres/timbre-abiertos/timbre-abiertos.component';
 import { VacunaMultipleComponent } from './vacunas/vacuna-multiple/vacuna-multiple.component';
 import { AlimentosInvitadosComponent } from './alimentacion/alimentos-invitados/alimentos-invitados.component';
@@ -62,7 +61,6 @@ import { TimbreVirtualComponent } from './timbres/timbre-virtual/timbre-virtual.
     ReportePermisosComponent,
     ReporteAtrasosComponent,
     ReporteEntradaSalidaComponent,
-    ListaReportesComponent,
     AdministradorTodasComponent,
     PorUsuarioComponent,
     OptionTimbreServidorComponent,
@@ -95,7 +93,6 @@ import { TimbreVirtualComponent } from './timbres/timbre-virtual/timbre-virtual.
     ReportePermisosComponent,
     ReporteAtrasosComponent,
     ReporteEntradaSalidaComponent,
-    ListaReportesComponent,
     SolicitudVacacionComponent,
   ],
   imports: [

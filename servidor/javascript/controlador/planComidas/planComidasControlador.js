@@ -576,11 +576,20 @@ class PlanComidasControlador {
         WHERE tc.id = ctc.tipo_comida AND ctc.id = dm.id_menu AND dm.id = $1
       `, [id_comida]);
             let notifica = mensaje + SERVICIO_SOLICITADO.rows[0].servicio;
-            yield database_1.default.query(`
+            const response = yield database_1.default.query(`
       INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
-      VALUES($1, $2, $3, $4, $5)
+      VALUES($1, $2, $3, $4, $5) RETURNING *
       `, [create_at, id_empl_envia, id_empl_recive, notifica, tipo]);
-            res.jsonp({ message: 'Notificación enviada con éxito.' });
+            const [notificiacion] = response.rows;
+            if (!notificiacion)
+                return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+            const USUARIO = yield database_1.default.query(`
+      SELECT (nombre || ' ' || apellido) AS usuario
+      FROM empleados WHERE id = $1
+      `, [id_empl_envia]);
+            notificiacion.usuario = USUARIO.rows[0].usuario;
+            return res.status(200)
+                .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
         });
     }
     /** ******************************************************************************************** **

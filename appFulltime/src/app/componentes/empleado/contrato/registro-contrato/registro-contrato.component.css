@@ -8,22 +8,6 @@ mat-form-field {padding: 10px 10px 0px 10px;}
 
 .separar {padding: 10px 10px 0px 10px}
 
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    font-size: 20px;
-    margin-left: 10px;
-}
-
-.barraTituloContratoE { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px; 
-}
-
-
-
 #nomEmple { font-size: 13px; }
 
 #tamañoLetra { font-size: 14px; }

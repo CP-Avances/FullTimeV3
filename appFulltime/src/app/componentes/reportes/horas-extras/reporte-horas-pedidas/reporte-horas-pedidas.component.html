@@ -1,5 +1,8 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 15px;">
+    <div id="titulo">
+        <span>REPORTE DE SOLICITUDES DE HORAS EXTRAS</span>
+    </div>
+    <br>
     <div class="row">
         <div class="col-md">
             <div id="titulo">
@@ -51,7 +54,7 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">LISTA DE EMPLEADOS
+        <div id="titulo">LISTA DE USUARIOS
             <mat-checkbox style="float: right; margin-right: 10px; font-size: 15px;" [checked]="reporte"
                 (change)="setAll($event.checked)">Solicitudes Autorizadas</mat-checkbox>
         </div>
@@ -127,8 +130,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="datosEmpleado.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="datosEmpleado.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>

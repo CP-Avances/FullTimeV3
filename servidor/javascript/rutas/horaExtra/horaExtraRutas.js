@@ -16,7 +16,6 @@ class HorasExtrasPedidasRutas {
         this.router.get('/', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ListarHorasExtrasPedidas);
         this.router.get('/pedidos_autorizados', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ListarHorasExtrasPedidasAutorizadas);
         this.router.get('/observaciones', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ListarHorasExtrasPedidasObservacion);
-        this.router.get('/:id', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerUnaHoraExtraPedida);
         this.router.get('/datosSolicitud/:id_emple_hora', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerSolicitudHoraExtra);
         this.router.get('/datosAutorizacion/:id_hora', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerAutorizacionHoraExtra);
         this.router.get('/horario-empleado/:id_cargo', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerHorarioEmpleado);
@@ -43,6 +42,8 @@ class HorasExtrasPedidasRutas {
         this.router.put('/:id/estado', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ActualizarEstado);
         // EDITAR OBSERVACION DE SOLICITUD DE HORAS EXTRAS
         this.router.put('/observacion/:id', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ActualizarObservacion);
+        // BUSCAR DATOS DE UNA SOLICITUD DE HORA EXTRA POR SU ID
+        this.router.get('/:id', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ObtenerUnaSolicitudHE);
         /** ************************************************************************************************** **
          ** **                         METODO PARA ENVIO DE NOTIFICACIONES                                  ** **
          ** ************************************************************************************************** **/

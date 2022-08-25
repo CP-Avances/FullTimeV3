@@ -1,29 +1,5 @@
 .btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
 
-.tituloHorarioL { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    height: 50px;
-}
-
-#iHorL { cursor: pointer; }
-
-#resulHorario { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    margin-left: 10px;
-}
-
 [type="file"] {
     height: 0;
     overflow: hidden;

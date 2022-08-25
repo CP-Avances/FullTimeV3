@@ -187,3 +187,8 @@ body {
     padding-bottom: 10px;
     color: rgb(228, 183, 0);
 }
+
+/* ESTILO LINEA DE DIVISION */
+mat-divider {
+    background: rgba(131, 131, 131, 0.609);
+}

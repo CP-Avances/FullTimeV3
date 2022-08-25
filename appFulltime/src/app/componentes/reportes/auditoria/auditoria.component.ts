@@ -18,8 +18,8 @@ import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
 // IMPORTAR COMPONENTES
-import { FraseSeguridadComponent } from '../../frase-administrar/frase-seguridad/frase-seguridad.component';
-import { SeguridadComponent } from '../../frase-administrar/seguridad/seguridad.component';
+import { FraseSeguridadComponent } from '../../administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
+import { SeguridadComponent } from '../../administracionGeneral/frase-seguridad/seguridad/seguridad.component';
 
 @Component({
   selector: 'app-auditoria',

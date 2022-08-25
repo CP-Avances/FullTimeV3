@@ -1,102 +1,151 @@
-.barraTitulo { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px; 
-    padding-bottom: 6px; 
+.col-sm {
+    font-weight: bold;
 }
 
-.barraTitulo1 { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px; 
-    padding-bottom: 6px; 
+#boton {
+    background-color: rgb(80, 87, 97);
+    color: white;
+    margin-top: 10px;
 }
 
-.barraTitulo2 { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px; 
-    padding-bottom: 6px; 
+mat-divider {
+    background: rgba(131, 131, 131, 0.609);
 }
 
-#resulHorario { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+.material-icons {
+    margin-right: 8px;
 }
 
-.col-sm { font-weight: bold;}
+#boton:hover {
+    background-color: rgba(75, 75, 75, 0.609);
+}
 
-#boton { background-color: rgb(80,87,97); color: white; margin-top: 10px;}
+p {
+    font-size: x-small;
+}
 
-mat-divider { background: rgba(131, 131, 131, 0.609);}
+.fas {
+    cursor: pointer;
+}
 
-.material-icons {margin-right: 8px;}
+.far {
+    cursor: pointer;
+}
 
-#boton:hover { background-color: rgba(75, 75, 75, 0.609);}
+#detalleH {
+    color: rgb(38, 0, 255);
+    margin-right: 15px;
+}
 
-p { font-size: x-small; }
-
-.fas {cursor: pointer;}
-
-.far {cursor: pointer;}
-
-#detalleH { color: rgb(38, 0, 255); margin-right: 15px;}
-
-#cerrar { color: rgb(38, 0, 255); }
+#cerrar {
+    color: rgb(38, 0, 255);
+}
 
 mat-tab-group {
-    background: rgb(232,232,232);
-    background: radial-gradient(circle, rgba(232,232,232,0.8883928571428571) 0%, rgba(249,249,249,1) 100%);
+    background: rgb(232, 232, 232);
+    background: radial-gradient(circle, rgba(232, 232, 232, 0.8883928571428571) 0%, rgba(249, 249, 249, 1) 100%);
 }
 
-#Selector {color: white; padding: 7% 25%; }
+#Selector {
+    color: white;
+    padding: 7% 25%;
+}
 
-mat-grid-tile {background-color: rgb(80,87,97); }
+mat-grid-tile {
+    background-color: rgb(80, 87, 97);
+}
 
-mat-grid-tile:hover {background-color: rgba(10, 10, 10, 0.609); }
+mat-grid-tile:hover {
+    background-color: rgba(10, 10, 10, 0.609);
+}
 
-#datosF { font-weight: bold; font-size: 15px; padding-right: 5px;}
+#datosF {
+    font-weight: bold;
+    font-size: 15px;
+    padding-right: 5px;
+}
 
-#verticalLine { border-left: 1px solid rgb(52,65,84); }
+#verticalLine {
+    border-left: 1px solid rgb(52, 65, 84);
+}
 
-.caja3 {padding: 0px 5px 0px 5px; width: 200px; }
+.caja3 {
+    padding: 0px 5px 0px 5px;
+    width: 200px;
+}
 
-.caja2 {padding: 0px 5px 0px 5px; width: 300px; }
+.caja2 {
+    padding: 0px 5px 0px 5px;
+    width: 300px;
+}
 
-#avatar { 
-    border-radius: 100%; 
-    height: 100px; 
-    width: 100px; 
-    background-color: rgb(126, 126, 126); 
+#avatar {
+    border-radius: 100%;
+    height: 100px;
+    width: 100px;
+    background-color: rgb(126, 126, 126);
     margin-bottom: 10px;
 }
 
-#avatarImagen { border-radius: 100%; height: 100px; width: 100px; }
+#avatarImagen {
+    border-radius: 100%;
+    height: 100px;
+    width: 100px;
+}
 
-.iniciales {color: white; font-weight: bold; font-size: 60px; }
+.iniciales {
+    color: white;
+    font-weight: bold;
+    font-size: 60px;
+}
 
-#edit { color:green; margin-right: 5px; cursor: pointer; font-size: 15px; text-align: center; }
+#edit {
+    color: green;
+    margin-right: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: center;
+}
 
-#doc { font-size: 14px; text-align: center;}
+#doc {
+    font-size: 14px;
+    text-align: center;
+}
 
-#delete { color:red;  cursor: pointer; text-align: center; }
+#delete {
+    color: red;
+    cursor: pointer;
+    text-align: center;
+}
 
 
 
-table { width: 100%; font-size: 14px; }
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-td { padding-top: 10px; text-align: center; }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-.caja1 {padding: 0px 10px 0px 10px; width: 250px; }
+.caja1 {
+    padding: 0px 10px 0px 10px;
+    width: 250px;
+}
 
-#cancel { color:red; cursor: pointer; font-size: 15px; text-align: center; margin-right: 20px; }
+.espacio {
+    padding: 0px 10px 0px 10px;
+}
+
+#cancel {
+    color: red;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: center;
+    margin-right: 20px;
+}
 
 [type="file"] {
     height: 0;
@@ -104,7 +153,7 @@ td { padding-top: 10px; text-align: center; }
     width: 0;
 }
 
-[type="file"] + label {
+[type="file"]+label {
     background: #f15d22;
     border: none;
     border-radius: 5px;
@@ -123,12 +172,12 @@ td { padding-top: 10px; text-align: center; }
     vertical-align: middle;
 }
 
-[type="file"] + label.btn-2 {
+[type="file"]+label.btn-2 {
     background-color: rgb(150, 243, 141);
     overflow: hidden;
 }
 
-[type="file"] + label.btn-2::before {
+[type="file"]+label.btn-2::before {
     color: #fff;
     content: "\f382";
     font-family: "Font Awesome 5 Pro";
@@ -143,36 +192,36 @@ td { padding-top: 10px; text-align: center; }
     transition: all 0.3s;
 }
 
-[type="file"] + label.btn-2:hover {
+[type="file"]+label.btn-2:hover {
     background-color: rgb(21, 130, 1);
 }
 
-[type="file"] + label.btn-2:hover::before {
+[type="file"]+label.btn-2:hover::before {
     right: 80%
 }
 
-#descargar:hover { 
-    font-weight: bold; 
-    font-size: 14px; 
-    font-family: "Poppins", sans-serif; 
-    border-radius: 5px; 
-    height: 58px; 
+#descargar:hover {
+    font-weight: bold;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    border-radius: 5px;
+    height: 58px;
     background-color: rgb(0, 76, 255);
     color: white;
-    padding-top: 10px; 
+    padding-top: 10px;
     padding-bottom: 6px;
 }
 
-#descargar { 
-    font-weight: bold; 
-    font-size: 14px; 
-    font-family: "Poppins", sans-serif; 
-    border-radius: 5px; 
-    height: 55px; 
-    background-color: #93a3c7; 
+#descargar {
+    font-weight: bold;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    border-radius: 5px;
+    height: 55px;
+    background-color: #93a3c7;
     overflow: hidden;
     color: white;
-    padding-top: 10px; 
+    padding-top: 10px;
     padding-bottom: 6px;
 }
 
@@ -180,20 +229,20 @@ td { padding-top: 10px; text-align: center; }
 #geolocalizacion {
     height: 400px;
     width: 100%;
-    border: 2px solid white ;
+    border: 2px solid white;
     margin-bottom: 50px;
 }
 
 .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-    background-color:  rgb(22, 92, 125) !important;
+    background-color: rgb(22, 92, 125) !important;
 }
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle {
-    background-color:  rgb(22, 92, 125) !important;
+    background-color: rgb(22, 92, 125) !important;
     z-index: 3;
 }
 
 .mat-radio-button .mat-radio-outer-circle {
-    border-color:  rgb(22, 92, 125) !important; 
+    border-color: rgb(22, 92, 125) !important;
     z-index: 3;
 }

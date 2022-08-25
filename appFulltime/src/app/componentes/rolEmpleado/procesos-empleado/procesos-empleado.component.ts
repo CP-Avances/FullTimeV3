@@ -6,9 +6,9 @@ import { PageEvent } from '@angular/material/paginator';
 
 import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProcesos/empleado-procesos.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { RegistrarEmpleProcesoComponent } from 'src/app/componentes/empleadoProcesos/registrar-emple-proceso/registrar-emple-proceso.component';
-import { MetodosComponent } from 'src/app/componentes/metodoEliminar/metodos.component';
-import { EditarEmpleadoProcesoComponent } from 'src/app/componentes/empleadoProcesos/editar-empleado-proceso/editar-empleado-proceso.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { RegistrarEmpleProcesoComponent } from '../../modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
+import { EditarEmpleadoProcesoComponent } from '../../modulos/accionesPersonal/procesos/editar-empleado-proceso/editar-empleado-proceso.component';
 
 @Component({
   selector: 'app-procesos-empleado',
@@ -117,7 +117,8 @@ export class ProcesosEmpleadoComponent implements OnInit {
   /* Ventana para editar procesos del empleado */
   AbrirVentanaEditarProceso(datoSeleccionado: any): void {
     console.log(datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarEmpleadoProcesoComponent,
+    this.vistaRegistrarDatos.open(EditarEmpleadoProcesoComponent
+      ,
       { width: '400px', data: { idEmpleado: this.idEmpleado, datosProcesos: datoSeleccionado } })
       .afterClosed().subscribe(item => {
         this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));

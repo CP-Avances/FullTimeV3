@@ -371,6 +371,7 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
       id_permiso: null,
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
+      tipo: 1,
       mensaje: 'Ha actualizado ' + this.nota + ' de vacaciones ' + this.user + ' desde ' +
         desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
         hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
