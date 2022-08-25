@@ -14,11 +14,13 @@ import { TiempoAutorizadoComponent } from '../tiempo-autorizado/tiempo-autorizad
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+
 import { HoraExtraAutorizacionesComponent } from 'src/app/componentes/autorizaciones/hora-extra-autorizaciones/hora-extra-autorizaciones.component';
 import { EditarEstadoHoraExtraAutorizacionComponent } from 'src/app/componentes/autorizaciones/editar-estado-hora-extra-autorizacion/editar-estado-hora-extra-autorizacion.component';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-ver-pedido-hora-extra',
@@ -48,6 +50,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
 
   constructor(
     private validacionesService: ValidacionesService, // VARIABLE DE VALIDACIONES DE ACCESO
+    private parametro: ParametrosService,
     private ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
     private router: Router, // VARIABLE DE MANEJO DE RUTAS
     private restHE: PedHoraExtraService, // SERVICIO DE DATOS DE SOLICITUD DE HORA EXTRA
@@ -61,9 +64,41 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.BuscarInfo();
     this.ObtenerLogo();
     this.ObtenerColores();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.BuscarInfo(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.BuscarInfo(fecha, this.formato_hora);
+      });
   }
 
   // VARIABLE DE ALMACENMAIENRO ID DE EMPLEADO QUE SOLICITA
@@ -75,7 +110,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   cont: number;
 
   // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
-  BuscarInfo() {
+  BuscarInfo(f_fecha: string, f_hora: string) {
     this.hora_extra = [];
 
     // BÚSQUEDA DE DATOS DE HORAS EXTRAS
@@ -95,19 +130,19 @@ export class VerPedidoHoraExtraComponent implements OnInit {
 
         h.fecha_inicio = moment.weekdays(moment(h.fec_inicio.split(' ')[0]).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(h.fec_inicio.split(' ')[0]).day()).slice(1) +
-          ' ' + moment(h.fec_inicio).format('DD/MM/YYYY');
+          ' ' + moment(h.fec_inicio).format(f_fecha);
 
-        h.hora_inicio = h.fec_inicio.split(' ')[1];
+        h.hora_inicio = moment(moment(h.fec_inicio).format('HH:mm:ss'), 'HH:mm').format(f_hora);
 
         h.fecha_fin = moment.weekdays(moment(h.fec_final.split(' ')[0]).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(h.fec_final.split(' ')[0]).day()).slice(1) +
-          ' ' + moment(h.fec_final).format('DD/MM/YYYY');
+          ' ' + moment(h.fec_final).format(f_fecha);
 
-        h.hora_fin = h.fec_final.split(' ')[1];
+        h.hora_fin = moment(moment(h.fec_final).format('HH:mm:ss'), 'HH:mm').format(f_hora);
 
         h.fec_solicita = moment.weekdays(moment(h.fec_solicita).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(h.fec_solicita).day()).slice(1) +
-          ' ' + moment(h.fec_solicita).format('DD/MM/YYYY');
+          ' ' + moment(h.fec_solicita).format(f_fecha);
       })
 
       console.log('data horas .. ', this.hora_extra)
@@ -254,7 +289,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
       width: '300px',
       data: { pedido_hora: datosHoraExtra, carga: nombre }
     }).afterClosed().subscribe(items => {
-      this.BuscarInfo();
+      this.BuscarParametro();
       this.HabilitarAutorizacion = true;
     });
   }
@@ -265,7 +300,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
       width: '400px',
       data: { horaExtra: datos, proceso: proceso, auto: aprobar }
     }).afterClosed().subscribe(items => {
-      this.BuscarInfo();
+      this.BuscarParametro();
     });
   }
 
@@ -273,7 +308,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     this.ventana.open(EditarEstadoHoraExtraAutorizacionComponent,
       { width: '300px', data: { autorizacion: [AutoHoraExtra], empl: this.id_usua_solicita } })
       .afterClosed().subscribe(items => {
-        this.BuscarInfo();
+        this.BuscarParametro();
       })
   }
 

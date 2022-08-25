@@ -69,7 +69,15 @@ export class HomeComponent implements OnInit {
     // id_tipo_parametro Formato fecha = 25
     this.restP.ListarDetalleParametros(25).subscribe(
       res => {
-        sessionStorage.setItem('fechas', res[0].descripcion)
+        localStorage.removeItem('fechas');
+        localStorage.setItem('fechas', res[0].descripcion)
+      });
+
+    // id_tipo_parametro Formato hora = 26
+    this.restP.ListarDetalleParametros(26).subscribe(
+      res => {
+        localStorage.removeItem('horas');
+        localStorage.setItem('horas', res[0].descripcion)
       });
   }
 
