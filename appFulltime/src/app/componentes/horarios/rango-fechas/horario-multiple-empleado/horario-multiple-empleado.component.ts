@@ -69,42 +69,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
 
   public check: checkOptions[];
 
-  // PRESENTACION DE INFORMACION DE ACUERDO AL CRITERIO DE BUSQUEDA
-  departamentos: any = [];
-  sucursales: any = [];
-  respuesta: any[];
-  empleados: any = [];
-  origen: any = [];
 
-  selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
-  selectionDep = new SelectionModel<ITableEmpleados>(true, []);
-  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
-
-  // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
-  pageSizeOptions_suc = [5, 10, 20, 50];
-  tamanio_pagina_suc: number = 5;
-  numero_pagina_suc: number = 1;
-
-  // ITEMS DE PAGINACIÓN DE LA TABLA DEPARTAMENTO
-  pageSizeOptions_dep = [5, 10, 20, 50];
-  tamanio_pagina_dep: number = 5;
-  numero_pagina_dep: number = 1;
-
-  // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
-  pageSizeOptions_emp = [5, 10, 20, 50];
-  tamanio_pagina_emp: number = 5;
-  numero_pagina_emp: number = 1;
-
-  get filtroNombreSuc() { return this.restR.filtroNombreSuc }
-
-  get filtroNombreDep() { return this.restR.filtroNombreDep }
-
-  get filtroNombreEmp() { return this.restR.filtroNombreEmp };
-  get filtroCodigo() { return this.restR.filtroCodigo };
-  get filtroCedula() { return this.restR.filtroCedula };
-
-  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
-  auto_individual: boolean = true;
 
   constructor(
     public informacion: DatosGeneralesService, // SERVICIO DE DATOS INFORMATIVOS DE USUARIOS
@@ -156,7 +121,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
           ele.empleado.forEach(r => {
             let elemento = {
               id: r.id,
-              name_empleado: r.name_empleado,
+              nombre: r.name_empleado,
               codigo: r.codigo,
               cedula: r.cedula,
               correo: r.correo,
@@ -244,6 +209,43 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
         break;
     }
   }
+
+  // PRESENTACION DE INFORMACION DE ACUERDO AL CRITERIO DE BUSQUEDA
+  departamentos: any = [];
+  sucursales: any = [];
+  respuesta: any[];
+  empleados: any = [];
+  origen: any = [];
+
+  selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
+  selectionDep = new SelectionModel<ITableEmpleados>(true, []);
+  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
+  pageSizeOptions_suc = [5, 10, 20, 50];
+  tamanio_pagina_suc: number = 5;
+  numero_pagina_suc: number = 1;
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA DEPARTAMENTO
+  pageSizeOptions_dep = [5, 10, 20, 50];
+  tamanio_pagina_dep: number = 5;
+  numero_pagina_dep: number = 1;
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
+  pageSizeOptions_emp = [5, 10, 20, 50];
+  tamanio_pagina_emp: number = 5;
+  numero_pagina_emp: number = 1;
+
+  get filtroNombreSuc() { return this.restR.filtroNombreSuc }
+
+  get filtroNombreDep() { return this.restR.filtroNombreDep }
+
+  get filtroNombreEmp() { return this.restR.filtroNombreEmp };
+  get filtroCodigo() { return this.restR.filtroCodigo };
+  get filtroCedula() { return this.restR.filtroCedula };
+
+  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
+  auto_individual: boolean = true;
 
   /** ************************************************************************************** **
    ** **                   METODOS DE SELECCION DE DATOS DE USUARIOS                      ** **
@@ -465,6 +467,25 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     }
   }
 
+  MostrarLista() {
+    if (this.opcion === 1) {
+      this.nombre_suc.reset();
+      this.Filtrar('', 1)
+    }
+    else if (this.opcion === 2) {
+      this.nombre_dep.reset();
+      this.Filtrar('', 2)
+    }
+    else if (this.opcion === 3) {
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 3)
+      this.Filtrar('', 4)
+      this.Filtrar('', 5)
+    }
+  }
+
   // METODO PARA LIMPIAR FORMULARIOS
   LimpiarFormulario() {
     if (this._booleanOptions.bool_emp === true) {
@@ -474,9 +495,6 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
       this.nombre_emp.reset();
 
       this._booleanOptions.bool_emp = false;
-      this._booleanOptions.bool_tab = false;
-      this._booleanOptions.bool_inc = false;
-
       this.selectionEmp.clear();
     }
 

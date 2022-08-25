@@ -262,7 +262,8 @@ class Servidor {
                     id_vacaciones: data.id_vacaciones,
                     id_hora_extra: data.id_hora_extra,
                     mensaje: data.mensaje,
-                    tipo: data.tipo
+                    tipo: data.tipo,
+                    usuario: data.usuario
                 }
                 console.log('server', data_llega);
                 socket.broadcast.emit('recibir_notificacion', data_llega);
@@ -278,7 +279,8 @@ class Servidor {
                     visto: data.visto,
                     descripcion: data.descripcion,
                     id_timbre: data.id_timbre,
-                    tipo: data.tipo
+                    tipo: data.tipo,
+                    usuario: data.usuario
                 }
                 console.log('server aviso .......', data_llega);
                 socket.broadcast.emit('recibir_aviso', data_llega);

@@ -14,7 +14,7 @@
                             <mat-label>Ingresar ID de usuario</mat-label>
                             <input matInput placeholder="Ej: " [(ngModel)]="filtroIdUser"
                                 [formControl]="idUser" (keypress)="IngresarSoloNumeros($event)">
-                            <mat-icon id="i_enrolado" matSuffix matTooltipClass="enrolado-tooltip"
+                            <mat-icon id="i_enrolado" matSuffix 
                                 matTooltipPosition="right"
                                 matTooltip="Búsqueda del empleado enrolado por el ID de usuario">
                                 help_outline</mat-icon>
@@ -23,14 +23,14 @@
                             <mat-label>Ingresar Nombre</mat-label>
                             <input matInput placeholder="Ej: " [(ngModel)]="filtroEnrNombre"
                                 [formControl]="nombre" type="text" (keypress)="IngresarSoloLetras($event)">
-                            <mat-icon id="i_enrolado" matSuffix matTooltipClass="enrolado-tooltip"
+                            <mat-icon id="i_enrolado" matSuffix 
                                 matTooltipPosition="right"
                                 matTooltip="Búsqueda del empleado enrolado por el nombre">
                                 help_outline</mat-icon>
                         </mat-form-field>
                         <mat-form-field>
                             <mat-label>Seleccionar Estado</mat-label>
-                            <mat-icon id="i_enrolado" matSuffix matTooltipClass="enrolado-tooltip"
+                            <mat-icon id="i_enrolado" matSuffix 
                                 matTooltipPosition="right"
                                 matTooltip="Búsqueda del empleado enrolado por el estado">
                                 help_outline</mat-icon>
@@ -96,22 +96,22 @@
                         <td *ngIf="enrolado.activo == false">Inactivo</td>
                         <td>{{enrolado.finger}}</td>
                         <td class="d-flex justify-content-center">
-                            <i matSuffix matTooltipClass="enrolado-tooltip" matTooltipPosition="right"
+                            <i matSuffix  matTooltipPosition="right"
                                 matTooltip="Agregar empleado enrolado a un dispositivo" class="far fa-clock" id="enr_reloj"
                                 (click)="AbrirVentanaAsignarReloj(enrolado)">
                                 <p>Dispositivo</p>
                             </i>
-                            <i matSuffix matTooltipClass="enrolado-tooltip" matTooltipPosition="right"
+                            <i matSuffix  matTooltipPosition="right"
                                 matTooltip="Ver datos generales del empleado enrolado" class="fas fa-eye" id="verEnrolado"
                                 [routerLink]="['/enroladoDispositivo/', enrolado.id]">
                                 <p>Ver</p>
                             </i>
-                            <i (click)="AbrirVentanaEditar(enrolado)" matSuffix matTooltipClass=" enrolado-tooltip"
+                            <i (click)="AbrirVentanaEditar(enrolado)" matSuffix 
                                 matTooltipPosition="right" matTooltip="Modificar datos generales del empleado enrolado"
                                 class="fas fa-edit">
                                 <p>Editar</p>
                             </i>
-                            <i (click)="ConfirmarDelete(enrolado)" matSuffix matTooltipClass="enrolado-tooltip"
+                            <i (click)="ConfirmarDelete(enrolado)" matSuffix 
                                 matTooltipPosition="right" matTooltip="Eliminar registro de empleado enrolado"
                                 class="far fa-trash-alt">
                                 <p>Eliminar</p>

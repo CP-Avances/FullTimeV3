@@ -1,6 +1,7 @@
-<mat-icon id="movilidad">open_with</mat-icon>
-<div class="detallePlanHorarioE">
-    <h5 mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Detalle de Planificación Horario</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR DETALLE HORARIO</span>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="DetallePlanHorarioForm">
@@ -25,7 +26,7 @@
                     <br>
                     <mat-form-field>
                         <mat-label>Tipo de día</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltipClass="horaE-tooltip"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
                             matTooltip="Seleccionar el tipo de día en los que se podrá realizar horas extras">
                             help_outline</mat-icon>
                         <mat-select [formControl]="tipoDia" required>
@@ -37,7 +38,7 @@
                     <br>
                     <mat-form-field>
                         <mat-label>Seleccionar Horario</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipClass="sucursalR-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Seleccionar un horario">
                             help_outline</mat-icon>
                         <mat-select [formControl]="horarioF" required>

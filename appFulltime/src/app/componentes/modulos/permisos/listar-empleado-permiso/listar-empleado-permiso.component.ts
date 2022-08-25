@@ -89,7 +89,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         this.lista_permisos = true;
       }
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validacionesService.RedireccionarHomeAdmin(err.error)
     });
   }
   permisosTotales: any;
@@ -106,7 +106,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         this.ObtenerPermisosAutorizados();
       });
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validacionesService.RedireccionarHomeAdmin(err.error)
     })
 
   }
@@ -163,9 +163,10 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   AbrirAutorizaciones(datos_permiso, forma: string) {
     this.vistaFlotante.open(AutorizacionesComponent,
       { width: '600px', data: { datosPermiso: datos_permiso, carga: forma } }).afterClosed().subscribe(items => {
-        window.location.reload();
         this.obtenerPermisos();
         this.ObtenerPermisosAutorizados();
+        this.auto_individual = true;
+        this.selectionUno.clear();
       });
   }
 
@@ -192,7 +193,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         this.lista_autorizados = true;
       }
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validacionesService.RedireccionarHomeAdmin(err.error)
     });
   }
 

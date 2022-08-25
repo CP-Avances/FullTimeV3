@@ -1,8 +1,8 @@
 <div class="scrollbar scrollbar-primary">
-    <div class="d-flex bd-highlight barraTituloCargoE">
-        <mat-icon class="flex-shrink-1 bd-highlight" id="movilidad">open_with</mat-icon>
-        <h5 class="w-100 bd-highlight" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Cargo del
-            Empleado</h5>
+    <div id="titulo">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            REGISTRAR CARGO</span>
     </div>
     <!-- Formulario Completo -->
     <form [formGroup]="nuevoEmplCargosForm">
@@ -15,7 +15,7 @@
                 <div class="d-flex flex-wrap justify-content-around">
                     <mat-form-field>
                         <mat-label id="selEmpre">Seleccionar Sucursal</mat-label>
-                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Indicar cuál es la Sucursal en la que va a laborar el empleado">
                             help_outline</mat-icon>
                         <mat-select [formControl]="idSucursal" required>
@@ -25,7 +25,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Departamento</mat-label>
-                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Lista de departamentos existentes en la empresa">
                             help_outline</mat-icon>
                         <mat-select [formControl]="idDepartamento" required>
@@ -36,8 +36,7 @@
                         <mat-label>Fecha de Inicio</mat-label>
                         <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa" [formControl]="fechaInicio"
                             min="1950-01-31" max="2050-01-31" required>
-                        <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" 
-                            matTooltipPosition="right"
+                        <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" matTooltipPosition="right"
                             matTooltip="Indicar la fecha de ingreso del empleado. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                         </mat-datepicker-toggle>
                         <mat-datepicker touchUi #picker></mat-datepicker>
@@ -46,15 +45,14 @@
                         <mat-label id="selEmpre">Fecha de Finalización</mat-label>
                         <input matInput [matDatepicker]="picker2" placeholder="dd/mm/aaaa" [formControl]="fechaFinal"
                             required>
-                        <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" 
-                            matTooltipPosition="right"
+                        <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" matTooltipPosition="right"
                             matTooltip="Indicar la fecha de finalización del cargo del empelado. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                         </mat-datepicker-toggle>
                         <mat-datepicker touchUi #picker2></mat-datepicker>
                     </mat-form-field>
                     <mat-form-field *ngIf="habilitarSeleccion">
                         <mat-label id="selEmpre">Seleccionar Cargo</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Seleccione el tipo de cargo que va a desempeñar">
                             help_outline
                         </mat-icon>
@@ -68,7 +66,7 @@
                     <mat-form-field *ngIf="habilitarCargo">
                         <mat-label id="selEmpre">Cargo a desempeñar</mat-label>
                         <input matInput placeholder="Ej: Secretaria" [formControl]="cargoF" [ngStyle]="estilo">
-                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Regresar a la lista de cargos existentes" (click)="VerTiposCargos()">
                             help_outline</mat-icon>
                         <mat-error *ngIf="cargoF.invalid">Ingresar un cargo válido</mat-error>
@@ -79,7 +77,7 @@
                             (keypress)="IngresarSoloNumeros($event)" required>
                         <span matPrefix>$&nbsp;</span>
                         <span matSuffix>.00</span>
-                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Indicar cual es el sueldo del empleado">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -88,7 +86,7 @@
                         <input matInput placeholder="Ej: 8" maxlength="2" [formControl]="horaTrabaja"
                             oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                             (keypress)="IngresarSoloNumeros($event)" required>
-                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Indicar el número de horas que va a laborar el empleado">
                             help_outline</mat-icon>
                     </mat-form-field>

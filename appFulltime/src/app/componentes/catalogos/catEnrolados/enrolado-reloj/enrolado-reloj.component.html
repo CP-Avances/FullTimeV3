@@ -10,7 +10,7 @@
             </div>
             <mat-form-field>
                 <mat-label id="selecDispositivo">Seleccionar Dispositivo</mat-label>
-                <mat-icon id="enrolado_reloj" matSuffix matTooltipClass="reloj-enrolado-tooltip" matTooltipPosition="right"
+                <mat-icon id="enrolado_reloj" matSuffix  matTooltipPosition="right"
                     matTooltip="Lista de dispositivos existentes en la empresa">help_outline</mat-icon>
                 <mat-select [formControl]="dispositivoF" [(ngModel)]="seleccionarDispositivo" required>
                     <mat-option *ngFor="let d of dispositivos" [value]="d.id">

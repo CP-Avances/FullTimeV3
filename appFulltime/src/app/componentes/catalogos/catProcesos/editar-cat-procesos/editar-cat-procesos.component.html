@@ -1,6 +1,7 @@
-<mat-icon id="movilidad">open_with</mat-icon>
-<div class="tituloprocesoR">
-    <span mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Acciones de Personal Modificar Proceso</span>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR PROCESOS</span>
 </div>
 <div style="text-align: center">
     <form [formGroup]="nuevoProcesoForm">
@@ -15,7 +16,7 @@
                     <mat-label>Nombre de proceso</mat-label>
                     <input matInput placeholder="Ej: Emergencia" [formControl]="nombre"
                         (keypress)="IngresarSoloLetras($event)" required>
-                    <mat-icon id="iprocesoR" matSuffix matTooltipClass="procesoR-tooltip" matTooltipPosition="right"
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Ingresar nombre con el que se va a identificar el nuevo proceso">
                         help_outline</mat-icon>
                     <mat-error *ngIf="nombre.invalid">{{obtenerMensajeErrorNombre()}}</mat-error>
@@ -23,7 +24,7 @@
                 <br>
                 <mat-form-field>
                     <mat-label>Proceso Padre</mat-label>
-                    <mat-icon id="iprocesoR" matSuffix matTooltipClass="procesoR-tooltip" matTooltipPosition="right"
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Seleccionar uno de los procesos listados, el mismo que figurar como proceso superior al nuevo proceso creado">
                         help_outline</mat-icon>
                     <mat-select [formControl]="procesoPadre" [(ngModel)]="seleccionarProceso" required>
@@ -36,7 +37,7 @@
                 <br>
                 <mat-form-field>
                     <mat-label>Nivel</mat-label>
-                    <mat-icon id="iprocesoR" matSuffix matTooltipClass="procesoR-tooltip" matTooltipPosition="right"
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Seleccionar el nivel del nuevo proceso">
                         help_outline</mat-icon>
                     <mat-select [formControl]="nivel" [(ngModel)]="seleccionarNivel" required>

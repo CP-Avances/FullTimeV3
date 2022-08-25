@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -68,7 +68,7 @@ export class ColoresEmpresaComponent implements OnInit {
     private toastr: ToastrService,
     public router: Router,
     public location: Location,
-    public dialogRef: MatDialogRef<ColoresEmpresaComponent>,
+    public ventana: MatDialogRef<ColoresEmpresaComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
@@ -118,7 +118,7 @@ export class ColoresEmpresaComponent implements OnInit {
         timeOut: 6000,
       });
       this.obtenerColores();
-      this.dialogRef.close({ actualizar: true });
+      this.ventana.close({ actualizar: true });
       this.habilitarprogress = false;
     })
   }
@@ -193,7 +193,7 @@ export class ColoresEmpresaComponent implements OnInit {
         timeOut: 6000,
       });
       this.obtenerColores();
-      this.dialogRef.close({ actualizar: true });
+      this.ventana.close({ actualizar: true });
       this.habilitarprogress = false;
     })
   }
@@ -323,7 +323,7 @@ export class ColoresEmpresaComponent implements OnInit {
   }
 
   cerrarVentana() {
-    this.dialogRef.close({ actualizar: false });
+    this.ventana.close({ actualizar: false });
   }
 
 }

@@ -1,14 +1,14 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, ThemePalette } from '@angular/material/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 
 import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-editar-feriados',
@@ -16,44 +16,43 @@ import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
   styleUrls: ['./editar-feriados.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
 
 export class EditarFeriadosComponent implements OnInit {
 
   idFeriado: number;
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   fechaF = new FormControl('', Validators.required);
   descripcionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
   fechaRecuperacionF = new FormControl('');
 
-  // Asignación de validaciones a inputs del formulario
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
   public EditarFeriadosForm = new FormGroup({
     fechaForm: this.fechaF,
     descripcionForm: this.descripcionF,
     fechaRecuperacionForm: this.fechaRecuperacionF
   });
 
-  /**
-   * Variables progress spinner
-   */
+  /** ************************************************************* **
+   ** **           VARIABLES PROGRESS SPINNER                    ** **
+   ** ************************************************************* **/
+  habilitarprogress: boolean = false;
+  value = 10;
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'indeterminate';
-  value = 10;
-  habilitarprogress: boolean = false;
   
   constructor(
     private rest: FeriadosService,
     private toastr: ToastrService,
     private router: Router,
-    public dialogRef: MatDialogRef<EditarFeriadosComponent>,
+    public ventana: MatDialogRef<EditarFeriadosComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit(): void {
-
     this.ImprimirDatos();
   }
 
@@ -131,10 +130,10 @@ export class EditarFeriadosComponent implements OnInit {
           timeOut: 6000,
         })
         this.LimpiarCampos();
-        this.dialogRef.close();
+        this.ventana.close();
         this.habilitarprogress = false;
         if (this.data.actualizar === true) {
-          window.location.reload();
+          this.ImprimirDatos()
         } else {
           this.router.navigate(['/verFeriados/', datos.id]);
         }
@@ -155,7 +154,7 @@ export class EditarFeriadosComponent implements OnInit {
 
   CerrarVentanaEditarFeriado() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
   ImprimirDatos() {
@@ -174,9 +173,9 @@ export class EditarFeriadosComponent implements OnInit {
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {

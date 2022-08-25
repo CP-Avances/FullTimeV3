@@ -1,14 +1,13 @@
 <div class="scrollbar scrollbar-primary">
-    <div class="d-flex bd-highlight periodoVacaciones">
-        <mat-icon class="flex-shrink-1 bd-highlight" id="movilidad">open_with</mat-icon>
-        <h5 class="w-100 bd-highlight" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Período de
-            Vacaciones</h5>
+    <div id="titulo">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            REGISTRAR PERIODO VACACIONES</span>
     </div>
     <!-- Formulario Completo -->
     <form [formGroup]="PerVacacionesForm">
         <mat-card-content>
             <div class="container" style="text-align: center">
-                <br>
                 <div class="nota">
                     <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                         Guardar.</span>
@@ -24,7 +23,7 @@
                     <mat-form-field>
                         <mat-label>Descripción</mat-label>
                         <input matInput placeholder="Ej:" [formControl]="descripcionF" required>
-                        <mat-icon id="ayuda" matSuffix matTooltipPosition="right" 
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
                             matTooltip="Ingresar nombre del período de vacaciones">help_outline</mat-icon>
                         <mat-error *ngIf="descripcionF.invalid">{{ObtenerMensajeErrorNombre()}}</mat-error>
                         <mat-error *ngIf="descripcionF.invalid">Ingrese una descripción válida</mat-error>
@@ -62,7 +61,7 @@
                         <mat-label id="dias">Días de vacación por antiguedad</mat-label>
                         <input matInput placeholder="Días de incremento" [formControl]="diaAntiguedadF" required
                             (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Número de días que se incrementán a los días de vacaciones que se le conceden al empleado al cumplir los años indicados de antiguedad">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -70,7 +69,7 @@
                         <mat-label id="dias">Días de vacaciones disponibles</mat-label>
                         <input matInput placeholder="Días de incremento" [formControl]="diaVacacionF" required
                             (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Número de días de vacaciones que tiene disponibles el empleado">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -78,7 +77,7 @@
                         <mat-label id="dias">Horas de vacaciones disponibles</mat-label>
                         <input matInput placeholder="Días de incremento" [formControl]="horaVacacionF" required
                             (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Número de horas de vacaciones que tiene disponibles el empleado">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -86,7 +85,7 @@
                         <mat-label id="dias">Minutos vacaciones disponibles</mat-label>
                         <input matInput placeholder="Días de incremento" [formControl]="minVacacionF" required
                             (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Número de minutos de vacaciones que tiene disponibles el empleado">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -94,7 +93,7 @@
                         <mat-label id="dias">Días de vacaciones perdidos</mat-label>
                         <input matInput placeholder="Días de incremento" [formControl]="diaPerdidoF" required
                             (keypress)="IngresarSoloNumeros($event)">
-                        <mat-icon id="iReg" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Número de días de vacaciones perdidos por no usarlos dentro del período permitido">
                             help_outline</mat-icon>
                     </mat-form-field>

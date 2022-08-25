@@ -144,7 +144,7 @@ export class VerEmpresaComponent implements OnInit {
   }
 
   AbrirVentanaReportes(datos_empresa, ventana) {
-    this.ventana.open(ColoresEmpresaComponent, { width: '350', data: { datos: datos_empresa, ventana: ventana } })
+    this.ventana.open(ColoresEmpresaComponent, { width: '400', data: { datos: datos_empresa, ventana: ventana } })
       .afterClosed().subscribe((items: any) => {
         if (items.actualizar === true) {
           this.ObtenerSucursal();

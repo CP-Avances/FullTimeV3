@@ -1,6 +1,6 @@
 <div class="container" *ngFor="let d of datosPedido" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>ACCIÓN DE PERSONAL</span>
         </div>
         <mat-card-content>
@@ -44,16 +44,15 @@
                         <br><b>{{cargoG.toUpperCase()}} {{d.abrev_empl_dos}}</b> {{datoEmpleadoG.toUpperCase()}}</label>
                     <br>
                     <div style="text-align: right;">
-                        <i id="editarF" [routerLink]="['/editarPedido/',d.id]" matSuffix 
-                            matTooltipPosition="right" matTooltip="Modificar datos de este registro"
-                            class="fas fa-edit">
+                        <i id="editarF" [routerLink]="['/editarPedido/',d.id]" matSuffix matTooltipPosition="right"
+                            matTooltip="Modificar datos de este registro" class="fas fa-edit">
                             <p>Editar</p>
                         </i>
                     </div>
                 </div>
             </div>
             <input type="submit" class="btn btn-sm" [routerLink]="['/listaPedidos/']"
-                value="Ir a la Lista de Acciones de Personal">
+                value="Ir a lista de acciones de personal">
         </mat-card-content>
     </mat-card>
 </div>

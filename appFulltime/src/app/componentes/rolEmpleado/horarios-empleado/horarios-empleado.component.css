@@ -1,24 +1,6 @@
-.barraTitulo { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 14px; 
-    padding-bottom: 6px; 
-}
-
-#resulHorario { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
 #boton { background-color: rgb(80,87,97); color: white; margin-top: 10px;}
 
 #boton:hover { background-color: rgba(75, 75, 75, 0.609);}
-
 
 
 table { width: 100%; font-size: 14px; }

@@ -41,6 +41,16 @@ class DocumentosControlador {
             res.status(200).sendFile(path);
         });
     }
+    EliminarDocumento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let nombre = req.params.nom_carpeta;
+            let filename = req.params.filename;
+            console.log(nombre, '==========', filename);
+            const path = (0, listarArchivos_1.EliminarArchivo)(nombre, filename);
+            console.log(path);
+            res.jsonp({ message: 'Documento eliminado' });
+        });
+    }
     ListarDocumentos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const DOCUMENTOS = yield database_1.default.query('SELECT * FROM documentacion ORDER BY id');
@@ -89,10 +99,6 @@ class DocumentosControlador {
     }
     GuardarDocumentos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let list = req.files;
-            let doc = list.uploads[0].path.split("\\")[1];
-            let id = req.params.id;
-            yield database_1.default.query('UPDATE documentacion SET documento = $2 WHERE id = $1', [id, doc]);
             res.jsonp({ message: 'Documento Guardado' });
         });
     }

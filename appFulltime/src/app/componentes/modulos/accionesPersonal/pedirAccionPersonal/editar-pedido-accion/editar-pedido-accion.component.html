@@ -1,9 +1,8 @@
 <div class="container" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTitulo">
-            <span>Añadir Acción de Personal</span>
+        <div id="titulo">
+            <span>MODIFICAR PEDIDO ACCIÓN DE PERSONAL</span>
         </div>
-        <br>
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                 Guardar.</span>
@@ -16,16 +15,15 @@
                             <mat-label id="letra">Número Partida Presupuestaria</mat-label>
                             <input id="numero" matInput placeholder="13369689656312" formControlName="numPartidaForm"
                                 required (keypress)="IngresarSoloNumeros($event)">
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right" matTooltip="Ingresar número de partida presupuestaria">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Ingresar número de partida presupuestaria">
                                 help_outline</mat-icon>
                         </mat-form-field>
                         <mat-form-field>
                             <mat-label>Fecha Realización</mat-label>
                             <input matInput [matDatepicker]="pickerF" placeholder="dd/mm/aaaa" [formControl]="fechaF"
                                 min="1950-01-31" max="2050-01-31" required [disabled]="true">
-                            <mat-datepicker-toggle matSuffix [for]="pickerF" id="planComida"
-                                 matTooltipPosition="right"
+                            <mat-datepicker-toggle matSuffix [for]="pickerF" id="i-cursor" matTooltipPosition="right"
                                 matTooltip="Fecha en la que se realiza el registro de ingreso de acción de personal">
                             </mat-datepicker-toggle>
                             <mat-datepicker touchUi #pickerF></mat-datepicker>
@@ -39,16 +37,15 @@
                                     {{option.empleado.toUpperCase()}}
                                 </mat-option>
                             </mat-autocomplete>
-                            <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                matTooltipPosition="right" matTooltip="Colaboradores registrados en el sistema.">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Colaboradores registrados en el sistema.">
                                 help_outline</mat-icon>
                         </mat-form-field>
                         <mat-form-field>
                             <mat-label>Rige Desde</mat-label>
                             <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa"
                                 formControlName="fechaDesdeForm" required>
-                            <mat-datepicker-toggle matSuffix [for]="picker" id="planComida"
-                                matTooltipPosition="right"
+                            <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" matTooltipPosition="right"
                                 matTooltip="Ingresar fecha en la que rige el proceso acción de personal. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                             </mat-datepicker-toggle>
                             <mat-datepicker touchUi #picker></mat-datepicker>
@@ -57,16 +54,14 @@
                             <mat-label>Rige Hasta</mat-label>
                             <input matInput [matDatepicker]="picker2" placeholder="dd/mm/aaaa"
                                 formControlName="fechaHastaForm">
-                            <mat-datepicker-toggle matSuffix [for]="picker2" id="planComida"
-                                matTooltipPosition="right"
+                            <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" matTooltipPosition="right"
                                 matTooltip="Ingresar fecha en la finaliza el proceso acción de personal. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                             </mat-datepicker-toggle>
                             <mat-datepicker touchUi #picker2></mat-datepicker>
                         </mat-form-field>
                         <mat-form-field>
                             <mat-label id="letra">Tipo de acción</mat-label>
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Lista de tipos de acción de personal registrados en el sistema.">
                                 help_outline</mat-icon>
                             <mat-select formControlName="accionForm" required>
@@ -78,8 +73,7 @@
                         <mat-form-field>
                             <mat-label id="letra">Identificación acción de personal</mat-label>
                             <input matInput placeholder="HU-001" formControlName="identificacionForm" required>
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Ingresar un identificador del registro de acción de personal">
                                 help_outline</mat-icon>
                             <mat-error *ngIf="identificacionF.invalid">Ingresar un identificador válido</mat-error>
@@ -88,8 +82,7 @@
                             <mat-label>Adición a base legal</mat-label>
                             <textarea matInput #base maxlength="200" placeholder="Ingresar base legal"
                                 formControlName="baseForm"></textarea>
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Ingresar una descripción adicional a la base legal">
                                 help_outline</mat-icon>
                             <mat-hint align="start"><strong>Ingresar hasta 200 caracteres</strong></mat-hint>
@@ -104,16 +97,14 @@
                             <mat-label id="letra">Descripción de la partida propuesta</mat-label>
                             <input matInput placeholder="" formControlName="descripcionForm"
                                 (keypress)="IngresarSoloLetras($event)">
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Ingresar una descripción de la partida propuesta">
                                 help_outline</mat-icon>
                             <mat-error *ngIf="descripcionF.invalid">{{ObtenerMensajeErrorDescripcion()}}</mat-error>
                         </mat-form-field>
                         <mat-form-field *ngIf="vistaAcuerdo">
                             <mat-label id="letra">Seleccionar decreto, acuerdo o resolución</mat-label>
-                            <mat-icon id="planComida" matSuffix matTooltipPosition="right"
-                                
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Seleccione una de las opciones de la lista.">
                                 help_outline
                             </mat-icon>
@@ -127,16 +118,14 @@
                         <mat-form-field *ngIf="ingresoAcuerdo">
                             <mat-label>Ingresar opción</mat-label>
                             <input matInput placeholder="Ej: Decreto" [formControl]="otroDecretoF" [ngStyle]="estilo">
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right" matTooltip="Regresar a la lista de opciones existentes"
-                                (click)="VerDecretos()">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Regresar a la lista de opciones existentes" (click)="VerDecretos()">
                                 help_outline</mat-icon>
                             <mat-error *ngIf="otroDecretoF.invalid">Ingresar un nombre válido</mat-error>
                         </mat-form-field>
                         <mat-form-field *ngIf="vistaCargo">
                             <mat-label id="letra">Cargo/Puesto propuesto</mat-label>
-                            <mat-icon id="planComida" matSuffix matTooltipPosition="right"
-                                
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Seleccionar el cargo o puesto que se encuentra propuesto.">
                                 help_outline
                             </mat-icon>
@@ -151,16 +140,14 @@
                             <mat-label>Ingresar cargo</mat-label>
                             <input matInput placeholder="Ej: Laboratorista" [formControl]="otroCargoF"
                                 [ngStyle]="estiloC">
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right" matTooltip="Regresar a la lista de opciones existentes"
-                                (click)="VerCargos()">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Regresar a la lista de opciones existentes" (click)="VerCargos()">
                                 help_outline</mat-icon>
                             <mat-error *ngIf="otroCargoF.invalid">Ingresar un nombre válido</mat-error>
                         </mat-form-field>
                         <mat-form-field>
                             <mat-label id="letra">Proceso propuesto</mat-label>
-                            <mat-icon id="planComida" matSuffix matTooltipPosition="right"
-                                
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Seleccionar el proceso que se encuentra propuesto.">
                                 help_outline
                             </mat-icon>
@@ -174,8 +161,8 @@
                             <mat-label id="letra">Número Partida Propuesta</mat-label>
                             <input id="numero" matInput placeholder="13369689656312" formControlName="numPropuestaForm"
                                 (keypress)="IngresarSoloNumeros($event)">
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right" matTooltip="Ingresar número de partida propuesta">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Ingresar número de partida propuesta">
                                 help_outline</mat-icon>
                         </mat-form-field>
                         <mat-form-field>
@@ -184,8 +171,8 @@
                                 (keypress)="IngresarSoloNumeros($event)">
                             <span matPrefix>$&nbsp;</span>
                             <span matSuffix>.00</span>
-                            <mat-icon id="planComida" matSuffix 
-                                matTooltipPosition="right" matTooltip="Indicar cual es el salario propuesto">
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                matTooltip="Indicar cual es el salario propuesto">
                                 help_outline</mat-icon>
                         </mat-form-field>
                         <div class="row">
@@ -202,8 +189,7 @@
                                             {{th.empleado.toUpperCase()}}
                                         </mat-option>
                                     </mat-autocomplete>
-                                    <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                        matTooltipPosition="right"
+                                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Colaboradores registrados en el sistema.">
                                         help_outline</mat-icon>
                                 </mat-form-field>
@@ -223,8 +209,7 @@
                                             {{g.empleado.toUpperCase()}}
                                         </mat-option>
                                     </mat-autocomplete>
-                                    <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                        matTooltipPosition="right"
+                                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Colaboradores registrados en el sistema.">
                                         help_outline</mat-icon>
                                 </mat-form-field>

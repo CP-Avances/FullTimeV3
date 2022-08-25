@@ -171,7 +171,11 @@ export class ListarVacacionesComponent implements OnInit {
   AbrirAutorizaciones(datos_vacacion, forma: string) {
     this.ventana.open(VacacionAutorizacionesComponent,
       { width: '600px', data: { datosVacacion: datos_vacacion, carga: forma } }).afterClosed().subscribe(items => {
-        window.location.reload();
+        //window.location.reload();
+        this.ObtenerListaVacaciones();
+        this.ObtenerListaVacacionesAutorizadas();
+        this.auto_individual = true;
+        this.selectionUno.clear();
       });
   }
 

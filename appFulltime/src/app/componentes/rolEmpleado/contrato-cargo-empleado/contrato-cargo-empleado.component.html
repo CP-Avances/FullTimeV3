@@ -1,12 +1,12 @@
-<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+<div class="container" style="padding-top: 20px; padding-bottom: 25px;">
     <div class="row">
-        <div class="col-md">
+        <div class="col-md" style="padding-bottom: 20px;">
             <mat-card class="mat-elevation-z8">
-                <div class="barraTitulo">
+                <div id="titulo">
                     <div class="container">
                         <div class="row">
                             <div class="col" style="text-align: center;">
-                                <h5>Contrato de Trabajo</h5>
+                                <h5>CONTRATO DE TRABAJO</h5>
                             </div>
                         </div>
                     </div>
@@ -64,11 +64,11 @@
             </mat-card>
             <br>
             <mat-card class="mat-elevation-z8">
-                <div class="barraTitulo">
+                <div id="titulo">
                     <div class="container">
                         <div class="row">
                             <div class="col" style="text-align: center;">
-                                <h5>Contratos Anteriores</h5>
+                                <h5>CONTRATOS ANTERIORES</h5>
                             </div>
                         </div>
                     </div>
@@ -78,8 +78,8 @@
                         <form [formGroup]="contratoForm">
                             <mat-form-field>
                                 <mat-label>Período del Contrato</mat-label>
-                                <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                    matTooltipPosition="right" matTooltip="Lista de contratos del empleado">
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Lista de contratos del empleado">
                                     help_outline</mat-icon>
                                 <mat-select [formControl]="fechaContrato">
                                     <mat-option *ngFor="let c of contratoBuscado" [value]="c.id"
@@ -147,11 +147,11 @@
         </div>
         <div class="col-md">
             <mat-card class="mat-elevation-z8">
-                <div class="barraTitulo">
+                <div id="titulo">
                     <div class="container">
                         <div class="row">
                             <div class="col" style="text-align: center;">
-                                <h5>Cargo</h5>
+                                <h5>CARGO ACTUAL</h5>
                             </div>
                         </div>
                     </div>
@@ -197,11 +197,11 @@
             </mat-card>
             <br>
             <mat-card class="mat-elevation-z8">
-                <div class="barraTitulo">
+                <div id="titulo">
                     <div class="container">
                         <div class="row">
                             <div class="col" style="text-align: center;">
-                                <h5>Cargos Anteriores</h5>
+                                <h5>CARGOS ANTERIORES</h5>
                             </div>
                         </div>
                     </div>
@@ -211,8 +211,7 @@
                         <form [formGroup]="cargoForm">
                             <mat-form-field>
                                 <mat-label>Período del Cargo</mat-label>
-                                <mat-icon id="sucursalR" matSuffix matTooltipClass="sucursalR-tooltip"
-                                    matTooltipPosition="right"
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Seleccionar contrato para obtener la lista de sus respectivos cargos">
                                     help_outline</mat-icon>
                                 <mat-select [formControl]="fechaICargo">

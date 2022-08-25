@@ -46,6 +46,8 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   empleado: any = [];
   idEmpleado: number;
 
+  formato: string = 'DD/MM/YYYY';
+
   // VARIABLES USADAS PARA BÚSQUEDA DE DATOS DE PERMISO
   id_permiso: string;
   datoSolicitud: any = [];
@@ -67,6 +69,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+    this.formato = sessionStorage.getItem('fechas');
     this.id_permiso = this.router.url.split('/')[2];
   }
 
@@ -74,6 +77,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     this.BuscarDatos();
     this.ObtenerLogo();
     this.ObtenerColores();
+    console.log('ver fecha .. ', this.formato)
   }
 
   // VARIABE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
@@ -94,19 +98,19 @@ export class VerEmpleadoPermisoComponent implements OnInit {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
         p.fec_creacion = moment.weekdays(moment(p.fec_creacion).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(p.fec_creacion).day()).slice(1) +
-          ' ' + moment(p.fec_creacion).format('DD/MM/YYYY');
+          ' ' + moment(p.fec_creacion).format(this.formato);
 
         p.fec_inicio = moment.weekdays(moment(p.fec_inicio).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(p.fec_inicio).day()).slice(1) +
-          ' ' + moment(p.fec_inicio).format('DD/MM/YYYY');
+          ' ' + moment(p.fec_inicio).format(this.formato);
 
         p.fec_final = moment.weekdays(moment(p.fec_final).day()).charAt(0).toUpperCase() +
           moment.weekdays(moment(p.fec_final).day()).slice(1) +
-          ' ' + moment(p.fec_final).format('DD/MM/YYYY');
+          ' ' + moment(p.fec_final).format(this.formato);
 
-        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format('HH:mm:ss');
+        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format('hh:mm:ss a');
 
-        p.hora_salida = moment(p.hora_salida, 'HH:mm').format('HH:mm:ss');
+        p.hora_salida = moment(p.hora_salida, 'HH:mm').format('hh:mm:ss a');
 
       })
 
@@ -287,7 +291,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
       // PIE DE PÁGINA
       footer: function (currentPage: { toString: () => string; }, pageCount: string, fecha: string, hora: string) {
         var f = moment();
-        fecha = f.format('YYYY-MM-DD');
+        fecha = f.format('DD/MM/YYYY');
         hora = f.format('HH:mm:ss');
         return {
           margin: 10,

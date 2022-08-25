@@ -1,5 +1,5 @@
-<div class="barraTitulo">
-    <h5>Modificar Título al Empleado</h5>
+<div id="titulo">
+    <h5>MODIFICAR TÍTULO DEL USUARIO</h5>
 </div>
 <form [formGroup]="editarTituloEmpleadoForm">
     <mat-card-content>
@@ -10,9 +10,9 @@
             </div>
             <mat-form-field>
                 <mat-label>Observaciones</mat-label>
-                <input matInput placeholder="ejemplo" (keypress)="IngresarSoloLetras($event)"
-                    [formControl]="observa" required>
-                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
+                <input matInput placeholder="ejemplo" (keypress)="IngresarSoloLetras($event)" [formControl]="observa"
+                    required>
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Hacer una observación que referencia al título que posee el empleado">
                     help_outline
                 </mat-icon>
@@ -20,7 +20,7 @@
             <br>
             <mat-form-field>
                 <mat-label>Seleccionar título</mat-label>
-                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Seleccionar el Título profesional que tiene el empleado">
                     help_outline
                 </mat-icon>
@@ -35,7 +35,8 @@
 </form>
 <div style="text-align: center;">
     <button mat-button type="submit" class="btn"
-        (click)="ActualizarTituloEmpleado(editarTituloEmpleadoForm.value); cancelar();" [disabled]="!editarTituloEmpleadoForm.valid">
+        (click)="ActualizarTituloEmpleado(editarTituloEmpleadoForm.value); cancelar();"
+        [disabled]="!editarTituloEmpleadoForm.valid">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Guardar registro">save</span>
     </button>

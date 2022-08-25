@@ -24,6 +24,17 @@ export class DocumentosService {
     return this.http.get<any>(`${environment.url}/archivosCargados/download/files/${nom_carpeta}/${filename}`)
   }
 
+  EliminarArchivo(nom_carpeta: string, filename: string) {
+    return this.http.delete<any>(`${environment.url}/archivosCargados/eliminar/files/${nom_carpeta}/${filename}`)
+  }
+
+  SubirArchivo(formData) {
+    return this.http.post(`${environment.url}/archivosCargados/documento`, formData)
+  }
+
+
+
+
   ListarArchivos() {
     return this.http.get(`${environment.url}/archivosCargados`);
   }
@@ -40,9 +51,7 @@ export class DocumentosService {
     return this.http.put(`${environment.url}/archivosCargados/editar/${id}`, data);
   }
 
-  SubirArchivo(formData, id: number) {
-    return this.http.put(`${environment.url}/archivosCargados/${id}/documento`, formData)
-  }
+
 
   EliminarRegistro(id: number) {
     return this.http.delete(`${environment.url}/archivosCargados/eliminar/${id}`);

@@ -1,6 +1,7 @@
-<div class="d-flex bd-highlight detalleHorario">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center">Editar Detalle Horarios</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR DETALLE HORARIO</span>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="DetalleHorarioForm">

@@ -49,7 +49,7 @@ export class DiscapacidadComponent implements OnInit {
     this.tipoDiscapacidad[this.tipoDiscapacidad.length] = { nombre: "OTRO" };
   }
 
-  texto: string = 'Anadir'
+  texto: string = 'REGISTRAR'
   editarFormulario() {
     if (this.editar == 'editar') {
       this.rest.getDiscapacidadUsuarioRest(parseInt(this.idEmploy)).subscribe(data => {
@@ -57,7 +57,7 @@ export class DiscapacidadComponent implements OnInit {
         this.carnet.setValue(this.userDiscapacidad[0].carn_conadis);
         this.porcentaje.setValue(this.userDiscapacidad[0].porcentaje);
         this.tipo.setValue(this.userDiscapacidad[0].tipo);
-        this.texto = 'Modificar'
+        this.texto = 'MODIFICAR'
       });
     }
   }
@@ -77,7 +77,7 @@ export class DiscapacidadComponent implements OnInit {
         this.GuardarTipoRegistro(form1);
       }
       else {
-        this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad','', {
+        this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad', '', {
           timeOut: 6000,
         })
       }
@@ -85,7 +85,7 @@ export class DiscapacidadComponent implements OnInit {
     else {
       if (form1.tipoForm === null) {
         console.log('probando2', form1.tipoForm)
-        this.toastr.info('Se le indica que debe seleccionar un tipo de discapacidad','', {
+        this.toastr.info('Se le indica que debe seleccionar un tipo de discapacidad', '', {
           timeOut: 6000,
         })
       }
@@ -102,7 +102,7 @@ export class DiscapacidadComponent implements OnInit {
         this.GuardarTipoActualizacion(form1);
       }
       else {
-        this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad','', {
+        this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad', '', {
           timeOut: 6000,
         })
       }
@@ -125,7 +125,7 @@ export class DiscapacidadComponent implements OnInit {
       });
       this.limpiarCampos();
       this.metodo.obtenerDiscapacidadEmpleado(this.idEmploy);
-      this.texto = 'Añadir';
+      this.texto = 'REGISTRAR';
     }, error => { });
   }
 

@@ -1,9 +1,9 @@
 // IMPORTACIÓN DE LIBRERIAS
-import { MatTableDataSource } from '@angular/material/table';
 import { FormControl, Validators } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { PageEvent } from '@angular/material/paginator';
 
 // IMPORTACIÓN DE SERVICIOS
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
@@ -30,8 +30,8 @@ export class TimbreAdminComponent implements OnInit {
 
   // DATOS DE FILTROS DE BÚSQUEDA
   filtroDepartamento: '';
-  filtroCodigo: number;
   filtroEmpleado = '';
+  filtroCodigo: number;
   filtroCedula: '';
   filtroCargo: '';
 
@@ -54,10 +54,10 @@ export class TimbreAdminComponent implements OnInit {
   filtroFechaTimbre = '';
 
   constructor(
-    private validar: ValidacionesService, // SERVICIO CONTROL DE VALIDACONES
-    public restD: DatosGeneralesService, // SERVICIO DATOS GENERALES
-    private restTimbres: TimbresService, // SERVICIO DATOS DE TIMBRES
     private toastr: ToastrService, // VARIABLE MANEJO DE NOTIFICACIONES
+    private validar: ValidacionesService, // SERVICIO CONTROL DE VALIDACONES
+    private restTimbres: TimbresService, // SERVICIO DATOS DE TIMBRES
+    public restD: DatosGeneralesService, // SERVICIO DATOS GENERALES
   ) { }
 
   ngOnInit(): void {

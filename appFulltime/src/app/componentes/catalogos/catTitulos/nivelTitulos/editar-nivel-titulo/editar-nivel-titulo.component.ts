@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
 import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulos.service';
 
@@ -10,6 +10,7 @@ import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulo
   templateUrl: './editar-nivel-titulo.component.html',
   styleUrls: ['./editar-nivel-titulo.component.css']
 })
+
 export class EditarNivelTituloComponent implements OnInit {
 
   nombre = new FormControl('', Validators.required)
@@ -20,9 +21,9 @@ export class EditarNivelTituloComponent implements OnInit {
 
   constructor(
     private restNivelTitulos: NivelTitulosService,
-    public dialogRef: MatDialogRef<EditarNivelTituloComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
     private toastr: ToastrService,
+    public ventana: MatDialogRef<EditarNivelTituloComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 
   ngOnInit(): void {
@@ -84,13 +85,13 @@ export class EditarNivelTituloComponent implements OnInit {
 
   CerrarVentanaRegistroTitulo() {
     this.LimpiarCampos();
-    this.dialogRef.close();
-    window.location.reload();
+    this.ventana.close();
+    this.ImprimirDatos();
   }
 
   Salir() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
-  
+
 }

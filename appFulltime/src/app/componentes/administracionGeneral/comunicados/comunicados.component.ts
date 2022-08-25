@@ -460,6 +460,25 @@ export class ComunicadosComponent implements OnInit {
     this.seleccion.reset();
   }
 
+  MostrarLista() {
+    if (this.opcion === 1) {
+      this.nombre_suc.reset();
+      this.Filtrar('', 1)
+    }
+    else if (this.opcion === 2) {
+      this.nombre_dep.reset();
+      this.Filtrar('', 2)
+    }
+    else if (this.opcion === 3) {
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 3)
+      this.Filtrar('', 4)
+      this.Filtrar('', 5)
+    }
+  }
+
   // MÉTODO PARA LEER NUMERO DE OCRREOS PERMITIDOS
   correos: number;
   BuscarParametro() {

@@ -39,16 +39,11 @@ export class SubirDocumentoComponent implements OnInit {
       doc_nombre: form.nombreDocumentoForm
     };
     if (this.archivoSubido[0].size <= 2e+6) {
-      this.rest.CrearArchivo(dataDocumento).subscribe(response => {
-        this.idDoc = response;
-        this.SubirRespaldo(this.idDoc.id);
+   
+        this.SubirRespaldo();
         this.LimpiarNombreArchivo();
         this.CerrarVentanaEditar();
-      }, error => {
-        this.toastr.error('Operación Fallida', 'Documento no pudo ser cargado en el sistema', {
-          timeOut: 6000,
-        })
-      })
+    
     }
     else {
       this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
@@ -72,13 +67,13 @@ export class SubirDocumentoComponent implements OnInit {
     }
   }
 
-  SubirRespaldo(id: number) {
+  SubirRespaldo() {
     let formData = new FormData();
     for (var i = 0; i < this.archivoSubido.length; i++) {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
-    this.rest.SubirArchivo(formData, id).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Documento subido con éxito', {
+    this.rest.SubirArchivo(formData).subscribe(res => {
+      this.toastr.success('Operación Exitosa', 'Documento cargado exitosamente.', {
         timeOut: 6000,
       });
       this.archivoForm.reset();

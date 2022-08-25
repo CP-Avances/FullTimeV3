@@ -1,12 +1,23 @@
-.btn { background-color: rgb(80,87,97); color: white; } 
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
-#accion { color: rgb(53, 95, 209); cursor: pointer; }
+#accion {
+    color: rgb(53, 95, 209);
+    cursor: pointer;
+}
 
-#cerrar { cursor: pointer; margin-left: 25px;}
+#cerrar {
+    cursor: pointer;
+}
 
-td { padding-top: 10px; text-align: center; }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-table { width: 100%; font-size: 12px;}
-
-
-
+table {
+    width: 100%;
+    font-size: 12px;
+}

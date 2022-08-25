@@ -1,7 +1,6 @@
-<div class="d-flex bd-highlight tituloEmpresaR">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-        Nivel de Seguridad</h5>
+<div id="resultados">
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
+        NIVEL DE SEGURIDAD</span>
 </div>
 <form [formGroup]="seguridadForm">
     <mat-card-content>
@@ -11,7 +10,7 @@
                     <div class="col-sm" style="text-align: left;">
                         <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
                             <label>Tipo de seguridad </label>
-                            <mat-icon id="empre" matSuffix matTooltipClass="empre-tooltip" matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Seleccionar el tipo de seguridad que se usara para realizar cambios importantes dentro del sistema">
                                 help_outline
                             </mat-icon>

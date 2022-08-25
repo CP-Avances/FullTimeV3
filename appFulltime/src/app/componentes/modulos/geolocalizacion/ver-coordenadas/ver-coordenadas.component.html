@@ -1,4 +1,4 @@
-<div class="container" *ngFor="let c of coordenadas" style="padding-top: 15px;">
+<div class="container" *ngFor="let c of coordenadas" style="padding-top: 20px;">
     <mat-card class="example-card mat-elevation-z8">
         <div id="titulo">
             <span>DATOS GENERALES</span>
@@ -7,17 +7,17 @@
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
                     <br>
-                    <div class="col-12">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Descripción:</label>
                         <label class="col-form-label">{{c.descripcion}}</label>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Latitud:</label>
                         <label class="col-form-label">{{c.latitud}}</label>
                     </div>
-                    <div class="col-6">
+                    <div class="col-md">
                         <label id="datosF" class="col-form-label">Longitud:</label>
                         <label class="col-form-label">{{c.longitud}}</label>
                     </div>
@@ -29,7 +29,7 @@
                     </i>
                 </div>
                 <div style="text-align: right;">
-                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaBusqueda()" value="Asignar Usuario">
+                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaBusqueda()" value="Asignar a usuario">
                     <input type="submit" class="btn btn-sm" [routerLink]="['/coordenadas/']" value="Atras">
                 </div>
             </div>
@@ -182,7 +182,7 @@
                 </div>
             </form>
             <div class="d-flex justify-content-around">
-                <input type="submit" class="btn btn-sm" (click)="GuardarRegistros()" value="Guardar Registro">
+                <input type="submit" class="btn btn-sm" (click)="GuardarRegistros()" value="Guardar registro">
                 <button mat-button type="submit" class="btn btn-sm" id="boton"
                     (click)="limpiarCampos()">Cancelar</button>
             </div>
@@ -191,7 +191,12 @@
             <hr>
             <!-- TABLA PARA SUCURSALES -->
             <div *ngIf="_booleanOptions.bool_suc" class="mat-elevation-z8" style="background: white;">
-                <div id="titulo">RESULTADO SUCURSALES</div>
+                                <div class="d-flex bd-highlight" id="resultados">
+                    <span class="w-100 bd-highlight">
+                        RESULTADO SUCURSALES</span>
+                    <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
+                        (click)="MostrarLista()">Mostrar lista</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm">
                         <thead class="thead-light">
@@ -227,7 +232,12 @@
             </div>
             <!-- TABLA PARA DEPARTAMENTOS -->
             <div *ngIf="_booleanOptions.bool_dep" class="mat-elevation-z8" style="background: white;">
-                <div id="titulo">RESULTADO DEPARTAMENTOS</div>
+                                <div class="d-flex bd-highlight" id="resultados">
+                    <span class="w-100 bd-highlight">
+                        RESULTADO DEPARTAMENTOS</span>
+                    <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
+                        (click)="MostrarLista()">Mostrar lista</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm">
                         <thead class="thead-light">
@@ -263,7 +273,12 @@
             </div>
             <!-- TABLA PARA EMPLEADOS -->
             <div *ngIf="_booleanOptions.bool_emp" class="mat-elevation-z8" style="background: white;">
-                <div id="titulo">RESULTADO USUARIOS</div>
+                                <div class="d-flex bd-highlight" id="resultados">
+                    <span class="w-100 bd-highlight">
+                        RESULTADO USUARIOS</span>
+                    <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
+                        (click)="MostrarLista()">Mostrar lista</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm">
                         <thead class="thead-light">

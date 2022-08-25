@@ -154,7 +154,7 @@ export class TimbreMultipleComponent implements OnInit {
           ele.empleado.forEach(r => {
             let elemento = {
               id: r.id,
-              name_empleado: r.name_empleado,
+              nombre: r.name_empleado,
               codigo: r.codigo,
               cedula: r.cedula,
               correo: r.correo,
@@ -546,8 +546,6 @@ export class TimbreMultipleComponent implements OnInit {
       this.nombre_emp.reset();
 
       this._booleanOptions.bool_emp = false;
-      this._booleanOptions.bool_tab = false;
-      this._booleanOptions.bool_inc = false;
 
       this.selectionEmp.clear();
     }
@@ -566,6 +564,25 @@ export class TimbreMultipleComponent implements OnInit {
 
     this.seleccion.reset();
     this.activar_boton = false;
+  }
+
+  MostrarLista() {
+    if (this.opcion === 1) {
+      this.nombre_suc.reset();
+      this.Filtrar('', 1)
+    }
+    else if (this.opcion === 2) {
+      this.nombre_dep.reset();
+      this.Filtrar('', 2)
+    }
+    else if (this.opcion === 3) {
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 3)
+      this.Filtrar('', 4)
+      this.Filtrar('', 5)
+    }
   }
 
   IngresarSoloLetras(e) {

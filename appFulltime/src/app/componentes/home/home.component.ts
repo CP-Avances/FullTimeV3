@@ -12,20 +12,22 @@ import * as echarts_marc from 'echarts/core';
 import * as echarts_retr from 'echarts/core';
 import * as echarts_tiem from 'echarts/core';
 import * as echarts_sali from 'echarts/core';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit{
- 
+export class HomeComponent implements OnInit {
+
   fecha: string;
 
   constructor(
     private restGraficas: GraficasService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public restP: ParametrosService
   ) { }
 
   ngOnInit(): void {
@@ -54,11 +56,21 @@ export class HomeComponent implements OnInit{
       [TooltipComponent, LegendComponent, LineChart, GridComponent, CanvasRenderer]
     );
 
-    var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-    var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
-    var f=new Date();
+    var meses = new Array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
+    var diasSemana = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
+    var f = new Date();
     this.fecha = diasSemana[f.getDay()] + ", " + f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
     this.ModeloGraficas();
+    this.BuscarParametro();
+  }
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.restP.ListarDetalleParametros(25).subscribe(
+      res => {
+        sessionStorage.setItem('fechas', res[0].descripcion)
+      });
   }
 
   ModeloGraficas() {
@@ -75,7 +87,7 @@ export class HomeComponent implements OnInit{
   GraficaUno() {
     let local = sessionStorage.getItem('asistencia');
     var chartDom = document.getElementById('charts_asistencia') as HTMLCanvasElement;
-    var thisChart = echarts_asis.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_asis.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaAsistenciaMicro().subscribe(res => {
@@ -92,7 +104,7 @@ export class HomeComponent implements OnInit{
   GraficaDos() {
     let local = sessionStorage.getItem('HoraExtra');
     var chartDom = document.getElementById('charts_hora_extra') as HTMLCanvasElement;
-    var thisChart = echarts_hora.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_hora.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaHoraExtraMicro().subscribe(res => {
@@ -109,7 +121,7 @@ export class HomeComponent implements OnInit{
   GraficaTres() {
     let local = sessionStorage.getItem('inasistencia');
     var chartDom = document.getElementById('charts_inasistencia') as HTMLCanvasElement;
-    var thisChart = echarts_inas.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_inas.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaInasistenciaMicro().subscribe(res => {
@@ -126,7 +138,7 @@ export class HomeComponent implements OnInit{
   GraficaCuatro() {
     let local = sessionStorage.getItem('JornadaHoraExtra');
     var chartDom = document.getElementById('charts_jornada_hora_extra') as HTMLCanvasElement;
-    var thisChart = echarts_jorn.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_jorn.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaJornadaHoraExtraMicro().subscribe(res => {
@@ -143,7 +155,7 @@ export class HomeComponent implements OnInit{
   GraficaCinco() {
     let local = sessionStorage.getItem('marcaciones');
     var chartDom = document.getElementById('charts_marcaciones') as HTMLCanvasElement;
-    var thisChart = echarts_marc.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_marc.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaMarcacionesMicro().subscribe(res => {
@@ -160,7 +172,7 @@ export class HomeComponent implements OnInit{
   GraficaSeis() {
     let local = sessionStorage.getItem('retrasos');
     var chartDom = document.getElementById('charts_retrasos') as HTMLCanvasElement;
-    var thisChart = echarts_retr.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_retr.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaRetrasoMicro().subscribe(res => {
@@ -177,7 +189,7 @@ export class HomeComponent implements OnInit{
   GraficaSiete() {
     let local = sessionStorage.getItem('tiempo_jornada');
     var chartDom = document.getElementById('charts_tiempo_jornada') as HTMLCanvasElement;
-    var thisChart = echarts_tiem.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_tiem.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaTiempoJornadaHoraExtraMicro().subscribe(res => {
@@ -194,7 +206,7 @@ export class HomeComponent implements OnInit{
   GraficaOcho() {
     let local = sessionStorage.getItem('salida_antes');
     var chartDom = document.getElementById('charts_salidas_antes') as HTMLCanvasElement;
-    var thisChart = echarts_sali.init(chartDom, 'light', {width: 350, renderer: 'svg',devicePixelRatio: 5 });
+    var thisChart = echarts_sali.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaSalidasAntesMicro().subscribe(res => {
@@ -224,25 +236,25 @@ export class HomeComponent implements OnInit{
   MenuRapido(num: number) {
     switch (num) {
       case 1: //Reportes
-        this.router.navigate(['/listaReportes'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/listaReportes'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 2: //Horas Extras
-        this.router.navigate(['/horas-extras-solicitadas'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/horas-extras-solicitadas'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 3: //Vacaciones
-        this.router.navigate(['/vacaciones-solicitados'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/vacaciones-solicitados'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 4: //Permisos
-        this.router.navigate(['/permisos-solicitados'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/permisos-solicitados'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 5: //Retrasos
-        this.router.navigate(['/macro/retrasos'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/retrasos'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 6: //Métricas
-        this.router.navigate(['/home'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/home'], { relativeTo: this.route, skipLocationChange: false });
         break;
       default:
-        this.router.navigate(['/home'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/home'], { relativeTo: this.route, skipLocationChange: false });
         break;
     }
   }
@@ -250,31 +262,31 @@ export class HomeComponent implements OnInit{
   RedireccionarRutas(num: number) {
     switch (num) {
       case 1: //Reportes
-        this.router.navigate(['/macro/inasistencia'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/inasistencia'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 2: //Horas Extras
-        this.router.navigate(['/macro/hora-extra'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/hora-extra'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 3: //Vacaciones
-        this.router.navigate(['/macro/asistencia'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/asistencia'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 4: //Permisos
-        this.router.navigate(['/macro/retrasos'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/retrasos'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 5: //Retrasos
-        this.router.navigate(['/macro/marcaciones'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/marcaciones'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 6: //Métricas
-        this.router.navigate(['/macro/tiempo-jornada-vs-hora-ext'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/tiempo-jornada-vs-hora-ext'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 7: //Métricas
-        this.router.navigate(['/macro/jornada-vs-hora-extra'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/jornada-vs-hora-extra'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 8: //Salidas antes
-        this.router.navigate(['/macro/salidas-antes'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/macro/salidas-antes'], { relativeTo: this.route, skipLocationChange: false });
         break;
       default:
-        this.router.navigate(['/home'], {relativeTo: this.route, skipLocationChange: false});
+        this.router.navigate(['/home'], { relativeTo: this.route, skipLocationChange: false });
         break;
     }
   }

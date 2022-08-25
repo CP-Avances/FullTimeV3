@@ -1,40 +1,37 @@
 <div class="container" *ngFor="let f of datosFeriado" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>DATOS GENERALES</span>
         </div>
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Descripción:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{f.descripcion}}</label>
                     </div>
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Fecha:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{f.fecha}}</label>
                     </div>
-                    <br>
-                    <div class="col">
+                    <div class="col-md">
                         <label class="col-sm col-form-label">Fecha de Recuperación:</label>
                         <br>
                         <label id="datosF" class="col-sm col-form-label">{{f.fec_recuperacion}}</label>
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <i id="editarF" (click)="AbrirVentanaEditarFeriado(f)" matSuffix 
-                        matTooltipPosition="right" matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                    <i id="editarF" (click)="AbrirVentanaEditarFeriado(f)" matSuffix matTooltipPosition="right"
+                        matTooltip="Modificar datos de este registro" class="fas fa-edit">
                         <p>Editar</p>
                     </i>
                 </div>
             </div>
             <hr>
             <div class="container table-responsive" style="padding-bottom: 50px;">
-                <div id="resulCiudades">CIUDADES EN LAS QUE RIGE ESTE FERIADO</div>
+                <div id="resultados">CIUDADES EN LAS QUE RIGE ESTE FERIADO</div>
                 <table class="mat-elevation-z8 table table-hover table-sm">
                     <thead class="thead-light">
                         <tr style="text-align: center;">
@@ -49,14 +46,13 @@
                             <td>{{dc.nombreciudad}}</td>
                             <td>
                                 <i id="editarI" (click)="AbrirVentanaEditarCiudad(dc)" matSuffix
-                                     matTooltipPosition="right"
-                                    matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                                    matTooltipPosition="right" matTooltip="Modificar datos de este registro"
+                                    class="fas fa-edit">
                                     <p>Editar</p>
                                 </i>
                                 <i class="far fa-trash-alt" (click)="ConfirmarDelete(dc)"
                                     style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
-                                    matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
-                                    matTooltip="Eliminar registro">
+                                    matTooltipPosition="right" matTooltip="Eliminar registro">
                                     <p>Eliminar</p>
                                 </i>
                             </td>
@@ -67,9 +63,8 @@
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/listarFeriados/']"
-                value="Ir a la Lista de Feriados">
-            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaAsignarCiudad(f)" value="Asignar una Ciudad">
+            <input type="submit" class="btn btn-sm" [routerLink]="['/listarFeriados/']" value="Ir a lista de feriados">
+            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaAsignarCiudad(f)" value="Asignar una ciudad">
         </mat-card-content>
     </mat-card>
 </div>

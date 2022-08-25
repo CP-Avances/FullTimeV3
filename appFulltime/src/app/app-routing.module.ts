@@ -32,7 +32,6 @@ import { EmplCargosComponent } from './componentes/empleado/cargo/empl-cargos/em
 import { ListarTitulosComponent } from './componentes/catalogos/catTitulos/listar-titulos/listar-titulos.component';
 import { ListarCiudadFeriadosComponent } from './componentes/catalogos/catFeriados/listar-ciudad-feriados/listar-ciudad-feriados.component';
 import { ListaSucursalesComponent } from './componentes/catalogos/catSucursal/lista-sucursales/lista-sucursales.component';
-import { ListarEmpresasComponent } from './componentes/catalogos/catEmpresa/listar-empresas/listar-empresas.component';
 import { DispositivosEnroladosComponent } from './componentes/catalogos/catEnrolados/dispositivos-enrolados/dispositivos-enrolados.component';
 import { OlvidarContraseniaComponent } from './componentes/iniciarSesion/olvidar-contrasenia/olvidar-contrasenia.component';
 import { ConfirmarContraseniaComponent } from './componentes/iniciarSesion/confirmar-contrasenia/confirmar-contrasenia.component';
@@ -117,8 +116,6 @@ import { VerParametroComponent } from './componentes/parametrosGenerales/ver-par
 import { ListarCoordenadasComponent } from './componentes/modulos/geolocalizacion/listar-coordenadas/listar-coordenadas.component';
 import { VerCoordenadasComponent } from './componentes/modulos/geolocalizacion/ver-coordenadas/ver-coordenadas.component';
 import { ComunicadosComponent } from './componentes/administracionGeneral/comunicados/comunicados.component';
-import { RealtimeAvisosComponent } from './componentes/administracionGeneral/notificaciones/realtime-avisos/realtime-avisos.component';
-import { RealtimeNotificacionComponent } from './componentes/administracionGeneral/notificaciones/realtime-notificacion/realtime-notificacion.component';
 import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
 import { ConfiguracionComponent } from './componentes/administracionGeneral/correo/configuracion/configuracion.component';
 import { ListarNivelTitulosComponent } from './componentes/catalogos/catTitulos/nivelTitulos/listar-nivel-titulos/listar-nivel-titulos.component';
@@ -153,6 +150,8 @@ import { ListarPedidoAccionComponent } from './componentes/modulos/accionesPerso
 import { EditarPedidoAccionComponent } from './componentes/modulos/accionesPersonal/pedirAccionPersonal/editar-pedido-accion/editar-pedido-accion.component';
 import { VerPedidoAccionComponent } from './componentes/modulos/accionesPersonal/pedirAccionPersonal/ver-pedido-accion/ver-pedido-accion.component';
 import { PermisosMultiplesEmpleadosComponent } from './componentes/modulos/permisos/permisos-multiples-empleados/permisos-multiples-empleados.component';
+import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
+import { RealtimeAvisosComponent } from './componentes/notificaciones/realtime-avisos/realtime-avisos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -187,7 +186,6 @@ const routes: Routes = [
   { path: 'emplCargos', component: EmplCargosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'sucursales', component: ListaSucursalesComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'nivelTitulos', component: ListarNivelTitulosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-  { path: 'empresa', component: ListarEmpresasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'planificacion', component: PlanificacionMultipleComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'permisos-solicitados', component: ListarEmpleadoPermisoComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'vacaciones-solicitados', component: ListarVacacionesComponent, canActivate: [AuthGuard], data: { roles: 1 } },

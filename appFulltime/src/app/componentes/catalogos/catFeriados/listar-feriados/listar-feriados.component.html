@@ -1,5 +1,4 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 20px;">
     <div class="row">
         <div class="col-md">
             <div id="titulo">
@@ -9,8 +8,8 @@
                 <div class="d-flex flex-wrap justify-content-center">
                     <input type="submit" class="btn btn-sm button" (click)="AbrirVentanaRegistrarFeriado()"
                         value="Crear nuevo feriado">
-                    <input type="submit" class="btn btn-sm button" (click)="LimpiarCampos()" value="Cancelar" matSuffix
-                        matTooltipPosition="right"
+                    <input type="submit" class="btn btn-sm button" (click)="LimpiarCampos()" value="Mostrar lista"
+                        matSuffix matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
                 </div>
             </mat-card>
@@ -37,7 +36,7 @@
 </div>
 <div class="container" style="padding-bottom: 10px; margin-bottom: 35px;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">RESULTADO DE BÚSQUEDA</div>
+        <div id="titulo">LISTA DE FERIADOS</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">

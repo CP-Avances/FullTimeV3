@@ -1,36 +1,23 @@
-.btn { background-color: rgb(80,87,97); color: white; }
-
-.button {margin: 5px 10px 5px 10px;}
-
-mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
-
-#cont { font-size: 14px; }
-
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    margin-left: 10px;
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
 }
 
-.tituloSucursalR{ 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    height: 50px;  
+.button {
+    margin: 5px 10px 5px 10px;
 }
 
-#sucursalR { cursor: pointer; }
+mat-form-field {
+    width: 250px;
+    padding: 10px 10px 0px 10px;
+}
 
-/*.sucursalR-tooltip { background-color : rgba(233, 33, 33, 0.828); }*/
+#cont {
+    font-size: 14px;
+}
 
-#provSelec { font-size: 15px; }
-
-.nota {
-    font-size: 12px; 
-    font-weight: bold; 
-    text-align: justify;
-    padding: 13px 5px 10px 5px; 
-    color: rgb(52,65,84);
+#provSelec {
+    font-size: 15px;
 }
 
 .progress {

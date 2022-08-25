@@ -1,12 +1,12 @@
-<br>
-<div class="container" style="padding-bottom: 25px;">
+<div class="container" style="padding-bottom: 25px; padding-top: 20px;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div class="barraTitulo d-flex bd-highlight">
+        <div class="d-flex bd-highlight" id="titulo">
             <div class="w-100 bd-highlight">
-                <h5>Planificación Horario</h5>
+                <h5>PLANIFICACIÓN HORARIO</h5>
             </div>
             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
-                <button type="submit" class="btn btn-outline-light btn-sm" (click)="AbrirVentanaPlanHorario()">Añadir</button>
+                <button type="submit" class="btn btn-outline-light btn-sm"
+                    (click)="AbrirVentanaPlanHorario()">Añadir</button>
             </div>
         </div>
         <div class="table-responsive">
@@ -23,27 +23,23 @@
                         <td>{{h.fec_inicio.split("T")[0]}}</td>
                         <td>{{h.fec_final.split("T")[0]}}</td>
                         <td class="d-flex justify-content-center">
-                            <i matSuffix  matTooltipPosition="right"
-                                matTooltip="Agregar Detalles de Planificación de Horario"
-                                class="far fa-list-alt" id="detalleH"
-                                (click)="AbrirVentanaDetallePlanHorario(h)">
-                                <p>Detalle</p>
-                            </i>
-                            <i *ngFor="let e of empleadoUno" matSuffix 
-                                matTooltipPosition="right" matTooltip="Ver datos generales de la planificación"
-                                class="fas fa-eye" id="ver" [routerLink]="['/detallesHEmpleado/', h.id, e.id]">
+
+                            <i *ngFor="let e of empleadoUno" matSuffix matTooltipPosition="right"
+                                matTooltip="Ver datos generales de la planificación" class="fas fa-eye" id="t-ver"
+                                [routerLink]="['/detallesHEmpleado/', h.id, e.id]">
                                 <p>Ver</p>
                             </i>
-                            <i class="fas fa-edit" style="color:green; margin-left: 15px;"
-                                (click)="AbrirEditarPlanificacion(h)" matSuffix matTooltipPosition="right"
-                                
-                                matTooltip="Modificar los datos generales de este registro">
+                            <i matSuffix matTooltipPosition="right"
+                                matTooltip="Agregar Detalles de Planificación de Horario" class="far fa-list-alt"
+                                id="t-detalles" (click)="AbrirVentanaDetallePlanHorario(h)">
+                                <p>Detalle</p>
+                            </i>
+                            <i class="fas fa-edit" id="t-editar" (click)="AbrirEditarPlanificacion(h)" matSuffix
+                                matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro">
                                 <p>Editar</p>
                             </i>
-                            <i class="far fa-trash-alt" (click)="ConfirmarDeletePlanificacion(h)"
-                                style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
-                                matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
-                                matTooltip="Eliminar registro">
+                            <i class="far fa-trash-alt" (click)="ConfirmarDeletePlanificacion(h)" id="t-eliminar"
+                                matSuffix matTooltipPosition="right" matTooltip="Eliminar registro">
                                 <p>Eliminar</p>
                             </i>
                         </td>
@@ -52,8 +48,7 @@
             </table>
         </div>
         <mat-paginator id="pagina" [length]="planHorario.length" [pageSize]="tamanio_pagina"
-            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
-            showFirstLastButtons>
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>

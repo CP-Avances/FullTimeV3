@@ -11,8 +11,8 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo">
-                            <h5>{{e.nombre}} {{e.apellido}}</h5>
+                        <div id="titulo">
+                            <h5>{{e.nombre.toUpperCase()}} {{e.apellido.toUpperCase()}}</h5>
                         </div>
                         <mat-card-content>
                             <div class="container" style="padding-top: 15px;">
@@ -86,7 +86,7 @@
                         </mat-card-content>
                         <div class="col" style="text-align: right;">
                             <button type="submit" class="btn" id="boton" (click)="CambiarContrasena()">Modificar
-                                Contraseña</button>
+                                contraseña</button>
                         </div>
                     </mat-card>
                 </div>
@@ -158,11 +158,11 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8">
-                        <div class="barraTitulo2">
+                        <div id="titulo">
                             <div class="container">
                                 <div class="row">
                                     <div class="col" style="text-align: center;">
-                                        <h5>Títulos</h5>
+                                        <h5>TÍTULO PROFESIONAL</h5>
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +205,7 @@
                             <div class="container">
                                 <div class="row" style="text-align: center;">
                                     <div class="col">
-                                        <h5>Discapacidad</h5>
+                                        <h5>DISCAPACIDAD</h5>
                                     </div>
                                 </div>
                             </div>
@@ -254,9 +254,9 @@
             <div class="row">
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
-                        <div class="d-flex bd-highlight barraTitulo1">
+                        <div class="d-flex bd-highlight" id="titulo">
                             <div class="w-100 bd-highlight">
-                                <h5>Registro de Vacunación</h5>
+                                <h5>REGISTRO DE VACUNACIÓN</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
                                 <!--     <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"

@@ -1,6 +1,6 @@
 <div class="container" *ngFor="let s of datosSucursal" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>DATOS GENERALES</span>
         </div>
         <mat-card-content>
@@ -27,19 +27,19 @@
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <i id="editarF" (click)="EditarDatosSucursal(s)" matSuffix 
-                        matTooltipPosition="right" matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                    <i id="editarF" (click)="EditarDatosSucursal(s)" matSuffix matTooltipPosition="right"
+                        matTooltip="Modificar datos de este registro" class="fas fa-edit">
                         <p>Editar</p>
                     </i>
                 </div>
                 <div style="text-align: center;">
                     <input type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarDepartamento()"
-                        value="Crear nuevo Departamento">
+                        value="Crear nuevo departamento">
                 </div>
             </div>
             <hr>
             <div class="container table-responsive" style="padding-bottom: 50px;">
-                <div id="resulDepartamentos">LISTA DE DEPARTAMENTOS</div>
+                <div id="resultados">LISTA DE DEPARTAMENTOS</div>
                 <table class="mat-elevation-z8 table table-hover table-sm">
                     <thead class="thead-light">
                         <tr style="text-align: center;">
@@ -59,14 +59,13 @@
                             </td>
                             <td *ngIf="d.nombre != 'Ninguno'">
                                 <i id="editarI" (click)="AbrirVentanaEditarDepartamento(d)" matSuffix
-                                     matTooltipPosition="right"
-                                    matTooltip="Modificar datos de este registro" class="fas fa-edit">
+                                    matTooltipPosition="right" matTooltip="Modificar datos de este registro"
+                                    class="fas fa-edit">
                                     <p>Editar</p>
                                 </i>
                                 <i class="far fa-trash-alt" (click)="ConfirmarDelete(d)"
                                     style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
-                                    matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
-                                    matTooltip="Eliminar registro">
+                                    matTooltipPosition="right" matTooltip="Eliminar registro">
                                     <p>Eliminar</p>
                                 </i>
                             </td>
@@ -77,7 +76,7 @@
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
                 <input type="submit" class="btn btn-sm" [routerLink]="['/sucursales/']"
-                    value="Ir a la Lista de Establecimientos">
+                    value="Ir a lista de establecimientos">
             </div>
         </mat-card-content>
     </mat-card>

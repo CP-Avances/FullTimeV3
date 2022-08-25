@@ -14,8 +14,6 @@ mat-form-field {padding: 10px 10px 0px 10px;}
 
 .mat-radio-button ~ .mat-radio-button { margin-left: 18px; }
 
-#activo { cursor: pointer; }
-
 #Feriado { font-size: 14px; }
 
 .scrollbar {

@@ -471,7 +471,7 @@ export class VerEmpleadoComponent implements OnInit {
   urlImagen: any;
   iniciales: any;
   mostrarImagen: boolean = false;
-  textoBoton: string = 'Subir Foto';
+  textoBoton: string = 'Subir foto';
   verEmpleado(idemploy: string) {
     this.empleadoUno = [];
     let idEmpleadoActivo = localStorage.getItem('empleado');
@@ -487,11 +487,11 @@ export class VerEmpleadoComponent implements OnInit {
           // this.Main.urlImagen = this.urlImagen;
         }
         this.mostrarImagen = true;
-        this.textoBoton = 'Editar Foto';
+        this.textoBoton = 'Editar foto';
       } else {
         this.iniciales = data[0].nombre.split(" ")[0].slice(0, 1) + data[0].apellido.split(" ")[0].slice(0, 1);
         this.mostrarImagen = false;
-        this.textoBoton = 'Subir Foto';
+        this.textoBoton = 'Subir foto';
       }
       this.MapGeolocalizar(data[0]['latitud'], data[0]['longitud'], empleado);
       this.obtenerPeriodoVacaciones();

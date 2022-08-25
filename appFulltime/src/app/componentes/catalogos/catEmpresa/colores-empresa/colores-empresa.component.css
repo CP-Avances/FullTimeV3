@@ -1,17 +1,18 @@
-mat-form-field { width: 230px; }
-
-.btn { border-radius: 5px; margin-left: 15px; background-color: rgb(80,87,97); color: white;}
-
-#titulo { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+mat-form-field {
+    width: 230px;
 }
 
-#cerrar { color:red; cursor: pointer; }
+.btn {
+    border-radius: 5px;
+    margin-left: 15px;
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
+
+#cerrar {
+    color: red;
+    cursor: pointer;
+}
 
 .progress {
     margin: 250px auto auto auto;
@@ -31,4 +32,8 @@ mat-form-field { width: 230px; }
 mat-progress-spinner {
     background: transparent;
     z-index: 100;
+}
+
+#mover {
+    cursor: grab;
 }

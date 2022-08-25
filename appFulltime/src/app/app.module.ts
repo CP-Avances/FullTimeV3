@@ -57,7 +57,6 @@ import { RegistroEmpresaComponent } from './componentes/catalogos/catEmpresa/reg
 import { DispositivosEnroladosComponent } from './componentes/catalogos/catEnrolados/dispositivos-enrolados/dispositivos-enrolados.component';
 import { RegistroPlanHorarioComponent } from './componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
 import { RegistroDetallePlanHorarioComponent } from './componentes/horarios/detallePlanHorario/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
-import { ListarEmpresasComponent } from './componentes/catalogos/catEmpresa/listar-empresas/listar-empresas.component';
 import { RegistroAutorizacionDepaComponent } from './componentes/autorizaciones/autorizaDepartamentos/registro-autorizacion-depa/registro-autorizacion-depa.component';
 import { RegistoEmpleadoHorarioComponent } from './componentes/horarios/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
 import { DetalleCatHorarioComponent } from './componentes/catalogos/catHorario/detalle-cat-horario/detalle-cat-horario.component';
@@ -91,9 +90,8 @@ import { EditarEstadoAutorizaccionComponent } from './componentes/autorizaciones
 import { VerDetallePlanHorariosComponent } from './componentes/horarios/detallePlanHorario/ver-detalle-plan-horarios/ver-detalle-plan-horarios.component';
 import { EditarEstadoVacacionAutoriacionComponent } from './componentes/autorizaciones/editar-estado-vacacion-autoriacion/editar-estado-vacacion-autoriacion.component';
 import { SubirDocumentoComponent } from './componentes/documentos/subir-documento/subir-documento.component';
-import { EditarDocumentoComponent } from './componentes/documentos/editar-documento/editar-documento.component';
 import { VerDocumentosComponent } from './componentes/documentos/ver-documentos/ver-documentos.component';
-import { SettingsComponent } from './componentes/administracionGeneral/settings/settings.component';
+import { SettingsComponent } from './componentes/administracionGeneral/preferecias/settings/settings.component';
 import { VacacionAutorizacionesComponent } from './componentes/autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
 import { ConfigurarAtrasosComponent } from './componentes/reportes/configuracion-reportes/configurar-atrasos/configurar-atrasos.component';
 import { HoraExtraAutorizacionesComponent } from './componentes/autorizaciones/hora-extra-autorizaciones/hora-extra-autorizaciones.component';
@@ -174,7 +172,7 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { ConfirmarDesactivadosComponent } from './componentes/empleado/datos-empleado/confirmar-desactivados/confirmar-desactivados.component';
 import { PlanHoraExtraAutorizaComponent } from './componentes/autorizaciones/plan-hora-extra-autoriza/plan-hora-extra-autoriza.component';
 import { ColoresEmpresaComponent } from './componentes/catalogos/catEmpresa/colores-empresa/colores-empresa.component';
-import { AyudaComponent } from './componentes/administracionGeneral/navegacion/ayuda/ayuda.component';
+import { AyudaComponent } from './componentes/administracionGeneral/preferecias/ayuda/ayuda.component';
 
 import { CorreoEmpresaComponent } from './componentes/administracionGeneral/correo/correo-empresa/correo-empresa.component';
 import { ListaArchivosComponent } from './componentes/documentos/lista-archivos/lista-archivos.component';
@@ -193,7 +191,7 @@ import { DetalleMenuComponent } from './componentes/catalogos/catTipoComidas/det
 import { VistaMenuComponent } from './componentes/catalogos/catTipoComidas/vista-menu/vista-menu.component';
 import { EditarDetalleMenuComponent } from './componentes/catalogos/catTipoComidas/editar-detalle-menu/editar-detalle-menu.component';
 import { ConfigReportFirmasHorasExtrasComponent } from './componentes/reportes/configuracion-reportes/config-report-firmas-horas-extras/config-report-firmas-horas-extras.component';
-import { AccionesTimbresComponent } from './componentes/administracionGeneral/acciones-timbres/acciones-timbres.component';
+import { AccionesTimbresComponent } from './componentes/administracionGeneral/preferecias/acciones-timbres/acciones-timbres.component';
 import { HorariosMultiplesComponent } from './componentes/horarios/rango-fechas/horarios-multiples/horarios-multiples.component';
 import { HorarioMultipleEmpleadoComponent } from './componentes/horarios/rango-fechas/horario-multiple-empleado/horario-multiple-empleado.component';
 
@@ -234,9 +232,6 @@ import { ListarCoordenadasComponent } from './componentes/modulos/geolocalizacio
 import { EditarCoordenadasComponent } from './componentes/modulos/geolocalizacion/editar-coordenadas/editar-coordenadas.component';
 import { VerCoordenadasComponent } from './componentes/modulos/geolocalizacion/ver-coordenadas/ver-coordenadas.component';
 import { ComunicadosComponent } from './componentes/administracionGeneral/comunicados/comunicados.component';
-import { RealtimeNotificacionComponent } from './componentes/administracionGeneral/notificaciones/realtime-notificacion/realtime-notificacion.component';
-import { RealtimeAvisosComponent } from './componentes/administracionGeneral/notificaciones/realtime-avisos/realtime-avisos.component';
-import { EliminarRealtimeComponent } from './componentes/administracionGeneral/notificaciones/eliminar-realtime/eliminar-realtime.component';
 import { RegistrarBirthdayComponent } from './componentes/administracionGeneral/birthday/registrar-birthday/registrar-birthday.component';
 import { EditarBirthdayComponent } from './componentes/administracionGeneral/birthday/editar-birthday/editar-birthday.component';
 import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
@@ -259,13 +254,6 @@ import { MarcacionesEmpMacroComponent } from './componentes/reportes/graficas-ma
 import { RetrasosMacroComponent } from './componentes/reportes/graficas-macro/retrasos-macro/retrasos-macro.component';
 import { TiempoJornadaVsHoraExtMacroComponent } from './componentes/reportes/graficas-macro/tiempo-jornada-vs-hora-ext-macro/tiempo-jornada-vs-hora-ext-macro.component';
 import { ListarCiudadComponent } from './componentes/catalogos/catCiudad/listar-ciudad/listar-ciudad.component';
-import { MainNavComponent } from './componentes/administracionGeneral/navegacion/main-nav/main-nav.component';
-import { NavbarComponent } from './componentes/administracionGeneral/navegacion/main-nav/navbar/navbar.component';
-import { SearchComponent } from './componentes/administracionGeneral/navegacion/main-nav/search/search.component';
-import { ButtonNotificacionComponent } from './componentes/administracionGeneral/navegacion/main-nav/button-notificacion/button-notificacion.component';
-import { ButtonAvisosComponent } from './componentes/administracionGeneral/navegacion/main-nav/button-avisos/button-avisos.component';
-import { ButtonOpcionesComponent } from './componentes/administracionGeneral/navegacion/main-nav/button-opciones/button-opciones.component';
-import { MainNavService } from './componentes/administracionGeneral/navegacion/main-nav/main-nav.service';
 import { RegistrarPeriodoVComponent } from './componentes/modulos/vacaciones/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { RegistrarEmpleProcesoComponent } from './componentes/modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { RegistrarVacacionesComponent } from './componentes/modulos/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
@@ -311,6 +299,16 @@ import { ListarPlanificacionComponent } from './componentes/modulos/alimentacion
 import { ListaAppComponent } from './componentes/modulos/appMovil/lista-app/lista-app.component';
 import { UpdateEstadoAppComponent } from './componentes/modulos/appMovil/update-estado-app/update-estado-app.component';
 import { PlanificacionComidasComponent } from './componentes/modulos/alimentacion/planificacion-comidas/planificacion-comidas.component';
+import { MainNavComponent } from './componentes/administracionGeneral/main-nav/main-nav.component';
+import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
+import { RealtimeAvisosComponent } from './componentes/notificaciones/realtime-avisos/realtime-avisos.component';
+import { EliminarRealtimeComponent } from './componentes/notificaciones/eliminar-realtime/eliminar-realtime.component';
+import { NavbarComponent } from './componentes/administracionGeneral/main-nav/navbar/navbar.component';
+import { SearchComponent } from './componentes/administracionGeneral/main-nav/search/search.component';
+import { ButtonNotificacionComponent } from './componentes/administracionGeneral/main-nav/button-notificacion/button-notificacion.component';
+import { ButtonAvisosComponent } from './componentes/administracionGeneral/main-nav/button-avisos/button-avisos.component';
+import { ButtonOpcionesComponent } from './componentes/administracionGeneral/main-nav/button-opciones/button-opciones.component';
+import { MainNavService } from './componentes/administracionGeneral/main-nav/main-nav.service';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -373,7 +371,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     RegistrarVacacionesComponent,
     RegistroPlanHorarioComponent,
     RegistroDetallePlanHorarioComponent,
-    ListarEmpresasComponent,
     RegistroAutorizacionDepaComponent,
     RegistroEmpleadoPermisoComponent,
     RegistoEmpleadoHorarioComponent,
@@ -429,7 +426,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     SolicitarPermisosEmpleadoComponent,
     RealtimeNotificacionComponent,
     SubirDocumentoComponent,
-    EditarDocumentoComponent,
     VerDocumentosComponent,
     VerDocumentacionComponent,
     SettingsComponent,

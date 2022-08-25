@@ -1,11 +1,12 @@
-<mat-icon id="movilidad">open_with</mat-icon>
-<div class="empleHorario">
-    <h5 mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Editar Horario del Empleado</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR HORARIO</span>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="EmpleadoHorarioForm">
     <mat-card-content>
-        <div class="container" style="padding-top: 15px; text-align: center;">
+        <div class="container" style="text-align: center;">
             <div class="nota">
                 <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                     Guardar.</span>

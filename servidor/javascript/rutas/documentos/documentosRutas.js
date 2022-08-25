@@ -20,12 +20,13 @@ class DoumentosRutas {
         this.router.get('/carpetas/', documentosControlador_1.default.Carpetas);
         this.router.get('/lista-carpetas/:nom_carpeta', documentosControlador_1.default.listarArchivosCarpeta);
         this.router.get('/download/files/:nom_carpeta/:filename', documentosControlador_1.default.DownLoadFile);
+        this.router.delete('/eliminar/files/:nom_carpeta/:filename', documentosControlador_1.default.EliminarDocumento);
+        this.router.post('/documento', [verificarToken_1.TokenValidation, multipartMiddleware], documentosControlador_1.default.GuardarDocumentos);
         this.router.get('/', documentosControlador_1.default.ListarDocumentos);
         this.router.get('/:id', verificarToken_1.TokenValidation, documentosControlador_1.default.ObtenerUnDocumento);
         this.router.post('/', verificarToken_1.TokenValidation, documentosControlador_1.default.CrearDocumento);
         this.router.put('/editar/:id', verificarToken_1.TokenValidation, documentosControlador_1.default.EditarDocumento);
         this.router.get('/documentos/:docs', documentosControlador_1.default.ObtenerDocumento);
-        this.router.put('/:id/documento', [verificarToken_1.TokenValidation, multipartMiddleware], documentosControlador_1.default.GuardarDocumentos);
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, documentosControlador_1.default.EliminarRegistros);
     }
 }

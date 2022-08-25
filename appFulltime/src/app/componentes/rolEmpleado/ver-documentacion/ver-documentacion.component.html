@@ -1,77 +1,55 @@
-<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
-    <div class="row">
-        <div class="col-sm">
-            <!--  <br><br><br><br> -->
-            <div class="tituloHorarioL">
-                <span>DOCUMENTOS</span>
-            </div>
-            <mat-card class="example-card mat-elevation-z9" id="carta1">
-                <h5 style="text-align: center">Críterios de Búsqueda</h5>
-                <form [formGroup]="buscarDocumentoForm">
-                    <mat-card-content>
-                        <div class="container" style="text-align: center">
-                            <mat-form-field>
-                                <mat-label>Nombre</mat-label>
-                                <input matInput name="filtroNombreDocumento" placeholder="Nombre Documento"
-                                    [formControl]="nombreDocF" [(ngModel)]="filtroNombreDocumento">
-                                <mat-icon id="iHorL" matSuffix 
-                                    matTooltipPosition="right" matTooltip="Búsqueda del documento por el nombre">
-                                    help_outline</mat-icon>
-                                <mat-error *ngIf="nombreDocF.invalid">Indispensable ingresar dos letras
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </mat-card-content>
-                </form>
-                <mat-card-actions style="text-align: center">
-                    <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()">Cancelar</button>
-                    <!--  <button mat-button type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrar()">Subir
-                        Documento</button>-->
-                </mat-card-actions>
-            </mat-card>
-        </div>
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 20px;">
+    <div id="titulo">
+        <span>LISTA DE DOCUMENTOS</span>
     </div>
-</div>
-<div class="container" style="padding-bottom: 50px; text-align: center;">
-    <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">RESULTADO DE BÚSQUEDA</div>
-        <div class="table-responsive">
-            <table class="table table-hover table-sm ">
-                <thead class="thead-light">
-                    <tr style="text-align: center;">
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Documento</th>
-                        <!--  <th scope="col">Acciones</th>-->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let ld of listaDocumentos | filtrarNombreDocu: filtroNombreDocumento | paginate:tamanio_pagina:numero_pagina">
-                        <td>{{ld.doc_nombre}}</td>
-                        <td class="d-flex justify-content-center">
-                            <a class="fas fa-file-alt"
-                                style="color:rgb(197, 95, 11); margin-left: 15px; text-align: center;" matSuffix
-                                matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento"
-                                href="{{hipervinculo}}/archivosCargados/documentos/{{ld.documento}}" target="_blank">
-                                <p>Documento</p>
-                            </a>
-                        </td>
-                        <!--   <td>
-                            <i class="fas fa-edit" matSuffix matTooltipPosition="right"
-                                 (click)="AbrirVentanaEditarDocumento(ld)"
-                                matTooltip="Modificar los datos generales de este registro">
-                                <p>Editar</p>
-                            </i>
-                            <i class="far fa-trash-alt" matSuffix matTooltipPosition="right"
-                                 matTooltip="Eliminar este registro">
-                                <p>Eliminar</p>
-                            </i>
-                        </td>-->
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <mat-paginator id="pagina" [length]="listaDocumentos.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
-        </mat-paginator>
+    <br>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Carpetas</li>
+            <li class="breadcrumb-item active" aria-current="page">{{Dirname}}</li>
+        </ol>
+    </nav>
+    <div class="d-flex flex-wrap justify-content-end" *ngIf="subir">
+        <button mat-button type="submit" class="btn btn-sm btn-primary" (click)="AbrirVentanaRegistrar()">Subir
+            Documento</button>
     </div>
+    <br *ngIf="subir">
+    <table class="table table-sm" style="background: white;">
+        <thead>
+            <tr style="text-align: center;">
+                <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descarga</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let a of archivos">
+                <td style="padding-top: 10px; text-align: center;" *ngIf="a.extencion === 'pdf'">
+                    <mat-icon style="color: red;">picture_as_pdf</mat-icon>
+                </td>
+                <td style="padding-top: 10px; text-align: center;" *ngIf="a.extencion === 'txt'">
+                    <mat-icon style="color: rgb(58, 58, 58);">text_snippet</mat-icon>
+                </td>
+                <td style="padding-top: 10px; text-align: center;"
+                    *ngIf="a.extencion === 'docx' || a.extencion === 'xlsx'">
+                    <mat-icon style="color: rgb(0, 110, 255);">insert_drive_file</mat-icon>
+                </td>
+                <td style="padding-top: 10px; text-align: center;"
+                    *ngIf="a.extencion === 'jpg' || a.extencion === 'jpeg' || a.extencion === 'png'">
+                    <mat-icon style="color: rgb(58, 160, 255);">photo</mat-icon>
+                </td>
+                <td>{{a.file}}</td>
+                <td style="padding-top: 10px; text-align: center;">
+                    <a mat-buttom type="button" (click)="DescargarArchivo(a.file)"
+                        href="{{hipervinculo}}/archivosCargados/download/files/{{Dirname}}/{{a.file}}" target="_blank">
+                        <mat-icon style="color: rgb(38, 184, 46);">cloud_download</mat-icon>
+                    </a>
+                    <i *ngIf="subir" class="far fa-trash-alt" (click)="EliminarArchivo(a.file)" matSuffix
+                        matTooltipPosition="right" matTooltip="Eliminar este documento">
+                        <p>Eliminar</p>
+                    </i>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

@@ -6,26 +6,6 @@ td { padding-top: 10px; text-align: center; }
 
 .far { color:red; cursor: pointer;}
 
-#departamento { font-size: 12px; }
-
-.TituloListaProvincia { 
-    font-size: 20px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
-#resulProvincia { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
-
 button {margin: 5px 10px 5px 10px;}
 
 table { width: 100%; font-size: 14px;}

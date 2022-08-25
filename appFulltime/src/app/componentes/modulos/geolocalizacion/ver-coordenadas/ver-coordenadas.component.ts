@@ -18,12 +18,11 @@ import { ITableEmpleados } from 'src/app/model/reportes.model';
 // SECCIÓN DE SERVICIOS
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { EditarParametroComponent } from 'src/app/componentes/parametrosGenerales/editar-parametro/editar-parametro.component';
-import { EditarDetalleParametroComponent } from 'src/app/componentes/parametrosGenerales/editar-detalle-parametro/editar-detalle-parametro.component';
 import { EmpleadoUbicacionService } from 'src/app/servicios/empleadoUbicacion/empleado-ubicacion.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ReportesAsistenciasService } from 'src/app/servicios/reportes/reportes-asistencias.service';
+import { EditarCoordenadasComponent } from '../editar-coordenadas/editar-coordenadas.component';
 
 export interface EmpleadoElemento {
   id_emplu: number;
@@ -206,9 +205,8 @@ export class VerCoordenadasComponent implements OnInit {
 
   // MÉTODO PARA EDITAR PARÁMETRO
   AbrirVentanaEditar(datos: any): void {
-    this.ventana.open(EditarParametroComponent,
-      { width: '400px', data: { parametros: datos, actualizar: true } })
-      .afterClosed().subscribe(result => {
+    this.ventana.open(EditarCoordenadasComponent,
+      { width: '400px', data: { ubicacion: datos, actualizar: true } }).afterClosed().subscribe(item => {
         this.BuscarUbicacion(this.idUbicacion);
         this.ListarUsuarios(parseInt(this.idUbicacion));
       });
@@ -328,16 +326,24 @@ export class VerCoordenadasComponent implements OnInit {
     this.seleccion.reset();
   }
 
-
-
-
-
-
-
-
-
-
-
+  MostrarLista() {
+    if (this.opcion === 1) {
+      this.nombre_suc.reset();
+      this.Filtrar('', 1)
+    }
+    else if (this.opcion === 2) {
+      this.nombre_dep.reset();
+      this.Filtrar('', 2)
+    }
+    else if (this.opcion === 3) {
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 3)
+      this.Filtrar('', 4)
+      this.Filtrar('', 5)
+    }
+  }
 
   departamentos: any = [];
   sucursales: any = [];

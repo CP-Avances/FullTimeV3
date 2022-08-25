@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
 import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
 import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulos.service';
@@ -11,33 +11,34 @@ import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulo
   templateUrl: './editar-titulos.component.html',
   styleUrls: ['./editar-titulos.component.css']
 })
+
 export class EditarTitulosComponent implements OnInit {
 
-  // Control de los campos del formulario
+  // CONTROL DE LOS CAMPOS DEL FORMULARIO
   nombre = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}")]);
   nivelF = new FormControl('');
   nombreNivel = new FormControl('', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}"))
 
 
-  // asignar los campos en un formulario en grupo
+  // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
   public nuevoTituloForm = new FormGroup({
     tituloNombreForm: this.nombre,
     tituloNivelForm: this.nivelF,
     nombreNivelForm: this.nombreNivel
   });
 
-  // Arreglo de niveles existentes
+  // ARREGLO DE NIVELES EXISTENTES
+  HabilitarDescrip: boolean = true;
+  selectNivel: any;
   niveles: any = [];
   idNivel: any = [];
-  selectNivel: any;
-  HabilitarDescrip: boolean = true;
   estilo: any;
 
   constructor(
+    private ntitulo: NivelTitulosService,
     private rest: TituloService,
-    private restNivelTitulo: NivelTitulosService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<EditarTitulosComponent>,
+    public ventana: MatDialogRef<EditarTitulosComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
   }
@@ -49,7 +50,7 @@ export class EditarTitulosComponent implements OnInit {
 
   obtenerNivelesTitulo() {
     this.niveles = [];
-    this.restNivelTitulo.getNivelesTituloRest().subscribe(res => {
+    this.ntitulo.getNivelesTituloRest().subscribe(res => {
       this.niveles = res;
       this.niveles[this.niveles.length] = { nombre: "OTRO" };
       this.selectNivel = this.niveles[this.niveles.length - 1].nombre;
@@ -61,7 +62,7 @@ export class EditarTitulosComponent implements OnInit {
     if (form1.tituloNivelForm === undefined) {
       this.nuevoTituloForm.patchValue({ nombreNivelForm: '' });
       this.estilo = { 'visibility': 'visible' }; this.HabilitarDescrip = false;
-      this.toastr.info('Ingresar nombre de nivel de titulación','', {
+      this.toastr.info('Ingresar nombre de nivel de titulación', '', {
         timeOut: 6000,
       });
     }
@@ -75,8 +76,8 @@ export class EditarTitulosComponent implements OnInit {
     let dataNivelTitulo = {
       nombre: form.nombreNivelForm,
     };
-    this.restNivelTitulo.postNivelTituloRest(dataNivelTitulo).subscribe(response => {
-      this.restNivelTitulo.BuscarNivelID().subscribe(datos => {
+    this.ntitulo.postNivelTituloRest(dataNivelTitulo).subscribe(response => {
+      this.ntitulo.BuscarNivelID().subscribe(datos => {
         var idNivel = datos[0].max;
         console.log('id_nivel', datos[0].max)
         this.ActualizarTitulo(form, idNivel);
@@ -103,9 +104,9 @@ export class EditarTitulosComponent implements OnInit {
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -155,7 +156,7 @@ export class EditarTitulosComponent implements OnInit {
   ImprimirDatos() {
     this.idNivel = [];
     console.log("nivel_nombre", this.data.nivel);
-    this.restNivelTitulo.BuscarNivelNombre(this.data.nivel).subscribe(datos => {
+    this.ntitulo.BuscarNivelNombre(this.data.nivel).subscribe(datos => {
       this.idNivel = datos;
       this.nuevoTituloForm.patchValue({
         tituloNombreForm: this.data.nombre,
@@ -171,14 +172,15 @@ export class EditarTitulosComponent implements OnInit {
   }
 
   CerrarVentanaRegistroTitulo() {
+    this.obtenerNivelesTitulo();
     this.LimpiarCampos();
-    this.dialogRef.close();
-    window.location.reload();
+    this.ImprimirDatos();
+    this.ventana.close();
   }
 
   Salir() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
 }

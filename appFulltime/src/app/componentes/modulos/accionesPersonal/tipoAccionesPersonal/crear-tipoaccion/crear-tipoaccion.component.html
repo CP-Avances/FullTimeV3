@@ -1,7 +1,8 @@
 <div class="scrollbar scrollbar-primary">
-    <div class="d-flex bd-highlight barraTituloRelojR">
-        <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-        <h5 class="w-100 bd-highlight align-self-center">Registrar Tipo Acción Personal</h5>
+    <div id="titulo">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            REGISTRAR TIPO DE ACCIONES DE PERSONAL</span>
     </div>
     <!-- Formulario Completo -->
     <form [formGroup]="AccionesForm">
@@ -15,8 +16,7 @@
                     <div class="d-flex flex-wrap justify-content-between">
                         <mat-form-field *ngIf="vistaTipo">
                             <mat-label id="letra">Tipo de Acción Personal</mat-label>
-                            <mat-icon id="planComida" matSuffix matTooltipPosition="right"
-                                
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Seleccionar uno de los tipos de acción de personal">
                                 help_outline
                             </mat-icon>
@@ -30,8 +30,7 @@
                         <mat-form-field *ngIf="ingresoTipo">
                             <mat-label id="letra">Ingresar tipo de acción personal</mat-label>
                             <input matInput placeholder="Ej: Traspaso" [formControl]="otroTipoF" [ngStyle]="estiloT">
-                            <mat-icon id="dispositivo" matSuffix 
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Regresar a la lista de tipos de acción de personal."
                                 (click)="VerTiposAccion()">
                                 help_outline</mat-icon>
@@ -41,7 +40,7 @@
                             <mat-label>Base Legal</mat-label>
                             <textarea matInput #legal maxlength="500" placeholder="Ingresar base legal"
                                 [formControl]="baseLegalF" required></textarea>
-                            <mat-icon id="dispositivo" matSuffix matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Escribir fundamento legal del nuevo tipo de acción de personal.">
                                 help_outline</mat-icon>
                             <mat-hint align="start"><strong>Ingresar hasta 500 caracteres</strong></mat-hint>
@@ -51,8 +50,7 @@
                             <mat-label>Descripción</mat-label>
                             <textarea matInput #des maxlength="100" placeholder="Ingresar base legal"
                                 [formControl]="descripcionF" required></textarea>
-                            <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
-                                matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Ingresar una descripción del nuevo tipo de acción de personal">
                                 help_outline</mat-icon>
                             <mat-hint align="start"><strong>Ingresar hasta 100 caracteres</strong></mat-hint>
@@ -66,8 +64,8 @@
                 <div class="col">
                     <label class="d-flex justify-content-start">
                         <span style="margin-left: 10px;">Tipo</span>
-                        <mat-icon id="dispositivo" matSuffix matTooltipClass="relojRegistro-tooltip"
-                            matTooltipPosition="right" matTooltip="Indicar de que tipo es la nueva acción de personal">
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Indicar de que tipo es la nueva acción de personal">
                             help_outline
                         </mat-icon>
                     </label>

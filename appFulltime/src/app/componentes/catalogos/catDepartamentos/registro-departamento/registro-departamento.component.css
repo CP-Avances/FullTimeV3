@@ -2,30 +2,7 @@
 
 mat-form-field {width: 250px; padding: 10px 10px 0px 10px;}
 
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    margin-left: 10px;
-}
-
-#ayuda { cursor: pointer; }
-
-.barraTituloRegDepa { 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    height: 50px; 
-}
-
 #depSup { font-size: 14px; }
-
-.nota {
-    font-size: 12px; 
-    font-weight: bold; 
-    text-align: justify;
-    padding: 13px 5px 10px 5px; 
-    color: rgb(52,65,84);
-}
 
 .progress {
     margin: 250px auto auto auto;

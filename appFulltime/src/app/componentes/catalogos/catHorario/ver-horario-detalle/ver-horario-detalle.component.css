@@ -6,26 +6,9 @@ hr { background-color: black; }
 
 .btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
 
-.barraTituloD { 
-    font-size: 25px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
 #editarI { color:green; cursor: pointer; }
 
 #editarF { color:green; cursor: pointer; text-align: center; margin-left: 15px; }
 
 #datosF { font-weight: bold; font-size: 16px; padding-right: 5px; }
-
-#resulCiudades { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
-}
 

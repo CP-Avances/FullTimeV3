@@ -1,40 +1,34 @@
-.btn { background-color: rgb(80,87,97); color: white; }
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
-p { font-size: x-small; }
+p {
+    font-size: x-small;
+}
 
-td { padding-top: 10px; text-align: center; }
-
-th { font-size: small; }
-
-button {margin: 5px 10px 5px 10px;}
-
-.tituloRegL { 
-    font-size: 20px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
+td {
     padding-top: 10px;
-    padding-bottom: 6px; 
+    text-align: center;
 }
 
-#resulRegimen { 
-    font-size: 17px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
-    padding-bottom: 6px; 
+th {
+    font-size: small;
 }
 
-table {width: 100%; font-size: 12px;}
+button {
+    margin: 5px 10px 5px 10px;
+}
 
-.scrollme { 
-    overflow-x: scroll; 
-} 
+table {
+    width: 100%;
+    font-size: 12px;
+}
 
-th { font-size: 14px;}
+.scrollme {
+    overflow-x: scroll;
+}
 
-
-
-
-
+th {
+    font-size: 14px;
+}

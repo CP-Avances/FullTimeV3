@@ -1,36 +1,24 @@
-<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
+<div class="container" style="padding-top: 15px; padding-bottom: 25px; padding-top: 20px;">
     <div class="row">
-        <div class="col-sm" style="padding-bottom: 15px;">
-            <div class="barraTitulo">
-                <h5>Horarios del Empleado</h5>
-            </div>
-            <mat-card class="example-card mat-elevation-z9" id="carta1">
-                <mat-card-actions style="text-align: center">
-                    <button type="submit" class="btn btn-sm" id="boton"
-                        (click)="AbrirVentanaEmplHorario()">Añadir</button>
-                </mat-card-actions>
-            </mat-card>
-        </div>
         <div class="col-md">
-            <div class="barraTitulo">
-                <h5>Carga múltiple de horarios</h5>
+            <div id="titulo">
+                <h5>ASIGNACIÓN DE HORARIO LABORAL</h5>
             </div>
             <mat-card class="example-card mat-elevation-z9" id="carta1">
                 <div class="d-flex flex-wrap justify-content-around" style="margin-right: 5%;">
                     <form method="post" enctype="multipart/form-data">
-                        <input (change)="fileChangeHorario($event)" type="file"
-                            [formControl]="archivoHorarioForm" id="file"
+                        <input (change)="fileChangeHorario($event)" type="file" [formControl]="archivoHorarioForm"
+                            id="file"
                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                         <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                            
                             matTooltip="Presionar para cargar plantilla con nombre Horario Empleado">Subir
-                            Horario</label>
+                            horario</label>
                     </form>
-                    <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
-                        matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento"
+                    <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
+                        matTooltip="Dar click para ver o descargar el documento"
                         href="{{hipervinculo}}/plantillaD/documento/Horario Empleado.xlsx">
-                        <span class="material-icons">cloud_download</span> Descargar Plantilla Horario
-                        Empleado
+                        <span class="material-icons">cloud_download</span> Descargar plantilla horario
+                        usuarios
                     </a>
                 </div>
             </mat-card>
@@ -39,7 +27,12 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">Lista de Horarios</div>
+        <div class="d-flex bd-highlight" id="titulo">
+            <span class="w-100 bd-highlight">
+                LISTA DE HORARIOS DEL USUARIO</span>
+            <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
+                (click)="AbrirVentanaEmplHorario()">Añadir</button>
+        </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm ">
                 <thead class="thead-light">
@@ -78,14 +71,12 @@
                         <td *ngIf="h.domingo == false">Normal</td>
                         <td class="d-flex justify-content-center">
                             <i class="fas fa-edit" id="edit" (click)="AbrirEditarHorario(h)" matSuffix
-                                matTooltipPosition="right" 
-                                matTooltip="Modificar los datos generales de este registro">
+                                matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro">
                                 <p>Editar</p>
                             </i>
                             <i class="far fa-trash-alt" (click)="ConfirmarDeleteHorario(h)"
                                 style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
-                                matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
-                                matTooltip="Eliminar registro">
+                                matTooltipPosition="right" matTooltip="Eliminar registro">
                                 <p>Eliminar</p>
                             </i>
                         </td>

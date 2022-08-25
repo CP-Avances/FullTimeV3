@@ -80,14 +80,13 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
     this.restR.GuardarCheckOpcion(0);
     this.restR.DefaultFormCriterios();
     this.restR.DefaultValoresFiltros();
-    sessionStorage.removeItem('plan_hora_extra');
+    this.origen = [];
   }
 
   BuscarInformacion() {
-
-    sessionStorage.removeItem('plan_hora_extra');
+    this.origen = [];
     this.informacion.ObtenerInformacion().subscribe((res: any[]) => {
-      sessionStorage.setItem('plan_hora_extra', JSON.stringify(res))
+      this.origen = JSON.stringify(res);
 
       res.forEach(obj => {
         this.sucursales.push({
@@ -194,6 +193,7 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
   sucursales: any = [];
   respuesta: any[];
   empleados: any = [];
+  origen: any = [];
 
   selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
   selectionDep = new SelectionModel<ITableEmpleados>(true, []);
@@ -305,7 +305,7 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
 
   ModelarSucursal(id: number) {
     let usuarios: any = [];
-    let respuesta = JSON.parse(sessionStorage.getItem('plan_hora_extra'))
+    let respuesta = JSON.parse(this.origen)
     if (id === 0) {
       respuesta.forEach((obj: any) => {
         this.selectionSuc.selected.find(obj1 => {
@@ -336,7 +336,7 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
 
   ModelarDepartamentos(id: number) {
     let usuarios: any = [];
-    let respuesta = JSON.parse(sessionStorage.getItem('plan_hora_extra'))
+    let respuesta = JSON.parse(this.origen)
 
     if (id === 0) {
       respuesta.forEach((obj: any) => {
@@ -429,8 +429,6 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
       this.nombre_emp.reset();
 
       this._booleanOptions.bool_emp = false;
-      this._booleanOptions.bool_tab = false;
-      this._booleanOptions.bool_inc = false;
 
       this.selectionEmp.clear();
     }
@@ -449,6 +447,25 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
 
     this.seleccion.reset();
     this.activar_boton = false;
+  }
+
+  MostrarLista() {
+    if (this.opcion === 1) {
+      this.nombre_suc.reset();
+      this.Filtrar('', 1)
+    }
+    else if (this.opcion === 2) {
+      this.nombre_dep.reset();
+      this.Filtrar('', 2)
+    }
+    else if (this.opcion === 3) {
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 3)
+      this.Filtrar('', 4)
+      this.Filtrar('', 5)
+    }
   }
 
   // METODO PARA ACTIVAR SELECCION MULTIPLE

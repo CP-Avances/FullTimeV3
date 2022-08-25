@@ -23,7 +23,7 @@ class TimbresControlador {
             SELECT id, to_char(create_at, 'yyyy-MM-dd HH24:mi:ss') AS create_at, id_send_empl, visto, 
             descripcion, id_timbre, tipo, id_receives_empl
             FROM realtime_timbres WHERE id_receives_empl = $1 
-            ORDER BY create_at DESC LIMIT 10
+            ORDER BY (visto is TRUE) DESC, id DESC LIMIT 20
             `, [id_empleado])
                 .then((result) => __awaiter(this, void 0, void 0, function* () {
                 if (result.rowCount > 0) {

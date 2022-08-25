@@ -1,6 +1,6 @@
 <div class="container" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTitulo">
+        <div id="titulo">
             <span>Asistencia</span>
         </div>
         <form [formGroup]="AsistenciaForm">
@@ -13,7 +13,7 @@
                     <mat-form-field>
                         <mat-label>Empleado</mat-label>
                         <input matInput [formControl]="nombreEmpleadoF" readonly>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Nombre del empleado que realizó el timbre">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -21,7 +21,7 @@
                         <mat-label>Horario: Fecha y Hora</mat-label>
                         <input matInput [matDatepicker]="picker1" [formControl]="fechaHoraHF" required
                             [disabled]="true">
-                        <mat-datepicker-toggle matSuffix [for]="picker1" id="permiso"
+                        <mat-datepicker-toggle matSuffix [for]="picker1" id="i-cursor"
                              matTooltipPosition="right"
                             matTooltip="Fecha y hora respectiva al horario del empleado">
                         </mat-datepicker-toggle>
@@ -31,7 +31,7 @@
                         <mat-label>Timbre: Fecha y Hora</mat-label>
                         <input matInput [matDatepicker]="picker2" [formControl]="fechaHoraTF" required
                             [disabled]="true">
-                        <mat-datepicker-toggle matSuffix [for]="picker2" id="permiso"
+                        <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor"
                              matTooltipPosition="right"
                             matTooltip="Fecha y hora en la que se realizo el timbre en el dispositivo">
                         </mat-datepicker-toggle>
@@ -40,14 +40,14 @@
                     <mat-form-field>
                         <mat-label>Acción del Timbre</mat-label>
                         <input matInput [formControl]="accionF" readonly>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Indica la acción realizada al timbrar">
                             help_outline</mat-icon>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Minutos de Espera</mat-label>
                         <input matInput [formControl]="esperaF" readonly>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Indica los minutos de tolerancia para realizar el timbre">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -55,7 +55,7 @@
                         <mat-label>Asistencia: Fecha y Hora</mat-label>
                         <input matInput [matDatepicker]="picker3" [formControl]="fechaHoraAF" required
                             [disabled]="true">
-                        <mat-datepicker-toggle matSuffix [for]="picker3" id="permiso"
+                        <mat-datepicker-toggle matSuffix [for]="picker3" id="i-cursor"
                              matTooltipPosition="right"
                             matTooltip="Fecha y hora que indica la asistencia del empleado">
                         </mat-datepicker-toggle>
@@ -64,7 +64,7 @@
                     <mat-form-field>
                         <mat-label>Estado</mat-label>
                         <input matInput [formControl]="estadoF" readonly>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Indica atraso o puntualidad de ingreso a trabajar">
                             help_outline</mat-icon>
                     </mat-form-field>

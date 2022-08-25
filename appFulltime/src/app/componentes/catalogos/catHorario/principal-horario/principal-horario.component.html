@@ -1,66 +1,71 @@
 <div class="container" style="padding-top: 20px; padding-bottom: 25px;">
-    <div id="titulo">
-        <span>CARGA MÚLTIPLE DE HORARIOS</span>
-    </div>
-    <mat-card class="example-card mat-elevation-z9">
-        <div class="row">
-            <div class="col-md">
-                <div class="d-flex flex-wrap justify-content-around" style="margin-right: 5%;">
-                    <form method="post" enctype="multipart/form-data">
-                        <input (change)="fileChangeCatalogoHorario($event)" type="file" [formControl]="archivo1Form"
-                            id="file1"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                        <label for="file1" class="btn-2" matSuffix matTooltipPosition="right"
-                            matTooltip="Presionar para seleccionar Plantilla con nombre Catalogo Horarios.">Cargar
-                            horarios</label>
-                    </form>
-                    <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
-                        matTooltip="Dar click para ver o descargar el documento."
-                        href="{{hipervinculo}}/plantillaD/documento/Catalogo Horarios.xlsx">
-                        <span class="material-icons">cloud_download</span> Descargar plantilla horario
-                    </a>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="d-flex flex-wrap justify-content-around" style="margin-right: 5%;">
-                    <form method="post" enctype="multipart/form-data">
-                        <input (change)="fileChangeDetalle($event)" type="file" [formControl]="archivo2Form" id="file2"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                        <label for="file2" class="btn-2" matSuffix matTooltipPosition="right"
-                            matTooltip="Presionar para seleccionar Plantilla con nombre Detalles Horarios.">Cargar
-                            Detalles</label>
-                    </form>
-                    <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
-                        matTooltip="Dar click para ver o descargar el documento."
-                        href="{{hipervinculo}}/plantillaD/documento/Detalles Horarios.xlsx">
-                        <span class="material-icons">cloud_download</span> Descargar Plantilla Detalles
-                    </a>
-                </div>
-            </div>
-        </div>
-    </mat-card>
-</div>
-<div class="container" style="padding-bottom: 25px;">
+
     <div class="row">
-        <div class="col-sm">
+        <div class="col-md">
             <div id="titulo">
                 <span>HORARIOS</span>
             </div>
-            <mat-card class="example-card mat-elevation-z9" id="carta1">
+            <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
                     <button mat-button type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarHorario()">Crear
                         nuevo horario</button>
                     <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Cancelar</button>
+                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Mostrar
+                        lista</button>
+                </div>
+            </mat-card>
+        </div>
+        <div class="col-md">
+            <div id="titulo">
+                <span>CARGAR PLANTILLA DE HORARIOS</span>
+            </div>
+            <mat-card class="example-card mat-elevation-z9">
+                <div class="row">
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <form method="post" enctype="multipart/form-data" style="padding-top: 5px;">
+                                <input (change)="fileChangeCatalogoHorario($event)" type="file"
+                                    [formControl]="archivo1Form" id="file1"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                                <label for="file1" class="btn-2" matSuffix matTooltipPosition="right"
+                                    matTooltip="Presionar para seleccionar Plantilla con nombre Catalogo Horarios.">Cargar
+                                    horario</label>
+                            </form>
+                            <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
+                                matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento."
+                                href="{{hipervinculo}}/plantillaD/documento/Catalogo Horarios.xlsx">
+                                <span class="material-icons">cloud_download</span> Descargar plantilla horario
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <form method="post" enctype="multipart/form-data" style="padding-top: 5px;">
+                                <input (change)="fileChangeDetalle($event)" type="file" [formControl]="archivo2Form"
+                                    id="file2"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                                <label for="file2" class="btn-2" matSuffix matTooltipPosition="right"
+                                    matTooltip="Presionar para seleccionar Plantilla con nombre Detalles Horarios.">Cargar
+                                    detalles</label>
+                            </form>
+                            <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
+                                matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento."
+                                href="{{hipervinculo}}/plantillaD/documento/Detalles Horarios.xlsx">
+                                <span class="material-icons">cloud_download</span> Descargar plantilla detalles
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </mat-card>
         </div>
     </div>
+
 </div>
+
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">RESULTADO DE BÚSQUEDA</div>
+        <div id="resultados">LISTA DE PLANIFICACIÓN HORARIA</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm ">
                 <thead class="thead-light">
@@ -130,8 +135,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="horarios.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="horarios.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 5%;">
             <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"

@@ -1,7 +1,7 @@
 <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
     <div class="row">
         <div class="col-sm" style="margin-bottom: 25px;">
-            <div class="tituloHorarioL">
+            <div id="titulo">
                 <span>CONFIGURACIÓN DE CÓDIGO</span>
             </div>
             <mat-card class="example-card mat-elevation-z9" id="carta1">
@@ -36,7 +36,7 @@
                                 <input matInput placeholder="1000" [formControl]="inicioF" [ngStyle]="estilo"
                                     maxlength="10" (keypress)="IngresarSoloNumeros($event)"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
-                                <mat-icon id="iHorL" matSuffix 
+                                <mat-icon id="i-cursor" matSuffix 
                                     matTooltipPosition="right"
                                     matTooltip="Indicar desde que valor se generará el código del empleado">
                                     help_outline</mat-icon>

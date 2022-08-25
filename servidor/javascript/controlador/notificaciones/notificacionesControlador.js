@@ -169,7 +169,7 @@ class NotificacionTiempoRealControlador {
           r.id_hora_extra, r.visto, r.mensaje, r.tipo, e.nombre, e.apellido 
         FROM realtime_noti AS r, empleados AS e 
         WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl 
-        ORDER BY id DESC LIMIT 10
+        ORDER BY (visto is TRUE) DESC, id DESC LIMIT 20
         `, [id]);
                 if (REAL_TIME_NOTIFICACION.rowCount > 0) {
                     return res.jsonp(REAL_TIME_NOTIFICACION.rows);
@@ -292,6 +292,11 @@ class NotificacionTiempoRealControlador {
             const [notificiacion] = response.rows;
             if (!notificiacion)
                 return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+            const USUARIO = yield database_1.default.query(`
+      SELECT (nombre || ' ' || apellido) AS usuario
+      FROM empleados WHERE id = $1
+      `, [id_empl_envia]);
+            notificiacion.usuario = USUARIO.rows[0].usuario;
             return res.status(200)
                 .jsonp({ message: 'Comunicado enviado exitosamente.', respuesta: notificiacion });
         });
@@ -386,6 +391,11 @@ class NotificacionTiempoRealControlador {
                 const [notificiacion] = response.rows;
                 if (!notificiacion)
                     return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+                const USUARIO = yield database_1.default.query(`
+        SELECT (nombre || ' ' || apellido) AS usuario
+        FROM empleados WHERE id = $1
+        `, [id_send_empl]);
+                notificiacion.usuario = USUARIO.rows[0].usuario;
                 return res.status(200)
                     .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
             }

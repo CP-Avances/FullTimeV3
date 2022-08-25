@@ -1,6 +1,7 @@
-<mat-icon id="movilidad">open_with</mat-icon>
-<div class="detallePlanHorarioE">
-    <h5 mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Detalle de Planificación Horario</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR DETALLE HORARIO</span>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="DetallePlanHorarioForm">
@@ -16,8 +17,7 @@
                         <mat-label id="fec">Fecha inicio de actividades</mat-label>
                         <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa" [formControl]="fechaF"
                             required>
-                        <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" 
-                            matTooltipPosition="right"
+                        <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" matTooltipPosition="right"
                             matTooltip="Ingresar la fecha de inicio de actividades. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                         </mat-datepicker-toggle>
                         <mat-datepicker touchUi #picker></mat-datepicker>
@@ -25,7 +25,7 @@
                     <br>
                     <mat-form-field>
                         <mat-label>Tipo de día</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltipClass="horaE-tooltip"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Seleccionar el tipo de día en los que se podrá realizar horas extras">
                             help_outline</mat-icon>
                         <mat-select [formControl]="tipoDia" required>
@@ -33,11 +33,11 @@
                                 {{d.viewValue}}
                             </mat-option>
                         </mat-select>
-                    </mat-form-field >
+                    </mat-form-field>
                     <br>
                     <mat-form-field>
                         <mat-label>Seleccionar Horario</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipClass="sucursalR-tooltip" matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Seleccionar un horario ">
                             help_outline</mat-icon>
                         <mat-select [formControl]="horarioF" required>

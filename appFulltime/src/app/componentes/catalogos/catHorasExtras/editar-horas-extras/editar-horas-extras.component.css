@@ -14,24 +14,11 @@ mat-radio-group { width: 210px; padding: 15px 20px 15px 20x; margin-bottom: 10px
 
 #tipoRecargo { font-size: small; }
 
-/*.horaE-tooltip { background-color : chocolate; }*/
-
-/*.horaS-tooltip { background-color : chocolate; font-size: 11px; border-radius: 25px; }*/
-
-#iHora { cursor: pointer; }
-
 #iconoG { margin-left: 15px; }
 
 .mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
 
-.tituloExtra { 
-  text-align: center; 
-  background: rgb(52,65,84); 
-  color: white; 
-  height: 50px;
-}
-
-.titulo_horaE { 
+.subtitulo { 
   position: relative; 
   float: left; 
   font-size: 19px; 
@@ -40,22 +27,7 @@ mat-radio-group { width: 210px; padding: 15px 20px 15px 20x; margin-bottom: 10px
   color: rgb(0, 0, 0);
 }
 
-.subtitulo_horaE {
-  font-size: 14px; 
-  font-weight: bold; 
-  padding-left: 5px; 
-  padding-top: 25px; 
-  padding-bottom: 25px; 
-  text-align: justify;
-}
-
 #seccion_horaE { color: rgba(8, 10, 124, 0.828); }
-
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    margin-left: 10px;
-}
 
 .scrollbar {
     float: left;

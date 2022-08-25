@@ -1,18 +1,17 @@
-<br>
-<div class="container" style="margin-bottom: 25px; padding-bottom: 10px;">
+<div class="container" style="margin-bottom: 25px; padding-bottom: 10px; padding-top: 20px;">
     <div class="row">
         <div class="col-md">
-            <div class="tituloCiudadesL">
+            <div id="titulo">
                 <span>CIUDADES</span>
             </div>
             <mat-card class="example-card mat-elevation-z8">
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-sm" (click)="AbrirVentanaRegistrarCiudad()">Crear
-                        nueva Ciudad
+                        nueva ciudad
                     </button>
                     <button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Cancelar</button>
+                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Mostrar lista</button>
                 </div>
             </mat-card>
         </div>
@@ -20,7 +19,7 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="resulCiudad">RESULTADO DE BÚSQUEDA</div>
+        <div id="resultados">RESULTADO DE BÚSQUEDA</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
@@ -34,16 +33,14 @@
                     <tr>
                         <td>
                             <mat-form-field id="t-inputs">
-                                <input matInput placeholder="Buscar"
-                                    (keypress)="IngresarSoloLetras($event)" [formControl]="provinciaF"
-                                    [(ngModel)]="filtroProvincia">
+                                <input matInput placeholder="Buscar" (keypress)="IngresarSoloLetras($event)"
+                                    [formControl]="provinciaF" [(ngModel)]="filtroProvincia">
                             </mat-form-field>
                         </td>
                         <td>
                             <mat-form-field id="t-inputs">
-                                <input matInput placeholder="Buscar"
-                                    (keypress)="IngresarSoloLetras($event)" [formControl]="ciudadF"
-                                    [(ngModel)]="filtroCiudad">
+                                <input matInput placeholder="Buscar" (keypress)="IngresarSoloLetras($event)"
+                                    [formControl]="ciudadF" [(ngModel)]="filtroCiudad">
                             </mat-form-field>
                         </td>
                         <td>
@@ -58,8 +55,7 @@
                         <td>{{ciudad.descripcion}}</td>
                         <td class="d-flex justify-content-center">
                             <i (click)="ConfirmarDelete(ciudad)" class="far fa-trash-alt" matSuffix
-                                matTooltipPosition="right" 
-                                matTooltip="Eliminar este registro.">
+                                matTooltipPosition="right" matTooltip="Eliminar este registro.">
                                 <p>Eliminar</p>
                             </i>
                         </td>
@@ -67,8 +63,8 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="datosCiudades.length" [pageSize]="tamanio_pagina" [pageSizeOptions]="pageSizeOptions"
-            id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="datosCiudades.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>

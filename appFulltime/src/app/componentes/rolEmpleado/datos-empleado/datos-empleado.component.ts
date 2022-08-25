@@ -151,7 +151,7 @@ export class DatosEmpleadoComponent implements OnInit {
      * ***************************************************************************************************
     */
   /** Método para ver la información del empleado */
-  textoBoton: string = 'Subir Foto';
+  textoBoton: string = 'Subir foto';
   verEmpleado(idemploy: any) {
     this.empleadoUno = [];
     let idEmpleadoActivo = localStorage.getItem('empleado');
@@ -162,7 +162,7 @@ export class DatosEmpleadoComponent implements OnInit {
         this.urlImagen = `${environment.url}/empleado/img/` + data[0]['imagen'];
         this.mostrarImagen = true;
         this.mostrarIniciales = false;
-        this.textoBoton = 'Editar Foto';
+        this.textoBoton = 'Editar foto';
         if (idEmpleadoActivo === idemploy) {
           // this.Main.urlImagen = this.urlImagen;
         }
@@ -170,7 +170,7 @@ export class DatosEmpleadoComponent implements OnInit {
         this.iniciales = data[0].nombre.split(" ")[0].slice(0, 1) + data[0].apellido.split(" ")[0].slice(0, 1);
         this.mostrarIniciales = true
         this.mostrarImagen = false;
-        this.textoBoton = 'Subir Foto';
+        this.textoBoton = 'Subir foto';
       }
     })
   }

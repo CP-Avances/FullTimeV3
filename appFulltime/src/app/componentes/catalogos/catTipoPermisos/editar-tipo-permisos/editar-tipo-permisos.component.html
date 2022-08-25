@@ -1,8 +1,7 @@
-<div class="d-flex bd-highlight barraTitulo">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">
-        open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-        Editar Tipo Permiso</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR TIPO PERMISO</span>
 </div>
 <mat-horizontal-stepper [linear]="isLinear" #stepper>
     <mat-step [stepControl]="primeroFormGroup">
@@ -12,11 +11,11 @@
                     matTooltip="Sección 1: Información General">description
                 </mat-icon>
             </ng-template>
-            <div class="titulo_permisoR">
+            <div class="subtitulo">
                 <span>Configuración General</span>
             </div>
             <br>
-            <div class="subtitulo_permisoR">
+            <div class="nota">
                 <span>Por favor llenar todos los campos obligatorios (*) del formulario y dar click en Siguiente para
                     continuar.</span>
             </div>
@@ -24,7 +23,7 @@
                 <div class="col">
                     <mat-form-field>
                         <mat-label>Seleccionar Tipo de Permiso</mat-label>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Nombre del tipo de permiso no editable">
                             help_outline</mat-icon>
                         <mat-select formControlName="descripcionForm" [(ngModel)]="seleccionarPermiso" required
@@ -40,7 +39,7 @@
                         <mat-label>Descripción</mat-label>
                         <input matInput placeholder="Ej: Descripcion del tipo de permiso" formControlName="nombreForm"
                             [ngStyle]="estilo" readonly="readonly">
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Nombre del tipo de permiso no editable">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -48,7 +47,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="almuIncluirForm" required>
                         <label class="d-flex justify-content-start">
                             <span style="font-size: 12px;">El permiso incluye Almuerzo *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si el permiso incluye almuerzo">help_outline
                             </mat-icon>
                         </label>
@@ -61,7 +60,7 @@
                 <div class="col">
                     <mat-form-field>
                         <mat-label>Solicitar permiso por:</mat-label>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Seleccionar si el permiso será por días o por horas y minutos">
                             help_outline</mat-icon>
                         <mat-select formControlName="diasHorasForm" [(ngModel)]="selectDiasHoras" required>
@@ -76,7 +75,7 @@
                         <mat-label>Días máximos de permiso</mat-label>
                         <input matInput placeholder="Ej: 3" (keypress)="IngresarSoloNumeros($event)"
                             formControlName="numDiaMaximoForm" [ngStyle]="estiloDias">
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar número de días máximos de permiso">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -85,7 +84,7 @@
                         <mat-label>Horas y minutos de permiso</mat-label>
                         <input matInput type="time" placeholder="Ej: 4" (keypress)="IngresarSoloNumeros($event)"
                             formControlName="numHoraMaximoForm" [ngStyle]="estiloHoras">
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar número de horas y minutos máximos de permiso">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -93,7 +92,7 @@
                 <div class="col">
                     <mat-form-field>
                         <mat-label id="emple_solicitar">Empleado podrá solicitar</mat-label>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Seleccionar si el empleado puede solicitar permiso">
                             help_outline</mat-icon>
                         <mat-select formControlName="acceEmpleadoForm" [(ngModel)]="selectAccess" required>
@@ -107,7 +106,7 @@
                         <mat-label>Días para solicitar permiso</mat-label>
                         <input matInput placeholder="Ej: 2" (keypress)="IngresarSoloNumeros($event)"
                             formControlName="numDiaIngresoForm" required>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar números de días para solicitar permiso">
                             help_outline</mat-icon>
                     </mat-form-field>
@@ -126,11 +125,11 @@
                     matTooltip="Sección 2: Efectos del Permiso">description
                 </mat-icon>
             </ng-template>
-            <div class="titulo_permisoR">
+            <div class="subtitulo">
                 <span>Configuración General</span>
             </div>
             <br>
-            <div class="subtitulo_permisoR">
+            <div class="nota">
                 <span>Por favor llenar todos los campos obligatorios (*) del formulario y dar click en Guardar para
                     continuar.</span>
             </div>
@@ -139,7 +138,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="vacaAfectaForm" required>
                         <label class="d-flex justify-content-start">
                             <span style="font-size: 12px;">Permiso afecta a vacaciones *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si el permiso afecta a vacaciones">help_outline
                             </mat-icon>
                         </label>
@@ -152,7 +151,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="anioAcumulaForm" required>
                         <label class="d-flex justify-content-start">
                             <span style="font-size: 12px;">Acumular permisos en el año *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si los días o horas del permiso son acumulables en el año">
                                 help_outline
                             </mat-icon>
@@ -166,7 +165,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="documentoForm" required>
                         <label class="d-flex justify-content-start">
                             <span style="font-size: 12px;">Requiere certificado *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si los días o horas del permiso son acumulables en el año">
                                 help_outline
                             </mat-icon>
@@ -181,7 +180,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="legalizarForm" required>
                         <label class="d-flex justify-content-start">
                             <span style="font-size: 12px;">Permiso debe ser Legalizado *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si el permiso debe ser legalizado">help_outline
                             </mat-icon>
                         </label>
@@ -193,7 +192,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="fecValidarForm" required>
                         <label class="d-flex justify-content-start">
                             <span>Restrición por fecha *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si el permiso tendrá alguna restrición por la fecha">
                                 help_outline
                             </mat-icon>
@@ -213,7 +212,7 @@
                         <input matInput [matDatepicker]="picker2" readonly placeholder="dd/mm/aaaa"
                             formControlName="fechaForm" min="1950-01-31" max="2050-01-31"
                             (dateInput)="VerificarFecha($event)">
-                        <mat-datepicker-toggle matSuffix [for]="picker2" id="permiso" 
+                        <mat-datepicker-toggle matSuffix [for]="picker2" id="i-cursor" 
                             matTooltipPosition="right"
                             matTooltip="Indicar la fecha en la que no se concedera permisos. Seleccione la fecha dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
                         </mat-datepicker-toggle>
@@ -224,7 +223,7 @@
                     <mat-radio-group aria-label="Select an option" formControlName="geneJustificacionForm" required>
                         <label class="d-flex justify-content-start">
                             <span style="font-size: 12px;">Permiso requiere Justificación *</span>
-                            <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                            <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                                 matTooltip="Seleccionar si el permiso debe ser justificacdo">help_outline
                             </mat-icon>
                         </label>
@@ -240,14 +239,14 @@
                         <mat-label>Días para justificar</mat-label>
                         <input matInput placeholder="Ej: 2" (keypress)="IngresarSoloNumeros($event)"
                             formControlName="numDiaJustificaForm" [ngStyle]="estiloJustifica" id="diasJustificar">
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Ingresar el número de días que tendrá el empleado para justificar">
                             help_outline</mat-icon>
                     </mat-form-field>
                     <br>
                     <mat-form-field>
                         <mat-label id="selec">Seleccionar tipo descuento</mat-label>
-                        <mat-icon id="permiso" matSuffix  matTooltipPosition="right"
+                        <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
                             matTooltip="Seleccionar si el permmiso tendrá descuento">help_outline</mat-icon>
                         <mat-select formControlName="tipoDescuentoForm" required>
                             <mat-option *ngFor="let d of descuentos" [value]="d.value">

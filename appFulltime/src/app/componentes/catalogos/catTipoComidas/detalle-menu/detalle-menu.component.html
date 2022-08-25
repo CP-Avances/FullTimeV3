@@ -1,7 +1,7 @@
-<div class="d-flex bd-highlight tituloComidaR">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center" mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-        Detalles del Menú</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR DETALLE DE MENÚ</span>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="TipoComidaForm">
@@ -14,7 +14,7 @@
             <mat-form-field>
                 <mat-label>Nombre del Plato</mat-label>
                 <input matInput placeholder="Nombre del plato" [formControl]="nombreF" required>
-                <mat-icon id="iComidasR" matSuffix matTooltipClass="comidasR-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ingresar nombre del nuevo plato">
                     help_outline</mat-icon>
                 <mat-error *ngIf="nombreF.invalid">{{ObtenerMensajeErrorNombreRequerido()}}</mat-error>
@@ -24,7 +24,7 @@
                 <mat-label>Valor</mat-label>
                 <input matInput placeholder="Ingresar valor del almuerzo" [formControl]="valorF"
                     (keypress)="IngresarNumeroDecimal($event)" required>
-                <mat-icon id="iComidasR" matSuffix matTooltipClass="comidasR-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ingresar el costo de este plato">
                     help_outline</mat-icon>
                 <mat-error *ngIf="valorF.invalid">{{ObtenerMensajeErrorCamposNumericosRequeridos()}}</mat-error>
@@ -32,7 +32,7 @@
             <mat-form-field>
                 <mat-label>Observación</mat-label>
                 <input matInput placeholder="Ingresar una observación" [formControl]="observacionF">
-                <mat-icon id="iComidasR" matSuffix matTooltipClass="comidasR-tooltip" matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ingresar una observación o descripción del plato">
                     help_outline</mat-icon>
                 <mat-error *ngIf="observacionF.invalid">{{ObtenerMensajeErrorObservacion()}}</mat-error>

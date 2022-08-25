@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
 import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
@@ -11,9 +11,10 @@ import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.s
   templateUrl: './editar-regimen.component.html',
   styleUrls: ['./editar-regimen.component.css']
 })
+
 export class EditarRegimenComponent implements OnInit {
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   descripcionF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}")]);
   diaAnioVacacionF = new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]);
   diaIncrAntiguedadF = new FormControl('', [Validators.required]);
@@ -23,7 +24,7 @@ export class EditarRegimenComponent implements OnInit {
   diaLibreAnioVacacionF = new FormControl('');
   mesesF = new FormControl('', [Validators.required]);
 
-  // Asignación de validaciones a inputs del formulario
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
   public RegimenForm = new FormGroup({
     diaMesVacacionForm: this.diaMesVacacionF,
     descripcionForm: this.descripcionF,
@@ -36,10 +37,10 @@ export class EditarRegimenComponent implements OnInit {
   });
 
   constructor(
-    private rest: RegimenService,
     private toastr: ToastrService,
+    private rest: RegimenService,
     public router: Router,
-    public dialogRef: MatDialogRef<EditarRegimenComponent>,
+    public ventana: MatDialogRef<EditarRegimenComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
@@ -49,13 +50,13 @@ export class EditarRegimenComponent implements OnInit {
 
   ImprimirDatos() {
     this.RegimenForm.patchValue({
-      diaMesVacacionForm: this.data.datosRegimen.dia_mes_vacacion,
-      descripcionForm: this.data.datosRegimen.descripcion,
-      diaAnioVacacionForm: this.data.datosRegimen.dia_anio_vacacion,
-      diaIncrAntiguedadForm: this.data.datosRegimen.dia_incr_antiguedad,
-      anioAntiguedadForm: this.data.datosRegimen.anio_antiguedad,
-      maxDiasAcumulacionForm: this.data.datosRegimen.max_dia_acumulacion,
       diaLibreAnioVacacionForm: this.data.datosRegimen.dia_libr_anio_vacacion,
+      maxDiasAcumulacionForm: this.data.datosRegimen.max_dia_acumulacion,
+      diaIncrAntiguedadForm: this.data.datosRegimen.dia_incr_antiguedad,
+      diaAnioVacacionForm: this.data.datosRegimen.dia_anio_vacacion,
+      diaMesVacacionForm: this.data.datosRegimen.dia_mes_vacacion,
+      anioAntiguedadForm: this.data.datosRegimen.anio_antiguedad,
+      descripcionForm: this.data.datosRegimen.descripcion,
       mesesForm: this.data.datosRegimen.meses_periodo
     });
     (<HTMLInputElement>document.getElementById('activo')).checked = true;
@@ -66,13 +67,13 @@ export class EditarRegimenComponent implements OnInit {
     let datosRegimen = {
       id: this.data.datosRegimen.id,
       descripcion: escribirRegimen,
-      dia_anio_vacacion: form.diaAnioVacacionForm,
-      dia_incr_antiguedad: form.diaIncrAntiguedadForm,
+      meses_periodo: form.mesesForm,
       anio_antiguedad: form.anioAntiguedadForm,
       dia_mes_vacacion: form.diaMesVacacionForm,
+      dia_anio_vacacion: form.diaAnioVacacionForm,
+      dia_incr_antiguedad: form.diaIncrAntiguedadForm,
       max_dia_acumulacion: form.maxDiasAcumulacionForm,
       dia_libr_anio_vacacion: form.diaLibreAnioVacacionForm,
-      meses_periodo: form.mesesForm
     };
     if (escribirRegimen === '') {
       this.toastr.info('Ingresar nombre del Régimen Laboral', 'Campo Obligatorio', {
@@ -99,17 +100,17 @@ export class EditarRegimenComponent implements OnInit {
     var diasAcumulados = datos.max_dia_acumulacion;
     var meses = datos.meses_periodo;
     if (parseInt(diasAnio) > parseInt(diasAcumulados)) {
-      this.toastr.info('Días máximos acumulados deben ser mayores a los días de vacación por año','', {
+      this.toastr.info('Días máximos acumulados deben ser mayores a los días de vacación por año', '', {
         timeOut: 6000,
       })
     }
     else if (parseInt(diasLibres) > parseInt(diasAnio)) {
-      this.toastr.info('Días libres de vacaciones deben ser menores a los días de vacación por año','', {
+      this.toastr.info('Días libres de vacaciones deben ser menores a los días de vacación por año', '', {
         timeOut: 6000,
       })
     }
     else if (parseInt(diasIncremento) > parseInt(diasAnio)) {
-      this.toastr.info('Días de incremento por antiguedad deben ser menores a los días de vacación por año','', {
+      this.toastr.info('Días de incremento por antiguedad deben ser menores a los días de vacación por año', '', {
         timeOut: 6000,
       })
     }
@@ -127,7 +128,7 @@ export class EditarRegimenComponent implements OnInit {
     if ((<HTMLInputElement>document.getElementById('activo')).checked) {
       var diasAnio = form.diaAnioVacacionForm;
       if (diasAnio === '') {
-        this.toastr.info('No ha ingresado días por año','', {
+        this.toastr.info('No ha ingresado días por año', '', {
           timeOut: 6000,
         });
         (<HTMLInputElement>document.getElementById('activo')).checked = false;
@@ -151,7 +152,7 @@ export class EditarRegimenComponent implements OnInit {
       })
       this.CerrarVentanaRegistroRegimen();
       if (this.data.actualizar === true) {
-        window.location.reload();
+        this.ImprimirDatos();
       } else {
         this.router.navigate(['/verRegimen/', this.data.datosRegimen.id]);
       }
@@ -184,9 +185,9 @@ export class EditarRegimenComponent implements OnInit {
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6];
     let tecla_especial = false
     for (var i in especiales) {
@@ -246,8 +247,8 @@ export class EditarRegimenComponent implements OnInit {
 
   CerrarVentanaRegistroRegimen() {
     this.LimpiarCampos();
-    this.dialogRef.close();
-    //window.location.reload();
+    this.ventana.close();
+    this.ImprimirDatos();
   }
 
   LimpiarDiasMeses() {

@@ -20,6 +20,32 @@
                 </div>
             </div>
             <hr>
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="!formato">
+                <div class="nota">
+                    <span>NOTA: Seleccionar el tipo de formato de fecha con el cual se va a trabajar en el
+                        sistema.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
+                    <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
+                        <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
+                            (click)="GuardarDatos(1)">
+                            Formato americano: DD/MM/YYYY
+                        </button>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
+                        <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
+                            (click)="GuardarDatos(2)">
+                            Formato inglés: MM/DD/YYYY
+                        </button>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
+                        <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
+                            (click)="GuardarDatos(3)">
+                            Formato estandar: YYYY-MM-DD
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="container" style="padding-bottom: 50px; text-align: center;">
                 <div class="mat-elevation-z8" style="background: white;">
                     <div id="resultados">DETALLES DE PARÁMETRO GENERAL</div>
@@ -35,9 +61,9 @@
                                 <tr *ngFor="let dp of datosDetalle | paginate:tamanio_pagina:numero_pagina">
                                     <td>{{dp.descripcion}}</td>
                                     <td>
-                                        <i id="editarI" (click)="AbrirVentanaEditarDetalle(dp)" matSuffix
-                                            matTooltipPosition="right" matTooltip="Modificar datos de este registro."
-                                            class="fas fa-edit">
+                                        <i *ngIf="formato" id="editarI" (click)="AbrirVentanaEditarDetalle(dp)"
+                                            matSuffix matTooltipPosition="right"
+                                            matTooltip="Modificar datos de este registro." class="fas fa-edit">
                                             <p>Editar</p>
                                         </i>
                                         <i matSuffix matTooltipPosition="right" matTooltip="Eliminar registro."
@@ -55,8 +81,9 @@
                     </mat-paginator>
                 </div>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/parametros/']" value="Lista Parámetros Generales">
-            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(tp)" value="Registrar Detalle">
+            <input type="submit" class="btn btn-sm" [routerLink]="['/parametros/']" value="Lista parámetros generales">
+            <input *ngIf="formato" type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(tp)"
+                value="Registrar detalle">
         </mat-card-content>
     </mat-card>
 </div>

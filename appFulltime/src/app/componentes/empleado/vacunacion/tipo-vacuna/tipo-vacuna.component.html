@@ -1,6 +1,7 @@
-<div class="d-flex bd-highlight titulo">
-    <mat-icon class="flex-shrink-1 bd-highlight align-self-center" id="movilidad">open_with</mat-icon>
-    <h5 class="w-100 bd-highlight align-self-center">Tipo de Vacuna</h5>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        TIPO DE VACUNA</span>
 </div>
 <form [formGroup]="vacunaForm">
     <div class="container" style="padding-top: 15px;">

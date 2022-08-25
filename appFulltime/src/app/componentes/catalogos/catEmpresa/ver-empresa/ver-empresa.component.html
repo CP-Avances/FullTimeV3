@@ -1,6 +1,6 @@
 <div class="container" *ngFor="let e of datosEmpresa" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div class="barraTituloD">
+        <div id="titulo">
             <span>{{e.nombre.toUpperCase()}}</span>
         </div>
         <mat-card-content>
@@ -149,7 +149,7 @@
             <hr>
             <div class="container" style="padding-bottom: 50px; text-align: center;">
                 <div class="mat-elevation-z8" style="background: white;">
-                    <div class="d-flex bd-highlight" id="resulSucursales">
+                    <div class="d-flex bd-highlight" id="titulo">
                         <div class="w-100 bd-highlight">
                             <h5>LISTA DE
                                 {{nombre_establecimiento.toUpperCase()}}</h5>
@@ -184,7 +184,7 @@
                                             <p>Editar</p>
                                         </i>
                                         <i class="far fa-trash-alt" (click)="ConfirmarDelete(ds)" id="t-eliminar"
-                                            matSuffix matTooltipClass="procesoL-tooltip" matTooltipPosition="right"
+                                            matSuffix  matTooltipPosition="right"
                                             matTooltip="Eliminar registro.">
                                             <p>Eliminar</p>
                                         </i>
