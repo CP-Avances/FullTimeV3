@@ -169,7 +169,7 @@ class NotificacionTiempoRealControlador {
           r.id_hora_extra, r.visto, r.mensaje, r.tipo, e.nombre, e.apellido 
         FROM realtime_noti AS r, empleados AS e 
         WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl 
-        ORDER BY (visto is TRUE) DESC, id DESC LIMIT 20
+        ORDER BY (visto is FALSE) DESC, id DESC LIMIT 20
         `, [id]);
                 if (REAL_TIME_NOTIFICACION.rowCount > 0) {
                     return res.jsonp(REAL_TIME_NOTIFICACION.rows);

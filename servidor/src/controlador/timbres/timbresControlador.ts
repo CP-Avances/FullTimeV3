@@ -12,7 +12,7 @@ class TimbresControlador {
             SELECT id, to_char(create_at, 'yyyy-MM-dd HH24:mi:ss') AS create_at, id_send_empl, visto, 
             descripcion, id_timbre, tipo, id_receives_empl
             FROM realtime_timbres WHERE id_receives_empl = $1 
-            ORDER BY (visto is TRUE) DESC, id DESC LIMIT 20
+            ORDER BY (visto is FALSE) DESC, id DESC LIMIT 20
             `,
             [id_empleado])
             .then(async (result) => {
