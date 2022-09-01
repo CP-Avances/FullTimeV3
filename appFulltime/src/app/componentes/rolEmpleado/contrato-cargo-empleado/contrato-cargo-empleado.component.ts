@@ -98,7 +98,8 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     this.restCargo.BuscarIDCargoActual(id_empleado).subscribe(datos => {
       this.cargosTotalesEmpleado = datos;
       let cargoIdActual = this.cargosTotalesEmpleado[0].max;
-      this.restCargo.getUnCargoRest(cargoIdActual).subscribe(datos => {
+      // id, codigo
+      this.restCargo.BuscarCargoID(cargoIdActual).subscribe(datos => {
         this.cargoEmpleado = datos;
         this.restCargo.ObtenerUnTipoCargo(this.cargoEmpleado[0].cargo).subscribe(datos => {
           this.nombreCargo = datos[0].cargo;
@@ -123,7 +124,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
   nombreCargoSeleccionado: string;
   obtenerCargoSeleccionadoEmpleado(form) {
     this.cargoSeleccionado = [];
-    this.restCargo.getUnCargoRest(form.fechaICargoForm).subscribe(datos => {
+    this.restCargo.BuscarCargoID(form.fechaICargoForm).subscribe(datos => {
       this.cargoSeleccionado = datos;
       this.restCargo.ObtenerUnTipoCargo(this.cargoSeleccionado[0].cargo).subscribe(datos => {
         this.nombreCargoSeleccionado = datos[0].cargo;

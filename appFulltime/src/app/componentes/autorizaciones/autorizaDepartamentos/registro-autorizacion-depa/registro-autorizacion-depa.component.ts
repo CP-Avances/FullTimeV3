@@ -1,19 +1,19 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 
+import { AutorizaDepartamentoService } from 'src/app/servicios/autorizaDepartamento/autoriza-departamento.service';
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { AutorizaDepartamentoService } from 'src/app/servicios/autorizaDepartamento/autoriza-departamento.service';
 
 @Component({
   selector: 'app-registro-autorizacion-depa',
   templateUrl: './registro-autorizacion-depa.component.html',
   styleUrls: ['./registro-autorizacion-depa.component.css']
 })
+
 export class RegistroAutorizacionDepaComponent implements OnInit {
 
   departamento: any = [];
@@ -23,25 +23,24 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
   idEmpresa: number;
 
   nombreEmpleadoF = new FormControl('', [Validators.required]);
-  idSucursal = new FormControl('', [Validators.required]);
   idDepartamento = new FormControl('', [Validators.required]);
+  idSucursal = new FormControl('', [Validators.required]);
   autorizarF = new FormControl('', [Validators.required]);
 
   public autorizarDepaForm = new FormGroup({
     nombreEmpleadoForm: this.nombreEmpleadoF,
     idSucursalForm: this.idSucursal,
-    idDeparForm: this.idDepartamento,
     autorizarForm: this.autorizarF,
+    idDeparForm: this.idDepartamento,
   });
 
   constructor(
     private restCatDepartamento: DepartamentosService,
-    private restAutoriza: AutorizaDepartamentoService,
     private restSucursales: SucursalService,
-    private restE: EmpresaService,
-    private rest: EmpleadoService,
+    private restAutoriza: AutorizaDepartamentoService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegistroAutorizacionDepaComponent>,
+    private rest: EmpleadoService,
+    public ventana: MatDialogRef<RegistroAutorizacionDepaComponent>,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any,
   ) {
     this.idEmpresa = parseInt(localStorage.getItem('empresa'));
@@ -52,7 +51,7 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
     this.BuscarSucursales();
   }
 
-  // Método para ver la información del empleado 
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
@@ -92,7 +91,8 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
     let autorizarDepar = {
       id_departamento: form.idDeparForm,
       id_empl_cargo: this.datoEmpleado.idCargo,
-      estado: form.autorizarForm
+      id_empleado: this.datoEmpleado.idEmpleado,
+      estado: form.autorizarForm,
     }
     console.log(autorizarDepar);
     this.restAutoriza.IngresarAutorizaDepartamento(autorizarDepar).subscribe(res => {
@@ -106,7 +106,7 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
 
   CerrarVentanaAutorizar() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
 }

@@ -9,6 +9,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-timbre-admin',
@@ -58,10 +59,38 @@ export class TimbreAdminComponent implements OnInit {
     private validar: ValidacionesService, // SERVICIO CONTROL DE VALIDACONES
     private restTimbres: TimbresService, // SERVICIO DATOS DE TIMBRES
     public restD: DatosGeneralesService, // SERVICIO DATOS GENERALES
+    public parametro: ParametrosService,
+
   ) { }
 
   ngOnInit(): void {
     this.VerDatosEmpleado();
+    this.BuscarParametro();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   // EVENTO PARA MANEJAR LA PÁGINACIÓN DE TABLA DE EMPLEADOS
@@ -93,6 +122,10 @@ export class TimbreAdminComponent implements OnInit {
       this.timbres = this.dataSource.data;
       this.lista = true;
       this.selec_nombre = nombre + ' ' + apellido;
+      this.timbres.forEach(data => {
+        data.fecha = this.validar.FormatearFecha(data.fec_hora_timbre, this.formato_fecha, this.validar.dia_abreviado);
+        data.hora = this.validar.FormatearHora(data.fec_hora_timbre.split(' ')[1], this.formato_hora);
+      })
     }, err => {
       this.toastr.error(err.error.message)
     })

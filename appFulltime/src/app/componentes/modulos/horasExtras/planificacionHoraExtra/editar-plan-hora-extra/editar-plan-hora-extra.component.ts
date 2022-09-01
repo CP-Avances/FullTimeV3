@@ -12,11 +12,6 @@ import { ParametrosService } from 'src/app/servicios/parametrosGenerales/paramet
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 
-interface Estado {
-  id: number,
-  nombre: string
-}
-
 @Component({
   selector: 'app-editar-plan-hora-extra',
   templateUrl: './editar-plan-hora-extra.component.html',
@@ -126,7 +121,7 @@ export class EditarPlanHoraExtraComponent implements OnInit {
   }
 
 
-  // MÉTODO PARA ACTUALIZAR UN PLANIFICACIÓN, ELIMINAR LA ANTERIOR Y CREAR UNA NUEVA
+  // MÉTODO PARA ACTUALIZAR UNA PLANIFICACIÓN, ELIMINAR LA ANTERIOR Y CREAR UNA NUEVA
   InsertarPlanificacion(form: any) {
     // MÉTODO PARA ELIMINAR PLANIFICACIÓN ANTERIOR
     this.restPE.EliminarPlanEmpleado(this.leer_datos.id_plan, this.leer_datos.id_empleado)
@@ -146,7 +141,7 @@ export class EditarPlanHoraExtraComponent implements OnInit {
 
           if (res.message != 'error') {
             var plan = res.info;
-
+            console.log('res info ... ', plan)
             // LECTURA DE DATOS DE USUARIO
             let usuario = '<tr><th>' + this.leer_datos.nombre +
               '</th><th>' + this.leer_datos.cedula + '</th></tr>';
@@ -181,7 +176,7 @@ export class EditarPlanHoraExtraComponent implements OnInit {
             this.toastr.warning('Ups algo salio mal !!!', 'Proceso no registrado.', {
               timeOut: 6000,
             });
-            this.CerrarVentana();
+            this.CerrarVentana(plan.id);
           }
         })
       });
@@ -218,7 +213,7 @@ export class EditarPlanHoraExtraComponent implements OnInit {
           // SI TODOS LOS DATOS HAN SIDO PROCESADOS ENVIAR CORREO
           if (cont === this.data.planifica.length) {
             this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
-            this.MostrarMensaje(contPlan);
+            this.MostrarMensaje(contPlan, plan.id);
           }
         } else {
           // CONTAR DATOS PROCESADOS
@@ -227,7 +222,7 @@ export class EditarPlanHoraExtraComponent implements OnInit {
           // SI TODOS LOS DATOS HAN SIDO PROCESADOS ENVIAR CORREO
           if (cont === this.data.planifica.length) {
             this.EnviarCorreo(plan, this.info_correo, usuario, desde, hasta, h_inicio, h_fin);
-            this.MostrarMensaje(contPlan);
+            this.MostrarMensaje(contPlan, plan.id);
           }
         }
       });
@@ -235,11 +230,11 @@ export class EditarPlanHoraExtraComponent implements OnInit {
   }
 
   // MÉTODO PARA MOSTRAR MENSAJE PARA SELECCION MULTIPLE
-  MostrarMensaje(contador: any) {
+  MostrarMensaje(contador: any, id_plan: number) {
     this.toastr.success('Se registra planificación a ' + contador + ' colaboradores.', 'Planificación de Horas Extras.', {
       timeOut: 6000,
     });
-    this.CerrarVentana();
+    this.CerrarVentana(id_plan);
   }
 
   // CREAR PLANIFICACIÓN DE UN SOLO USUARIO
@@ -254,13 +249,13 @@ export class EditarPlanHoraExtraComponent implements OnInit {
         this.toastr.success('', 'Planificación de Horas Extras registrada.', {
           timeOut: 6000,
         });
-        this.CerrarVentana();
+        this.CerrarVentana(plan.id);
       }
       else {
         this.toastr.warning('Ups algo salio mal !!!', 'Proceso no registrado.', {
           timeOut: 6000,
         });
-        this.CerrarVentana();
+        this.CerrarVentana(plan.id);
       }
     })
   }
@@ -428,9 +423,9 @@ export class EditarPlanHoraExtraComponent implements OnInit {
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
   }
 
-  CerrarVentana() {
+  CerrarVentana(id_plan: number) {
     this.PedirHoraExtraForm.reset();
-    this.ventana.close();
+    this.ventana.close(id_plan);
   }
 
 

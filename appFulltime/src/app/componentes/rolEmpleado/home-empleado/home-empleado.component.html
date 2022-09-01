@@ -1,6 +1,6 @@
 <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
   <div class="row">
-    <div class="col-sm"style="text-align: center;">
+    <div class="col-sm" style="text-align: center;">
       <span class="text-titulo">Estadísticas Empleado</span>
     </div>
     <div class="col-sm" style="margin-top: 3px; text-align: center;">
@@ -8,21 +8,23 @@
     </div>
     <div class="col-sm d-flex justify-content-end">
       <button class="btn btn-primary btn-sm d-flex justify-content-center" (click)="RefrescarGraficas()">
-        <mat-icon class="align-self-center" style="color: white; margin-right: 7px; font-size: 20px;" matTooltipPosition="right" 
-          matTooltip="Presione aquí para actualizar los datos de las gráficas">cached</mat-icon>
+        <mat-icon class="align-self-center" style="color: white; margin-right: 7px; font-size: 20px;"
+          matTooltipPosition="right" matTooltip="Presione aquí para actualizar los datos de las gráficas">cached
+        </mat-icon>
         <span class="align-self-center">Actualizar</span>
       </button>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-sm"style="text-align: center;">
+    <div class="col-sm" style="text-align: center;">
       <span class="text-titulo">Último Timbre: </span>
     </div>
     <div class="col-sm" style="margin-top: 3px; text-align: center;">
-      <span class="text-titulo-fecha">{{ultimoTimbre.timbre}}</span>
+      <span class="text-titulo-fecha">{{ultimoTimbre.fecha}}</span>
+
     </div>
-    <div class="col-sm"style="text-align: center;">
+    <div class="col-sm" style="text-align: center;">
       <span class="text-titulo">Acción: </span>
     </div>
     <div class="col-sm" style="margin-top: 3px; text-align: center;">
@@ -30,7 +32,7 @@
     </div>
   </div>
   <br>
-  <div class="row">  
+  <div class="row">
     <div class="d-flex justify-content-center flex-wrap">
       <button class="btn btn-lg d-flex justify-content-center boton-dos" (click)="MenuRapido(1)">
         <mat-icon class="icon-menu align-self-center">work</mat-icon>
@@ -54,7 +56,7 @@
       </button>
     </div>
   </div>
-  
+
   <div class="row">
     <div class="col-md-6">
       <mat-card class="example-card mat-elevation-z8">
@@ -114,4 +116,3 @@
   </div>
 
 </div>
-    

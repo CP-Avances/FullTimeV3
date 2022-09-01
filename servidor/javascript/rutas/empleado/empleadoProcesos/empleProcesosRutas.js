@@ -13,7 +13,7 @@ class DepartamentoRutas {
     }
     configuracion() {
         this.router.get('/', verificarToken_1.TokenValidation, empleProcesoControlador_1.default.ListarEmpleProcesos);
-        this.router.get('/infoProceso/:id_empl_cargo', verificarToken_1.TokenValidation, empleProcesoControlador_1.default.EncontrarProcesoPorIdCargo);
+        this.router.get('/infoProceso/:id_empleado', verificarToken_1.TokenValidation, empleProcesoControlador_1.default.BuscarProcesoUsuario);
         this.router.post('/', verificarToken_1.TokenValidation, empleProcesoControlador_1.default.CrearEmpleProcesos);
         this.router.put('/', verificarToken_1.TokenValidation, empleProcesoControlador_1.default.ActualizarProcesoEmpleado);
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, empleProcesoControlador_1.default.EliminarRegistros);

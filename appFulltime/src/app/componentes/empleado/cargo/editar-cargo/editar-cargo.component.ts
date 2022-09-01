@@ -1,10 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit, Input } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+
+import { VerEmpleadoComponent } from '../../ver-empleado/ver-empleado.component';
+
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
-import { ToastrService } from 'ngx-toastr';
-import { VerEmpleadoComponent } from '../../ver-empleado/ver-empleado.component';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
@@ -12,6 +14,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
   templateUrl: './editar-cargo.component.html',
   styleUrls: ['./editar-cargo.component.css']
 })
+
 export class EditarCargoComponent implements OnInit {
 
   @Input() idSelectCargo: number;
@@ -23,21 +26,21 @@ export class EditarCargoComponent implements OnInit {
   empresas: any = [];
 
   idDepartamento = new FormControl('', [Validators.required]);
+  horaTrabaja = new FormControl('', [Validators.required]);
   fechaInicio = new FormControl('', Validators.required);
   fechaFinal = new FormControl('', Validators.required);
   idSucursal = new FormControl('', [Validators.required]);
   sueldo = new FormControl('', [Validators.required]);
-  horaTrabaja = new FormControl('', [Validators.required]);
-  tipoF = new FormControl('');
   cargoF = new FormControl('', [Validators.minLength(3)]);
+  tipoF = new FormControl('');
 
   public nuevoEmplCargosForm = new FormGroup({
-    idDeparForm: this.idDepartamento,
+    horaTrabajaForm: this.horaTrabaja,
+    idSucursalForm: this.idSucursal,
     fecInicioForm: this.fechaInicio,
     fecFinalForm: this.fechaFinal,
-    idSucursalForm: this.idSucursal,
+    idDeparForm: this.idDepartamento,
     sueldoForm: this.sueldo,
-    horaTrabajaForm: this.horaTrabaja,
     cargoForm: this.cargoF,
     tipoForm: this.tipoF
   });
@@ -47,20 +50,20 @@ export class EditarCargoComponent implements OnInit {
     private restEmplCargos: EmplCargosService,
     private restSucursales: SucursalService,
     private restEmpleado: EmpleadoService,
-    private toastr: ToastrService,
     private verEmpleado: VerEmpleadoComponent,
+    private toastr: ToastrService,
   ) { }
 
   ngOnInit(): void {
-    this.obtenerCargoEmpleado();
+    this.ObtenerCargoEmpleado();
     this.FiltrarSucursales();
     this.BuscarTiposCargos();
     this.tipoCargo[this.tipoCargo.length] = { cargo: "OTRO" };
   }
 
   id_empl_contrato: number;
-  obtenerCargoEmpleado() {
-    this.restEmplCargos.getUnCargoRest(this.idSelectCargo).subscribe(res => {
+  ObtenerCargoEmpleado() {
+    this.restEmplCargos.BuscarCargoID(this.idSelectCargo).subscribe(res => {
       this.cargo = res;
       this.id_empl_contrato = this.cargo[0].id_empl_contrato;
       this.cargo.forEach(obj => {
@@ -142,7 +145,7 @@ export class EditarCargoComponent implements OnInit {
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
       return true;
     }
@@ -196,7 +199,7 @@ export class EditarCargoComponent implements OnInit {
     else {
       console.log(dataEmpleadoCargo);
       this.restEmplCargos.ActualizarContratoEmpleado(this.idSelectCargo, this.id_empl_contrato, dataEmpleadoCargo).subscribe(res => {
-        this.verEmpleado.obtenerCargoEmpleado(parseInt(this.idEmploy));
+        this.verEmpleado.ObtenerCargoEmpleado(this.idSelectCargo, this.verEmpleado.formato_fecha);
         this.cancelar();
         this.toastr.success('Operación Exitosa', 'Cargo del empleado Actualizado', {
           timeOut: 6000,
@@ -205,7 +208,7 @@ export class EditarCargoComponent implements OnInit {
     }
   }
 
-  cancelar() { this.verEmpleado.verCargoEdicion(true); }
+  cancelar() { this.verEmpleado.VerCargoEdicion(true); }
 
   estilo: any;
   habilitarCargo: boolean = false;
@@ -242,7 +245,7 @@ export class EditarCargoComponent implements OnInit {
           // Buscar id de último cargo ingresado
           datos.cargo = data[0].max;
           this.restEmplCargos.ActualizarContratoEmpleado(this.idSelectCargo, this.id_empl_contrato, datos).subscribe(res => {
-            this.verEmpleado.obtenerCargoEmpleado(parseInt(this.idEmploy));
+            this.verEmpleado.ObtenerCargoEmpleado(this.idSelectCargo, this.verEmpleado.formato_fecha);
             this.cancelar();
             this.toastr.success('Operación Exitosa', 'Cargo del empleado Actualizado', {
               timeOut: 6000,

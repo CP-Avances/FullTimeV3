@@ -54,7 +54,9 @@ export class ProcesosEmpleadoComponent implements OnInit {
       this.idCargo = datos;
       console.log("idCargo Procesos", this.idCargo[0].id);
       for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        this.restEmpleadoProcesos.ObtenerProcesoPorIdCargo(this.idCargo[i]['id']).subscribe(datos => {
+
+        // revisar 
+        this.restEmpleadoProcesos.ObtenerProcesoUsuario(this.idCargo[i]['id']).subscribe(datos => {
           this.buscarProcesos = datos;
           if (this.buscarProcesos.length === 0) {
             console.log("No se encuentran registros")

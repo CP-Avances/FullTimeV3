@@ -73,7 +73,8 @@ export class PlanificacionHorarioEmpleadoComponent implements OnInit {
       this.idCargo = datos;
       //console.log("idCargo Procesos", this.idCargo[0].id);
       for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        this.restPlanH.ObtenerPlanHorarioPorIdCargo(this.idCargo[i]['id']).subscribe(datos => {
+        //revisar
+        this.restPlanH.ObtenerHorarioRotativo(this.idCargo[i]['id']).subscribe(datos => {
           this.planHorario = datos;
           if (this.planHorario.length != 0) {
             if (this.cont === 0) {

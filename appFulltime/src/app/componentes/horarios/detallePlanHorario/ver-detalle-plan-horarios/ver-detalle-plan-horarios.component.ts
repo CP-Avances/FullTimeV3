@@ -1,35 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { FormControl } from '@angular/forms';
+import { environment } from '../../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { FormControl } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
-import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
 import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horarios/detallePlanHorario/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
 import { EditarDetallePlanComponent } from 'src/app/componentes/horarios/detallePlanHorario/editar-detalle-plan/editar-detalle-plan.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
+import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
 import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
 import { PlanGeneralService } from 'src/app/servicios/planGeneral/plan-general.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { environment } from '../../../../../environments/environment';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-ver-detalle-plan-horarios',
   templateUrl: './ver-detalle-plan-horarios.component.html',
   styleUrls: ['./ver-detalle-plan-horarios.component.css']
 })
+
 export class VerDetallePlanHorariosComponent implements OnInit {
 
-  idPlanH: string;
-  idEmpleado: string;
   datosPlanificacion: any = [];
   datosDetalle: any = [];
+  idEmpleado: string;
+  idPlanH: string;
 
-  // items de paginación de la tabla
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   nameFile: string;
@@ -39,13 +42,15 @@ export class VerDetallePlanHorariosComponent implements OnInit {
   hipervinculo: string = environment.url
 
   constructor(
-    public router: Router,
+    private restEmpleado: EmpleadoService,
+    private toastr: ToastrService,
     private restDP: DetallePlanHorarioService,
     private restPH: PlanHorarioService,
     private restP: PlanGeneralService,
-    private restEmpleado: EmpleadoService,
-    public vistaRegistrarDatos: MatDialog,
-    private toastr: ToastrService,
+    public router: Router,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -54,9 +59,8 @@ export class VerDetallePlanHorariosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.BuscarParametro();
     this.ObtenerEmpleado(parseInt(this.idEmpleado))
-    this.BuscarDatosPlanHorario(this.idPlanH);
-    this.ListarDetalles(this.idPlanH);
   }
 
   ManejarPagina(e: PageEvent) {
@@ -64,33 +68,65 @@ export class VerDetallePlanHorariosComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1
   }
 
-  BuscarDatosPlanHorario(id_planificacion: any) {
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.LlamarMetodo(this.formato_fecha);
+      },
+      vacio => {
+        this.LlamarMetodo(this.formato_fecha);
+      });
+  }
+
+  LlamarMetodo(formato_fecha: string) {
+    this.BuscarDatosPlanHorario(this.idPlanH, formato_fecha);
+    this.ListarDetalles(this.idPlanH, formato_fecha);
+  }
+
+  BuscarDatosPlanHorario(id_planificacion: any, formato_fecha: string) {
     this.datosPlanificacion = [];
-    this.restPH.ObtenerPlanHorarioPorId(id_planificacion).subscribe(data => {
-      this.datosPlanificacion = data;
+    this.restPH.ObtenerPlanHorarioPorId(id_planificacion).subscribe(datos => {
+      this.datosPlanificacion = datos;
+      this.datosPlanificacion.forEach(data => {
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+      })
     })
   }
 
-  ListarDetalles(id_planificacion: any) {
+  ListarDetalles(id_planificacion: any, formato_fecha: string) {
     this.datosDetalle = [];
     this.restDP.ObtenerPlanHoraDetallePorIdPlanHorario(id_planificacion).subscribe(datos => {
       this.datosDetalle = datos;
+      this.datosDetalle.forEach(data => {
+        data.fecha_ = this.validar.FormatearFecha(data.fecha, formato_fecha, this.validar.dia_abreviado);
+      })
     })
   }
 
   AbrirVentanaDetalles(datosSeleccionados): void {
-    this.vistaRegistrarDatos.open(RegistroDetallePlanHorarioComponent, { width: '350px', data: { planHorario: datosSeleccionados, actualizarPage: true } })
+    this.ventana.open(RegistroDetallePlanHorarioComponent, { width: '350px', data: { planHorario: datosSeleccionados, actualizarPage: true } })
       .afterClosed().subscribe(item => {
-        this.ListarDetalles(this.idPlanH);
+        this.ListarDetalles(this.idPlanH, this.formato_fecha);
       });
   }
 
   AbrirVentanaEditar(datosSeleccionados: any, datosPlan: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarDetallePlanComponent,
+    this.ventana.open(EditarDetallePlanComponent,
       { width: '350px', data: { detalle: datosSeleccionados, plan: datosPlan } })
       .afterClosed().subscribe(item => {
-        this.ListarDetalles(this.idPlanH);
+        this.ListarDetalles(this.idPlanH, this.formato_fecha);
       });
   }
 
@@ -100,7 +136,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
-      this.ListarDetalles(this.idPlanH);
+      this.ListarDetalles(this.idPlanH, this.formato_fecha);
       this.EliminarPlanificacion(fecha, horario, codigo)
     });
   }
@@ -125,7 +161,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
   /** Función para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     console.log('detalle plan', datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarDetalle(datos.id, datos.fecha, datos.id_horario, parseInt(this.empleado[0].codigo));
@@ -136,11 +172,13 @@ export class VerDetallePlanHorariosComponent implements OnInit {
   }
 
   empleado: any = [];
+  usuario: string = '';
   // Método para ver la información del empleado 
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
     this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
       this.empleado = data;
+      this.usuario = this.empleado[0].nombre + ' ' + this.empleado[0].apellido;
     })
   }
 
@@ -205,7 +243,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
                 this.toastr.success('Operación Exitosa', 'Plantilla de Horario importada.', {
                   timeOut: 6000,
                 });
-                this.ListarDetalles(this.idPlanH);
+                this.ListarDetalles(this.idPlanH, this.formato_fecha);
                 this.archivo1Form.reset();
                 this.nameFile = '';
                 // window.location.reload();

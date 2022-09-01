@@ -10,10 +10,13 @@ class PlanHorarioRutas {
     }
 
     configuracion(): void {
+
+        // BUSQUEDA DE HORARIOS ROTATIVOS POR CODIGO DE USUARIO
+        this.router.get('/rotativo/:codigo', TokenValidation, PLAN_HORARIO_CONTROLADOR.BuscarHorarioRotativoCodigo);
+
         this.router.get('/', TokenValidation, PLAN_HORARIO_CONTROLADOR.ListarPlanHorario);
         this.router.post('/', TokenValidation, PLAN_HORARIO_CONTROLADOR.CrearPlanHorario);
         this.router.get('/buscar/:id_empleado', TokenValidation, PLAN_HORARIO_CONTROLADOR.EncontrarIdPlanHorario);
-        this.router.get('/infoPlan/:id_cargo', TokenValidation, PLAN_HORARIO_CONTROLADOR.EncontrarPlanHorarioPorIdCargo);
         this.router.get('/datosPlanHorario/:id', TokenValidation, PLAN_HORARIO_CONTROLADOR.EncontrarPlanHorarioPorId);
         this.router.put('/', TokenValidation, PLAN_HORARIO_CONTROLADOR.ActualizarPlanHorario);
         this.router.delete('/eliminar/:id', TokenValidation, PLAN_HORARIO_CONTROLADOR.EliminarRegistros);

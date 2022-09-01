@@ -3,11 +3,13 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 
+import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { AutorizacionesComponent } from 'src/app/componentes/autorizaciones/autorizaciones/autorizaciones.component';
+
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 
 export interface PermisosElemento {
   apellido: string;
@@ -39,33 +41,33 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
 
   selectionUno = new SelectionModel<PermisosElemento>(true, []);
 
-  // Visibilizar lista de permisos autorizados
+  // VISIBILIZAR LISTA DE PERMISOS AUTORIZADOS
   lista_autorizados: boolean = false;
   lista_permisos: boolean = false;
 
-  // Habilitar o Deshabilitar el icono de autorización individual
+  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true;
 
-  // Items de paginación de la tabla
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
 
-  // Items de paginación de la tabla autorizados
+  // ITEMS DE PAGINACIÓN DE LA TABLA AUTORIZADOS
   tamanio_pagina_autorizado: number = 5;
   numero_pagina_autorizado: number = 1;
   pageSizeOptions_autorizado = [5, 10, 20, 50];
 
   constructor(
+    private validar: ValidacionesService,
+    private ventana: MatDialog,
     private restP: PermisosService,
+    public parametro: ParametrosService,
     public restEmpleado: EmpleadoService,
-    private vistaFlotante: MatDialog,
-    private validacionesService: ValidacionesService
   ) { }
 
   ngOnInit(): void {
-    this.obtenerPermisos();
-    this.ObtenerPermisosAutorizados();
+    this.BuscarParametro();
   }
 
   ManejarPagina(e: PageEvent) {
@@ -73,59 +75,102 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  obtenerPermisos() {
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.obtenerPermisos(fecha, this.formato_hora);
+        this.ObtenerPermisosAutorizados(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.obtenerPermisos(fecha, this.formato_hora);
+        this.ObtenerPermisosAutorizados(fecha, this.formato_hora);
+      });
+  }
+
+  obtenerPermisos(fecha: string, hora: string) {
+
     this.restP.obtenerAllPermisos().subscribe(res => {
       this.permisos = res;
+
+      this.permisos.forEach(p => {
+        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+        p.fec_creacion = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
+
+        p.fec_inicio = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
+
+        p.fec_final = this.validar.FormatearFecha(p.fec_final, fecha, this.validar.dia_abreviado);
+
+        if (p.estado === 1) {
+          p.estado = 'Pendiente';
+        }
+        else if (p.estado === 2) {
+          p.estado = 'Pre-autorizado';
+        }
+      })
       console.log('permisos', this.permisos)
-      for (var i = 0; i <= this.permisos.length - 1; i++) {
-        if (this.permisos[i].estado === 1) {
-          this.permisos[i].estado = 'Pendiente';
-        }
-        else if (this.permisos[i].estado === 2) {
-          this.permisos[i].estado = 'Pre-autorizado';
-        }
-      }
       if (this.permisos.length != 0) {
         this.lista_permisos = true;
       }
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error)
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
+
   permisosTotales: any;
   EditarPermiso(id, id_empl) {
-    /* Método para imprimir datos del permiso */
+    // MÉTODO PARA IMPRIMIR DATOS DEL PERMISO 
     this.permisosTotales = [];
     this.restP.ObtenerUnPermisoEditar(id).subscribe(datos => {
       this.permisosTotales = datos;
-      this.vistaFlotante.open(EditarPermisoEmpleadoComponent, {
+      this.ventana.open(EditarPermisoEmpleadoComponent, {
         width: '1200px',
         data: { dataPermiso: this.permisosTotales[0], id_empleado: parseInt(id_empl) }
       }).afterClosed().subscribe(items => {
-        this.obtenerPermisos();
-        this.ObtenerPermisosAutorizados();
+        this.BuscarParametro();
       });
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error)
+      return this.validar.RedireccionarHomeAdmin(err.error)
     })
 
   }
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
     const numRows = this.permisos.length;
     return numSelected === numRows;
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
       this.permisos.forEach(row => this.selectionUno.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabel(row?: PermisosElemento): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
@@ -159,18 +204,18 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
     this.AbrirAutorizaciones(EmpleadosSeleccionados, 'multiple');
   }
 
-  // Autorización de permisos
+  // AUTORIZACIÓN DE PERMISOS
   AbrirAutorizaciones(datos_permiso, forma: string) {
-    this.vistaFlotante.open(AutorizacionesComponent,
-      { width: '600px', data: { datosPermiso: datos_permiso, carga: forma } }).afterClosed().subscribe(items => {
-        this.obtenerPermisos();
-        this.ObtenerPermisosAutorizados();
+    this.ventana.open(AutorizacionesComponent,
+      { width: '600px', data: { datosPermiso: datos_permiso, carga: forma } })
+      .afterClosed().subscribe(items => {
+        this.BuscarParametro();
         this.auto_individual = true;
         this.selectionUno.clear();
       });
   }
 
-  // Lista de permisos que han sido autorizados o negados
+  // LISTA DE PERMISOS QUE HAN SIDO AUTORIZADOS O NEGADOS
 
   ManejarPaginaAutorizados(e: PageEvent) {
     this.tamanio_pagina_autorizado = e.pageSize;
@@ -178,22 +223,31 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   }
 
   permisosAutorizados: any = [];
-  ObtenerPermisosAutorizados() {
+  ObtenerPermisosAutorizados(fecha: string, hora: string) {
     this.restP.BuscarPermisosAutorizados().subscribe(res => {
       this.permisosAutorizados = res;
-      for (var i = 0; i <= this.permisosAutorizados.length - 1; i++) {
-        if (this.permisosAutorizados[i].estado === 3) {
-          this.permisosAutorizados[i].estado = 'Autorizado';
+
+      this.permisosAutorizados.forEach(p => {
+        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
+        p.fec_creacion = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
+
+        p.fec_inicio = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
+
+        p.fec_final = this.validar.FormatearFecha(p.fec_final, fecha, this.validar.dia_abreviado);
+
+        if (p.estado === 3) {
+          p.estado = 'Autorizado';
         }
-        else if (this.permisosAutorizados[i].estado === 4) {
-          this.permisosAutorizados[i].estado = 'Negado';
+        else if (p.estado === 4) {
+          p.estado = 'Negado';
         }
-      }
+      })
+
       if (this.permisosAutorizados.length != 0) {
         this.lista_autorizados = true;
       }
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error)
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 

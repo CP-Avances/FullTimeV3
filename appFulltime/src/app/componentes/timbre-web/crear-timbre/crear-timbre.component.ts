@@ -170,7 +170,7 @@ export class CrearTimbreComponent implements OnInit {
           fec_hora_timbre: form1.fechaForm.toJSON().split('T')[0] + 'T' + form1.horaForm + ':00',
           accion: form1.accionForm,
           tecl_funcion: this.TeclaFuncion(form1.accionForm),
-          observacion: 'Timbre creado por Admi. ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido,
+          observacion: 'Timbre creado por Admin. ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido,
           latitud: this.latitud,
           longitud: this.longitud,
           id_empleado: obj.id,

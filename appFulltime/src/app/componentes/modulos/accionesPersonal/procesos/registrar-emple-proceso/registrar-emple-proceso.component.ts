@@ -1,12 +1,12 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProcesos/empleado-procesos.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ProcesoService } from 'src/app/servicios/catalogos/catProcesos/proceso.service';
 
 @Component({
@@ -15,11 +15,12 @@ import { ProcesoService } from 'src/app/servicios/catalogos/catProcesos/proceso.
   styleUrls: ['./registrar-emple-proceso.component.css'],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
+
 export class RegistrarEmpleProcesoComponent implements OnInit {
 
   empleados: any = [];
@@ -31,18 +32,18 @@ export class RegistrarEmpleProcesoComponent implements OnInit {
   idProcesoF = new FormControl('', Validators.required);
 
   public EmpleProcesoForm = new FormGroup({
-    fecInicioForm: this.fechaInicio,
-    fecFinalForm: this.fechaFinal,
     nombreEmpleadoForm: this.nombreEmpleado,
-    idProcesoForm: this.idProcesoF
+    fecInicioForm: this.fechaInicio,
+    idProcesoForm: this.idProcesoF,
+    fecFinalForm: this.fechaFinal,
   });
 
   constructor(
-    private rest: EmpleadoService,
-    private restP: EmpleadoProcesosService,
     private restPro: ProcesoService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegistrarEmpleProcesoComponent>,
+    private restP: EmpleadoProcesosService,
+    private rest: EmpleadoService,
+    public ventana: MatDialogRef<RegistrarEmpleProcesoComponent>,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
   ) { }
 
@@ -51,7 +52,7 @@ export class RegistrarEmpleProcesoComponent implements OnInit {
     this.ObtenerProcesos();
   }
 
-  // metodo para ver la informacion del empleado 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
@@ -84,9 +85,10 @@ export class RegistrarEmpleProcesoComponent implements OnInit {
   InsertarProceso(form) {
     let datosProceso = {
       id_empl_cargo: this.datoEmpleado.idCargo,
+      id_empleado: this.datoEmpleado.idEmpleado,
       fec_inicio: form.fecInicioForm,
       fec_final: form.fecFinalForm,
-      id: form.idProcesoForm
+      id: form.idProcesoForm,
     };
     this.restP.RegistrarEmpleProcesos(datosProceso).subscribe(response => {
       this.toastr.success('Operación Exitosa', 'Período de Procesos del Empleado registrados', {
@@ -106,8 +108,7 @@ export class RegistrarEmpleProcesoComponent implements OnInit {
 
   CerrarVentanaRegistroProceso() {
     this.LimpiarCampos();
-    this.dialogRef.close();
-    //window.location.reload();
+    this.ventana.close();
   }
 
 }

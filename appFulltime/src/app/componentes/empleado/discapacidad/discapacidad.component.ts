@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { DiscapacidadService } from 'src/app/servicios/discapacidad/discapacidad.service';
+import { Component, OnInit, Input } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+
+import { DiscapacidadService } from 'src/app/servicios/discapacidad/discapacidad.service';
+
 import { VerEmpleadoComponent } from '../ver-empleado/ver-empleado.component';
 
 @Component({
@@ -10,6 +11,7 @@ import { VerEmpleadoComponent } from '../ver-empleado/ver-empleado.component';
   templateUrl: './discapacidad.component.html',
   styleUrls: ['./discapacidad.component.css']
 })
+
 export class DiscapacidadComponent implements OnInit {
 
   @Input() idEmploy: string;
@@ -17,40 +19,39 @@ export class DiscapacidadComponent implements OnInit {
 
   userDiscapacidad: any = [];
   tipoDiscapacidad: any = [];
-  unTipo: any = [];
   ultimoId: any = [];
+  unTipo: any = [];
 
   HabilitarDescrip: boolean = true;
   estilo: any;
 
-  carnet = new FormControl('', [Validators.required, Validators.maxLength(8)]);
   porcentaje = new FormControl('', [Validators.required, Validators.maxLength(6)]);
-  tipo = new FormControl('', [Validators.maxLength(10)])
   nombreF = new FormControl('', [Validators.minLength(5)])
+  carnet = new FormControl('', [Validators.required, Validators.maxLength(8)]);
+  tipo = new FormControl('', [Validators.maxLength(10)])
 
   public nuevoCarnetForm = new FormGroup({
-    carnetForm: this.carnet,
     porcentajeForm: this.porcentaje,
+    carnetForm: this.carnet,
+    nombreForm: this.nombreF,
     tipoForm: this.tipo,
-    nombreForm: this.nombreF
   });
 
   constructor(
     private rest: DiscapacidadService,
     private toastr: ToastrService,
-    private router: Router,
     private metodo: VerEmpleadoComponent
   ) { }
 
   ngOnInit(): void {
-    this.limpiarCampos();
-    this.editarFormulario();
+    this.LimpiarCampos();
+    this.EditarFormulario();
     this.ObtenerTiposDiscapacidad();
     this.tipoDiscapacidad[this.tipoDiscapacidad.length] = { nombre: "OTRO" };
   }
 
   texto: string = 'REGISTRAR'
-  editarFormulario() {
+  EditarFormulario() {
     if (this.editar == 'editar') {
       this.rest.getDiscapacidadUsuarioRest(parseInt(this.idEmploy)).subscribe(data => {
         this.userDiscapacidad = data;
@@ -123,10 +124,10 @@ export class DiscapacidadComponent implements OnInit {
       this.toastr.success('Operacion Exitosa', 'Discapacidad guardada', {
         timeOut: 6000,
       });
-      this.limpiarCampos();
-      this.metodo.obtenerDiscapacidadEmpleado(this.idEmploy);
+      this.LimpiarCampos();
+      this.metodo.ObtenerDiscapacidadEmpleado();
       this.texto = 'REGISTRAR';
-    }, error => { });
+    });
   }
 
   ActualizarDatos(form, idTipoD) {
@@ -139,7 +140,7 @@ export class DiscapacidadComponent implements OnInit {
       this.toastr.success('Operación Exitosa', 'Discapacidad Actualiza', {
         timeOut: 6000,
       });
-      this.metodo.obtenerDiscapacidadEmpleado(this.idEmploy);
+      this.metodo.ObtenerDiscapacidadEmpleado();
       this.cerrarRegistro();
     });
   }
@@ -155,7 +156,7 @@ export class DiscapacidadComponent implements OnInit {
         this.ultimoId[0].max;
         this.ActualizarDatos(form, this.ultimoId[0].max);
       });
-    }, error => { });
+    });
   }
 
   GuardarTipoRegistro(form) {
@@ -169,15 +170,15 @@ export class DiscapacidadComponent implements OnInit {
         this.ultimoId[0].max;
         this.RegistarDatos(form, this.ultimoId[0].max);
       });
-    }, error => { });
+    });
   }
 
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -201,7 +202,7 @@ export class DiscapacidadComponent implements OnInit {
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
       return true;
     }
@@ -225,24 +226,21 @@ export class DiscapacidadComponent implements OnInit {
   }
 
 
-  limpiarCampos() {
+  LimpiarCampos() {
     this.nuevoCarnetForm.reset();
   }
 
   cerrarRegistro() {
-    this.metodo.mostrarDis();
-    //window.location.reload();
+    this.metodo.MostrarDis();
   }
 
 
-  /* TIPO DE DESCAPACIDAD */
+  // TIPO DE DESCAPACIDAD 
   seleccionarTipo;
   ObtenerTiposDiscapacidad() {
     this.rest.ListarTiposD().subscribe(data => {
       this.tipoDiscapacidad = data;
       this.tipoDiscapacidad[this.tipoDiscapacidad.length] = { nombre: "OTRO" };
-      //this.seleccionarTipo = this.tipoDiscapacidad[this.tipoDiscapacidad.length - 1].nombre;
-
     });
   }
 

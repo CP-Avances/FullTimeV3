@@ -9,6 +9,10 @@ export class EmplCargosService {
 
   constructor(private http: HttpClient) { }
 
+  BuscarCargoID(id: number) {
+    return this.http.get<any>(`${environment.url}/empleadoCargos/${id}`);
+  }
+
   getEmpleadoCargosRest() {
     return this.http.get(`${environment.url}/empleadoCargos`);
   }
@@ -17,9 +21,6 @@ export class EmplCargosService {
     return this.http.get(`${environment.url}/empleadoCargos/lista-empleados`);
   }
 
-  getUnCargoRest(id: number) {
-    return this.http.get<any>(`${environment.url}/empleadoCargos/${id}`);
-  }
 
   getInfoCargoEmpleadoRest(id_empl_contrato: number) {
     return this.http.get<any>(`${environment.url}/empleadoCargos/cargoInfo/${id_empl_contrato}`);

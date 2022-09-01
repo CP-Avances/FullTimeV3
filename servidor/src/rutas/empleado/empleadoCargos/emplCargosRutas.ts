@@ -11,10 +11,13 @@ class EmpleadosCargpsRutas {
     }
 
     configuracion(): void {
+
+        // METODO DE BUSQUEDA DE DATOS DE CARGO DEL USUARIO MEDIANTE ID DEL CARGO
+        this.router.get('/:id', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.ObtenerCargoID);
+
         this.router.get('/', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.list);
         this.router.get('/lista-empleados/', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.ListarCargoEmpleado);
         this.router.get('/empleadosAutorizan/:id', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.ListarEmpleadoAutoriza);
-        this.router.get('/:id', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.getOne);
         this.router.get('/cargoInfo/:id_empl_contrato', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.EncontrarInfoCargoEmpleado);
         this.router.post('/', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.Crear);
         this.router.get('/buscar/:id_empleado', TokenValidation, EMPLEADO_CARGO_CONTROLADOR.EncontrarIdCargo);

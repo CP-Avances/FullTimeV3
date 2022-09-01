@@ -19,9 +19,19 @@ class AutorizaDepartamentoControlador {
         res.jsonp({ message: 'Autorización se registró con éxito' });
     }
 
-    public async EncontrarAutorizacionCargo(req: Request, res: Response) {
-        const { id_empl_cargo } = req.params;
-        const AUTORIZA = await pool.query('SELECT * FROM VistaDepartamentoAutoriza WHERE id_empl_cargo= $1', [id_empl_cargo]);
+    public async EncontrarAutorizacionUsuario(req: Request, res: Response) {
+        const { id_empleado } = req.params;
+        const AUTORIZA = await pool.query(
+            `
+            SELECT da.id, da.id_departamento, da.id_empl_cargo, da.estado, cd.nombre AS nom_depar,
+                ce.id AS id_empresa, ce.nombre AS nom_empresa, s.id AS id_sucursal, 
+                s.nombre AS nom_sucursal
+            FROM depa_autorizaciones AS da, cg_departamentos AS cd, cg_empresa AS ce, 
+                sucursales AS s
+            WHERE da.id_departamento = cd.id AND cd.id_sucursal = s.id AND ce.id = s.id_empresa
+                AND da.id_empleado = $1
+            `
+            , [id_empleado]);
         if (AUTORIZA.rowCount > 0) {
             return res.jsonp(AUTORIZA.rows)
         }

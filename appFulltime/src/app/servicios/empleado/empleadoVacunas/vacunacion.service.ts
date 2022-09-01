@@ -14,7 +14,7 @@ export class VacunacionService {
 
   // SERVICIO REGISTROS DE VACUNACIÓN
   CrearRegistroVacunacion(data: any) {
-    return this.http.post(`${environment.url}/vacunas`, data);
+    return this.http.post<any>(`${environment.url}/vacunas`, data);
   }
 
   ObtenerVacunaEmpleado(id_empleado: number) {
@@ -32,11 +32,6 @@ export class VacunacionService {
   SubirDocumento(formData, id: number) {
     return this.http.put(`${environment.url}/vacunas/${id}/documento`, formData)
   }
-
-  ConsultarUltimaVacuna() {
-    return this.http.get(`${environment.url}/vacunas/buscar/ultimo`);
-  }
-
 
   // SERVICIOS DE REGISTROS DE TIPO DE VACUNACIÓN
   CrearTipoVacuna(data: any) {

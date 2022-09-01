@@ -22,8 +22,8 @@ export class EmpleadoHorariosService {
     return this.http.post(`${environment.url}/empleadoHorario`, datos);
   }
 
-  BuscarHorarioCargo(id: any) {
-    return this.http.get(`${environment.url}/empleadoHorario/horarioCargo/${id}`);
+  BuscarHorarioUsuario(codigo: any) {
+    return this.http.get(`${environment.url}/empleadoHorario/horarioCargo/${codigo}`);
   }
 
   CargaMultiple(formData) {

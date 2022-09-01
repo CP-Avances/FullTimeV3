@@ -22,7 +22,7 @@ export class AutorizaDepartamentoService {
     return this.http.post(`${environment.url}/autorizaDepartamento`, datos);
   }
 
-  BuscarAutoridadCargo(id: any) {
+  BuscarAutoridadUsuario(id: any) {
     return this.http.get(`${environment.url}/autorizaDepartamento/autoriza/${id}`);
   }
 

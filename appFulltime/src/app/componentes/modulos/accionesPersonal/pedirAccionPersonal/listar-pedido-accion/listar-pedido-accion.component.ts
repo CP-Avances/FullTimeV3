@@ -148,7 +148,8 @@ export class ListarPedidoAccionComponent implements OnInit {
 
   /** MÉTODO PARA BUSCAR PROCESOS QUE TIENE EL EMPLEADO DE ACUERDO AL CARGO */
   BuscarProcesosCargo(id_cargo: any, valor: any, contar: any) {
-    this.restEmpleadoProcesos.ObtenerProcesoPorIdCargo(id_cargo[valor]['id']).subscribe(datos => {
+    // revisar 
+    this.restEmpleadoProcesos.ObtenerProcesoUsuario(id_cargo[valor]['id']).subscribe(datos => {
       this.buscarProcesos = datos;
       if (this.buscarProcesos.length != 0) {
         if (this.contador === 0) {

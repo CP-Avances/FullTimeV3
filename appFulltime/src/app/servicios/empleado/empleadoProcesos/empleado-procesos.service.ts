@@ -17,7 +17,7 @@ export class EmpleadoProcesosService {
     return this.http.post(`${environment.url}/empleadoProcesos`, datos);
   }
 
-  ObtenerProcesoPorIdCargo(id_empl_cargo: number) {
+  ObtenerProcesoUsuario(id_empl_cargo: number) {
     return this.http.get<any>(`${environment.url}/empleadoProcesos/infoProceso/${id_empl_cargo}`);
   }
 

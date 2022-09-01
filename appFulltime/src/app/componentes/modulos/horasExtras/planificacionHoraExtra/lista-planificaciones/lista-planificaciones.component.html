@@ -21,8 +21,8 @@
                 <tbody>
                     <tr *ngFor="let p of listaPlan | paginate:tamanio_pagina:numero_pagina">
                         <td>{{p.descripcion}}</td>
-                        <td>{{p.fecha_desde.split('T')[0]}}</td>
-                        <td>{{p.fecha_hasta.split('T')[0]}}</td>
+                        <td>{{p.fecha_desde}}</td>
+                        <td>{{p.fecha_hasta}}</td>
                         <td>{{p.hora_inicio}}</td>
                         <td>{{p.hora_fin}}</td>
                         <td>{{p.horas_totales}}</td>
@@ -97,10 +97,10 @@
                         </td>
                         <td>{{e.nombre}}</td>
                         <td>{{e.descripcion}}</td>
-                        <td>{{e.fecha_desde.split('T')[0]}}</td>
-                        <td>{{e.fecha_hasta.split('T')[0]}}</td>
-                        <td>{{e.hora_inicio}}</td>
-                        <td>{{e.hora_fin}}</td>
+                        <td>{{e.fecDesde}}</td>
+                        <td>{{e.fecHasta}}</td>
+                        <td>{{e.horaInicio}}</td>
+                        <td>{{e.horaFin}}</td>
                         <td>{{e.horas_totales}}</td>
                         <td class="d-flex justify-content-center">
                             <i *ngIf="ver_editar" class="fas fa-edit" (click)="AbrirEditarPlan(e, 'individual')"

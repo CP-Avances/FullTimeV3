@@ -1,8 +1,8 @@
 // LLAMADO DE LIBRERIAS
+import { Component, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
 
 // LLAMADO A COMPONENTES
 import { AutorizaSolicitudComponent } from '../autoriza-solicitud/autoriza-solicitud.component';
@@ -11,6 +11,8 @@ import { AutorizaSolicitudComponent } from '../autoriza-solicitud/autoriza-solic
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { EditarSolicitudComidaComponent } from '../editar-solicitud-comida/editar-solicitud-comida.component';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE AUTORIZACIÓN
 export interface SolicitudElemento {
@@ -67,14 +69,64 @@ export class ListarSolicitudComponent implements OnInit {
 
   constructor(
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
+    public parametro: ParametrosService,
+    public validar: ValidacionesService,
     public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
     private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
   ) { }
 
   ngOnInit(): void {
-    this.ObtenerSolicitudesAutorizados(); // LISTA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
-    this.ObtenerSolicitudesExpiradas(); // LISTA DE DATOS DE SOLIICTUDES EXPIRADAS
-    this.ObtenerSolicitudes(); // LISTA DE SOLICITUDES PENDIENTES
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        // LISTA DE DATOS DE SOLICITUDES
+        this.ObtenerSolicitudes(fecha, this.formato_hora);
+        // LISTA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
+        this.ObtenerSolicitudesAutorizados(fecha, this.formato_hora);
+        // LISTA DE DATOS DE SOLIICTUDES EXPIRADAS
+        this.ObtenerSolicitudesExpiradas(fecha, this.formato_hora);
+      },
+      vacio => {
+        // LISTA DE DATOS DE SOLICITUDES
+        this.ObtenerSolicitudes(fecha, this.formato_hora);
+        // LISTA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
+        this.ObtenerSolicitudesAutorizados(fecha, this.formato_hora);
+        // LISTA DE DATOS DE SOLIICTUDES EXPIRADAS
+        this.ObtenerSolicitudesExpiradas(fecha, this.formato_hora);
+      });
+  }
+
+  FormatearDatos(lista: any, formato_fecha: string, formato_hora: string) {
+    lista.forEach(data => {
+      data.fec_comida_ = this.validar.FormatearFecha(data.fec_comida, formato_fecha, this.validar.dia_abreviado);
+      data.hora_inicio_ = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+      data.hora_fin_ = this.validar.FormatearHora(data.hora_fin, formato_hora);
+    })
   }
 
   /** ********************************************************************************************* */
@@ -88,12 +140,13 @@ export class ListarSolicitudComponent implements OnInit {
   }
 
   // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
-  ObtenerSolicitudes() {
+  ObtenerSolicitudes(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaNegado().subscribe(res => {
       this.solicitudes = res;
       if (this.solicitudes.length != 0) {
         this.lista_solicitados = true;
       }
+      this.FormatearDatos(this.solicitudes, formato_fecha, formato_hora);
     });
   }
 
@@ -154,9 +207,7 @@ export class ListarSolicitudComponent implements OnInit {
     this.ventana.open(AutorizaSolicitudComponent,
       { width: '600px', data: { datosMultiple: datos_solicitud, carga: forma } })
       .afterClosed().subscribe(items => {
-        this.ObtenerSolicitudesAutorizados();
-        this.ObtenerSolicitudesExpiradas();
-        this.ObtenerSolicitudes();
+        this.BuscarParametro();
         this.btnCheckHabilitar_Estado = false;
         this.selectionUnoEstado.clear();
         this.btnCheckHabilitar = false;
@@ -171,8 +222,7 @@ export class ListarSolicitudComponent implements OnInit {
       data: { solicitud: datoSeleccionado }
     })
       .afterClosed().subscribe(item => {
-        this.ObtenerSolicitudesAutorizados();
-        this.ObtenerSolicitudes();
+        this.BuscarParametro();
       });
   }
 
@@ -188,9 +238,12 @@ export class ListarSolicitudComponent implements OnInit {
 
   // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
   solicitudesAutorizados: any = []; // VARIABLE PARA GUARDAR DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
-  ObtenerSolicitudesAutorizados() {
+  ObtenerSolicitudesAutorizados(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaAprobado().subscribe(res => {
       this.solicitudesAutorizados = res;
+
+      this.FormatearDatos(this.solicitudesAutorizados, formato_fecha, formato_hora);
+
       for (var i = 0; i <= this.solicitudesAutorizados.length - 1; i++) {
         if (this.solicitudesAutorizados[i].aprobada === true) {
           this.solicitudesAutorizados[i].aprobada = 'AUTORIZADO';
@@ -273,9 +326,12 @@ export class ListarSolicitudComponent implements OnInit {
 
   // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES EXPIRADAS
   solicitudesExpiradas: any = []; // VARIABLE PARA ALMACENAR DATOS DE SOLIICTUDES EXPIRADAS
-  ObtenerSolicitudesExpiradas() {
+  ObtenerSolicitudesExpiradas(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaExpirada().subscribe(res => {
       this.solicitudesExpiradas = res;
+
+      this.FormatearDatos(this.solicitudesExpiradas, formato_fecha, formato_hora);
+
       for (var i = 0; i <= this.solicitudesExpiradas.length - 1; i++) {
         if (this.solicitudesExpiradas[i].aprobada === true) {
           this.solicitudesExpiradas[i].aprobada = 'AUTORIZADO';

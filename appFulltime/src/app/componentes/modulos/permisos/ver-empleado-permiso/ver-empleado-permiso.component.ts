@@ -104,7 +104,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
       });
   }
 
-  // VARIABE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
+  // VARIABLE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
   empleado_estado: any = [];
   // CONTADOR DE REVISIONES DE SOLICITUD
   lectura: number = 1;

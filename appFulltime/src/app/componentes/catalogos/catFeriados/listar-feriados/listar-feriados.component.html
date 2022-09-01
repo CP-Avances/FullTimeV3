@@ -57,7 +57,7 @@
                         </td>
                         <td>
                             <mat-form-field id="t-inputs">
-                                <input matInput placeholder="aaaa-mm-dd" [formControl]="fechaF"
+                                <input matInput placeholder="yyyy-mm-dd" [formControl]="fechaF"
                                     [(ngModel)]="filtradoFecha">
                             </mat-form-field>
                         </td>
@@ -71,8 +71,8 @@
                     <tr
                         *ngFor="let f of feriados | filtroNombre: filtroDescripcion | filtroFecha: filtradoFecha | paginate:tamanio_pagina:numero_pagina ">
                         <td id="desc">{{f.descripcion}}</td>
-                        <td style="font-size: 12px;">{{f.fecha}}</td>
-                        <td style="font-size: 12px;">{{f.fec_recuperacion}}</td>
+                        <td style="font-size: 12px;">{{f.fecha_}}</td>
+                        <td style="font-size: 12px;">{{f.fec_recuperacion_}}</td>
                         <td class="d-flex justify-content-center">
                             <i matSuffix matTooltipPosition="right" matTooltip="Ver datos generales de este feriado."
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/verFeriados/', f.id]">

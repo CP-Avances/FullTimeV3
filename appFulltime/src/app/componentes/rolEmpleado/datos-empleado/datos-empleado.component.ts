@@ -212,7 +212,8 @@ export class DatosEmpleadoComponent implements OnInit {
     this.restCargo.BuscarIDCargoActual(id_empleado).subscribe(datos => {
       this.cargosTotalesEmpleado = datos;
       let cargoIdActual = this.cargosTotalesEmpleado[0].max;
-      this.restCargo.getUnCargoRest(cargoIdActual).subscribe(datos => {
+// revisar
+      this.restCargo.BuscarCargoID(cargoIdActual).subscribe(datos => {
         this.cargoEmpleado = datos;
       }, error => { });
     });
@@ -267,7 +268,8 @@ export class DatosEmpleadoComponent implements OnInit {
 
   planHorario: any;
   obtenerPlanHorarios(idEmpleadoCargo: number) {
-    this.restPlanH.ObtenerPlanHorarioPorIdCargo(idEmpleadoCargo).subscribe(res => {
+    // revisar
+    this.restPlanH.ObtenerHorarioRotativo(idEmpleadoCargo).subscribe(res => {
       this.planHorario = res;
       this.planHorario.map(obj => {
         this.obtenerPlanHoraDetalle(obj.id);
@@ -292,7 +294,8 @@ export class DatosEmpleadoComponent implements OnInit {
       this.idCargo = datos;
       console.log("idCargo Procesos", this.idCargo[0].id);
       for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        this.restEmpleadoProcesos.ObtenerProcesoPorIdCargo(this.idCargo[i]['id']).subscribe(datos => {
+        // revisar 
+        this.restEmpleadoProcesos.ObtenerProcesoUsuario(this.idCargo[i]['id']).subscribe(datos => {
           this.buscarProcesos = datos;
           if (this.buscarProcesos.length === 0) {
             console.log("No se encuentran registros")
@@ -343,7 +346,8 @@ export class DatosEmpleadoComponent implements OnInit {
       this.idCargo = datos;
       console.log("idCargo ", this.idCargo[0].id);
       for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        this.restAutoridad.BuscarAutoridadCargo(this.idCargo[i]['id']).subscribe(datos => {
+       // revisar
+        this.restAutoridad.BuscarAutoridadUsuario(this.idCargo[i]['id']).subscribe(datos => {
           this.autorizacionEmpleado = datos;
           if (this.autorizacionEmpleado.length === 0) {
             console.log("No se encuentran registros")
@@ -373,7 +377,8 @@ export class DatosEmpleadoComponent implements OnInit {
       this.idCargo = datos;
       console.log("idCargo ", this.idCargo[0].id);
       for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        this.restEmpleHorario.BuscarHorarioCargo(this.idCargo[i]['id']).subscribe(datos => {
+       // revisar
+        this.restEmpleHorario.BuscarHorarioUsuario(this.idCargo[i]['id']).subscribe(datos => {
           this.horariosEmpleado = datos;
           if (this.horariosEmpleado.length === 0) {
             console.log("No se encuentran registros")
