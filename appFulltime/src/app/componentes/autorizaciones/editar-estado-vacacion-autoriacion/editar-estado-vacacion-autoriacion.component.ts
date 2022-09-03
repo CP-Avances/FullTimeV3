@@ -232,7 +232,7 @@ export class EditarEstadoVacacionAutoriacionComponent implements OnInit {
       id_receives_depa: '',
       id_vacaciones: vacaciones.id,
       id_hora_extra: null,
-      id_send_empl: this.idEmpleadoIngresa,
+      id_send_empl: this.id_empleado_loggin,
       id_permiso: null,
       estado: estado_v,
       tipo: 2,

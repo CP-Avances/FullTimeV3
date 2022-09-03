@@ -17,6 +17,7 @@ import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.serv
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 interface opcionesDiasHoras {
   valor: string;
@@ -127,6 +128,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     public validar: ValidacionesService,
     public ventana: MatDialogRef<RegistroEmpleadoPermisoComponent>,
     public restAutoriza: AutorizacionService,
+    public parametro: ParametrosService,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any,
   ) {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
@@ -143,6 +145,32 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.ImprimirNumeroPermiso();
     this.ObtenerTiposPermiso();
     this.ObtenerEmpleado(this.datoEmpleado.idEmpleado);
+    this.BuscarParametro();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   empleado: any = [];
@@ -1000,9 +1028,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     var correo_usuarios = '';
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
-    let solicitud = moment.weekdays(moment(permiso.fec_creacion).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_creacion).day()).slice(1);
-    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(permiso.fec_creacion, this.formato_fecha, this.validar.dia_completo);
+    let desde = this.validar.FormatearFecha(permiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(permiso.fec_final, this.formato_fecha, this.validar.dia_completo);
 
     // CAPTURANDO ESTADO DE LA SOLICITUD DE PERMISO
     if (permiso.estado === 1) {
@@ -1051,11 +1079,11 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           tipo_permiso: tipo_permiso,
           dias_permiso: permiso.dia,
           observacion: permiso.descripcion,
-          solicitud: solicitud + ' ' + moment(permiso.fec_creacion).format('DD/MM/YYYY'),
-          h_inicio: moment(permiso.hora_salida, 'HH:mm').format('HH:mm'),
-          desde: desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY'),
-          h_fin: moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm'),
+          solicitud: solicitud,
+          desde: desde,
+          hasta: hasta,
+          h_inicio: this.validar.FormatearHora(permiso.hora_salida, this.formato_hora),
+          h_fin: this.validar.FormatearHora(permiso.hora_ingreso, this.formato_hora),
           estado_p: estado_p,
           proceso: 'creado',
           id_dep: e.id_dep,
@@ -1098,10 +1126,11 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   EnviarNotificacion(permiso: any) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
-    let desde = moment.weekdays(moment(permiso.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(permiso.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(permiso.fec_final).day()).slice(1);
-    let h_inicio = moment(permiso.hora_salida, 'HH:mm').format('HH:mm');
-    let h_fin = moment(permiso.hora_ingreso, 'HH:mm').format('HH:mm');
+    let desde = this.validar.FormatearFecha(permiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(permiso.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+    let h_inicio = this.validar.FormatearHora(permiso.hora_salida, this.formato_hora);
+    let h_fin = this.validar.FormatearHora(permiso.hora_ingreso, this.formato_hora);
 
     if (h_inicio === '00:00') {
       h_inicio = '';
@@ -1121,8 +1150,8 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       tipo: 1,
       estado: 'Pendiente',
       mensaje: 'Ha realizado ' + this.nota + ' de permiso ' + this.user + ' desde ' +
-        desde + ' ' + moment(permiso.fec_inicio).format('DD/MM/YYYY') + ' ' + h_inicio + ' hasta ' +
-        hasta + ' ' + moment(permiso.fec_final).format('DD/MM/YYYY') + ' ' + h_fin,
+        desde + ' ' + h_inicio + ' hasta ' +
+        hasta + ' ' + h_fin,
     }
 
     permiso.EmpleadosSendNotiEmail.forEach(e => {

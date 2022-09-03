@@ -116,11 +116,9 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
 
       this.permisos.forEach(p => {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        p.fec_creacion = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
-
-        p.fec_inicio = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
-
-        p.fec_final = this.validar.FormatearFecha(p.fec_final, fecha, this.validar.dia_abreviado);
+        p.fec_creacion_ = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
+        p.fec_inicio_ = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
+        p.fec_final_ = this.validar.FormatearFecha(p.fec_final, fecha, this.validar.dia_abreviado);
 
         if (p.estado === 1) {
           p.estado = 'Pendiente';
@@ -229,11 +227,9 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
 
       this.permisosAutorizados.forEach(p => {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        p.fec_creacion = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
-
-        p.fec_inicio = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
-
-        p.fec_final = this.validar.FormatearFecha(p.fec_final, fecha, this.validar.dia_abreviado);
+        p.fec_creacion_ = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
+        p.fec_inicio_ = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
+        p.fec_final_ = this.validar.FormatearFecha(p.fec_final, fecha, this.validar.dia_abreviado);
 
         if (p.estado === 3) {
           p.estado = 'Autorizado';

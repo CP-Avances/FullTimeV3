@@ -128,8 +128,8 @@ export class ListaHorasExtrasComponent implements OnInit {
       this.horasExtras = datos;
 
       this.horasExtras.forEach(data => {
-        data.h_inicio = this.validar.FormatearHora(data.hora_inicio, formato_hora);
-        data.h_final = this.validar.FormatearHora(data.hora_final, formato_hora);
+        data.h_inicio_ = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+        data.h_final_ = this.validar.FormatearHora(data.hora_final, formato_hora);
 
         if (data.tipo_descuento === 1) {
           data.tipo_descuento = 'Horas Extras';

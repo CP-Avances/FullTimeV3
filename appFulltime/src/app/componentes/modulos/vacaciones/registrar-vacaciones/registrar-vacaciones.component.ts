@@ -11,6 +11,8 @@ import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-registrar-vacaciones',
@@ -67,6 +69,8 @@ export class RegistrarVacacionesComponent implements OnInit {
     private informacion: DatosGeneralesService,
     public restAutoriza: AutorizacionService,
     public ventana: MatDialogRef<RegistrarVacacionesComponent>,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
   ) {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
@@ -79,6 +83,22 @@ export class RegistrarVacacionesComponent implements OnInit {
 
     this.obtenerInformacionEmpleado();
     this.ObtenerEmpleados(this.datoEmpleado.idEmpleado);
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
   }
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
@@ -338,8 +358,8 @@ export class RegistrarVacacionesComponent implements OnInit {
       cont = cont + 1;
 
       // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE VACACIÓN
-      let desde = moment.weekdays(moment(vacacion.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacacion.fec_inicio).day()).slice(1);
-      let hasta = moment.weekdays(moment(vacacion.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacacion.fec_final).day()).slice(1);
+      let desde = this.validar.FormatearFecha(vacacion.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+      let hasta = this.validar.FormatearFecha(vacacion.fec_final, this.formato_fecha, this.validar.dia_completo);
 
       // CAPTURANDO ESTADO DE LA SOLICITUD DE VACACIÓN
       if (vacacion.estado === 1) {
@@ -365,8 +385,8 @@ export class RegistrarVacacionesComponent implements OnInit {
           idContrato: this.datoEmpleado.idContratoActual,
           estado_v: estado_v,
           proceso: 'creado',
-          desde: desde + ' ' + moment(vacacion.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(vacacion.fec_final).format('DD/MM/YYYY'),
+          desde: desde,
+          hasta: hasta,
           id_dep: e.id_dep, // VERIFICAR
           id_suc: e.id_suc, // VERIFICAR
           correo: correo_usuarios,
@@ -402,8 +422,9 @@ export class RegistrarVacacionesComponent implements OnInit {
 
   EnviarNotificacion(vacaciones: any) {
 
-    let desde = moment.weekdays(moment(vacaciones.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(vacaciones.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(vacaciones.fec_final).day()).slice(1);
+    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE VACACIÓN
+    let desde = this.validar.FormatearFecha(vacaciones.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(vacaciones.fec_final, this.formato_fecha, this.validar.dia_completo);
 
     let notificacion = {
       id_receives_empl: '',
@@ -415,8 +436,7 @@ export class RegistrarVacacionesComponent implements OnInit {
       tipo: 1,
       estado: 'Pendiente',
       mensaje: 'Ha realizado ' + this.nota + ' de vacaciones ' + this.user + ' desde ' +
-        desde + ' ' + moment(vacaciones.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(vacaciones.fec_final).format('DD/MM/YYYY'),
+        desde + ' hasta ' + hasta,
     }
 
     vacaciones.EmpleadosSendNotiEmail.forEach(e => {

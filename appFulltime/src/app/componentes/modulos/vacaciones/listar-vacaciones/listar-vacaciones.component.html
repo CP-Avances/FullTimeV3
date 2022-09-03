@@ -38,9 +38,9 @@
                         </td>
                         <td>{{v.nombre}} {{v.apellido}}</td>
                         <td>{{v.estado}}</td>
-                        <td>{{v.fec_inicio}}</td>
-                        <td>{{v.fec_final}}</td>
-                        <td>{{v.fec_ingreso}}</td>
+                        <td>{{v.fec_inicio_}}</td>
+                        <td>{{v.fec_final_}}</td>
+                        <td>{{v.fec_ingreso_}}</td>
                         <td class="d-flex justify-content-center">
                             <i class="fas fa-edit" id="edit" style="margin-right: 20px;"
                                 (click)="EditarVacaciones(v.id)" matSuffix matTooltipPosition="right"
@@ -82,9 +82,9 @@
                     <tr *ngFor="let v of vacaciones_autorizadas | paginate:tamanio_pagina_auto:numero_pagina_auto">
                         <td>{{v.nombre}} {{v.apellido}}</td>
                         <td>{{v.estado}}</td>
-                        <td>{{v.fec_inicio}}</td>
-                        <td>{{v.fec_final}}</td>
-                        <td>{{v.fec_ingreso}}</td>
+                        <td>{{v.fec_inicio_}}</td>
+                        <td>{{v.fec_final_}}</td>
+                        <td>{{v.fec_ingreso_}}</td>
                         <td class="d-flex justify-content-center">
                             <a class="fas fa-file-alt" style="color:rgb(197, 95, 11); margin-left: 15px;" matSuffix
                                 matTooltipPosition="right" matTooltip="Cambiar el estado del documento de autorización"

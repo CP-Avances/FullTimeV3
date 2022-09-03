@@ -429,7 +429,7 @@ class NotificacionTiempoRealControlador {
         FROM empleados WHERE id = $1
         `,
         [id_send_empl]);
-  
+
       notificiacion.usuario = USUARIO.rows[0].usuario;
 
       return res.status(200)

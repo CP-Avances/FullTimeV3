@@ -131,10 +131,10 @@ export class ListaPlanificacionesComponent implements OnInit {
       console.log('ver data ... ', this.listaPlan)
 
       this.listaPlan.forEach(data => {
-        data.fecha_desde = this.validar.FormatearFecha(data.fecha_desde, formato_fecha, this.validar.dia_abreviado);
-        data.fecha_hasta = this.validar.FormatearFecha(data.fecha_hasta, formato_fecha, this.validar.dia_abreviado);
-        data.hora_inicio = this.validar.FormatearHora(data.hora_inicio, formato_hora);
-        data.hora_fin = this.validar.FormatearHora(data.hora_fin, formato_hora);
+        data.fecha_desde_ = this.validar.FormatearFecha(data.fecha_desde, formato_fecha, this.validar.dia_abreviado);
+        data.fecha_hasta_ = this.validar.FormatearFecha(data.fecha_hasta, formato_fecha, this.validar.dia_abreviado);
+        data.hora_inicio_ = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+        data.hora_fin_ = this.validar.FormatearHora(data.hora_fin, formato_hora);
       })
 
       if (this.listaPlan.length != 0) {
@@ -261,13 +261,13 @@ export class ListaPlanificacionesComponent implements OnInit {
     let cuenta_correo = datos.correo;
 
     // LECTURA DE DATOS DE LA PLANIFICACIÓN
-    let desde = moment.weekdays(moment(datos.fecha_desde).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fecha_desde).day()).slice(1);
-    let hasta = moment.weekdays(moment(datos.fecha_hasta).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fecha_hasta).day()).slice(1);
-    let h_inicio = moment(datos.hora_inicio, 'HH:mm').format('HH:mm');
-    let h_fin = moment(datos.hora_fin, 'HH:mm').format('HH:mm');
+    let desde = this.validar.FormatearFecha(datos.fecha_desde, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(datos.fecha_hasta, this.formato_fecha, this.validar.dia_completo);
+    let h_inicio = this.validar.FormatearHora(datos.hora_inicio, this.formato_hora);
+    let h_fin = this.validar.FormatearHora(datos.hora_fin, this.formato_hora);
 
     this.restPlan.EliminarPlanEmpleado(id_plan, id_empleado).subscribe(res => {
-      this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
+      this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, id_empleado);
       this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
@@ -344,7 +344,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       this.restPlan.EliminarPlanEmpleado(obj.id_plan, obj.id_empleado).subscribe(res => {
         // CONTAR DATOS PROCESADOS
         this.contar_eliminados = this.contar_eliminados + 1;
-        this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, obj.id_empleado);
+        this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, obj.id_empleado);
 
         // SI TODOS LOS DATOS HAN SIDO PROCESADOS ENVIAR CORREO
         if (this.contar_eliminados === datos.length) {
@@ -429,15 +429,14 @@ export class ListaPlanificacionesComponent implements OnInit {
   }
 
   // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
-  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
+  NotificarPlanificacion(desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.idEmpleadoLogueado,
       id_empl_recive: recibe,
       tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
       mensaje: 'Planificación de horas extras eliminada desde ' +
-        desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
-        ' horario de ' + h_inicio + ' a ' + h_fin,
+        desde + ' hasta ' +
+        hasta + ' horario de ' + h_inicio + ' a ' + h_fin,
     }
     this.restPlan.EnviarNotiPlanificacion(mensaje).subscribe(res => {
       this.aviso.RecibirNuevosAvisos(res.respuesta);
@@ -457,8 +456,8 @@ export class ListaPlanificacionesComponent implements OnInit {
       nombres: usuario,
       asunto: 'ELIMINACION DE PLANIFICACION DE HORAS EXTRAS',
       inicio: h_inicio,
-      desde: desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       horas: moment(datos.horas_totales, 'HH:mm').format('HH:mm'),
       fin: h_fin,
     }
