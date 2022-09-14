@@ -416,6 +416,18 @@ class PermisosControlador {
             }
         });
     }
+    // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+    EliminarPermisoMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento } = req.params;
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\permisos\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'ok' });
+        });
+    }
     // METODO PARA ACTUALIZAR ESTADO DEL PERMISO
     ActualizarEstado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

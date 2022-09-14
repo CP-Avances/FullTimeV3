@@ -560,6 +560,17 @@ class HorasExtrasPedidasControlador {
     res.jsonp({ message: 'Documento Actualizado' });
   }
 
+  // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+  public async EliminarArchivoMovil(req: Request, res: Response) {
+    let { documento } = req.params;
+    if (documento != 'null' && documento != '' && documento != null) {
+      let filePath = `servidor\\horasExtras\\${documento}`
+      let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+      fs.unlinkSync(direccionCompleta);
+    }
+    res.jsonp({ message: 'ok' });
+  }
+
   // BUSQUEDA DE DOCUMENTO HORAS EXTRAS
   public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
     const docs = req.params.docs;

@@ -51,6 +51,9 @@ class PermisosRutas {
         this.router.get('/permiso-usuario/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEmpleado);
         // BUSQUEDA DE RESPALDOS D EPERMISOS
         this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
+        // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+        this.router.delete('/eliminar-movil/:documento', PERMISOS_CONTROLADOR.EliminarPermisoMovil);
+
 
         /** ************************************************************************************************* **
          ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** ** 

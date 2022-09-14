@@ -504,6 +504,18 @@ class HorasExtrasPedidasControlador {
             res.jsonp({ message: 'Documento Actualizado' });
         });
     }
+    // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+    EliminarArchivoMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento } = req.params;
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\horasExtras\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'ok' });
+        });
+    }
     // BUSQUEDA DE DOCUMENTO HORAS EXTRAS
     ObtenerDocumento(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

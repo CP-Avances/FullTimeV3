@@ -465,6 +465,17 @@ class PermisosControlador {
         }
     }
 
+    // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+    public async EliminarPermisoMovil(req: Request, res: Response) {
+        let { documento } = req.params;
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\permisos\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+        res.jsonp({ message: 'ok' });
+    }
+
     // METODO PARA ACTUALIZAR ESTADO DEL PERMISO
     public async ActualizarEstado(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
