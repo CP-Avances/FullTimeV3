@@ -1176,4 +1176,5 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     })
   }
 
+  // Revisión permisos
 }
