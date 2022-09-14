@@ -13,8 +13,6 @@ import { ValidacionesService } from '../../../../servicios/validaciones/validaci
 })
 export class TituloEmpleadoComponent implements OnInit {
 
-  // @Input() idEmploy: string;
-
   cgTitulos: any = [];
   selectTitle: string = '';
 
@@ -31,7 +29,7 @@ export class TituloEmpleadoComponent implements OnInit {
     public restEmpleado: EmpleadoService,
     private toastr: ToastrService,
     private validacionService: ValidacionesService,
-    private dialogRef: MatDialogRef<TituloEmpleadoComponent>,
+    private ventana: MatDialogRef<TituloEmpleadoComponent>,
     @Inject(MAT_DIALOG_DATA) public empleado: any
   ) { }
 
@@ -56,7 +54,7 @@ export class TituloEmpleadoComponent implements OnInit {
         timeOut: 6000,
       });
       this.limpiarCampos();
-      this.dialogRef.close(true)
+      this.ventana.close(true)
     });
   }
 
@@ -69,7 +67,7 @@ export class TituloEmpleadoComponent implements OnInit {
   }
 
   cerrarRegistro() {
-    this.dialogRef.close(false)
+    this.ventana.close(false)
   }
 
   VerificarTitulo() {

@@ -69,7 +69,10 @@ export class PlanHoraExtraService {
   EliminarPlanEmpleado(id: number, id_empleado: number) {
     return this.http.delete(`${environment.url}/planificacionHoraExtra/eliminar/plan-hora/${id}/${id_empleado}`);
   }
-
+  // BUSQUEDA DE DATOS DE PLANIFICACION POR ID DE USUARIO
+  ListarPlanificacionUsuario(id_empleado: number) {
+    return this.http.get(`${environment.url}/planificacionHoraExtra/listar-plan/${id_empleado}`);
+  }
 
 
   /** *************************************************************************************************** **

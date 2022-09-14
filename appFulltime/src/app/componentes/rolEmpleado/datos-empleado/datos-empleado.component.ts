@@ -1,38 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
+import * as xlsx from 'xlsx';
 import * as moment from 'moment';
+import * as FileSaver from 'file-saver';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import * as xlsx from 'xlsx';
-import * as FileSaver from 'file-saver';
 
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { DiscapacidadService } from 'src/app/servicios/discapacidad/discapacidad.service';
-import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
-import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
-import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
-import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
-import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
-import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProcesos/empleado-procesos.service';
-import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
-import { ScriptService } from 'src/app/servicios/empleado/script.service';
-import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
-import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
-import { AutorizaDepartamentoService } from 'src/app/servicios/autorizaDepartamento/autoriza-departamento.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-
-import { RegistroPlanHorarioComponent } from 'src/app/componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
-import { CambiarContrasenaComponent } from 'src/app/componentes/rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
-// import { NavbarComponent } from '../../../share/main-nav/navbar/navbar.component';
-import { environment } from 'src/environments/environment';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { VacunacionService } from 'src/app/servicios/empleado/empleadoVacunas/vacunacion.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
+import { ScriptService } from 'src/app/servicios/empleado/script.service';
+
+import { CambiarContrasenaComponent } from 'src/app/componentes/rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
+import { TituloEmpleadoComponent } from '../../empleado/titulos/titulo-empleado/titulo-empleado.component';
+import { EditarTituloComponent } from '../../empleado/titulos/editar-titulo/editar-titulo.component';
+import { DiscapacidadComponent } from '../../empleado/discapacidad/discapacidad.component';
+import { EditarVacunaComponent } from '../../empleado/vacunacion/editar-vacuna/editar-vacuna.component';
+import { CrearVacunaComponent } from '../../empleado/vacunacion/crear-vacuna/crear-vacuna.component';
 import { MetodosComponent } from '../../administracionGeneral/metodoEliminar/metodos.component';
-import { RegistrarVacacionesComponent } from '../../modulos/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
 
 @Component({
   selector: 'app-datos-empleado',
@@ -42,86 +38,96 @@ import { RegistrarVacacionesComponent } from '../../modulos/vacaciones/registrar
 
 export class DatosEmpleadoComponent implements OnInit {
 
-
-  iniciales: string;
-  urlImagen: any;
-  mostrarImagen: boolean = false;
-  mostrarIniciales: boolean = false;
-  barraDis = false;
-
   empleadoUno: any = [];
-  idEmpleado: string;
-  fechaNacimiento: any = [];
+  tituloEmpleado: any = [];
   discapacidadUser: any = [];
-
-  relacionTituloEmpleado: any = [];
-  auxRestTitulo: any = [];
-
-  idContrato: any = [];
-  contratoEmpleadoRegimen: any = [];
+  empleadoLogueado: any = [];
   contratoEmpleado: any = [];
-  fechaContratoIngreso: string;
-  fechaContratoSalida: string;
 
-  fechaCargoInicio: string;
-  fechaCargoFinal: string;
+  // VARIABLES DE ALMACENAMIENTO DE DATOS DE BOTONES
+  idEmpleado: string; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO SELECCIONADO PARA VER DATOS
+  btnTitulo = 'Añadir';
+  btnDisc = 'Añadir';
+  editar: string = '';
 
-  logo: any;
-  idCargo: any = [];
-  idPerVacacion: any = [];
-  idPlanHorario: any = [];
-  cont: number;
-
-  /* Items de paginación de la tabla */
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA 
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   hipervinculo: string = environment.url; // VARIABLE DE MANEJO DE RUTAS CON URL
 
   constructor(
-    public restTitulo: TituloService,
-    public restEmpleado: EmpleadoService,
     public restDiscapacidad: DiscapacidadService,
-    public restCargo: EmplCargosService,
-    public restPerV: PeriodoVacacionesService,
-    public restPlanH: PlanHorarioService,
-    public vistaRegistrarDatos: MatDialog,
-    public restVacaciones: VacacionesService,
-    public restPlanHoraDetalle: DetallePlanHorarioService,
-    public restEmpleadoProcesos: EmpleadoProcesosService,
-    public restPlanComidas: PlanComidasService,
-    public restEmpleHorario: EmpleadoHorariosService,
-    public restPermiso: PermisosService,
-    public restAutoridad: AutorizaDepartamentoService,
-    public restEmpre: EmpresaService,
-    private toastr: ToastrService,
-    private scriptService: ScriptService,
+    public restEmpleado: EmpleadoService,
+    public informacion: DatosGeneralesService,
+    public restTitulo: TituloService,
     public restVacuna: VacunacionService,
-    // public Main: NavbarComponent,
+    public restEmpre: EmpresaService,
+    public parametro: ParametrosService,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
+    public router: Router,
+    private scriptService: ScriptService,
+    private toastr: ToastrService,
   ) {
     this.idEmpleado = localStorage.getItem('empleado');
-    this.obtenerTituloEmpleado(parseInt(this.idEmpleado));
-    this.obtenerDiscapacidadEmpleado(this.idEmpleado);
     this.scriptService.load('pdfMake', 'vfsFonts');
   }
 
   ngOnInit(): void {
-    this.verEmpleado(this.idEmpleado);
-    this.obtenerContratoEmpleadoRegimen();
-    this.obtenerPlanComidasEmpleado(parseInt(this.idEmpleado));
-    this.obtenerPermisos(parseInt(this.idEmpleado))
-    this.ObtenerAutorizaciones(parseInt(this.idEmpleado));
-    this.ObtenerHorariosEmpleado(parseInt(this.idEmpleado));
-    this.obtenerCargoEmpleado(parseInt(this.idEmpleado));
-    this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
-    this.obtenerVacaciones(parseInt(this.idEmpleado));
-    this.ObtenerDatosVacunas();
     this.ObtenerLogo();
     this.ObtenerColores();
+    this.BuscarParametro();
+    this.ObtenerTituloEmpleado();
+    this.ObtenerDiscapacidadEmpleado();
   }
 
-  // Método para obtener el logo de la empresa
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.LlamarMetodos(this.formato_fecha);
+      },
+      vacio => {
+        this.LlamarMetodos(this.formato_fecha);
+      });
+  }
+
+  // LLAMAR METODOS DE PRESENTACION DE INFORMACION
+  LlamarMetodos(formato_fecha: string) {
+    this.VerDatosActuales(formato_fecha);
+    this.VerEmpleado(formato_fecha);
+    this.ObtenerDatosVacunas(formato_fecha);
+  }
+
+  /** ********************************************************************************************* **
+   ** **                            MÉTODO GENERALES DE CONSULTAS                                ** **                                           *
+   ** ********************************************************************************************* **/
+
+  // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
+  datoActual: any = [];
+  VerDatosActuales(formato_fecha: string) {
+    this.datoActual = [];
+    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(res => {
+      this.datoActual = res[0];
+      // LLAMADO A DATOS DE USUARIO
+      this.ObtenerContratoEmpleado(this.datoActual.id_contrato, formato_fecha);
+    }, vacio => {
+      this.BuscarContratoActual(formato_fecha);
+    });
+  }
+
+  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
   logoE: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -145,328 +151,294 @@ export class DatosEmpleadoComponent implements OnInit {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
-  /* 
-     * ***************************************************************************************************
-     *                               MÉTODO PARA MOSTRAR DATOS
-     * ***************************************************************************************************
-    */
-  /** Método para ver la información del empleado */
+
+  // VENTANA PARA REALIZAR CAMBIO DE CONTRASEÑA
+  CambiarContrasena(): void {
+    console.log(this.idEmpleado);
+    this.ventana.open(CambiarContrasenaComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
+  }
+
+  /** ********************************************************************************************* **
+   ** **                      MÉTODO PARA MOSTRAR DATOS PERFIL DE USUARIO                        ** **                                           *
+   ** ********************************************************************************************* **/
+
+  // MÉTODO PARA VER LA INFORMACIÓN DEL USUARIO 
+  urlImagen: any;
+  iniciales: any;
+  mostrarImagen: boolean = false;
   textoBoton: string = 'Subir foto';
-  verEmpleado(idemploy: any) {
+  VerEmpleado(formato_fecha: string) {
     this.empleadoUno = [];
-    let idEmpleadoActivo = localStorage.getItem('empleado');
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.getOneEmpleadoRest(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleadoUno = data;
-      this.fechaNacimiento = data[0]['fec_nacimiento'].split("T")[0];
+      this.empleadoUno[0].fec_nacimiento_ = this.validar.FormatearFecha(this.empleadoUno[0].fec_nacimiento, formato_fecha, this.validar.dia_abreviado);
       if (data[0]['imagen'] != null) {
         this.urlImagen = `${environment.url}/empleado/img/` + data[0]['imagen'];
         this.mostrarImagen = true;
-        this.mostrarIniciales = false;
         this.textoBoton = 'Editar foto';
-        if (idEmpleadoActivo === idemploy) {
-          // this.Main.urlImagen = this.urlImagen;
-        }
       } else {
         this.iniciales = data[0].nombre.split(" ")[0].slice(0, 1) + data[0].apellido.split(" ")[0].slice(0, 1);
-        this.mostrarIniciales = true
         this.mostrarImagen = false;
         this.textoBoton = 'Subir foto';
       }
     })
   }
 
-  /** Método para obtener datos de discapacidad */
-  obtenerDiscapacidadEmpleado(idEmployDisca: any) {
+  /** ********************************************************************************************* **
+   ** **                            PARA LA SUBIR LA IMAGEN DEL EMPLEADO                         ** **                                 *
+   ** ********************************************************************************************* **/
+
+  nameFile: string;
+  archivoSubido: Array<File>;
+  archivoForm = new FormControl('');
+  FileChange(element) {
+    this.archivoSubido = element.target.files;
+    this.SubirPlantilla();
+  }
+
+  SubirPlantilla() {
+    let formData = new FormData();
+    for (var i = 0; i < this.archivoSubido.length; i++) {
+      console.log(this.archivoSubido[i], this.archivoSubido[i].name)
+      formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
+      console.log("iamge", formData);
+    }
+    this.restEmpleado.subirImagen(formData, parseInt(this.idEmpleado)).subscribe(res => {
+      this.toastr.success('Operación Exitosa', 'imagen subida.', {
+        timeOut: 6000,
+      });
+      this.VerEmpleado(this.formato_fecha);
+      this.archivoForm.reset();
+      this.nameFile = '';
+    });
+  }
+
+  /** ********************************************************************************************* **
+   ** **                   BUSQUEDA DE DATOS DE ASIGNACIONES: TITULOS                            ** **                        *
+   ** ********************************************************************************************* **/
+
+  // BUSQUEDA DE TITULOS
+  ObtenerTituloEmpleado() {
+    this.tituloEmpleado = [];
+    this.restEmpleado.getEmpleadoTituloRest(parseInt(this.idEmpleado)).subscribe(data => {
+      this.tituloEmpleado = data;
+    });
+  }
+
+  // REGISTRAR NUEVO TITULO
+  AbrirVentanaRegistarTituloEmpleado() {
+    this.ventana.open(TituloEmpleadoComponent, { data: this.idEmpleado, width: '360px' })
+      .afterClosed().subscribe(result => {
+        if (result) {
+          this.ObtenerTituloEmpleado();
+        }
+      })
+  }
+
+  // EDITAR UN TITULO
+  AbrirVentanaEditarTitulo(dataTitulo) {
+    this.ventana.open(EditarTituloComponent, { data: dataTitulo, width: '360px' })
+      .afterClosed().subscribe(result => {
+        if (result) {
+          this.ObtenerTituloEmpleado();
+        }
+      })
+  }
+
+  // ELIMINAR REGISTRO DE TÍTULO 
+  EliminarTituloEmpleado(id: number) {
+    this.restEmpleado.deleteEmpleadoTituloRest(id).subscribe(res => {
+      this.ObtenerTituloEmpleado();
+      this.toastr.error('Registro eliminado', '', {
+        timeOut: 6000,
+      });
+    });
+  }
+
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  ConfirmarDeleteTitulo(id: number) {
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
+      .subscribe((confirmado: Boolean) => {
+        if (confirmado) {
+          this.EliminarTituloEmpleado(id);
+        } else {
+          this.router.navigate(['/datosEmpleado']);
+
+        }
+      });
+  }
+
+
+  /** ********************************************************************************************* **
+   ** **               BUSQUEDA DE DATOS DE ASIGNACIONES: DISCAPACIDAD                           ** **                        *
+   ** ********************************************************************************************* **/
+
+  // MÉTODO PARA OBTENER DATOS DE DISCAPACIDAD 
+  ObtenerDiscapacidadEmpleado() {
     this.discapacidadUser = [];
-    this.restDiscapacidad.getDiscapacidadUsuarioRest(idEmployDisca).subscribe(data => {
+    this.restDiscapacidad.getDiscapacidadUsuarioRest(parseInt(this.idEmpleado)).subscribe(data => {
       this.discapacidadUser = data;
-    }, error => { console.log("") });
+      this.HabilitarBtn();
+    });
   }
 
-  /** Método para obtener los títulos de un empleado a través de la tabla EMPL_TITULOS 
-    * que conecta a la tabla EMPLEADOS con CG_TITULOS */
-  obtenerTituloEmpleado(idEmployTitu: number) {
-    this.relacionTituloEmpleado = [];
-    this.restEmpleado.getEmpleadoTituloRest(idEmployTitu).subscribe(data => {
-      this.relacionTituloEmpleado = data;
-    }, error => { console.log("") });
+  // ELIMINAR REGISTRO DE DISCAPACIDAD 
+  EliminarDiscapacidad(id_discapacidad: number) {
+    this.restDiscapacidad.deleteDiscapacidadUsuarioRest(id_discapacidad).subscribe(res => {
+      this.ObtenerDiscapacidadEmpleado();
+      this.btnDisc = 'Añadir';
+      this.toastr.error('Registro eliminado', '', {
+        timeOut: 6000,
+      });
+    })
+  };
+
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  ConfirmarDeleteDiscapacidad(id: number) {
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
+      .subscribe((confirmado: Boolean) => {
+        if (confirmado) {
+          this.EliminarDiscapacidad(id);
+        } else {
+          this.router.navigate(['/datosEmpleado']);
+        }
+      });
   }
 
-  /** Método para obtener el contrato de un empleado con su respectivo régimen laboral */
-  idContratoEmpleado: number;
-  obtenerContratoEmpleadoRegimen() {
+  // REGISTRAR DISCAPACIDAD
+  AbrirVentanaDiscapacidad(proceso: string) {
+    this.ventana.open(DiscapacidadComponent, {
+      data: { idEmpleado: this.idEmpleado, metodo: proceso }, width: '360px'
+    })
+      .afterClosed().subscribe(result => {
+        this.ObtenerDiscapacidadEmpleado();
+      })
+  }
+
+  // HABILITAR BOTONES DE EDICION
+  HabilitarBtn() {
+    if (this.discapacidadUser.length != 0) {
+      this.btnDisc = 'Editar';
+    }
+    else {
+      this.btnDisc = 'Añadir';
+    }
+  }
+
+  // LÓGICA DE BOTÓN PARA MOSTRAR COMPONENTE DEL REGISTRO DE DISCAPACIDAD 
+  MostrarDis() {
+    if (this.discapacidadUser.length != 0) {
+      this.AbrirVentanaDiscapacidad('editar');
+    }
+    else {
+      this.AbrirVentanaDiscapacidad('registrar');
+    }
+  }
+
+  /** ********************************************************************************************* **
+   ** **                          BUSQUEDA DE DATOS DE VACUNACIÓN                                ** **                        *
+   ** ********************************************************************************************* **/
+
+  // MÉTODO PARA CONSULTAR DATOS DE REGISTRO DE VACUNACIÓN
+  datosVacuna: any = [];
+  ObtenerDatosVacunas(formato_fecha: string) {
+    this.datosVacuna = [];
+    this.restVacuna.ObtenerVacunaEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
+      this.datosVacuna = data;
+
+      this.datosVacuna.forEach(data => {
+        data.fecha_ = this.validar.FormatearFecha(data.fecha, formato_fecha, this.validar.dia_abreviado);
+      })
+    });
+  }
+
+  // EDITAR REGISTRO DE VACUNA
+  AbrirVentanaEditar(datos: any) {
+    this.ventana.open(EditarVacunaComponent, {
+      data: { idEmpleado: this.idEmpleado, vacuna: datos }, width: '360px'
+    })
+      .afterClosed().subscribe(result => {
+        this.ObtenerDatosVacunas(this.formato_fecha);
+      })
+  }
+
+  // LÓGICA DE BOTÓN PARA MOSTRAR COMPONENTE DEL REGISTRO DE VACUNACION 
+  MostrarVentanaVacuna() {
+    this.ventana.open(CrearVacunaComponent, {
+      data: { idEmpleado: this.idEmpleado }, width: '360px'
+    })
+      .afterClosed().subscribe(result => {
+        this.ObtenerDatosVacunas(this.formato_fecha);
+      })
+  }
+
+  // ELIMINAR REGISTRO DE VACUNA
+  EliminarVacuna(id: number) {
+    this.restVacuna.EliminarRegistroVacuna(id).subscribe(res => {
+      this.ObtenerDatosVacunas(this.formato_fecha);
+      this.toastr.error('Registro eliminado', '', {
+        timeOut: 6000,
+      });
+    });
+  }
+
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  ConfirmarEliminarVacuna(id: number) {
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
+      .subscribe((confirmado: Boolean) => {
+        if (confirmado) {
+          this.EliminarVacuna(id);
+        } else {
+          this.router.navigate(['/datosEmpleado']);
+        }
+      });
+  }
+
+  /** ******************************************************************************************** **
+   ** **                    MÉTODOS PARA MENEJO DE DATOS DE CONTRATO                            ** **
+   ** ******************************************************************************************** **/
+
+  // MÉTODO PARA OBTENER ULTIMO CONTRATO
+  BuscarContratoActual(formato_fecha: string) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idContrato = datos;
-      this.restEmpleado.BuscarDatosContrato(this.idContrato[0].max).subscribe(res => {
-        this.contratoEmpleado = res;
-      }, error => { });
-    }, error => { });
-  }
-
-  /** Método para obtener los datos del cargo del empleado */
-  cargoEmpleado: any = [];
-  cargosTotalesEmpleado: any = [];
-  obtenerCargoEmpleado(id_empleado: number) {
-    this.cargoEmpleado = [];
-    this.cargosTotalesEmpleado = [];
-    this.restCargo.BuscarIDCargoActual(id_empleado).subscribe(datos => {
-      this.cargosTotalesEmpleado = datos;
-      let cargoIdActual = this.cargosTotalesEmpleado[0].max;
-// revisar
-      this.restCargo.BuscarCargoID(cargoIdActual).subscribe(datos => {
-        this.cargoEmpleado = datos;
-      }, error => { });
+      this.datoActual.id_contrato = datos[0].max;
+      this.ObtenerContratoEmpleado(this.datoActual.id_contrato, formato_fecha);
     });
   }
 
-  /* Método para imprimir datos del permiso */
-  permisosEmpleado: any;
-  permisosTotales: any;
-  obtenerPermisos(id_empleado: number) {
-    this.permisosEmpleado = [];
-    this.permisosTotales = [];
-    this.restEmpleado.BuscarIDContrato(id_empleado).subscribe(datos => {
-      this.idContrato = datos;
-      // console.log("idContrato ", this.idContrato[0].id);
-      for (let i = 0; i <= this.idContrato.length - 1; i++) {
-        this.restPermiso.BuscarPermisoContrato(this.idContrato[i]['id']).subscribe(datos => {
-          this.permisosEmpleado = datos;
-          console.log(this.permisosTotales);
-          if (this.permisosEmpleado.length === 0) {
-            console.log("No se encuentran registros")
-          }
-          else {
-            if (this.cont === 0) {
-              this.permisosTotales = datos
-              this.cont++;
-            }
-            else {
-              this.permisosTotales = this.permisosTotales.concat(datos);
-              console.log("Datos Permisos" + i + '', this.permisosTotales)
-            }
-          }
-        }, err => {
-          const { access, message } = err.error.message;
-          if (access === false) {
-            this.toastr.error(message)
-          }
-        })
-      }
-    });
-  }
-
-  vacaciones: any = [];
-  obtenerVacaciones(id_empleado: number) {
-    this.restPerV.BuscarIDPerVacaciones(id_empleado).subscribe(datos => {
-      this.idPerVacacion = datos;
-      console.log("idPerVaca ", this.idPerVacacion[0].id);
-      this.restVacaciones.ObtenerVacacionesPorIdPeriodo(this.idPerVacacion[0].id).subscribe(res => {
-        this.vacaciones = res;
-      }, error => { console.log("") });
-    }, error => { });
-  }
-
-  planHorario: any;
-  obtenerPlanHorarios(idEmpleadoCargo: number) {
-    // revisar
-    this.restPlanH.ObtenerHorarioRotativo(idEmpleadoCargo).subscribe(res => {
-      this.planHorario = res;
-      this.planHorario.map(obj => {
-        this.obtenerPlanHoraDetalle(obj.id);
-      })
-    }, error => { console.log("") });
-  }
-
-  planHoraDetalle: any;
-  obtenerPlanHoraDetalle(id_plan_horario: number) {
-    this.restPlanHoraDetalle.ObtenerPlanHoraDetallePorIdPlanHorario(id_plan_horario).subscribe(res => {
-      this.planHoraDetalle = res;
-    }, error => { console.log("") });
-  }
-
-  /** Método para mostrar datos de los procesos del empleado */
-  buscarProcesos: any = [];
-  empleadoProcesos: any = [];
-  obtenerEmpleadoProcesos(id_empleado: number) {
-    this.buscarProcesos = [];
-    this.empleadoProcesos = [];
-    this.restCargo.BuscarIDCargo(id_empleado).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idCargo Procesos", this.idCargo[0].id);
-      for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        // revisar 
-        this.restEmpleadoProcesos.ObtenerProcesoUsuario(this.idCargo[i]['id']).subscribe(datos => {
-          this.buscarProcesos = datos;
-          if (this.buscarProcesos.length === 0) {
-            console.log("No se encuentran registros")
-          }
-          else {
-            if (this.cont === 0) {
-              this.empleadoProcesos = datos
-              this.cont++;
-            }
-            else {
-              this.empleadoProcesos = this.empleadoProcesos.concat(datos);
-              console.log("Datos procesos" + i + '', this.empleadoProcesos)
-            }
-          }
-        })
-      }
-    });
-  }
-
-  /** Método para mostrar datos de planificación de almuerzos */
-  planComidas: any;
-  obtenerPlanComidasEmpleado(id_empleado: number) {
-    this.planComidas = [];
-    this.restPlanComidas.ObtenerPlanComidaPorIdEmpleado(id_empleado).subscribe(res => {
-      this.planComidas = res;
-      console.log('comidas 1', this.planComidas);
-      this.restPlanComidas.ObtenerSolComidaPorIdEmpleado(id_empleado).subscribe(sol => {
-        this.planComidas = this.planComidas.concat(sol);
-        console.log('comidas 2', this.planComidas);
-      });
-    }, error => {
-      this.restPlanComidas.ObtenerSolComidaPorIdEmpleado(id_empleado).subscribe(sol2 => {
-        this.planComidas = sol2;
-        console.log('comidas 3', this.planComidas);
-      });
-    });
-  }
-
-
-
-  /* Método para mostrar datos de autoridad departamentos */
-  autorizacionEmpleado: any;
-  autorizacionesTotales: any;
-  ObtenerAutorizaciones(id_empleado: number) {
-    this.autorizacionEmpleado = [];
-    this.autorizacionesTotales = [];
-    this.restCargo.BuscarIDCargo(id_empleado).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idCargo ", this.idCargo[0].id);
-      for (let i = 0; i <= this.idCargo.length - 1; i++) {
-       // revisar
-        this.restAutoridad.BuscarAutoridadUsuario(this.idCargo[i]['id']).subscribe(datos => {
-          this.autorizacionEmpleado = datos;
-          if (this.autorizacionEmpleado.length === 0) {
-            console.log("No se encuentran registros")
-          }
-          else {
-            if (this.cont === 0) {
-              this.autorizacionesTotales = datos
-              this.cont++;
-            }
-            else {
-              this.autorizacionesTotales = this.autorizacionesTotales.concat(datos);
-              console.log("Datos autorizacion" + i + '', this.autorizacionesTotales)
-            }
-          }
-        })
-      }
-    });
-  }
-
-  /* Método para mostrar datos de horario */
-  horariosEmpleado: any;
-  horariosEmpleadoTotales: any = [];
-  ObtenerHorariosEmpleado(id_empleado: number) {
-    this.horariosEmpleado = [];
-    this.horariosEmpleadoTotales = [];
-    this.restCargo.BuscarIDCargo(id_empleado).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idCargo ", this.idCargo[0].id);
-      for (let i = 0; i <= this.idCargo.length - 1; i++) {
-       // revisar
-        this.restEmpleHorario.BuscarHorarioUsuario(this.idCargo[i]['id']).subscribe(datos => {
-          this.horariosEmpleado = datos;
-          if (this.horariosEmpleado.length === 0) {
-            console.log("No se encuentran registros")
-          }
-          else {
-            if (this.cont === 0) {
-              this.horariosEmpleadoTotales = datos
-              this.cont++;
-            }
-            else {
-              this.horariosEmpleadoTotales = this.horariosEmpleadoTotales.concat(datos);
-              console.log("Datos autorizacion" + i + '', this.horariosEmpleadoTotales)
-            }
-          }
-        })
-      }
-    });
-  }
-
-
-
-  /* 
-  ****************************************************************************************************
-  *                               ABRIR VENTANAS DE SOLICITUDES
-  ****************************************************************************************************
-  */
-
-  /* Ventana para realizar cambio de contraseña */
-  CambiarContrasena(): void {
-    console.log(this.idEmpleado);
-    this.vistaRegistrarDatos.open(CambiarContrasenaComponent, { width: '350px', data: this.idEmpleado }).disableClose = true;
-  }
-
-  /* Ventana para registrar vacaciones del empleado */
-  AbrirVentanaVacaciones(): void {
-    this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idPerVacacion = datos;
-      console.log(this.idPerVacacion)
-      this.vistaRegistrarDatos.open(RegistrarVacacionesComponent,
-        { width: '900px', data: { idEmpleado: this.idEmpleado, idPerVacacion: this.idPerVacacion[0].id, idContrato: this.idPerVacacion[0].idcontrato } }).disableClose = true;
-    }, error => {
-      this.toastr.info('El empleado no tiene registrado Periodo de Vacaciones', 'Primero Registrar Periodo de Vacaciones', {
-        timeOut: 6000,
+  // MÉTODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
+  ObtenerContratoEmpleado(id_contrato: number, formato_fecha: string) {
+    this.restEmpleado.BuscarDatosContrato(id_contrato).subscribe(res => {
+      this.contratoEmpleado = res;
+      this.contratoEmpleado.forEach(data => {
+        data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
+        data.fec_salida_ = this.validar.FormatearFecha(data.fec_salida, formato_fecha, this.validar.dia_abreviado);
       })
     });
   }
 
-  /* Ventana para registrar planificación de horarios del empleado */
-  AbrirVentanaPlanHorario(): void {
-    this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idcargo ", this.idCargo[0].max)
-      this.vistaRegistrarDatos.open(RegistroPlanHorarioComponent,
-        { width: '300px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max } }).disableClose = true;
-    }, error => {
-      this.toastr.info('El empleado no tiene registrado un Cargo', 'Primero Registrar Cargo', {
-        timeOut: 6000,
-      })
-    });
-  }
+  /** ****************************************************************************************** **
+   ** **                               PARA LA GENERACION DE PDFs                             ** **                                           *
+   ** ****************************************************************************************** **/
 
-
-  /* 
-  ****************************************************************************************************
-  *                               PARA LA GENERACION DE PDFs
-  ****************************************************************************************************
-  */
-
-  generarPdf(action = 'open') {
-    const documentDefinition = this.getDocumentDefinicion();
+  GenerarPdf(action = 'open') {
+    const documentDefinition = this.GetDocumentDefinicion();
     switch (action) {
       case 'open': pdfMake.createPdf(documentDefinition).open(); break;
       case 'print': pdfMake.createPdf(documentDefinition).print(); break;
       case 'download': pdfMake.createPdf(documentDefinition).download(); break;
-
       default: pdfMake.createPdf(documentDefinition).open(); break;
     }
   }
 
-  getDocumentDefinicion() {
+  GetDocumentDefinicion() {
     sessionStorage.setItem('profile', this.empleadoUno);
     return {
-      // Encabezado de la página
+      // ENCABEZADO DE LA PÁGINA
       pageOrientation: 'landscape',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
-      header: { text: 'Impreso por:  ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
-
-      // Pie de página
+      header: { text: 'Impreso por:  ' + this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
+      // PIE DE PÁGINA
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
         var f = moment();
         fecha = f.format('YYYY-MM-DD');
@@ -491,20 +463,21 @@ export class DatosEmpleadoComponent implements OnInit {
         { text: 'Perfil Empleado', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         {
           columns: [
-            [{ text: this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido, style: 'name' },
-            { text: 'Fecha Nacimiento: ' + this.fechaNacimiento },
-            { text: 'Corre Electronico: ' + this.empleadoUno[0].correo, },
-            { text: 'Teléfono: ' + this.empleadoUno[0].telefono, }
+            [
+              { text: this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido, style: 'name' },
+              { text: 'Fecha Nacimiento: ' + this.empleadoUno[0].fec_nacimiento_ },
+              { text: 'Corre Electronico: ' + this.empleadoUno[0].correo },
+              { text: 'Teléfono: ' + this.empleadoUno[0].telefono }
             ]
           ]
         },
         { text: 'Contrato Empleado', style: 'header' },
-        this.presentarDataPDFcontratoEmpleado(),
+        this.PresentarDataPDFcontratoEmpleado(),
         { text: 'Plan de comidas', style: 'header' },
         { text: 'Titulos', style: 'header' },
-        this.presentarDataPDFtitulosEmpleado(),
+        this.PresentarDataPDFtitulosEmpleado(),
         { text: 'Discapacidad', style: 'header' },
-        this.presentarDataPDFdiscapacidadEmpleado(),
+        this.PresentarDataPDFdiscapacidadEmpleado(),
       ],
       info: {
         title: this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido + '_PERFIL',
@@ -520,7 +493,7 @@ export class DatosEmpleadoComponent implements OnInit {
     };
   }
 
-  presentarDataPDFtitulosEmpleado() {
+  PresentarDataPDFtitulosEmpleado() {
     return {
       table: {
         widths: ['*', '*', '*'],
@@ -530,7 +503,7 @@ export class DatosEmpleadoComponent implements OnInit {
             { text: 'Nombre', style: 'tableHeader' },
             { text: 'Nivel', style: 'tableHeader' }
           ],
-          ...this.relacionTituloEmpleado.map(obj => {
+          ...this.tituloEmpleado.map(obj => {
             return [obj.observaciones, obj.nombre, obj.nivel];
           })
         ]
@@ -538,7 +511,7 @@ export class DatosEmpleadoComponent implements OnInit {
     };
   }
 
-  presentarDataPDFcontratoEmpleado() {
+  PresentarDataPDFcontratoEmpleado() {
     return {
       table: {
         widths: ['*', 'auto', 100, '*'],
@@ -549,23 +522,22 @@ export class DatosEmpleadoComponent implements OnInit {
             { text: 'Fecha Ingreso', style: 'tableHeader' },
             { text: 'Fecha Salida', style: 'tableHeader' }
           ],
-          ...this.contratoEmpleadoRegimen.map(obj => {
-            const ingreso = obj.fec_ingreso.split("T")[0];
+          ...this.contratoEmpleado.map(obj => {
+            const ingreso = obj.fec_ingreso_;
             if (obj.fec_salida === null) {
               const salida = '';
               return [obj.descripcion, obj.dia_anio_vacacion, ingreso, salida];
             } else {
-              const salida = obj.fec_salida.split("T")[0];
+              const salida = obj.fec_salida_;
               return [obj.descripcion, obj.dia_anio_vacacion, ingreso, salida];
             }
           })
         ]
       }
     };
-
   }
 
-  presentarDataPDFdiscapacidadEmpleado() {
+  PresentarDataPDFdiscapacidadEmpleado() {
     return {
       table: {
         widths: ['*', '*', '*'],
@@ -583,30 +555,32 @@ export class DatosEmpleadoComponent implements OnInit {
     };
   }
 
-  /* 
-  ****************************************************************************************************
-  *                               PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL Y CSV
-  ****************************************************************************************************
-  */
+  /** ******************************************************************************************* **
+   ** **                          PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL                        ** **                           *
+   ** ******************************************************************************************* **/
 
-  exportToExcel() {
+  ExportToExcel() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.empleadoUno);
-    const wsc: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.contratoEmpleadoRegimen);
+    const wsc: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.contratoEmpleado);
     const wsd: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.discapacidadUser);
-    const wst: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.relacionTituloEmpleado);
+    const wst: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tituloEmpleado);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, wse, 'perfil');
-    xlsx.utils.book_append_sheet(wb, wsc, 'contrato');
-    xlsx.utils.book_append_sheet(wb, wst, 'titulos');
-    xlsx.utils.book_append_sheet(wb, wsd, 'discapacida');
+    xlsx.utils.book_append_sheet(wb, wse, 'PERFIL');
+    xlsx.utils.book_append_sheet(wb, wsc, 'CONTRATO');
+    xlsx.utils.book_append_sheet(wb, wst, 'TITULOS');
+    xlsx.utils.book_append_sheet(wb, wsd, 'DISCAPACIDA');
     xlsx.writeFile(wb, "EmpleadoEXCEL" + new Date().getTime() + '.xlsx');
   }
 
-  exportToCVS() {
+  /** ******************************************************************************************* **
+   ** **                          PARA LA EXPORTACIÓN DE ARCHIVOS CSV                          ** **                                *
+   ** ******************************************************************************************* **/
+
+  ExportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.empleadoUno);
-    const wsc: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.contratoEmpleadoRegimen);
+    const wsc: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.contratoEmpleado);
     const wsd: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.discapacidadUser);
-    const wst: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.relacionTituloEmpleado);
+    const wst: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tituloEmpleado);
     const csvDataE = xlsx.utils.sheet_to_csv(wse);
     const csvDataC = xlsx.utils.sheet_to_csv(wsc);
     const csvDataD = xlsx.utils.sheet_to_csv(wsd);
@@ -615,45 +589,12 @@ export class DatosEmpleadoComponent implements OnInit {
     FileSaver.saveAs(data, "EmpleadoCSV" + new Date().getTime() + '.csv');
   }
 
-  /* 
-  ****************************************************************************************************
-  *                               PARA LA SUBIR LA IMAGEN DEL EMPLEADO
-  ****************************************************************************************************
-  */
-  nameFile: string;
-  archivoSubido: Array<File>;
-  archivoForm = new FormControl('');
-
-  fileChange(element) {
-    this.archivoSubido = element.target.files;
-    this.plantilla();
-  }
-
-  plantilla() {
-    let formData = new FormData();
-    for (var i = 0; i < this.archivoSubido.length; i++) {
-      console.log(this.archivoSubido[i], this.archivoSubido[i].name)
-      formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
-    }
-    this.restEmpleado.subirImagen(formData, parseInt(this.idEmpleado)).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'imagen subida.', {
-        timeOut: 6000,
-      });
-      this.verEmpleado(this.idEmpleado)
-      this.archivoForm.reset();
-      this.nameFile = '';
-    });
-  }
-
-
-  /**
-  * 
-  * METODO PARA EXPORTAR A XML
-  * 
-  */
+  /** ******************************************************************************************* ** 
+   ** **                             MÉTODO PARA IMPRIMIR EN XML                               ** **
+   ** ******************************************************************************************* **/
 
   nacionalidades: any = [];
-  obtenerNacionalidades() {
+  ObtenerNacionalidades() {
     this.restEmpleado.getListaNacionalidades().subscribe(res => {
       this.nacionalidades = res;
     });
@@ -665,20 +606,19 @@ export class DatosEmpleadoComponent implements OnInit {
 
   urlxml: string;
   data: any = [];
-  exportToXML() {
-    var objeto;
+  ExportToXML() {
+    var objeto: any;
     var arregloEmpleado = [];
     this.empleadoUno.forEach(obj => {
       var estadoCivil = this.EstadoCivilSelect[obj.esta_civil - 1];
       var genero = this.GeneroSelect[obj.genero - 1];
       var estado = this.EstadoSelect[obj.estado - 1];
-      let nacionalidad;
+      let nacionalidad: any;
       this.nacionalidades.forEach(element => {
         if (obj.id_nacionalidad == element.id) {
           nacionalidad = element.nombre;
         }
       });
-
       objeto = {
         "empleado": {
           '@codigo': obj.codigo,
@@ -688,7 +628,7 @@ export class DatosEmpleadoComponent implements OnInit {
           "estadoCivil": estadoCivil,
           "genero": genero,
           "correo": obj.correo,
-          "fechaNacimiento": obj.fec_nacimiento.split("T")[0],
+          "fechaNacimiento": obj.fec_nacimiento_,
           "estado": estado,
           "correoAlternativo": obj.mail_alternativo,
           "domicilio": obj.domicilio,
@@ -699,82 +639,11 @@ export class DatosEmpleadoComponent implements OnInit {
       }
       arregloEmpleado.push(objeto)
     });
-
     this.restEmpleado.DownloadXMLRest(arregloEmpleado).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/empleado/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });
-  }
-
-
-  /* ************************************************************************************************** *
- *                               REGISTRO DE VACUNACIÓN                                               *
- * ************************************************************************************************** */
-  // MÉTODO PARA CONSULTAR DATOS DE REGISTRO DE VACUNACIÓN
-  mostrarVacuna = true;
-  btnHabilitadoVacuna = true;
-  datosVacuna: any = [];
-  ObtenerDatosVacunas() {
-    this.datosVacuna = [];
-    this.restVacuna.ObtenerVacunaEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
-      this.datosVacuna = data;
-      this.HabilitarBotonesVacuna();
-    });
-  }
-
-  btnVacuna = 'Añadir';
-  mostrarVacunaEditar: boolean = true;
-  HabilitarBotonesVacuna() {
-    if (this.datosVacuna.length == 0) {
-      this.btnVacuna = 'Añadir';
-    } else {
-      this.btnVacuna = 'Editar';
-    }
-  }
-
-  // LÓGICA DE BOTÓN PARA MOSTRAR COMPONENTE DEL REGISTRO DE VACUNACION 
-  MostrarVentanaVacuna() {
-    if (this.btnVacuna != 'Editar' && this.btnVacuna != 'Cancelar') {
-      if (this.mostrarVacuna == true) {
-        this.mostrarVacuna = false;
-        this.btnVacuna = 'No Añadir';
-      } else {
-        this.mostrarVacuna = true;
-        this.btnVacuna = 'Añadir';
-      }
-    } else {
-      if (this.mostrarVacunaEditar == false) {
-        this.mostrarVacunaEditar = true;
-        this.btnVacuna = 'Editar';
-      } else {
-        this.mostrarVacunaEditar = false;
-        this.btnVacuna = 'Cancelar';
-      }
-    }
-  }
-
-  // ELIMINAR REGISTRO DE VACUNA
-  EliminarVacuna(id: number) {
-    this.restVacuna.EliminarRegistroVacuna(id).subscribe(res => {
-      this.ObtenerDatosVacunas();
-      this.btnVacuna = 'Añadir';
-      this.toastr.error('Registro eliminado', '', {
-        timeOut: 6000,
-      });
-    });
-  }
-
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
-  ConfirmarEliminarVacuna(id: number) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
-      .subscribe((confirmado: Boolean) => {
-        if (confirmado) {
-          this.EliminarVacuna(id);
-        } else {
-          // this.router.navigate(['/verEmpleado/', this.idEmpleado]);
-        }
-      });
   }
 
 }

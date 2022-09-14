@@ -1,12 +1,14 @@
+import { FormControl, FormGroup } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { FormControl, FormGroup } from '@angular/forms';
-
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { environment } from '../../../../environments/environment';
 
+import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 
 @Component({
   selector: 'app-contrato-cargo-empleado',
@@ -17,61 +19,126 @@ import { environment } from '../../../../environments/environment';
 export class ContratoCargoEmpleadoComponent implements OnInit {
 
   idEmpleado: string;
-  idContrato: any = [];
   contratoEmpleado: any = [];
   hipervinculo: string = environment.url
 
   constructor(
-    public restTitulo: TituloService,
+    public informacion: DatosGeneralesService,
     public restEmpleado: EmpleadoService,
+    public restTitulo: TituloService,
     public restCargo: EmplCargosService,
+    public parametro: ParametrosService,
+    public validar: ValidacionesService,
     private toastr: ToastrService,
-
   ) {
     this.idEmpleado = localStorage.getItem('empleado');
   }
 
   ngOnInit(): void {
-    this.obtenerContratoEmpleadoRegimen();
-    this.obtenerCargoEmpleado(parseInt(this.idEmpleado));
-    this.obtenerContratosEmpleado();
+    this.BuscarParametro();
   }
 
-  /** Método para obtener el Contrato Actual de un empleado con su respectivo régimen laboral */
-  idContratoEmpleado: number;
-  obtenerContratoEmpleadoRegimen() {
+  /** **************************************************************************************** **
+   ** **                       METODOS GENERALES DEL SISTEMA                                ** ** 
+   ** **************************************************************************************** **/
+
+  // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
+  datoActual: any = [];
+  VerDatosActuales(formato_fecha: string) {
+    this.datoActual = [];
+    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(res => {
+      this.datoActual = res[0];
+      // LLAMADO A DATOS DE USUARIO
+      this.ObtenerContratoEmpleado(this.datoActual.id_contrato, formato_fecha);
+      this.ObtenerCargoEmpleado(this.datoActual.id_cargo, formato_fecha);
+    }, vacio => {
+      this.BuscarContratoActual(formato_fecha);
+    });
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.LlamarMetodos(this.formato_fecha);
+      },
+      vacio => {
+        this.LlamarMetodos(this.formato_fecha);
+      });
+  }
+
+  // LLAMAR METODOS DE PRESENTACION DE INFORMACION
+  LlamarMetodos(formato_fecha: string) {
+    this.VerDatosActuales(formato_fecha);
+    this.ObtenerContratosEmpleado(formato_fecha);
+  }
+
+  /** ******************************************************************************************** **
+   ** **                    MÉTODOS PARA MENEJO DE DATOS DE CONTRATO                            ** **
+   ** ******************************************************************************************** **/
+
+  // MÉTODO PARA OBTENER ULTIMO CONTRATO
+  BuscarContratoActual(formato_fecha: string) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idContrato = datos;
-      this.restEmpleado.BuscarDatosContrato(this.idContrato[0].max).subscribe(res => {
-        this.contratoEmpleado = res;
-      }, error => { });
-    }, error => { });
+      this.datoActual.id_contrato = datos[0].max;
+      this.ObtenerContratoEmpleado(this.datoActual.id_contrato, formato_fecha);
+    });
   }
 
-  /** Método para ver lista de todos los contratos*/
+  // MÉTODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
+  ObtenerContratoEmpleado(id_contrato: number, formato_fecha: string) {
+    this.restEmpleado.BuscarDatosContrato(id_contrato).subscribe(res => {
+      this.contratoEmpleado = res;
+      this.contratoEmpleado.forEach(data => {
+        data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
+        data.fec_salida_ = this.validar.FormatearFecha(data.fec_salida, formato_fecha, this.validar.dia_abreviado);
+      })
+    });
+  }
+
+  // MÉTODO PARA VER LISTA DE TODOS LOS CONTRATOS
   contratoBuscado: any = [];
-  obtenerContratosEmpleado() {
+  ObtenerContratosEmpleado(formato_fecha: string) {
     this.contratoBuscado = [];
     this.restEmpleado.BuscarContratoEmpleadoRegimen(parseInt(this.idEmpleado)).subscribe(res => {
       this.contratoBuscado = res;
-    }, error => { });
+      this.contratoBuscado.forEach(data => {
+        data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
+      })
+    });
   }
 
-  /** Método para ver datos del contrato seleccionado */
+  // MÉTODO PARA VER DATOS DEL CONTRATO SELECCIONADO 
   fechaContrato = new FormControl('');
   public contratoForm = new FormGroup({
     fechaContratoForm: this.fechaContrato,
   });
   contratoSeleccionado: any = [];
   listaCargos: any = [];
-  obtenerContratoSeleccionado(form) {
+  ObtenerContratoSeleccionado(form: any) {
     this.LimpiarCargo();
     this.contratoSeleccionado = [];
     this.restEmpleado.BuscarDatosContrato(form.fechaContratoForm).subscribe(res => {
       this.contratoSeleccionado = res;
-    }, error => { });
+      this.contratoSeleccionado.forEach(data => {
+        data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, this.formato_fecha, this.validar.dia_abreviado);
+        data.fec_salida_ = this.validar.FormatearFecha(data.fec_salida, this.formato_fecha, this.validar.dia_abreviado);
+      })
+    });
     this.restCargo.getInfoCargoEmpleadoRest(form.fechaContratoForm).subscribe(datos => {
       this.listaCargos = datos;
+      this.listaCargos.forEach(data => {
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, this.formato_fecha, this.validar.dia_abreviado);
+      })
     }, error => {
       this.toastr.info('El contrato seleccionado no registra ningún cargo', 'VERIFICAR', {
         timeOut: 6000,
@@ -79,57 +146,56 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     });
   }
 
-  /** Método para limpiar registro Cargo y Contrato seleccionado*/
+  // MÉTODO PARA LIMPIAR REGISTRO DE CONTRATO
   LimpiarContrato() {
+    this.contratoSeleccionado = [];
+    this.cargoSeleccionado = [];
+    this.listaCargos = [];
     this.contratoForm.reset();
     this.cargoForm.reset();
-    this.contratoSeleccionado = [];
-    this.listaCargos = [];
-    this.cargoSeleccionado = [];
   }
 
-  /** Método para obtener los datos del cargo del empleado */
+
+  /** ** ***************************************************************************************** **
+   ** ** **                  MÉTODOS PARA MENEJO DE DATOS DE CARGO                              ** **
+   ** ******************************************************************************************** **/
+
+  // MÉTODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
   cargoEmpleado: any = [];
-  cargosTotalesEmpleado: any = [];
-  nombreCargo: string;
-  obtenerCargoEmpleado(id_empleado: number) {
+  ObtenerCargoEmpleado(id_cargo: number, formato_fecha: string) {
     this.cargoEmpleado = [];
-    this.cargosTotalesEmpleado = [];
-    this.restCargo.BuscarIDCargoActual(id_empleado).subscribe(datos => {
-      this.cargosTotalesEmpleado = datos;
-      let cargoIdActual = this.cargosTotalesEmpleado[0].max;
-      // id, codigo
-      this.restCargo.BuscarCargoID(cargoIdActual).subscribe(datos => {
-        this.cargoEmpleado = datos;
-        this.restCargo.ObtenerUnTipoCargo(this.cargoEmpleado[0].cargo).subscribe(datos => {
-          this.nombreCargo = datos[0].cargo;
-        });
-      });
+    this.restCargo.BuscarCargoID(id_cargo).subscribe(datos => {
+      this.cargoEmpleado = datos;
+      this.cargoEmpleado.forEach(data => {
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+      })
     });
   }
 
-  /** Método para limpiar registro del Cargo seleccionado*/
+  // MÉTODO PARA LIMPIAR REGISTRO 
   LimpiarCargo() {
-    this.cargoForm.reset();
-    this.listaCargos = [];
     this.cargoSeleccionado = [];
+    this.listaCargos = [];
+    this.cargoForm.reset();
   }
 
-  /** Método para ver cargo seleccionado */
+  // MÉTODO PARA VER CARGO SELECCIONADO 
   fechaICargo = new FormControl('');
   public cargoForm = new FormGroup({
     fechaICargoForm: this.fechaICargo,
   });
   cargoSeleccionado: any = [];
-  nombreCargoSeleccionado: string;
-  obtenerCargoSeleccionadoEmpleado(form) {
+  ObtenerCargoSeleccionado(form) {
     this.cargoSeleccionado = [];
     this.restCargo.BuscarCargoID(form.fechaICargoForm).subscribe(datos => {
       this.cargoSeleccionado = datos;
-      this.restCargo.ObtenerUnTipoCargo(this.cargoSeleccionado[0].cargo).subscribe(datos => {
-        this.nombreCargoSeleccionado = datos[0].cargo;
-      });
+      this.cargoSeleccionado.forEach(data => {
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, this.formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, this.formato_fecha, this.validar.dia_abreviado);
+      })
     });
   }
+
 
 }

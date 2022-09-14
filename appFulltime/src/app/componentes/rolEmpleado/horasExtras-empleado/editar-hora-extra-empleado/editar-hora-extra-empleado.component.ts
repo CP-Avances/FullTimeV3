@@ -6,9 +6,11 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 interface Estado {
   id: number,
@@ -45,11 +47,16 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
   estadoF = new FormControl('', [Validators.required]);
   horasF = new FormControl('', [Validators.required]);
 
+  archivoForm = new FormControl('');
+  respaldoF = new FormControl('');
+  seleccion = new FormControl('');
+
   public PedirHoraExtraForm = new FormGroup({
     descripcionForm: this.descripcionF,
     fechaInicioForm: this.fechaInicioF,
     horaInicioForm: this.horaInicioF,
     FechaFinForm: this.FechaFinF,
+    respaldoForm: this.respaldoF,
     horaFinForm: this.horaFinF,
     estadoForm: this.estadoF,
     horasForm: this.horasF,
@@ -65,6 +72,8 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
     private restHE: PedHoraExtraService,
     private toastr: ToastrService,
     public ventana: MatDialogRef<EditarHoraExtraEmpleadoComponent>,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
     @Inject(MAT_DIALOG_DATA) public datos: any
   ) {
     // VARIABLES DEL EMPLEADO QUE SOLICITA
@@ -84,13 +93,40 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
     this.PedirHoraExtraForm.patchValue({
       descripcionForm: this.datos.descripcion,
       fechaInicioForm: this.datos.fec_inicio,
-      horaInicioForm: this.datos.fec_inicio.split("T")[1].split(".")[0],
+      horaInicioForm: moment(this.datos.fec_inicio).format('HH:mm'),
       FechaFinForm: this.datos.fec_final,
-      horaFinForm: this.datos.fec_final.split("T")[1].split(".")[0],
+      horaFinForm: moment(this.datos.fec_final).format('HH:mm'),
       horasForm: this.datos.num_hora.split(":")[0] + ":" + this.datos.num_hora.split(":")[1],
     });
 
     this.obtenerInformacionEmpleado();
+
+    this.BuscarHora();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
@@ -115,38 +151,20 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
       })
   }
 
-  InsertarHoraExtra(form1) {
-    let dataPedirHoraExtra = {
+  InsertarHoraExtra(form: any) {
+    let data = {
       depa_user_loggin: localStorage.getItem('departamento'),
       tipo_funcion: 0,
-      descripcion: form1.descripcionForm,
+      descripcion: form.descripcionForm,
       fec_inicio: null,
       fec_final: null,
-      num_hora: form1.horasForm + ":00",
-      estado: form1.estadoForm,
+      num_hora: form.horasForm + ":00",
+      estado: form.estadoForm,
     }
 
-    dataPedirHoraExtra.fec_inicio = this.ValidarFechas(form1.fechaInicioForm, form1.horaInicioForm);
-    dataPedirHoraExtra.fec_final = this.ValidarFechas(form1.FechaFinForm, form1.horaFinForm);
-
-    this.restHE.EditarHoraExtra(parseInt(this.datos.id), dataPedirHoraExtra).subscribe(horaExtra => {
-      console.log('ver horaE ---- ', horaExtra)
-      this.toastr.success('Operación Exitosa', 'Hora extra solicitada', {
-        timeOut: 6000,
-      });
-      horaExtra.EmpleadosSendNotiEmail.push(this.solInfo);
-      this.EnviarCorreo(horaExtra);
-      this.EnviarNotificacion(horaExtra);
-      this.ventana.close(true);
-
-    }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        this.toastr.error(message)
-        this.ventana.close();
-      }
-    });
-
+    data.fec_inicio = this.ValidarFechas(form.fechaInicioForm, form.horaInicioForm);
+    data.fec_final = this.ValidarFechas(form.FechaFinForm, form.horaFinForm);
+    this.VerificarArchivo(data, form);
   }
 
   ValidarFechas(fecha, hora) {
@@ -217,13 +235,22 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
     var correo_usuarios = '';
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
-    let solicitud = moment.weekdays(moment(horaExtra.fec_solicita).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_solicita).day()).slice(1);
-    let desde = moment.weekdays(moment(horaExtra.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(horaExtra.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_final).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(horaExtra.fec_solicita, this.formato_fecha, this.validar.dia_completo);
+    let desde = this.validar.FormatearFecha(moment(horaExtra.fec_inicio).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(moment(horaExtra.fec_final).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
 
     // CAPTURANDO ESTADO DE LA SOLICITUD DE HORA EXTRA
     if (horaExtra.estado === 1) {
       var estado_h = 'Pendiente de autorización';
+    }
+    else if (horaExtra.estado === 1) {
+      var estado_h = 'Preautorizada';
+    }
+    else if (horaExtra.estado === 1) {
+      var estado_h = 'Autorizada';
+    }
+    else if (horaExtra.estado === 1) {
+      var estado_h = 'Negada';
     }
 
     horaExtra.EmpleadosSendNotiEmail.forEach(e => {
@@ -246,11 +273,11 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
 
         let datosHoraExtraCreada = {
           tipo_solicitud: 'Realización de Horas Extras solicitadas por',
-          solicitud: solicitud + ' ' + moment(horaExtra.fec_solicita).format('DD/MM/YYYY'),
-          desde: desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY'),
-          h_inicio: moment(horaExtra.fec_inicio).format('HH:mm'),
-          h_final: moment(horaExtra.fec_final).format('HH:mm'),
+          solicitud: solicitud,
+          desde: desde,
+          hasta: hasta,
+          h_inicio: this.validar.FormatearHora(moment(horaExtra.fec_inicio).format('HH:mm:ss'), this.formato_hora),
+          h_final: this.validar.FormatearHora(moment(horaExtra.fec_final).format('HH:mm:ss'), this.formato_hora),
           num_horas: moment(horaExtra.num_hora, 'HH:mm').format('HH:mm'),
           observacion: horaExtra.descripcion,
           estado_h: estado_h,
@@ -295,10 +322,11 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
   EnviarNotificacion(horaExtra: any) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
-    let desde = moment.weekdays(moment(horaExtra.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(horaExtra.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_final).day()).slice(1);
-    let h_inicio = moment(horaExtra.fec_inicio).format('HH:mm');
-    let h_final = moment(horaExtra.fec_final).format('HH:mm');
+    let desde = this.validar.FormatearFecha(moment(horaExtra.fec_inicio).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(moment(horaExtra.fec_final).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
+
+    let h_inicio = this.validar.FormatearHora(moment(horaExtra.fec_inicio).format('HH:mm:ss'), this.formato_hora)
+    let h_final = this.validar.FormatearHora(moment(horaExtra.fec_final).format('HH:mm:ss'), this.formato_hora);
 
     let notificacion = {
       id_send_empl: this.id_user_loggin,
@@ -310,9 +338,8 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
       id_hora_extra: horaExtra.id,
       tipo: 1,
       mensaje: 'Ha actualizado su solicitud de horas extras desde ' +
-        desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
-        ' horario de ' + h_inicio + ' a ' + h_final,
+        desde + ' hasta ' +
+        hasta + ' horario de ' + h_inicio + ' a ' + h_final,
     }
 
     horaExtra.EmpleadosSendNotiEmail.forEach(e => {
@@ -381,5 +408,132 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
   LimpiarCampoHoras() {
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
   }
+
+  /** ********************************************************************************** **
+   ** **                       SUBIR ARCHIVO DE SOLICITUD DE PERMISO                  ** **
+   ** ********************************************************************************** **/
+
+  nameFile: string;
+  archivoSubido: Array<File>;
+
+  fileChange(element) {
+    this.archivoSubido = element.target.files;
+    if (this.archivoSubido.length != 0) {
+      const name = this.archivoSubido[0].name;
+      console.log(this.archivoSubido[0].name);
+      this.PedirHoraExtraForm.patchValue({ respaldoForm: name });
+      this.HabilitarBtn = true;
+    }
+  }
+
+  SubirRespaldo(form: any) {
+    var id = parseInt(this.datos.id);
+    let formData = new FormData();
+    console.log("tamaño", this.archivoSubido[0].size);
+    for (var i = 0; i < this.archivoSubido.length; i++) {
+      formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
+    }
+    this.restHE.SubirArchivoRespaldo(formData, id, form.respaldoForm).subscribe(res => {
+      this.archivoForm.reset();
+      this.nameFile = '';
+    });
+  }
+
+  LimpiarNombreArchivo() {
+    this.PedirHoraExtraForm.patchValue({
+      respaldoForm: '',
+    });
+  }
+
+  // MÉTODO PARA QUITAR ARCHIVO SELECCIONADO
+  HabilitarBtn: boolean = false;
+  RetirarArchivo() {
+    this.archivoSubido = [];
+    this.HabilitarBtn = false;
+    this.LimpiarNombreArchivo();
+    this.archivoForm.patchValue('');
+  }
+
+  activar: boolean = false;
+  opcion: number = 0;
+  ActivarArchivo() {
+    this.acciones = true;
+    this.activar = true;
+    this.opcion = 2;
+  }
+
+  QuitarArchivo() {
+    this.acciones = true;
+    this.activar = false;
+    this.opcion = 1;
+    this.RetirarArchivo();
+  }
+
+  acciones: boolean = false;
+  LimpiarAcciones() {
+    this.seleccion.reset();
+    this.acciones = false;
+    this.activar = false;
+    this.RetirarArchivo();
+    this.opcion = 0;
+  }
+
+  VerificarArchivo(datos: any, form: any) {
+    console.log('prueba ... ', this.opcion);
+    if (this.opcion === 1) {
+      let eliminar = {
+        documento: this.datos.documento,
+        id: parseInt(this.datos.id)
+      }
+      this.GuardarDatos(datos);
+      this.restHE.EliminarArchivoRespaldo(eliminar).subscribe(res => {
+        this.archivoForm.reset();
+        this.nameFile = '';
+      });
+      this.ventana.close(true);
+    }
+    else if (this.opcion === 2) {
+      if (form.respaldoForm != '' && form.respaldoForm != null) {
+        if (this.archivoSubido[0].size <= 2e+6) {
+          this.GuardarDatos(datos);
+          this.SubirRespaldo(form);
+          this.ventana.close(true);
+        }
+        else {
+          this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
+            timeOut: 6000,
+          });
+        }
+      }
+      else {
+        this.toastr.info('No ha seleccionado ningún archivo.', '', {
+          timeOut: 6000,
+        });
+      }
+    }
+    else {
+      this.GuardarDatos(datos);
+      this.ventana.close(true);
+    }
+  }
+
+  GuardarDatos(datos: any) {
+    this.restHE.EditarHoraExtra(parseInt(this.datos.id), datos).subscribe(horaExtra => {
+      console.log('ver horaE ---- ', horaExtra)
+      this.toastr.success('Operación Exitosa', 'Hora extra solicitada', {
+        timeOut: 6000,
+      });
+      horaExtra.EmpleadosSendNotiEmail.push(this.solInfo);
+      this.EnviarCorreo(horaExtra);
+      this.EnviarNotificacion(horaExtra);
+    }, err => {
+      const { access, message } = err.error.message;
+      if (access === false) {
+        this.toastr.error(message)
+        this.ventana.close();
+      }
+    });
+  }
+
 
 }

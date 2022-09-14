@@ -63,7 +63,7 @@ export class PlanificacionComidasComponent implements OnInit {
 
   constructor(
     private toastr: ToastrService,
-    private restP: ParametrosService,
+    private parametro: ParametrosService,
     private rest: TipoComidasService,
     public restE: EmpleadoService,
     public restH: EmpleadoHorariosService,
@@ -81,9 +81,35 @@ export class PlanificacionComidasComponent implements OnInit {
     console.log('datos', this.data, this.data.servicios + ' ' + this.data.servicios.length)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.MostrarDatos();
-    this.BuscarParametro();
     this.ObtenerServicios();
+    this.BuscarParametro();
+    this.MostrarDatos();
+    this.BuscarFecha();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarFecha() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   descripcion: string;
@@ -269,10 +295,11 @@ export class PlanificacionComidasComponent implements OnInit {
         let cuenta_correo = this.data.servicios.correo;
 
         // LECTURA DE DATOS DE LA PLANIFICACIÓN
-        let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-        let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-        let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-        let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+        let desde = this.validar.FormatearFecha(plan.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+        let hasta = this.validar.FormatearFecha(plan.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+        let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora);
+        let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
         // REGISTRAR PLANIFICACION DEL USUARIO
         this.fechasHorario.map(obj => {
@@ -454,10 +481,11 @@ export class PlanificacionComidasComponent implements OnInit {
           var plan = res.info;
 
           // LECTURA DE DATOS DE LA PLANIFICACIÓN
-          let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-          let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-          let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-          let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+          let desde = this.validar.FormatearFecha(plan.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+          let hasta = this.validar.FormatearFecha(plan.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+          let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora);
+          let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
           this.fechasHorario = []; // ARRAY QUE CONTIENE TODAS LAS FECHAS DEL MES INDICADO
           // INICIALIZAR DATOS DE FECHA
@@ -538,8 +566,8 @@ export class PlanificacionComidasComponent implements OnInit {
       correo: cuenta_correo,
       inicio: h_inicio,
       extra: datos.extra,
-      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       final: h_fin,
     }
 
@@ -576,8 +604,7 @@ export class PlanificacionComidasComponent implements OnInit {
       id_empl_recive: id_empleado_recibe,
       tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
       mensaje: 'Planificación servicio de alimentación desde ' +
-        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        desde + ' hasta ' + hasta +
         ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
     }
     this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
@@ -596,7 +623,7 @@ export class PlanificacionComidasComponent implements OnInit {
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
     let datos = [];
-    this.restP.ListarDetalleParametros(24).subscribe(
+    this.parametro.ListarDetalleParametros(24).subscribe(
       res => {
         datos = res;
         if (datos.length != 0) {

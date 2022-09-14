@@ -218,7 +218,7 @@ class HorarioControlador {
     ObtenerDocumento(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const docs = req.params.docs;
-            let filePath = `servidor\\docRespaldosHorarios\\${docs}`;
+            let filePath = `servidor\\horarios\\${docs}`;
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }

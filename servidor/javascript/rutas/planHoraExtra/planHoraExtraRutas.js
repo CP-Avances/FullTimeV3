@@ -37,6 +37,8 @@ class DepartamentoRutas {
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, planHoraExtraControlador_1.default.EliminarRegistros);
         // ELIMINAR PLANIFICACION DE UN USUARIO
         this.router.delete('/eliminar/plan-hora/:id/:id_empleado', verificarToken_1.TokenValidation, planHoraExtraControlador_1.default.EliminarPlanEmpleado);
+        // BUSQUEDA DE DATOS DE PLANIFICACION POR ID DE USUARIO
+        this.router.get('/listar-plan/:id', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], planHoraExtraControlador_1.default.BuscarPlanUsuario);
         /** ******************************************************************************************** **
          ** *             ENVIO DE CORREO ELECTRONICO DE PLANIFICACIONES DE HORAS EXTRAS               * **
          ** ******************************************************************************************** **/

@@ -233,7 +233,6 @@ export class MainNavComponent implements OnInit {
         estado: true,
         icono: 'settings',
         children: [
-          { name: 'Inicio', url: '/home' },
           {
             name: 'Parametrización',
             accion: true,
@@ -538,6 +537,7 @@ export class MainNavComponent implements OnInit {
             icono: 'hourglass_full',
             children: [
               { name: 'Solicitar Hora Extra', url: '/horaExtraEmpleado' },
+              { name: 'Planificación HorasExtras', url: '/horasPlanEmpleado' },
             ]
           },
           {
@@ -546,7 +546,8 @@ export class MainNavComponent implements OnInit {
             estado: true,
             icono: 'restaurant',
             children: [
-              { name: 'Solicitar Servicio', url: '/almuerzosEmpleado' },
+              { name: 'Solicitar Servicio', url: '/comidasEmpleado' },
+              { name: 'Planificación Alimentación', url: '/comidasPlanEmpleado' },
             ]
           },
           {
@@ -586,7 +587,6 @@ export class MainNavComponent implements OnInit {
         children: [
           { name: 'Autoridades', url: '/informacion' },
           { name: 'Archivos', url: '/verDocumentacion' },
-          { name: 'Estadísticas Generales', url: '/estadisticas' },
         ]
       },
       {

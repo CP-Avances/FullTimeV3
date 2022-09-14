@@ -1,19 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
+import { PlanGeneralService } from 'src/app/servicios/planGeneral/plan-general.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
 
-import { RegistroPlanHorarioComponent } from 'src/app/componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
 import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horarios/detallePlanHorario/registro-detalle-plan-horario/registro-detalle-plan-horario.component';
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { RegistroPlanHorarioComponent } from 'src/app/componentes/horarios/planificacionHorario/registro-plan-horario/registro-plan-horario.component';
 import { EditarPlanificacionComponent } from 'src/app/componentes/horarios/planificacionHorario/editar-planificacion/editar-planificacion.component';
-
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-planificacion-horario-empleado',
@@ -23,32 +26,48 @@ import { EditarPlanificacionComponent } from 'src/app/componentes/horarios/plani
 
 export class PlanificacionHorarioEmpleadoComponent implements OnInit {
 
-
   idEmpleado: string;
   empleadoUno: any = [];
-  idCargo: any = [];
-  cont: number;
 
-  /* Items de paginación de la tabla */
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA 
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   constructor(
+    public restPlanHoraDetalle: DetallePlanHorarioService,
+    public restPlanGeneral: PlanGeneralService,
     public restEmpleado: EmpleadoService,
+    public informacion: DatosGeneralesService,
     public restCargo: EmplCargosService,
     public restPlanH: PlanHorarioService,
-    public vistaRegistrarDatos: MatDialog,
-    public restPlanHoraDetalle: DetallePlanHorarioService,
-    private toastr: ToastrService,
+    public parametro: ParametrosService,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
     public router: Router,
+    private toastr: ToastrService,
   ) {
     this.idEmpleado = localStorage.getItem('empleado');
   }
 
   ngOnInit(): void {
-    this.verEmpleado(this.idEmpleado);
-    this.obtenerPlanHorarios(parseInt(this.idEmpleado));
+    this.VerEmpleado();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                       METODOS GENERALES DEL SISTEMA                                ** ** 
+   ** **************************************************************************************** **/
+
+  // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
+  datoActual: any = [];
+  VerDatosActuales(formato_fecha: string) {
+    this.datoActual = [];
+    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(res => {
+      this.datoActual = res[0];
+      // LLAMADO A DATOS DE USUARIO
+      this.ObtenerHorarioRotativo(this.datoActual.codigo, formato_fecha);
+    });
   }
 
   ManejarPagina(e: PageEvent) {
@@ -56,94 +75,157 @@ export class PlanificacionHorarioEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  verEmpleado(idemploy: any) {
+  VerEmpleado() {
     this.empleadoUno = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.getOneEmpleadoRest(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleadoUno = data;
     })
   }
 
-  /** Método para imprimir datos de la planificación de horarios */
-  planHorario: any;
-  planHorarioTotales: any;
-  obtenerPlanHorarios(id_empleado: number) {
-    this.planHorario = [];
-    this.planHorarioTotales = [];
-    this.restCargo.BuscarIDCargo(id_empleado).subscribe(datos => {
-      this.idCargo = datos;
-      //console.log("idCargo Procesos", this.idCargo[0].id);
-      for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        //revisar
-        this.restPlanH.ObtenerHorarioRotativo(this.idCargo[i]['id']).subscribe(datos => {
-          this.planHorario = datos;
-          if (this.planHorario.length != 0) {
-            if (this.cont === 0) {
-              this.planHorarioTotales = datos
-              this.cont++;
-            }
-            else {
-              this.planHorarioTotales = this.planHorarioTotales.concat(datos);
-              console.log("Datos plan horario" + i + '', this.planHorarioTotales)
-            }
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+   formato_fecha: string = 'DD/MM/YYYY';
+   formato_hora: string = 'HH:mm:ss';
+ 
+   // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+   BuscarParametro() {
+     // id_tipo_parametro Formato fecha = 25
+     this.parametro.ListarDetalleParametros(25).subscribe(
+       res => {
+         this.formato_fecha = res[0].descripcion;
+         this.VerDatosActuales(this.formato_fecha);
+       },
+       vacio => {
+         this.VerDatosActuales(this.formato_fecha);
+       });
+   }
+
+  /** **************************************************************************************** **
+   ** **             METODO DE PRESENTACION DE DATOS DE HORARIOS ROTATIVOS                  ** **
+   ** **************************************************************************************** **/
+
+  // MÉTODO PARA IMPRIMIR DATOS DE LA HORARIOS ROTATIVOS 
+  horarioRotativo: any = [];
+  ObtenerHorarioRotativo(codigo: number, formato_fecha: string) {
+    this.horarioRotativo = [];
+    this.restPlanH.ObtenerHorarioRotativo(codigo).subscribe(datos => {
+      this.horarioRotativo = datos;
+      this.horarioRotativo.forEach(data => {
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+      })
+    })
+  }
+
+  // VENTANA PARA REGISTRAR PLANIFICACIÓN DE HORARIOS DEL EMPLEADO 
+  AbrirVentanaHorarioRotativo(): void {
+    if (this.datoActual.id_cargo != undefined) {
+      this.ventana.open(RegistroPlanHorarioComponent,
+        {
+          width: '300px', data: {
+            idEmpleado: this.idEmpleado, idCargo: this.datoActual.id_cargo
           }
         })
-      }
-    });
-  }
-
-  /* Ventana para registrar planificación de horarios del empleado */
-  AbrirVentanaPlanHorario(): void {
-    this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idcargo ", this.idCargo[0].max)
-      this.vistaRegistrarDatos.open(RegistroPlanHorarioComponent,
-        { width: '300px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max } })
         .afterClosed().subscribe(item => {
-          this.obtenerPlanHorarios(parseInt(this.idEmpleado));
+          this.ObtenerHorarioRotativo(this.datoActual.codigo, this.formato_fecha);
         });
-    }, error => {
-      this.toastr.info('El empleado no tiene registrado un Cargo', 'Primero Registrar Cargo', {
+    }
+    else {
+      this.toastr.info('El usuario no tiene registrado un Cargo.', '', {
         timeOut: 6000,
       })
-    });
+    }
   }
 
-  /* Ventana para registrar detalle de horario del empleado*/
+  // VENTANA PARA REGISTRAR HORARIO 
+  AbrirEditarHorarioRotativo(datoSeleccionado: any): void {
+    this.ventana.open(EditarPlanificacionComponent,
+      { width: '300px', data: { idEmpleado: this.idEmpleado, datosPlan: datoSeleccionado } })
+      .afterClosed().subscribe(item => {
+        this.ObtenerHorarioRotativo(this.datoActual.codigo, this.formato_fecha);
+      });
+  }
+
+  // VENTANA PARA REGISTRAR DETALLE DE HORARIO DEL EMPLEADO
   AbrirVentanaDetallePlanHorario(datos: any): void {
-    this.vistaRegistrarDatos.open(RegistroDetallePlanHorarioComponent,
-      { width: '350px', data: { idEmpleado: this.idEmpleado, planHorario: datos, actualizarPage: false, direccionarE: true } }).disableClose = true;
+    console.log(datos);
+    this.ventana.open(RegistroDetallePlanHorarioComponent,
+      { width: '350px', data: { idEmpleado: this.idEmpleado, planHorario: datos, actualizarPage: false, direccionarE: false } }).disableClose = true;
   }
 
-  /** Función para eliminar registro seleccionado Planificación*/
-  EliminarPlanificacion(id_plan: number) {
+
+  // BUSCAR FECHAS DE HORARIO y ELIMINAR PLANIFICACION GENERAL
+  id_planificacion_general: any = [];
+  EliminarPlanGeneral(fec_inicio: string, fec_final: string, horario: number, codigo: string) {
+    this.id_planificacion_general = [];
+    let plan_fecha = {
+      fec_inicio: fec_inicio.split('T')[0],
+      fec_final: fec_final.split('T')[0],
+      id_horario: horario,
+      codigo: parseInt(codigo)
+    };
+    this.restPlanGeneral.BuscarFechas(plan_fecha).subscribe(res => {
+      this.id_planificacion_general = res;
+      this.id_planificacion_general.map(obj => {
+        this.restPlanGeneral.EliminarRegistro(obj.id).subscribe(res => {
+        })
+      })
+    })
+  }
+
+  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE HORARIO ROTATIVO
+  EliminarHorarioRotativo(id_plan: number) {
     this.restPlanH.EliminarRegistro(id_plan).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
-      this.obtenerPlanHorarios(parseInt(this.idEmpleado));
+      this.ObtenerHorarioRotativo(this.datoActual.codigo, this.formato_fecha);
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
-  ConfirmarDeletePlanificacion(datos: any) {
-    console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO DE HORARIO ROTATIVO
+  ConfirmarHorarioRotativo(datos: any) {
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
-          this.EliminarPlanificacion(datos.id);
+          this.BuscarDatosPlanHorario(datos.id, datos.codigo)
+          this.EliminarHorarioRotativo(datos.id);
         } else {
           this.router.navigate(['/planificacionHorario']);
         }
       });
   }
 
-  /* Ventana para registrar horario */
-  AbrirEditarPlanificacion(datoSeleccionado: any): void {
-    console.log(datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarPlanificacionComponent,
-      { width: '300px', data: { idEmpleado: this.idEmpleado, datosPlan: datoSeleccionado } }).afterClosed().subscribe(item => {
-        this.obtenerPlanHorarios(parseInt(this.idEmpleado));
-      });
+  // BUSCAR DETALLES DEL HORARIO ROTATIVO 
+  detallesPlanificacion: any = [];
+  BuscarDatosPlanHorario(id_planificacion: any, codigo: string) {
+    this.detallesPlanificacion = [];
+    this.restPlanHoraDetalle.ObtenerPlanHoraDetallePorIdPlanHorario(id_planificacion)
+      .subscribe(datos => {
+        this.detallesPlanificacion = datos;
+        this.detallesPlanificacion.map(obj => {
+          this.EliminarPlanificacionGeneral(obj.fecha, obj.id_horario, codigo)
+        })
+      })
+  }
+
+  // ELIMINAR REGISTROS DE PLANIFICACION GENERAL 
+  EliminarPlanificacionGeneral(fecha: string, horario: number, codigo: string) {
+    this.id_planificacion_general = [];
+    let plan_fecha = {
+      fec_inicio: fecha.split('T')[0],
+      id_horario: horario,
+      codigo: parseInt(codigo)
+    };
+    this.restPlanGeneral.BuscarFecha(plan_fecha).subscribe(res => {
+      this.id_planificacion_general = res;
+      this.id_planificacion_general.map(obj => {
+        this.restPlanGeneral.EliminarRegistro(obj.id).subscribe(res => {
+        })
+      })
+    })
   }
 
 }

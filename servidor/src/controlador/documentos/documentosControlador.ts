@@ -7,8 +7,8 @@ class DocumentosControlador {
     public Carpetas(req: Request, res: Response) {
         let carpetas = [
             { nombre: 'Contratos', filename: 'contratos' },
-            { nombre: 'Respaldos Horarios', filename: 'docRespaldosHorarios' },
-            { nombre: 'Respaldos Permisos', filename: 'docRespaldosPermisos' },
+            { nombre: 'Respaldos Horarios', filename: 'horarios' },
+            { nombre: 'Respaldos Permisos', filename: 'permisos' },
             { nombre: 'Documentacion', filename: 'documentacion' }
         ]
 

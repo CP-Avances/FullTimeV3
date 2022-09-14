@@ -337,6 +337,8 @@ class VacacionesControlador {
     EnviarCorreoVacacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
@@ -376,13 +378,13 @@ class VacacionesControlador {
                        <b>Cargo:</b> ${correoInfoPideVacacion.rows[0].tipo_cargo} <br>
                        <b>Departamento:</b> ${correoInfoPideVacacion.rows[0].departamento} <br>
                        <b>Generado mediante:</b> Aplicación Web <br>
-                       <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                       <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       <b>Fecha de envío:</b> ${fecha} <br> 
+                       <b>Hora de envío:</b> ${hora} <br><br> 
                    </p>
                    <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Motivo:</b> Vacaciones <br>   
-                       <b>Fecha de Solicitud:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Fecha de Solicitud:</b> ${fecha} <br> 
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Estado:</b> ${estado_v} <br><br>
@@ -432,6 +434,8 @@ class VacacionesControlador {
     EnviarCorreoVacacionesMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
             if (datos === 'ok') {
@@ -470,13 +474,13 @@ class VacacionesControlador {
                          <b>Cargo:</b> ${correoInfoPideVacacion.rows[0].tipo_cargo} <br>
                          <b>Departamento:</b> ${correoInfoPideVacacion.rows[0].departamento} <br>
                          <b>Generado mediante:</b> Aplicación Móvil <br>
-                         <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                         <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                         <b>Fecha de envío:</b> ${fecha} <br> 
+                         <b>Hora de envío:</b> ${hora} <br><br> 
                      </p>
                      <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                      <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                          <b>Motivo:</b> Vacaciones <br>   
-                         <b>Fecha de Solicitud:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                         <b>Fecha de Solicitud:</b> ${fecha} <br> 
                          <b>Desde:</b> ${desde} <br>
                          <b>Hasta:</b> ${hasta} <br>
                          <b>Estado:</b> ${estado_v} <br><br>

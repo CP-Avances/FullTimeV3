@@ -21,10 +21,10 @@ import { MetodosComponent } from 'src/app/componentes/administracionGeneral/meto
 
 // IMPORTAR SERVICIOS
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
-import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
   selector: 'app-listar-tipo-comidas',
@@ -72,8 +72,8 @@ export class ListarTipoComidasComponent implements OnInit {
     private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
     private rest: TipoComidasService, // SERVICIO DATOS DE TIPOS DE SERVICIOS DE COMIDAS
     public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
-    public router: Router, // VARIABLE DE MANEJO DE RUTAS URL
     public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    public router: Router, // VARIABLE DE MANEJO DE RUTAS URL
     public validar: ValidacionesService,
     public parametro: ParametrosService,
   ) {

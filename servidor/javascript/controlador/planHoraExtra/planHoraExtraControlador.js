@@ -240,6 +240,26 @@ class PlanHoraExtraControlador {
             res.jsonp({ message: 'Registro eliminado' });
         });
     }
+    // BUSQUEDA DE PLANIFICACIONES POR ID DE USUARIO
+    BuscarPlanUsuario(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const PLAN = yield database_1.default.query(`
+      SELECT pe.id, p.id AS id_plan, p.descripcion, p.fecha_desde, p.fecha_hasta, p.hora_inicio, 
+	      p.hora_fin, p.horas_totales, pe.observacion, pe.tiempo_autorizado, pe.estado,
+        da.id AS id_empleado, (da.nombre || ' ' || da.apellido) AS nombre, da.correo, da.cedula,
+        da.codigo, da.id_cargo, da.id_contrato
+      FROM plan_hora_extra_empleado AS pe, plan_hora_extra AS p, datos_actuales_empleado AS da
+      WHERE pe.id_empl_realiza = $1 AND pe.id_plan_hora = p.id AND da.id = pe.id_empl_realiza
+      `, [id]);
+            if (PLAN.rowCount > 0) {
+                res.jsonp(PLAN.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            }
+        });
+    }
     /** ********************************************************************************************* **
      ** *             ENVIO DE CORREOS ELECTRONICOS DE PLANIFICACIÓN DE HORAS EXTRAS                  **
      ** ********************************************************************************************* **/
@@ -247,6 +267,8 @@ class PlanHoraExtraControlador {
     EnviarCorreoPlanificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
@@ -280,13 +302,13 @@ class PlanHoraExtraControlador {
                        <b>Cargo:</b> ${Envia.tipo_cargo} <br>
                        <b>Departamento:</b> ${Envia.departamento} <br>
                        <b>Generado mediante:</b> Aplicación Web <br>
-                       <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                       <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       <b>Fecha de envío:</b> ${fecha} <br> 
+                       <b>Hora de envío:</b> ${hora} <br><br> 
                    </p>
                    <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA PLANIFICACIÓN DE HORAS EXTRAS</h3>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Motivo:</b> ${observacion} <br>   
-                       <b>Fecha de Planificación:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Fecha de Planificación:</b> ${fecha} <br> 
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Horario:</b> ${inicio} a ${fin} <br>

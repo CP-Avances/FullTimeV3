@@ -141,7 +141,7 @@ export class ValidacionesService {
   FormatearFecha(fecha: string, formato: string, dia: string) {
     let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
       moment(fecha).format(dia).slice(1) +
-      ' ' + moment(fecha).format(formato);
+      ', ' + moment(fecha).format(formato);
     return valor;
   }
 

@@ -11,6 +11,7 @@ import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-editar-plan-hora-extra',
@@ -55,7 +56,9 @@ export class EditarPlanHoraExtraComponent implements OnInit {
     private restP: ParametrosService,
     public restEmpleado: EmpleadoService,
     public restCargo: EmplCargosService,
+    public parametro: ParametrosService,
     public ventana: MatDialogRef<EditarPlanHoraExtraComponent>,
+    public validar: ValidacionesService,
     public aviso: RealTimeService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
@@ -70,6 +73,32 @@ export class EditarPlanHoraExtraComponent implements OnInit {
     this.id_cargo_loggin = parseInt(localStorage.getItem("ultimoCargo"));
 
     this.CargarDatos();
+    this.BuscarFecha();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarFecha() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   leer_datos: any;
@@ -148,10 +177,11 @@ export class EditarPlanHoraExtraComponent implements OnInit {
             let cuenta_correo = this.leer_datos.correo;
 
             // LECTURA DE DATOS DE LA PLANIFICACIÓN
-            let desde = moment.weekdays(moment(plan.fecha_desde).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fecha_desde).day()).slice(1);
-            let hasta = moment.weekdays(moment(plan.fecha_hasta).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fecha_hasta).day()).slice(1);
-            let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-            let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+            let desde = this.validar.FormatearFecha(plan.fecha_desde, this.formato_fecha, this.validar.dia_completo);
+            let hasta = this.validar.FormatearFecha(plan.fecha_hasta, this.formato_fecha, this.validar.dia_completo);
+
+            let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora)
+            let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
             // DATOS DE ASIGNACIÓN DE PLANIFICACIÓN A EMPLEADOS
             let planEmpleado = {
@@ -301,8 +331,7 @@ export class EditarPlanHoraExtraComponent implements OnInit {
       id_empl_recive: recibe,
       tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
       mensaje: 'Planificación de horas extras actualizada desde ' +
-        desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
+        desde + ' hasta ' + hasta +
         ' horario de ' + h_inicio + ' a ' + h_fin,
     }
     this.restPE.EnviarNotiPlanificacion(mensaje).subscribe(res => {
@@ -323,8 +352,8 @@ export class EditarPlanHoraExtraComponent implements OnInit {
       nombres: usuario,
       asunto: 'ACTUALIZACION DE PLANIFICACION DE HORAS EXTRAS',
       inicio: h_inicio,
-      desde: desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       horas: moment(datos.horas_totales, 'HH:mm').format('HH:mm'),
       fin: h_fin,
     }

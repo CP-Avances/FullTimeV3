@@ -323,6 +323,15 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
       if (vacacion.estado === 1) {
         var estado_v = 'Pendiente de autorización';
       }
+      else if (vacacion.estado === 2) {
+        var estado_v = 'Preautorizada';
+      }
+      else if (vacacion.estado === 3) {
+        var estado_v = 'Autorizada';
+      }
+      else if (vacacion.estado === 1) {
+        var estado_v = 'Negada';
+      }
 
       // SI EL USUARIO SE ENCUENTRA ACTIVO Y TIENEN CONFIGURACIÓN RECIBIRA CORREO DE SOLICITUD DE VACACIÓN
       if (e.vaca_mail) {

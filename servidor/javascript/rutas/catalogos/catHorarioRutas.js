@@ -11,7 +11,7 @@ const multipartMiddleware = multipart({
     uploadDir: './plantillas',
 });
 const multipartMiddlewareD = multipart({
-    uploadDir: './docRespaldosHorarios',
+    uploadDir: './horarios',
 });
 class HorarioRutas {
     constructor() {

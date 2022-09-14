@@ -17,6 +17,7 @@ const MetodosHorario_1 = require("../../libs/MetodosHorario");
 const settingsMail_1 = require("../../libs/settingsMail");
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 class HorasExtrasPedidasControlador {
     ListarHorasExtrasPedidas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -345,7 +346,7 @@ class HorasExtrasPedidasControlador {
     // ELIMINAR REGISTRO DE HORAS EXTRAS
     EliminarHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_hora_extra } = req.params;
+            const { id_hora_extra, documento } = req.params;
             yield database_1.default.query(`
       DELETE FROM realtime_noti WHERE id_hora_extra = $1
       `, [id_hora_extra]);
@@ -355,6 +356,11 @@ class HorasExtrasPedidasControlador {
             const response = yield database_1.default.query(`
       DELETE FROM hora_extr_pedidos WHERE id = $1 RETURNING *
       `, [id_hora_extra]);
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\horasExtras\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
             const [objetoHoraExtra] = response.rows;
             if (objetoHoraExtra) {
                 return res.status(200).jsonp(objetoHoraExtra);
@@ -365,11 +371,11 @@ class HorasExtrasPedidasControlador {
         });
     }
     // BUSCAR REGISTROS DE HORAS EXTRAS DE UN USUARIO
-    ObtenerlistaHora(req, res) {
+    ObtenerListaHora(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_user } = req.params;
             const HORAS_EXTRAS_PEDIDAS = yield database_1.default.query(`
-      SELECT * FROM hora_extr_pedidos WHERE id_usua_solicita = $1
+      SELECT * FROM hora_extr_pedidos WHERE id_usua_solicita = $1 ORDER BY id DESC
       `, [id_user]);
             if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
                 return res.jsonp(HORAS_EXTRAS_PEDIDAS.rows);
@@ -470,6 +476,42 @@ class HorasExtrasPedidasControlador {
             }
         });
     }
+    // REGISTRAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS 
+    GuardarDocumentoHoras(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let list = req.files;
+            let doc = list.uploads[0].path.split("\\")[1];
+            let { nombre } = req.params;
+            let id = req.params.id;
+            yield database_1.default.query(`
+      UPDATE hora_extr_pedidos SET documento = $2, docu_nombre = $3 WHERE id = $1
+      `, [id, doc, nombre]);
+            res.jsonp({ message: 'Documento Actualizado' });
+        });
+    }
+    // ELIMINAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS 
+    EliminarDocumentoHoras(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento, id } = req.body;
+            yield database_1.default.query(`
+      UPDATE hora_extr_pedidos SET documento = null, docu_nombre = null WHERE id = $1
+      `, [id]);
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\horasExtras\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'Documento Actualizado' });
+        });
+    }
+    // BUSQUEDA DE DOCUMENTO HORAS EXTRAS
+    ObtenerDocumento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const docs = req.params.docs;
+            let filePath = `servidor\\horasExtras\\${docs}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
     /** ************************************************************************************************* **
      ** **          MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **
      ** ************************************************************************************************* **/
@@ -477,6 +519,8 @@ class HorasExtrasPedidasControlador {
     SendMailNotifiHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
@@ -516,15 +560,16 @@ class HorasExtrasPedidasControlador {
                            <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
                            <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
                            <b>Generado mediante:</b> Aplicación Web <br>
-                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                           <b>Fecha de envío:</b> ${fecha} <br> 
+                           <b>Hora de envío:</b> ${hora} <br><br> 
                        </p>
                        <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Motivo:</b> Solicitud de Horas Extras <br>   
                            <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                           <b>Desde:</b> ${desde} ${h_inicio} <br>
-                           <b>Hasta:</b> ${hasta} ${h_final} <br>
+                           <b>Desde:</b> ${desde} <br>
+                           <b>Hasta:</b> ${hasta} <br>
+                           <b>Horario:</b> ${h_inicio} a ${h_final} <br>
                            <b>Observación:</b> ${observacion} <br>
                            <b>Num. horas solicitadas:</b> ${num_horas} <br>
                            <b>Estado:</b> ${estado_h} <br><br>
@@ -574,6 +619,8 @@ class HorasExtrasPedidasControlador {
     EnviarCorreoHoraExtraMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
             if (datos === 'ok') {
@@ -612,15 +659,16 @@ class HorasExtrasPedidasControlador {
                            <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
                            <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
                            <b>Generado mediante:</b> Aplicación Móvil <br>
-                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                           <b>Fecha de envío:</b> ${fecha} <br> 
+                           <b>Hora de envío:</b> ${hora} <br><br> 
                        </p>
                        <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Motivo:</b> ${observacion} <br>   
                            <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                           <b>Desde:</b> ${desde} ${h_inicio} <br>
-                           <b>Hasta:</b> ${hasta} ${h_final} <br>
+                           <b>Desde:</b> ${desde} <br>
+                           <b>Hasta:</b> ${hasta} <br>
+                           <b>Horario:</b> ${h_inicio} a ${h_final} <br>
                            <b>Num. horas solicitadas:</b> ${num_horas} <br>
                            <b>Estado:</b> ${estado_h} <br><br>
                            <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>

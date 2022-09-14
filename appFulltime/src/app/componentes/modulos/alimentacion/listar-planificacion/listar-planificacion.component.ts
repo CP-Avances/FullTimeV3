@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
 
 // LLAMADO A COMPONENTES
 import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
@@ -225,11 +224,10 @@ export class ListarPlanificacionComponent implements OnInit {
     let cuenta_correo = datos.correo;
 
     // LECTURA DE DATOS DE LA PLANIFICACIÓN
-    let desde = moment.weekdays(moment(datos.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(datos.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_final).day()).slice(1);
-    let h_inicio = moment(datos.hora_inicio, 'HH:mm').format('HH:mm');
-    let h_fin = moment(datos.hora_fin, 'HH:mm').format('HH:mm');
-
+    let desde = this.validar.FormatearFecha(datos.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(datos.fec_final, this.formato_fecha, this.validar.dia_completo);
+    let h_inicio = this.validar.FormatearHora(datos.hora_inicio, this.formato_hora);
+    let h_fin = this.validar.FormatearHora(datos.hora_fin, this.formato_hora);
 
     this.restC.EliminarPlanComida(id_plan, id_empleado).subscribe(res => {
       this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
@@ -443,10 +441,10 @@ export class ListarPlanificacionComponent implements OnInit {
       console.log('ver eliminar 56666 ', plan)
       var plan = obj.alimentacion
       // LECTURA DE DATOS DE LA PLANIFICACIÓN
-      let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-      let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-      let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-      let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+      let desde = this.validar.FormatearFecha(plan.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+      let hasta = this.validar.FormatearFecha(plan.fec_final, this.formato_fecha, this.validar.dia_completo);
+      let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora);
+      let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
       // LECTURA DE NOMBRES DE USUARIOS
       usuario = usuario + '<tr><th>' + plan.nombre + '</th><th>' + plan.cedula + '</th></tr>';
@@ -578,8 +576,8 @@ export class ListarPlanificacionComponent implements OnInit {
       correo: cuenta_correo,
       inicio: h_inicio,
       extra: datos.extra,
-      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       final: h_fin,
     }
 
@@ -610,8 +608,7 @@ export class ListarPlanificacionComponent implements OnInit {
       id_empl_recive: id_empleado_recibe,
       tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
       mensaje: 'Planificación de alimentación eliminada desde ' +
-        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        desde + ' hasta ' + hasta +
         ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
     }
     this.restC.EnviarMensajePlanComida(mensaje).subscribe(res => {

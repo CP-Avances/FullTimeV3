@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import { VerificarHorario } from '../../libs/MetodosHorario';
 import { ReporteHoraExtra } from '../../class/HorasExtras';
-import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales }
+import {
+  enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales,
+  FormatearFecha, FormatearHora, dia_completo
+}
   from '../../libs/settingsMail';
 import { QueryResult } from 'pg';
 import pool from '../../database';
 import path from 'path';
+import fs from 'fs';
 
 class HorasExtrasPedidasControlador {
   public async ListarHorasExtrasPedidas(req: Request, res: Response) {
@@ -366,7 +370,7 @@ class HorasExtrasPedidasControlador {
 
   // ELIMINAR REGISTRO DE HORAS EXTRAS
   public async EliminarHoraExtra(req: Request, res: Response): Promise<Response> {
-    const { id_hora_extra } = req.params;
+    const { id_hora_extra, documento } = req.params;
 
     await pool.query(
       `
@@ -386,6 +390,12 @@ class HorasExtrasPedidasControlador {
       `
       , [id_hora_extra]);
 
+    if (documento != 'null' && documento != '' && documento != null) {
+      let filePath = `servidor\\horasExtras\\${documento}`
+      let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+      fs.unlinkSync(direccionCompleta);
+    }
+
     const [objetoHoraExtra] = response.rows;
 
     if (objetoHoraExtra) {
@@ -397,11 +407,11 @@ class HorasExtrasPedidasControlador {
   }
 
   // BUSCAR REGISTROS DE HORAS EXTRAS DE UN USUARIO
-  public async ObtenerlistaHora(req: Request, res: Response): Promise<any> {
+  public async ObtenerListaHora(req: Request, res: Response): Promise<any> {
     const { id_user } = req.params;
     const HORAS_EXTRAS_PEDIDAS = await pool.query(
       `
-      SELECT * FROM hora_extr_pedidos WHERE id_usua_solicita = $1
+      SELECT * FROM hora_extr_pedidos WHERE id_usua_solicita = $1 ORDER BY id DESC
       `
       , [id_user]);
     if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
@@ -517,6 +527,46 @@ class HorasExtrasPedidasControlador {
     }
   }
 
+  // REGISTRAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS 
+  public async GuardarDocumentoHoras(req: Request, res: Response): Promise<void> {
+    let list: any = req.files;
+    let doc = list.uploads[0].path.split("\\")[1];
+    let { nombre } = req.params;
+    let id = req.params.id;
+    await pool.query(
+      `
+      UPDATE hora_extr_pedidos SET documento = $2, docu_nombre = $3 WHERE id = $1
+      `
+      , [id, doc, nombre]);
+    res.jsonp({ message: 'Documento Actualizado' });
+  }
+
+  // ELIMINAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS 
+  public async EliminarDocumentoHoras(req: Request, res: Response): Promise<void> {
+    let { documento, id } = req.body;
+
+    await pool.query(
+      `
+      UPDATE hora_extr_pedidos SET documento = null, docu_nombre = null WHERE id = $1
+      `
+      , [id]);
+
+    if (documento != 'null' && documento != '' && documento != null) {
+      let filePath = `servidor\\horasExtras\\${documento}`
+      let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+      fs.unlinkSync(direccionCompleta);
+    }
+
+    res.jsonp({ message: 'Documento Actualizado' });
+  }
+
+  // BUSQUEDA DE DOCUMENTO HORAS EXTRAS
+  public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
+    const docs = req.params.docs;
+    let filePath = `servidor\\horasExtras\\${docs}`
+    res.sendFile(__dirname.split("servidor")[0] + filePath);
+  }
+
 
   /** ************************************************************************************************* **
    ** **          MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **      
@@ -526,6 +576,8 @@ class HorasExtrasPedidasControlador {
   public async SendMailNotifiHoraExtra(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
 
     const path_folder = path.resolve('logos');
 
@@ -576,15 +628,16 @@ class HorasExtrasPedidasControlador {
                            <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
                            <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
                            <b>Generado mediante:</b> Aplicación Web <br>
-                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                           <b>Fecha de envío:</b> ${fecha} <br> 
+                           <b>Hora de envío:</b> ${hora} <br><br> 
                        </p>
                        <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Motivo:</b> Solicitud de Horas Extras <br>   
                            <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                           <b>Desde:</b> ${desde} ${h_inicio} <br>
-                           <b>Hasta:</b> ${hasta} ${h_final} <br>
+                           <b>Desde:</b> ${desde} <br>
+                           <b>Hasta:</b> ${hasta} <br>
+                           <b>Horario:</b> ${h_inicio} a ${h_final} <br>
                            <b>Observación:</b> ${observacion} <br>
                            <b>Num. horas solicitadas:</b> ${num_horas} <br>
                            <b>Estado:</b> ${estado_h} <br><br>
@@ -634,6 +687,8 @@ class HorasExtrasPedidasControlador {
   public async EnviarCorreoHoraExtraMovil(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
 
     const path_folder = path.resolve('logos');
 
@@ -682,15 +737,16 @@ class HorasExtrasPedidasControlador {
                            <b>Cargo:</b> ${correoInfoPideHoraExtra.rows[0].tipo_cargo} <br>
                            <b>Departamento:</b> ${correoInfoPideHoraExtra.rows[0].departamento} <br>
                            <b>Generado mediante:</b> Aplicación Móvil <br>
-                           <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                           <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                           <b>Fecha de envío:</b> ${fecha} <br> 
+                           <b>Hora de envío:</b> ${hora} <br><br> 
                        </p>
                        <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                            <b>Motivo:</b> ${observacion} <br>   
                            <b>Fecha de Solicitud:</b> ${solicitud} <br> 
-                           <b>Desde:</b> ${desde} ${h_inicio} <br>
-                           <b>Hasta:</b> ${hasta} ${h_final} <br>
+                           <b>Desde:</b> ${desde} <br>
+                           <b>Hasta:</b> ${hasta} <br>
+                           <b>Horario:</b> ${h_inicio} a ${h_final} <br>
                            <b>Num. horas solicitadas:</b> ${num_horas} <br>
                            <b>Estado:</b> ${estado_h} <br><br>
                            <b>${tipo_solicitud}:</b> ${solicitado_por} <br><br>

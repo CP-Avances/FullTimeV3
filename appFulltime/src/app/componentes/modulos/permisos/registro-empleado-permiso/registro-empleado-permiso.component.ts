@@ -909,9 +909,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.ventana.close();
   }
 
-  /* ********************************************************************************** *
-     *                       SUBIR ARCHIVO DE SOLICITUD DE PERMISO                    *
-   * ********************************************************************************** */
+  /** ********************************************************************************** **
+   ** **                       SUBIR ARCHIVO DE SOLICITUD DE PERMISO                  ** **
+   ** ********************************************************************************** **/
 
   nameFile: string;
   archivoSubido: Array<File>;

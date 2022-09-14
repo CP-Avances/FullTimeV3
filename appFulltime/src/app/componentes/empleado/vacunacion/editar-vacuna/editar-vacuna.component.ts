@@ -1,8 +1,8 @@
 // IMPORTAR LIBRERIAS
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Inject } from '@angular/core';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
@@ -13,6 +13,7 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 // IMPORTAR COMPONENTES
 import { VerEmpleadoComponent } from '../../ver-empleado/ver-empleado.component';
 import { TipoVacunaComponent } from '../tipo-vacuna/tipo-vacuna.component';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-editar-vacuna',
@@ -28,19 +29,21 @@ import { TipoVacunaComponent } from '../tipo-vacuna/tipo-vacuna.component';
 
 export class EditarVacunaComponent implements OnInit {
 
-  // DATOS EXTRAIDOS DEL COMPONENTE IMPORTADO
-  @Input() idEmploy: string;
-  @Input() dvacuna: any;
+  idEmploy: string;
+  dvacuna: any;
 
   constructor(
     public restVacuna: VacunacionService, // SERVICIO DE DATOS DE VACUNACIÓN
-    public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS DE NAVEGACIÓN
     public validar: ValidacionesService, // VARIABLE USADA EN VALIDACIONES
-    public metodos: VerEmpleadoComponent, // VARIABLE USADA PARA LEER MÉTODO DE COMPONENTE IMPORTADO
     public toastr: ToastrService, // VARIABLE USADA EN NOTIFICACIONES
+    private ventana_: MatDialogRef<EditarVacunaComponent>,
+    public ventana: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public datos: any
   ) { }
 
   ngOnInit(): void {
+    this.idEmploy = this.datos.idEmpleado;
+    this.dvacuna = this.datos.vacuna;
     this.ObtenerTipoVacunas();
     this.tipoVacuna[this.tipoVacuna.length] = { nombre: "OTRO" };
     this.MostrarDatos();
@@ -112,8 +115,7 @@ export class EditarVacunaComponent implements OnInit {
 
   // MÉTODO PARA CERRAR VENTANA DE REGISTRO
   CerrarRegistro() {
-    this.metodos.mostrarVacunaEditar = false;
-    this.metodos.btnVacuna = 'Añadir';
+    this.ventana_.close();
   }
 
   // MÉTODO PARA LIMPIAR NOMBRE DEL ARCHIVO SELECCIONADO
@@ -157,7 +159,6 @@ export class EditarVacunaComponent implements OnInit {
       this.toastr.success('', 'Registro Vacunación guardado.', {
         timeOut: 6000,
       });
-      this.metodos.ObtenerDatosVacunas(this.metodos.formato_fecha);
       if (form.certificadoForm === '' || form.certificadoForm === null || form.certificadoForm === undefined) {
         this.CerrarRegistro();
       }
@@ -181,7 +182,6 @@ export class EditarVacunaComponent implements OnInit {
     if (this.archivoSubido[0].size <= 2e+6) {
       this.GuardarDatosCarnet(form);
       this.CargarDocumento();
-      this.metodos.ObtenerDatosVacunas(this.metodos.formato_fecha);
       this.CerrarRegistro();
     }
     else {

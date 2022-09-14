@@ -17,7 +17,7 @@ class EmpleadoHorariosRutas {
 
     configuracion(): void {
         // METODO DE BUSQUEDA DE HORARIOS DE UN USUARIO
-        this.router.get('/horarioCargo/:codigo', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ListarHorarioUsuario);
+        this.router.get('/horarioCodigo/:codigo', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ListarHorarioUsuario);
 
         this.router.get('/', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ListarEmpleadoHorarios);
         this.router.post('/', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.CrearEmpleadoHorarios);

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales }
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales,
+  FormatearFecha, FormatearHora, dia_completo }
   from '../../libs/settingsMail';
 import path from 'path';
 import { QueryResult } from 'pg';
@@ -212,6 +213,8 @@ class NotificacionTiempoRealControlador {
   public async EnviarCorreoComunicado(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
 
     const path_folder = path.resolve('logos');
 
@@ -246,8 +249,8 @@ class NotificacionTiempoRealControlador {
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
                   <b>Generado mediante:</b> Sistema Web <br>
-                  <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                  <b>Hora de envío:</b> ${tiempo.hora} <br><br>                  
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                  
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
@@ -323,6 +326,8 @@ class NotificacionTiempoRealControlador {
   public async EnviarCorreoComunicadoMovil(req: Request, res: Response) {
 
     var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
 
     const path_folder = path.resolve('logos');
 
@@ -357,8 +362,8 @@ class NotificacionTiempoRealControlador {
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
                   <b>Generado mediante:</b> Aplicación Móvil <br>
-                  <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                  <b>Hora de envío:</b> ${tiempo.hora} <br><br>                   
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                   
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">

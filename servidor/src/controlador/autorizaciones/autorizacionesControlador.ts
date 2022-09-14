@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { Credenciales, fechaHora } from '../../libs/settingsMail';
+import { Credenciales, fechaHora, FormatearFecha, FormatearHora, dia_completo } from '../../libs/settingsMail';
 import path from 'path';
 const nodemailer = require("nodemailer");
 
@@ -78,6 +78,8 @@ class AutorizacionesControlador {
     public async ActualizarEstadoPlanificacion(req: Request, res: Response): Promise<void> {
 
         var tiempo = fechaHora();
+        var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+        var hora = await FormatearHora(tiempo.hora);
 
         const path_folder = path.resolve('logos');
 

@@ -1,85 +1,82 @@
-<mat-card class="example-card mat-elevation-z8">
-    <div id="titulo">
-        <h5>MODIFICAR DATOS VACUNA</h5>
-    </div>
-    <!-- Formulario Completo -->
-    <form [formGroup]="vacunaForm">
-        <mat-card-content>
-            <div class="container" style="padding-top: 15px; text-align: center;">
-                <div class="nota">
-                    <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
-                        Guardar.</span>
+<div id="titulo">
+    <h5>MODIFICAR DATOS VACUNA</h5>
+</div>
+<!-- Formulario Completo -->
+<form [formGroup]="vacunaForm">
+    <mat-card-content>
+        <div class="container" style="text-align: center;">
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    Guardar.</span>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <mat-form-field>
+                        <mat-label>Descripción</mat-label>
+                        <input matInput placeholder="Primera dosis" [formControl]="nombreF" required>
+                        <mat-icon matSuffix matTooltipPosition="right" matTooltip="Ingresar una descripción.">
+                            help_outline
+                        </mat-icon>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Fecha de vacuna</mat-label>
+                        <input matInput [matDatepicker]="picker1" placeholder="dd/mm/aaaa" [formControl]="fechaF"
+                            required>
+                        <mat-datepicker-toggle matSuffix [for]="picker1" id="i-cursor" matTooltipPosition="right"
+                            matTooltip="Ingresar la fecha en la que recibio la primera dosis de la vacuna. Seleccionar fecha o escribir fecha con formato día/mes/año. Ejemplo: 12/04/1993">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker touchUi #picker1></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Vacuna</mat-label>
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Seleccionar tipo de vacuna.">
+                            help_outline
+                        </mat-icon>
+                        <mat-select [formControl]="vacunaF" required>
+                            <mat-option *ngFor="let tv of tipoVacuna" [value]="tv.id"
+                                (click)="AbrirVentana(vacunaForm.value)">
+                                {{tv.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <mat-form-field>
-                            <mat-label>Descripción</mat-label>
-                            <input matInput placeholder="Primera dosis" [formControl]="nombreF" required>
-                            <mat-icon matSuffix matTooltipPosition="right" matTooltip="Ingresar una descripción.">
-                                help_outline
-                            </mat-icon>
-                        </mat-form-field>
-                        <mat-form-field>
-                            <mat-label>Fecha de vacuna</mat-label>
-                            <input matInput [matDatepicker]="picker1" placeholder="dd/mm/aaaa" [formControl]="fechaF"
-                                required>
-                            <mat-datepicker-toggle matSuffix [for]="picker1" id="i-cursor" matTooltipPosition="right"
-                                matTooltip="Ingresar la fecha en la que recibio la primera dosis de la vacuna. Seleccionar fecha o escribir fecha con formato día/mes/año. Ejemplo: 12/04/1993">
-                            </mat-datepicker-toggle>
-                            <mat-datepicker touchUi #picker1></mat-datepicker>
-                        </mat-form-field>
-                        <mat-form-field>
-                            <mat-label>Vacuna</mat-label>
-                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                matTooltip="Seleccionar tipo de vacuna.">
-                                help_outline
-                            </mat-icon>
-                            <mat-select [formControl]="vacunaF" required>
-                                <mat-option *ngFor="let tv of tipoVacuna" [value]="tv.id"
-                                    (click)="AbrirVentana(vacunaForm.value)">
-                                    {{tv.nombre}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex flex-wrap justify-content-around">
-                            <div class="separar">
-                                <form method="post" enctype="multipart/form-data">
-                                    <input (change)="fileChange($event)" type="file" [formControl]="archivoF" id="file">
-                                    <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" matSuffix
-                                        matTooltipPosition="right"
-                                        matTooltip="Subir certificado o carnet de vacunación contra la COVID 19.">Subir
-                                        Carnet</label>
-                                </form>
-                            </div>
-                            <div class="separar">
-                                <input type="text" readonly id="nomDocumento" placeholder="Ningún archivo seleccionado."
-                                    class="form-control" style="width: 210px;" [formControl]="certificadoF">
-                            </div>
-                            <div class="separar" *ngIf="HabilitarBtn">
-                                <button class="btn btn-sm" type="submit" (click)="RetirarArchivo()">Quitar
-                                    Documento</button>
-                            </div>
+                <div class="col">
+                    <div class="d-flex flex-wrap justify-content-around">
+                        <div class="separar">
+                            <form method="post" enctype="multipart/form-data">
+                                <input (change)="fileChange($event)" type="file" [formControl]="archivoF" id="file">
+                                <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" matSuffix
+                                    matTooltipPosition="right"
+                                    matTooltip="Subir certificado o carnet de vacunación contra la COVID 19.">Subir
+                                    Carnet</label>
+                            </form>
+                        </div>
+                        <div class="separar">
+                            <input type="text" readonly id="nomDocumento" placeholder="Ningún archivo seleccionado."
+                                class="form-control" style="width: 210px;" [formControl]="certificadoF">
+                        </div>
+                        <div class="separar" *ngIf="HabilitarBtn">
+                            <button class="btn btn-sm" type="submit" (click)="RetirarArchivo()">Quitar
+                                Documento</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </mat-card-content>
-    </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn" (click)="GuardarDatosSistema(vacunaForm.value)"
-            [disabled]="!vacunaForm.valid">
-            <span class="material-icons alinear" matSuffix matTooltipPosition="right"
-                matTooltip="Guardar datos registrados.">save</span>
-        </button>
-        <button type="submit" class="btn" (click)="LimpiarCampos()">
-            <span class="material-icons alinear" matSuffix matTooltipPosition="right"
-                matTooltip="Borrar datos ingresados.">backspace</span>
-        </button>
-        <button type="submit" class="btn" (click)="CerrarRegistro()">
-            <span class="material-icons alinear" matSuffix matTooltipPosition="right"
-                matTooltip="Cerrar ventana de registro de vacunación.">close</span>
-        </button>
-    </div>
-</mat-card>
+        </div>
+    </mat-card-content>
+</form>
+<div style="text-align: center;">
+    <button type="submit" class="btn" (click)="GuardarDatosSistema(vacunaForm.value)" [disabled]="!vacunaForm.valid">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Guardar datos registrados.">save</span>
+    </button>
+    <button type="submit" class="btn" (click)="LimpiarCampos()">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Borrar datos ingresados.">backspace</span>
+    </button>
+    <button type="submit" class="btn" (click)="CerrarRegistro()">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Cerrar ventana de registro de vacunación.">close</span>
+    </button>
+</div>

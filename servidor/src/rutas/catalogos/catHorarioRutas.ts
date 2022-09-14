@@ -9,7 +9,7 @@ const multipartMiddleware = multipart({
 });
 
 const multipartMiddlewareD = multipart({
-    uploadDir: './docRespaldosHorarios',
+    uploadDir: './horarios',
 });
 
 class HorarioRutas {

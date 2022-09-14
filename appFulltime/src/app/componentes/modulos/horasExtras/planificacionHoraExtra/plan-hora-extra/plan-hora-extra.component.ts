@@ -68,11 +68,12 @@ export class PlanHoraExtraComponent implements OnInit {
     public aviso: RealTimeService,
     private restPE: PlanHoraExtraService,
     private toastr: ToastrService,
-    private restP: ParametrosService,
+    private parametro: ParametrosService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
+    console.log('data ', this.data)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
 
@@ -85,6 +86,32 @@ export class PlanHoraExtraComponent implements OnInit {
     });
 
     this.BuscarParametro();
+    this.BuscarFecha();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarFecha() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   // METODO DE VALIDACION DE INGRESO CORRECTO DE FECHAS
@@ -142,10 +169,11 @@ export class PlanHoraExtraComponent implements OnInit {
         let cuenta_correo = this.data.planifica.correo;
 
         // LECTURA DE DATOS DE LA PLANIFICACIÓN
-        let desde = moment.weekdays(moment(plan.fecha_desde).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fecha_desde).day()).slice(1);
-        let hasta = moment.weekdays(moment(plan.fecha_hasta).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fecha_hasta).day()).slice(1);
-        let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-        let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+        let desde = this.validar.FormatearFecha(plan.fecha_desde, this.formato_fecha, this.validar.dia_completo);
+        let hasta = this.validar.FormatearFecha(plan.fecha_hasta, this.formato_fecha, this.validar.dia_completo);
+
+        let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora)
+        let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
         // DATOS DE ASIGNACIÓN DE PLANIFICACIÓN A EMPLEADOS
         let planEmpleado = {
@@ -197,7 +225,7 @@ export class PlanHoraExtraComponent implements OnInit {
 
         if (response.message != 'error') {
           // ENVIAR NOTIFICACION DE PLANIFICACION HE
-          this.NotificarPlanificacion(plan, desde, hasta, h_inicio, h_fin, obj.id)
+          this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, obj.id)
 
           // CONTAR DATOS PROCESADOS
           cont = cont + 1;
@@ -235,7 +263,7 @@ export class PlanHoraExtraComponent implements OnInit {
     this.restPE.CrearPlanHoraExtraEmpleado(planEmpleado).subscribe(response => {
 
       if (response.message != 'error') {
-        this.NotificarPlanificacion(plan, desde, hasta, h_inicio, h_fin, this.data.planifica.id)
+        this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, this.data.planifica.id)
 
         this.EnviarCorreo(plan, cuenta_correo, usuarios, desde, hasta, h_inicio, h_fin);
 
@@ -287,14 +315,14 @@ export class PlanHoraExtraComponent implements OnInit {
   }
 
   // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
-  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
+  NotificarPlanificacion(desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.id_user_loggin,
       id_empl_recive: recibe,
       tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
       mensaje: 'Planificación de horas extras desde ' +
-        desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
+        desde + ' hasta ' +
+        hasta +
         ' horario de ' + h_inicio + ' a ' + h_fin,
     }
     this.restPE.EnviarNotiPlanificacion(mensaje).subscribe(res => {
@@ -315,8 +343,8 @@ export class PlanHoraExtraComponent implements OnInit {
       nombres: usuario,
       asunto: 'PLANIFICACION DE HORAS EXTRAS',
       inicio: h_inicio,
-      desde: desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       horas: moment(datos.horas_totales, 'HH:mm').format('HH:mm'),
       fin: h_fin,
     }
@@ -341,7 +369,7 @@ export class PlanHoraExtraComponent implements OnInit {
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
     let datos = [];
-    this.restP.ListarDetalleParametros(24).subscribe(
+    this.parametro.ListarDetalleParametros(24).subscribe(
       res => {
         datos = res;
         if (datos.length != 0) {

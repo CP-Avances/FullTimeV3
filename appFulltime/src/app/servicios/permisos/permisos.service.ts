@@ -36,8 +36,6 @@ export class PermisosService {
     return this.http.put(`${environment.url}/empleadoPermiso/${id}/estado`, datos);
   }
 
-
-
   ConsultarEmpleadoPermisos() {
     return this.http.get(`${environment.url}/empleadoPermiso`);
   }
@@ -52,10 +50,6 @@ export class PermisosService {
 
   ObtenerUnPermisoEditar(id: number) {
     return this.http.get(`${environment.url}/empleadoPermiso/permiso/editar/${id}`)
-  }
-
-  SubirArchivoRespaldo(formData, id: number) {
-    return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento`, formData)
   }
 
   BuscarNumPermiso(id: number) {
@@ -102,6 +96,11 @@ export class PermisosService {
   // METODO PARA ENVIAR NOTIFICACION DE PERMISOS
   EnviarCorreoWeb(datos: any) {
     return this.http.post<any>(`${environment.url}/empleadoPermiso/mail-noti`, datos);
+  }
+
+  // SUBIR RESPALDOS DE PERMISOS
+  SubirArchivoRespaldo(formData, id: number) {
+    return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento`, formData)
   }
 
 }

@@ -1,10 +1,9 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { DiscapacidadService } from 'src/app/servicios/discapacidad/discapacidad.service';
-
-import { VerEmpleadoComponent } from '../ver-empleado/ver-empleado.component';
 
 @Component({
   selector: 'app-discapacidad',
@@ -14,8 +13,8 @@ import { VerEmpleadoComponent } from '../ver-empleado/ver-empleado.component';
 
 export class DiscapacidadComponent implements OnInit {
 
-  @Input() idEmploy: string;
-  @Input() editar: string;
+  idEmploy: string;
+  editar: string;
 
   userDiscapacidad: any = [];
   tipoDiscapacidad: any = [];
@@ -40,10 +39,14 @@ export class DiscapacidadComponent implements OnInit {
   constructor(
     private rest: DiscapacidadService,
     private toastr: ToastrService,
-    private metodo: VerEmpleadoComponent
+    private ventana: MatDialogRef<DiscapacidadComponent>,
+    @Inject(MAT_DIALOG_DATA) public datos: any
   ) { }
 
   ngOnInit(): void {
+    this.editar = this.datos.metodo;
+    this.idEmploy = this.datos.idEmpleado;
+    console.log(this.datos)
     this.LimpiarCampos();
     this.EditarFormulario();
     this.ObtenerTiposDiscapacidad();
@@ -125,8 +128,8 @@ export class DiscapacidadComponent implements OnInit {
         timeOut: 6000,
       });
       this.LimpiarCampos();
-      this.metodo.ObtenerDiscapacidadEmpleado();
       this.texto = 'REGISTRAR';
+      this.cerrarRegistro();
     });
   }
 
@@ -140,7 +143,6 @@ export class DiscapacidadComponent implements OnInit {
       this.toastr.success('Operación Exitosa', 'Discapacidad Actualiza', {
         timeOut: 6000,
       });
-      this.metodo.ObtenerDiscapacidadEmpleado();
       this.cerrarRegistro();
     });
   }
@@ -231,7 +233,7 @@ export class DiscapacidadComponent implements OnInit {
   }
 
   cerrarRegistro() {
-    this.metodo.MostrarDis();
+    this.ventana.close();
   }
 
 

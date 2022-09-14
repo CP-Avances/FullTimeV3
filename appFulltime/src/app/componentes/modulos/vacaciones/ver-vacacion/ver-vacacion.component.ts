@@ -76,17 +76,15 @@ export class VerVacacionComponent implements OnInit {
   // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     var f = moment();
-    var fecha = f.format('YYYY-MM-DD')
+    this.fechaActual = f.format('YYYY-MM-DD');
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
       res => {
         this.formato_fecha = res[0].descripcion;
         this.BuscarDatos(this.formato_fecha);
-        this.fechaActual = this.validar.FormatearFecha(fecha, this.formato_fecha, this.validar.dia_completo);
       },
       vacio => {
         this.BuscarDatos(this.formato_fecha);
-        this.fechaActual = this.validar.FormatearFecha(fecha, this.formato_fecha, this.validar.dia_completo);
       });
   }
 
@@ -316,6 +314,7 @@ export class VerVacacionComponent implements OnInit {
   }
 
   SeleccionarMetodo() {
+    let fecha = this.validar.FormatearFecha(this.fechaActual, this.formato_fecha, this.validar.dia_completo);
     let fec_ingreso_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_ingreso.split('T')[0], this.formato_fecha, this.validar.dia_completo);
     let fec_inicio_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_inicio.split('T')[0], this.formato_fecha, this.validar.dia_completo);
     let fec_final_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_final.split('T')[0], this.formato_fecha, this.validar.dia_completo);
@@ -327,7 +326,7 @@ export class VerVacacionComponent implements OnInit {
           [{ text: 'INFORMACIÓN GENERAL', style: 'tableHeader' }],
           [{
             columns: [
-              { text: [{ text: 'FECHA: ' + this.fechaActual, style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA: ' + fecha, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
               { text: [{ text: 'CIUDAD: ' + this.datoSolicitud[0].nom_ciudad, style: 'itemsTableD' }] }
             ]

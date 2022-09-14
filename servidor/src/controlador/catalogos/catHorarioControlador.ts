@@ -202,7 +202,7 @@ class HorarioControlador {
 
   public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
     const docs = req.params.docs;
-    let filePath = `servidor\\docRespaldosHorarios\\${docs}`
+    let filePath = `servidor\\horarios\\${docs}`
     res.sendFile(__dirname.split("servidor")[0] + filePath);
   }
 

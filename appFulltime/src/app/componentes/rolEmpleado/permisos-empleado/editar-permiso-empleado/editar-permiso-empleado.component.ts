@@ -1043,6 +1043,15 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     if (permiso.estado === 1) {
       var estado_p = 'Pendiente de autorización';
     }
+    else if (permiso.estado === 2) {
+      var estado_p = 'Preautorizada';
+    }
+    else if (permiso.estado === 3) {
+      var estado_p = 'Autorizada';
+    }
+    else if (permiso.estado === 1) {
+      var estado_p = 'Negada';
+    }
 
     // LEYENDO DATOS DE TIPO DE PERMISO
     var tipo_permiso = '';

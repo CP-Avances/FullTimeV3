@@ -52,8 +52,8 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
   }
 
   /** **************************************************************************************** **
- ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
- ** **************************************************************************************** **/
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
 
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';

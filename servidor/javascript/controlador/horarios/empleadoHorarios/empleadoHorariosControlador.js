@@ -24,10 +24,10 @@ class EmpleadoHorariosControlador {
             const { codigo } = req.params;
             const HORARIOS = yield database_1.default.query(`
             SELECT eh.id, eh.id_empl_cargo, eh.id_hora, eh.fec_inicio, eh.fec_final,
-            eh.lunes, eh.martes, eh.miercoles, eh.jueves, eh.viernes, eh.sabado, eh.domingo, 
-            eh.id_horarios, eh.estado, eh.codigo, ch.nombre AS nom_horario
+                eh.lunes, eh.martes, eh.miercoles, eh.jueves, eh.viernes, eh.sabado, eh.domingo, 
+                eh.id_horarios, eh.estado, eh.codigo, ch.nombre AS nom_horario
             FROM empl_horarios AS eh, cg_horarios AS ch
-             WHERE eh.id_horarios = ch.id AND eh.codigo = $1
+            WHERE eh.id_horarios = ch.id AND eh.codigo = $1 ORDER BY eh.id DESC
             `, [codigo]);
             if (HORARIOS.rowCount > 0) {
                 return res.jsonp(HORARIOS.rows);

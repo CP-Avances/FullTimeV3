@@ -98,3 +98,50 @@ export const fechaHora = function () {
   }
   return tiempo;
 }
+
+export const dia_abreviado: string = 'ddd';
+export const dia_completo: string = 'dddd';
+
+export const FormatearFecha = async function (fecha: string, dia: string) {
+  let formato = await BuscarFecha();
+  let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
+    moment(fecha).format(dia).slice(1) +
+    ', ' + moment(fecha).format(formato.fecha);
+  return valor;
+}
+
+export const FormatearHora = async function (hora: string) {
+  let formato = await BuscarHora();
+  let valor = moment(hora, 'HH:mm:ss').format(formato.hora);
+  return valor;
+}
+
+export const BuscarFecha = async function () {
+  return {
+    fecha: await pool.query(
+      `SELECT descripcion FROM detalle_tipo_parametro WHERE id_tipo_parametro = 25`
+    ).then(result => {
+      if (result.rowCount != 0) {
+        return result.rows[0].descripcion;
+      }
+      else {
+        return 'DD/MM/YYYY';
+      }
+    })
+  }
+}
+
+export const BuscarHora = async function () {
+  return {
+    hora: await pool.query(
+      `SELECT descripcion FROM detalle_tipo_parametro WHERE id_tipo_parametro = 26`
+    ).then(result => {
+      if (result.rowCount != 0) {
+        return result.rows[0].descripcion;
+      }
+      else {
+        return 'HH:mm:ss';
+      }
+    })
+  }
+}

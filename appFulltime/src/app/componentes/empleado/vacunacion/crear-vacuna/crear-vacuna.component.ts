@@ -1,16 +1,14 @@
 // IMPORTAR LIBRERIAS
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 // IMPORTAR SERVICIOS
 import { VacunacionService } from 'src/app/servicios/empleado/empleadoVacunas/vacunacion.service';
 
-// IMPORTAR COMPONENTES
-import { VerEmpleadoComponent } from '../../ver-empleado/ver-empleado.component';
 import { TipoVacunaComponent } from '../tipo-vacuna/tipo-vacuna.component';
 
 @Component({
@@ -27,17 +25,18 @@ import { TipoVacunaComponent } from '../tipo-vacuna/tipo-vacuna.component';
 
 export class CrearVacunaComponent implements OnInit {
 
-  // VARIABLE TOMADA DESDE EL COMPONENTE VER IMPORTADO
-  @Input() idEmploy: string;
+  idEmploy: any;
 
   constructor(
     public restVacuna: VacunacionService, // CONSULTA DE SERVICIOS DATOS DE VACUNACIÓN
-    public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS DE NAVEGACIÓN
-    public metodos: VerEmpleadoComponent, // VARIABLE USADA PARA EXTRAER MÉTODOS DEL COMPONENTEE IMPORTADO
     public toastr: ToastrService, // VARIABLE USADA PARA MENSAJES DE NOTIFICACIONES
+    private ventana_: MatDialogRef<CrearVacunaComponent>,
+    public ventana: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public datos: any
   ) { }
 
   ngOnInit(): void {
+    this.idEmploy = this.datos.idEmpleado;
     this.ObtenerTipoVacunas();
     this.tipoVacuna[this.tipoVacuna.length] = { nombre: "OTRO" };
   }
@@ -99,7 +98,7 @@ export class CrearVacunaComponent implements OnInit {
 
   // MÉTODO PARA CERRAR VENTANA DE REGISTRO
   CerrarRegistro() {
-    this.metodos.MostrarVentanaVacuna();
+    this.ventana_.close();
   }
 
   // MÉTODO PARA LIMPIAR NOMBRE DEL ARCHIVO SELECCIONADO
@@ -150,7 +149,6 @@ export class CrearVacunaComponent implements OnInit {
       this.toastr.success('', 'Registro guardado.', {
         timeOut: 6000,
       });
-      this.metodos.ObtenerDatosVacunas(this.metodos.formato_fecha);
       if (form.certificadoForm === '' || form.certificadoForm === null || form.certificadoForm === undefined) {
         this.CerrarRegistro();
       }
@@ -183,7 +181,6 @@ export class CrearVacunaComponent implements OnInit {
         this.toastr.success('', 'Registro guardado.', {
           timeOut: 6000,
         });
-        this.metodos.ObtenerDatosVacunas(this.metodos.formato_fecha);
       });
     });
   }

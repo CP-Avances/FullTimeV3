@@ -3,6 +3,12 @@ import { TokenValidation } from '../../libs/verificarToken';
 import { Router } from 'express';
 import HorasExtrasPedidasControlador from '../../controlador/horaExtra/horaExtraControlador';
 
+const multipart = require('connect-multiparty');
+
+const multipartMiddleware = multipart({
+    uploadDir: './horasExtras',
+});
+
 class HorasExtrasPedidasRutas {
     public router: Router = Router();
 
@@ -37,11 +43,11 @@ class HorasExtrasPedidasRutas {
         // CREAR REGISTRO DE HORAS EXTRAS
         this.router.post('/', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.CrearHoraExtraPedida);
         // ELIMINAR REGISTRO DE HORAS EXTRAS
-        this.router.delete('/eliminar/:id_hora_extra', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.EliminarHoraExtra);
+        this.router.delete('/eliminar/:id_hora_extra/:documento', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.EliminarHoraExtra);
         // EDITAR REGISTRO DE HORA EXTRA
         this.router.put('/:id/solicitud', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.EditarHoraExtra);
         // BUSCAR LISTA DE HORAS EXTRAS DE UN USUARIO
-        this.router.get('/lista/:id_user', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ObtenerlistaHora);
+        this.router.get('/lista/:id_user', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ObtenerListaHora);
         // EDITAR TIEMPO AUTORIZADO DE SOLICITUD
         this.router.put('/tiempo-autorizado/:id_hora', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.TiempoAutorizado);
         // EDITAR ESTADO DE LA SOLIICTUD
@@ -50,6 +56,12 @@ class HorasExtrasPedidasRutas {
         this.router.put('/observacion/:id', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ActualizarObservacion);
         // BUSCAR DATOS DE UNA SOLICITUD DE HORA EXTRA POR SU ID
         this.router.get('/:id', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ObtenerUnaSolicitudHE);
+        // GUARDAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS
+        this.router.put('/:id/documento/:nombre', [TokenValidation, ModuloHoraExtraValidation, multipartMiddleware], HorasExtrasPedidasControlador.GuardarDocumentoHoras);
+        // BUSQUEDA DE RESPALDOS DE HORAS EXTRAS
+        this.router.get('/documentos/:docs', HorasExtrasPedidasControlador.ObtenerDocumento);
+        // ELIMINAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS
+        this.router.put('/eliminar-documento', [TokenValidation, ModuloHoraExtraValidation, multipartMiddleware], HorasExtrasPedidasControlador.EliminarDocumentoHoras);
 
 
         /** ************************************************************************************************** ** 
@@ -60,6 +72,8 @@ class HorasExtrasPedidasRutas {
         this.router.post('/mail-noti/', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.SendMailNotifiHoraExtra);
         // METODO DE ENVIO DE CORREO DESDE APLICACION WEB
         this.router.post('/mail-noti-horas-extras-movil/:id_empresa', HorasExtrasPedidasControlador.EnviarCorreoHoraExtraMovil);
+        // GUARDAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS MOVIL
+        this.router.put('/:id/documento-movil/:nombre', [multipartMiddleware], HorasExtrasPedidasControlador.GuardarDocumentoHoras);
 
     }
 }

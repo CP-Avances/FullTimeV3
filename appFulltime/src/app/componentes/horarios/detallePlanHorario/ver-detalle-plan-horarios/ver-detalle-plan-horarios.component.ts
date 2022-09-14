@@ -11,11 +11,11 @@ import { EditarDetallePlanComponent } from 'src/app/componentes/horarios/detalle
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { DetallePlanHorarioService } from 'src/app/servicios/horarios/detallePlanHorario/detalle-plan-horario.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { PlanHorarioService } from 'src/app/servicios/horarios/planHorario/plan-horario.service';
 import { PlanGeneralService } from 'src/app/servicios/planGeneral/plan-general.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
   selector: 'app-ver-detalle-plan-horarios',
@@ -130,7 +130,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
       });
   }
 
-  /** Función para eliminar registro seleccionado Planificación*/
+  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarDetalle(id_detalle: number, fecha, horario, codigo) {
     this.restDP.EliminarRegistro(id_detalle).subscribe(res => {
       this.toastr.error('Registro eliminado', '', {
@@ -158,7 +158,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
     })
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     console.log('detalle plan', datos);
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -173,7 +173,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
 
   empleado: any = [];
   usuario: string = '';
-  // Método para ver la información del empleado 
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
     this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
@@ -182,9 +182,9 @@ export class VerDetallePlanHorariosComponent implements OnInit {
     })
   }
 
-  /****************************************************************************************************** 
-* PLANTILLA CARGAR SOLO HORARIOS
-******************************************************************************************************/
+  /** ******************************************************************************************** ** 
+   ** **                                  PLANTILLA CARGAR SOLO HORARIOS                        ** **
+   ** ******************************************************************************************** **/
 
   fileChangePlantilla(element) {
     this.archivoSubido = element.target.files;
@@ -246,12 +246,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
                 this.ListarDetalles(this.idPlanH, this.formato_fecha);
                 this.archivo1Form.reset();
                 this.nameFile = '';
-                // window.location.reload();
               });
-              /*this.ListarDetalles(this.idPlanH);
-              this.archivo1Form.reset();
-              this.nameFile = '';
-              // window.location.reload();*/
             });
           }
         });

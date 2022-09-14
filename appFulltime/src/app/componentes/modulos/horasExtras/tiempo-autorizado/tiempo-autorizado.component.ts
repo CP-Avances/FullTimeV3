@@ -8,6 +8,8 @@ import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-tiempo-autorizado',
@@ -46,6 +48,8 @@ export class TiempoAutorizadoComponent implements OnInit {
     private toastr: ToastrService,
     private restA: AutorizacionService,
     public ventana: MatDialogRef<TiempoAutorizadoComponent>,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
@@ -55,6 +59,32 @@ export class TiempoAutorizadoComponent implements OnInit {
     console.log('data de la hora', this.data);
     this.obtenerInformacionEmpleado();
     this.MostrarProceso();
+    this.BuscarParametro();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
@@ -198,9 +228,9 @@ export class TiempoAutorizadoComponent implements OnInit {
     var correo_usuarios = '';
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
-    let solicitud = moment.weekdays(moment(horaExtra.fec_solicita).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_solicita).day()).slice(1);
-    let desde = moment.weekdays(moment(horaExtra.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(horaExtra.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_final).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(horaExtra.fec_solicita, this.formato_fecha, this.validar.dia_completo);
+    let desde = this.validar.FormatearFecha(horaExtra.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(horaExtra.fec_final, this.formato_fecha, this.validar.dia_completo);
 
     horaExtra.EmpleadosSendNotiEmail.forEach(e => {
 
@@ -222,11 +252,11 @@ export class TiempoAutorizadoComponent implements OnInit {
 
         let datosHoraExtraCreada = {
           tipo_solicitud: 'Solicitud de Hora Extra ' + estado_c.toLowerCase() + ' por',
-          solicitud: solicitud + ' ' + moment(horaExtra.fec_solicita).format('DD/MM/YYYY'),
-          desde: desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY'),
-          hasta: hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY'),
-          h_inicio: moment(horaExtra.fec_inicio).format('HH:mm'),
-          h_final: moment(horaExtra.fec_final).format('HH:mm'),
+          solicitud: solicitud,
+          desde: desde,
+          hasta: hasta,
+          h_inicio: this.validar.FormatearHora(horaExtra.fec_inicio, this.formato_hora),
+          h_final: this.validar.FormatearHora(horaExtra.fec_final, this.formato_hora),
           num_horas: moment(horaExtra.num_hora, 'HH:mm').format('HH:mm') +
             '<br> <b>Num. horas ' + estado_n + ':</b> ' + moment(valor, 'HH:mm').format('HH:mm') + ' <br>',
           observacion: horaExtra.descripcion,
@@ -272,18 +302,19 @@ export class TiempoAutorizadoComponent implements OnInit {
   EnviarNotificacion(horaExtra: any, estado_h: string, valor: any, estado_n: string) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
-    let desde = moment.weekdays(moment(horaExtra.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(horaExtra.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_final).day()).slice(1);
-    let h_inicio = moment(horaExtra.fec_inicio).format('HH:mm');
-    let h_final = moment(horaExtra.fec_final).format('HH:mm');
+    let desde = this.validar.FormatearFecha(horaExtra.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(horaExtra.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+    let h_inicio = this.validar.FormatearHora(horaExtra.fec_inicio, this.formato_hora)
+    let h_final = this.validar.FormatearHora(horaExtra.fec_final, this.formato_hora);
 
     let mensaje = {
       id_empl_envia: this.idEmpleado,
       id_empl_recive: '',
       mensaje: 'Ha ' + estado_h.toLowerCase() + ' la solicitud de horas extras para ' +
         this.solInfo.fullname + ' desde ' +
-        desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
+        desde + ' hasta ' +
+        hasta +
         ' horario de ' + h_inicio + ' a ' + h_final +
         ' estado ' + estado_n + ' horas ' + moment(valor, 'HH:mm').format('HH:mm'),
       tipo: 12,  // APROBACIONES DE SOLICITUD DE HORAS EXTRAS
@@ -335,17 +366,17 @@ export class TiempoAutorizadoComponent implements OnInit {
     }
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
-    let solicitud = moment.weekdays(moment(horaExtra.fec_solicita).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_solicita).day()).slice(1);
-    let desde = moment.weekdays(moment(horaExtra.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(horaExtra.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_final).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(horaExtra.fec_solicita, this.formato_fecha, this.validar.dia_completo);
+    let desde = this.validar.FormatearFecha(horaExtra.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(horaExtra.fec_final, this.formato_fecha, this.validar.dia_completo);
 
     let datosHoraExtraCreada = {
       tipo_solicitud: 'Solicitud de Justificación de Hora Extra por',
-      solicitud: solicitud + ' ' + moment(horaExtra.fec_solicita).format('DD/MM/YYYY'),
-      desde: desde + ' ' + moment(horaExtra.fec_inicio).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY'),
-      h_inicio: moment(horaExtra.fec_inicio).format('HH:mm'),
-      h_final: moment(horaExtra.fec_final).format('HH:mm'),
+      solicitud: solicitud,
+      desde: desde,
+      hasta: hasta,
+      h_inicio: this.validar.FormatearHora(horaExtra.fec_inicio, this.formato_hora),
+      h_final: this.validar.FormatearHora(horaExtra.fec_final, this.formato_hora),
       num_horas: moment(horaExtra.num_hora, 'HH:mm').format('HH:mm'),
       observacion: horaExtra.descripcion,
       estado_h: estado_h + '<br><br> <b>Mensaje:</b> ' + mensaje,
@@ -385,10 +416,11 @@ export class TiempoAutorizadoComponent implements OnInit {
   NotificarJustificacion(horaExtra: any, valor: string) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
-    let desde = moment.weekdays(moment(horaExtra.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(horaExtra.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(horaExtra.fec_final).day()).slice(1);
-    let h_inicio = moment(horaExtra.fec_inicio).format('HH:mm');
-    let h_final = moment(horaExtra.fec_final).format('HH:mm');
+    let desde = this.validar.FormatearFecha(horaExtra.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(horaExtra.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+    let h_inicio = this.validar.FormatearHora(horaExtra.fec_inicio, this.formato_hora)
+    let h_final = this.validar.FormatearHora(horaExtra.fec_final, this.formato_hora);
 
     let mensaje = {
       id_empl_envia: this.idEmpleado,
@@ -399,7 +431,7 @@ export class TiempoAutorizadoComponent implements OnInit {
         hasta + ' ' + moment(horaExtra.fec_final).format('DD/MM/YYYY') +
         ' horario de ' + h_inicio + ' a ' + h_final +
         ' horas ' + moment(valor, 'HH:mm').format('HH:mm'),
-      tipo: 11,  // JUSTIFICACION DE SOLIICTUD DE HORAS EXTRAS
+      tipo: 11,  // JUSTIFICACION DE SOLICITUD DE HORAS EXTRAS
     }
     this.realTime.EnviarMensajeGeneral(mensaje).subscribe(res => {
       this.realTime.RecibirNuevosAvisos(res.respuesta);

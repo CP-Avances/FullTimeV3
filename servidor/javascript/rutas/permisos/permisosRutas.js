@@ -9,7 +9,7 @@ const express_1 = require("express");
 const permisosControlador_1 = __importDefault(require("../../controlador/permisos/permisosControlador"));
 const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart({
-    uploadDir: './docRespaldosPermisos',
+    uploadDir: './permisos',
 });
 class PermisosRutas {
     constructor() {
@@ -22,7 +22,6 @@ class PermisosRutas {
         this.router.get('/lista-autorizados/', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ListarPermisosAutorizados);
         this.router.get('/:id', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerUnPermiso);
         this.router.get('/permiso/editar/:id', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerPermisoEditar);
-        this.router.get('/documentos/:docs', permisosControlador_1.default.getDoc);
         this.router.get('/numPermiso/:id_empleado', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerNumPermiso);
         this.router.get('/permisoContrato/:id_empl_contrato', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerPermisoContrato);
         this.router.get('/datosSolicitud/:id_emple_permiso', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerDatosSolicitud);
@@ -46,6 +45,8 @@ class PermisosRutas {
         this.router.get('/un-permiso/:id_permiso', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ListarUnPermisoInfo);
         // BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
         this.router.get('/permiso-usuario/:id_empleado', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.ObtenerPermisoEmpleado);
+        // BUSQUEDA DE RESPALDOS D EPERMISOS
+        this.router.get('/documentos/:docs', permisosControlador_1.default.getDoc);
         /** ************************************************************************************************* **
          ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** **
          ** ************************************************************************************************* **/
@@ -53,6 +54,8 @@ class PermisosRutas {
         this.router.post('/mail-noti/', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.EnviarCorreoWeb);
         // ENVIAR CORREO MEDIANTE APLICACION MOVIL
         this.router.post('/mail-noti-permiso-movil/:id_empresa', permisosControlador_1.default.EnviarCorreoPermisoMovil);
+        // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO APLICACION MOVIL
+        this.router.put('/:id/documento-movil', [multipartMiddleware], permisosControlador_1.default.GuardarDocumentoPermiso);
     }
 }
 const PERMISOS_RUTAS = new PermisosRutas();
