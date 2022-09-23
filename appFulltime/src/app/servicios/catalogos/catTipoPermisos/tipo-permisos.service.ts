@@ -22,7 +22,7 @@ export class TipoPermisosService {
     return this.http.get(`${environment.url}/tipoPermisos/acceso/${access}`);
   }
 
-  getOneTipoPermisoRest(id: number) {
+  BuscarUnTipoPermiso(id: number) {
     return this.http.get(`${environment.url}/tipoPermisos/${id}`);
   }
 

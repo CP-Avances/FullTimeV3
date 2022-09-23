@@ -38,7 +38,7 @@ class PermisosRutas {
         // CREAR PERMISO
         this.router.post('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.CrearPermisos);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO
-        this.router.put('/:id/documento', [TokenValidation, ModuloPermisosValidation, multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
+        this.router.put('/:id/documento/:documento', [TokenValidation, ModuloPermisosValidation, multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
         // ACTUALIZAR PERMISO
         this.router.put('/:id/permiso-solicitado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EditarPermiso);
         // ELIMINAR PERMISO
@@ -64,7 +64,7 @@ class PermisosRutas {
         // ENVIAR CORREO MEDIANTE APLICACION MOVIL
         this.router.post('/mail-noti-permiso-movil/:id_empresa', PERMISOS_CONTROLADOR.EnviarCorreoPermisoMovil);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO APLICACION MOVIL
-        this.router.put('/:id/documento-movil', [multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
+        this.router.put('/:id/documento-movil/:documento', [multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
     }
 }
 

@@ -14,15 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VACUNAS_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../../database"));
+const fs_1 = __importDefault(require("fs"));
 class VacunasControlador {
     // CREAR REGISTRO DE VACUNACIÓN
     CrearRegistro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet } = req.body;
+            const { id_empleado, descripcion, fecha, id_tipo_vacuna } = req.body;
             const response = yield database_1.default.query(`
-            INSERT INTO empl_vacunas (id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet) 
-            VALUES ($1, $2, $3, $4, $5) RETURNING *
-            `, [id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet]);
+            INSERT INTO empl_vacunas (id_empleado, descripcion, fecha, id_tipo_vacuna) 
+            VALUES ($1, $2, $3, $4) RETURNING *
+            `, [id_empleado, descripcion, fecha, id_tipo_vacuna]);
             const [vacuna] = response.rows;
             if (vacuna) {
                 return res.status(200).jsonp(vacuna);
@@ -37,8 +38,11 @@ class VacunasControlador {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
             let documento = list.uploads[0].path.split("\\")[1];
+            let { nombre } = req.params;
             let id = req.params.id;
-            yield database_1.default.query('UPDATE empl_vacunas SET carnet = $2 WHERE id = $1', [id, documento]);
+            yield database_1.default.query(`
+            UPDATE empl_vacunas SET carnet = $2, nom_carnet = $3 WHERE id = $1
+            `, [id, documento, nombre]);
             res.jsonp({ message: 'Registro guardado.' });
         });
     }
@@ -83,22 +87,54 @@ class VacunasControlador {
     ActualizarRegistro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const { id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet } = req.body;
+            const { id_empleado, descripcion, fecha, id_tipo_vacuna } = req.body;
             yield database_1.default.query(`
             UPDATE empl_vacunas SET id_empleado = $1, descripcion = $2, fecha = $3, 
-            id_tipo_vacuna = $4, nom_carnet = $5 WHERE id = $6
-            `, [id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet, id]);
+            id_tipo_vacuna = $4 WHERE id = $5
+            `, [id_empleado, descripcion, fecha, id_tipo_vacuna, id]);
             res.jsonp({ message: 'Registro actualizado.' });
         });
     }
     // ELIMINAR REGISTRO DE VACUNACIÓN
     EliminarRegistro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
+            const { id, documento } = req.params;
             yield database_1.default.query(`
             DELETE FROM empl_vacunas WHERE id = $1
             `, [id]);
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\carnetVacuna\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
             res.jsonp({ message: 'Registro eliminado.' });
+        });
+    }
+    // ELIMINAR DOCUMENTO CARNET DE VACUNACION
+    EliminarDocumento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento, id } = req.body;
+            yield database_1.default.query(`
+            UPDATE empl_vacunas SET carnet = null, nom_carnet = null WHERE id = $1
+            `, [id]);
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\carnetVacuna\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'Documento Actualizado' });
+        });
+    }
+    // ELIMINAR DOCUMENTO CARNET DE VACUNACION DEL SERVIDOR
+    EliminarDocumentoServidor(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento } = req.body;
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\carnetVacuna\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'Documento Actualizado' });
         });
     }
     // OBTENER CERTIFICADO DE VACUNACIÓN

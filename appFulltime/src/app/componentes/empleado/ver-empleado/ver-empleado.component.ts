@@ -73,6 +73,7 @@ import { EditarEmpleadoComponent } from '../datos-empleado/editar-empleado/edita
 import { FraseSeguridadComponent } from '../../administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
 import { TituloEmpleadoComponent } from '../titulos/titulo-empleado/titulo-empleado.component';
 import { EditarContratoComponent } from '../contrato/editar-contrato/editar-contrato.component';
+import { PlanHoraExtraComponent } from '../../modulos/horasExtras/planificacionHoraExtra/plan-hora-extra/plan-hora-extra.component';
 import { DiscapacidadComponent } from '../discapacidad/discapacidad.component';
 import { EditarTituloComponent } from '../titulos/editar-titulo/editar-titulo.component';
 import { CambiarFraseComponent } from '../../administracionGeneral/frase-seguridad/cambiar-frase/cambiar-frase.component';
@@ -81,7 +82,6 @@ import { EmplLeafletComponent } from '../../modulos/geolocalizacion/empl-leaflet
 import { CrearVacunaComponent } from '../vacunacion/crear-vacuna/crear-vacuna.component';
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
-import { PlanHoraExtraComponent } from '../../modulos/horasExtras/planificacionHoraExtra/plan-hora-extra/plan-hora-extra.component';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -148,14 +148,14 @@ export class VerEmpleadoComponent implements OnInit {
     public router: Router, // VARIABLE NAVEGACIÓN DE RUTAS URL
     public restU: UsuarioService, // SERVICIO DATOS USUARIO
     public aviso: RealTimeService,
+    private restF: FuncionesService, // SERVICIO DATOS FUNCIONES DEL SISTEMA
+    private toastr: ToastrService, // VARIABLE MANEJO DE MENSAJES DE NOTIFICACIONES
     private restHE: PedHoraExtraService, // SERVICIO DATOS PEDIDO HORA EXTRA
     private informacion: DatosGeneralesService,
     private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
-    private activatedRoute: ActivatedRoute,
     private scriptService: ScriptService, // SERVICIO DATOS EMPLEADO - REPORTE
+    private activatedRoute: ActivatedRoute,
     private restPlanGeneral: PlanGeneralService, // SERVICIO DATOS DE PLANIFICACIÓN
-    private toastr: ToastrService, // VARIABLE MANEJO DE MENSAJES DE NOTIFICACIONES
-    private restF: FuncionesService, // SERVICIO DATOS FUNCIONES DEL SISTEMA
 
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
@@ -209,7 +209,7 @@ export class VerEmpleadoComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESION
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoLogueado = data;
     })
   }
@@ -281,7 +281,7 @@ export class VerEmpleadoComponent implements OnInit {
   textoBoton: string = 'Subir foto';
   VerEmpleado(formato_fecha: string) {
     this.empleadoUno = [];
-    this.restEmpleado.getOneEmpleadoRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleadoUno = data;
       this.empleadoUno[0].fec_nacimiento_ = this.validar.FormatearFecha(this.empleadoUno[0].fec_nacimiento, formato_fecha, this.validar.dia_abreviado);
       var empleado = data[0]['nombre'] + data[0]['apellido'];
@@ -528,7 +528,7 @@ export class VerEmpleadoComponent implements OnInit {
       this.datosVacuna = data;
 
       this.datosVacuna.forEach(data => {
-        data.fecha_ = this.validar.FormatearFecha(data.fecha, formato_fecha, this.validar.dia_abreviado);
+        data.fecha_ = this.validar.FormatearFecha(data.fecha, formato_fecha, this.validar.dia_completo);
       })
     });
   }
@@ -536,7 +536,7 @@ export class VerEmpleadoComponent implements OnInit {
   // EDITAR REGISTRO DE VACUNA
   AbrirVentanaEditar(datos: any) {
     this.ventana.open(EditarVacunaComponent, {
-      data: { idEmpleado: this.idEmpleado, vacuna: datos }, width: '360px'
+      data: { idEmpleado: this.idEmpleado, vacuna: datos }, width: '600px'
     })
       .afterClosed().subscribe(result => {
         this.ObtenerDatosVacunas(this.formato_fecha);
@@ -546,7 +546,7 @@ export class VerEmpleadoComponent implements OnInit {
   // LÓGICA DE BOTÓN PARA MOSTRAR COMPONENTE DEL REGISTRO DE VACUNACION 
   MostrarVentanaVacuna() {
     this.ventana.open(CrearVacunaComponent, {
-      data: { idEmpleado: this.idEmpleado }, width: '360px'
+      data: { idEmpleado: this.idEmpleado }, width: '600px'
     })
       .afterClosed().subscribe(result => {
         this.ObtenerDatosVacunas(this.formato_fecha);
@@ -554,8 +554,8 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // ELIMINAR REGISTRO DE VACUNA
-  EliminarVacuna(id: number) {
-    this.restVacuna.EliminarRegistroVacuna(id).subscribe(res => {
+  EliminarVacuna(datos: any) {
+    this.restVacuna.EliminarRegistroVacuna(datos.id, datos.carnet).subscribe(res => {
       this.ObtenerDatosVacunas(this.formato_fecha);
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
@@ -564,11 +564,11 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
-  ConfirmarEliminarVacuna(id: number) {
+  ConfirmarEliminarVacuna(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
-          this.EliminarVacuna(id);
+          this.EliminarVacuna(datos);
         } else {
           this.router.navigate(['/verEmpleado/', this.idEmpleado]);
         }
@@ -589,6 +589,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // MÉTODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
   ObtenerContratoEmpleado(id_contrato: number, formato_fecha: string) {
+    this.contratoEmpleado = [];
     this.restEmpleado.BuscarDatosContrato(id_contrato).subscribe(res => {
       this.contratoEmpleado = res;
       this.contratoEmpleado.forEach(data => {
@@ -602,7 +603,7 @@ export class VerEmpleadoComponent implements OnInit {
   contratoBuscado: any = [];
   ObtenerContratosEmpleado(formato_fecha: string) {
     this.contratoBuscado = [];
-    this.restEmpleado.BuscarContratoEmpleadoRegimen(parseInt(this.idEmpleado)).subscribe(res => {
+    this.restEmpleado.BuscarContratosEmpleado(parseInt(this.idEmpleado)).subscribe(res => {
       this.contratoBuscado = res;
       this.contratoBuscado.forEach(data => {
         data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
@@ -650,12 +651,9 @@ export class VerEmpleadoComponent implements OnInit {
 
   // METODO DE EDICION DE CONTRATOS
   AbrirVentanaEditarContrato(dataContrato) {
-    this.ventana.open(EditarContratoComponent, { data: dataContrato, width: '600px' })
+    this.ventana.open(EditarContratoComponent, { data: dataContrato, width: '900px' })
       .afterClosed().subscribe(result => {
-        if (result) {
-          console.log(result);
-          this.ObtenerContratoEmpleado(this.datoActual.id_contrato, this.formato_fecha)
-        }
+        this.ObtenerContratoEmpleado(this.datoActual.id_contrato, this.formato_fecha)
       })
   }
 

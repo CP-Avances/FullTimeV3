@@ -118,4 +118,9 @@ export class PedHoraExtraService {
     return this.http.put(`${environment.url}/horas-extras-pedidas/eliminar-documento`, datos)
   }
 
+  // ELIMINAR RESPALDOS DE HORAS EXTRAS DEL SERVIDOR
+  EliminarArchivoServidor(documento: string) {
+    return this.http.delete(`${environment.url}/horas-extras-pedidas/eliminar-documento-web/${documento}`,)
+  }
+
 }

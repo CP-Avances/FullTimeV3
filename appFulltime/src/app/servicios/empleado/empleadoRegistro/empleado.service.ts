@@ -14,7 +14,24 @@ export class EmpleadoService {
     })
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient
+  ) { }
+
+  // BUSCAR UN REGISTRO DE USUARIO
+  BuscarUnEmpleado(id: number) {
+    return this.http.get<any>(`${environment.url}/empleado/${id}`);
+  }
+
+  // BUSCAR LISTA DE EMPLEADOS
+  BuscarListaEmpleados() {
+    return this.http.get<any>(`${environment.url}/empleado/buscador/empleado`);
+  }
+
+
+
+
+
 
   // Empleados  
   getEmpleadosRest() {
@@ -26,13 +43,9 @@ export class EmpleadoService {
     return this.http.post(`${environment.url}/empleado/buscar/informacion`, data);
   }
 
-  getBuscadorEmpledosRest() {
-    return this.http.get<any>(`${environment.url}/empleado/buscador-empl`);
-  }
 
-  getOneEmpleadoRest(id: number) {
-    return this.http.get<any>(`${environment.url}/empleado/${id}`);
-  }
+
+
 
   postEmpleadoRest(data: any) {
     return this.http.post(`${environment.url}/empleado`, data).pipe(
@@ -87,18 +100,49 @@ export class EmpleadoService {
     return this.http.delete(`${environment.url}/empleado/eliminar/titulo/${id}`);
   }
 
-  // Servicio para insertar contrato del empleado
+
+  /** ***************************************************************************************** ** 
+   ** **                        MANEJO DE DATOS DE CONTRATOS                                 ** ** 
+   ** ***************************************************************************************** **/
+
+  // REGISTRO DE DATOS DE CONTRATO
   CrearContratoEmpleado(datos: any) {
-    return this.http.post(`${environment.url}/contratoEmpleado`, datos);
+    return this.http.post<any>(`${environment.url}/contratoEmpleado`, datos);
   }
 
+  // CARGAR DOCUMENTO CONTRATO
+  SubirContrato(formData: any, id: number, nombre: string) {
+    return this.http.put(`${environment.url}/contratoEmpleado/${id}/documento/${nombre}`, formData)
+  }
+
+  // BUSCAR CONTRATOS POR ID DE EMPLEADO
+  BuscarContratosEmpleado(id: number) {
+    return this.http.get<any>(`${environment.url}/contratoEmpleado/contrato-empleado/${id}`);
+  }
+
+  // EDITAR DATOS DE CONTRATO
+  ActualizarContratoEmpleado(id: number, data: any) {
+    return this.http.put(`${environment.url}/contratoEmpleado/${id}/actualizar/`, data);
+  }
+
+  // ELIMINAR DOCUMENTO DE CONTRATO
+  EliminarArchivo(datos: any) {
+    return this.http.put(`${environment.url}/contratoEmpleado/eliminar_contrato/base_servidor`, datos)
+  }
+
+  // ELIMINAR DOCUMENTO DE CONTRATO DEL SERVIDOR
+  EliminarArchivoServidor(datos: any) {
+    return this.http.put(`${environment.url}/contratoEmpleado/eliminar_contrato/servidor`, datos)
+  }
+
+  // VISUALIZAR DOCUMENTO CONTRATO
   ObtenerUnContrato(id: number) {
     return this.http.get(`${environment.url}/contratoEmpleado/${id}/get`);
   }
 
-  ActualizarContratoEmpleado(id: number, id_empleado: number, data: any) {
-    return this.http.put(`${environment.url}/contratoEmpleado/${id_empleado}/${id}/actualizar/`, data);
-  }
+
+  
+
 
   BuscarIDContrato(id: number) {
     return this.http.get(`${environment.url}/contratoEmpleado/${id}`);
@@ -112,13 +156,9 @@ export class EmpleadoService {
     return this.http.get<any>(`${environment.url}/contratoEmpleado/contrato/${id}`);
   }
 
-  BuscarContratoEmpleadoRegimen(id: number) {
-    return this.http.get<any>(`${environment.url}/contratoEmpleado/contratoRegimen/${id}`);
-  }
 
-  SubirContrato(formData, id: number) {
-    return this.http.put(`${environment.url}/contratoEmpleado/${id}/documento`, formData)
-  }
+
+
 
   EditarDocumento(id: number, data: any) {
     return this.http.put(`${environment.url}/contratoEmpleado/editar/editarDocumento/${id}`, data);
@@ -136,18 +176,30 @@ export class EmpleadoService {
     return this.http.get<any>(`${environment.url}/contratoEmpleado`);
   }
 
-  /** SERVICIOS PARA SER USADOS PARA REGISTRAR MODALIDAD DE TRABAJO O TIPO DE CONTRATOS */
+  /** **************************************************************************************** **
+   ** **  SERVICIOS PARA SER USADOS PARA REGISTRAR MODALIDAD DE TRABAJO O TIPO DE CONTRATOS ** **
+   ** **************************************************************************************** **/
+
+  // REGISTRAR MODALIDAD DE TRABAJO
   CrearTiposContrato(datos: any) {
-    return this.http.post(`${environment.url}/contratoEmpleado/modalidad/trabajo`, datos);
+    return this.http.post<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo`, datos);
   }
 
+  // BUSCAR LISTA MODALIDAD DE TRABAJO
   BuscarTiposContratos() {
     return this.http.get<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo`);
   }
 
+
+
+
+
   BuscarUltimoTiposContratos() {
     return this.http.get<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo/ultimo`);
   }
+
+
+
 
   // GUARDAR CÓDIGO
 
@@ -209,6 +261,9 @@ export class EmpleadoService {
   ListaEmpleadosDesactivados() {
     return this.http.get<any>(`${environment.url}/empleado/desactivados/empleados`);
   }
+
+
+
 
   /** *********************************************************************** **
    ** **         CONTROL DE GEOLOCALIZACIÓN EN EL SISTEMA                     **

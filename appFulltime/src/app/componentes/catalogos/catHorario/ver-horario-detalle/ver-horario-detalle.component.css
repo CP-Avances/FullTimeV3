@@ -10,5 +10,12 @@ hr { background-color: black; }
 
 #editarF { color:green; cursor: pointer; text-align: center; margin-left: 15px; }
 
-#datosF { font-weight: bold; font-size: 16px; padding-right: 5px; }
+.espacio {
+    padding: 0px 10px 0px 10px;
+}
 
+#datosF {
+    font-weight: bold;
+    font-size: 15px;
+    padding-right: 5px;
+}

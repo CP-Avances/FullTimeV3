@@ -13,12 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
-const builder = require('xmlbuilder');
 const database_1 = __importDefault(require("../../database"));
+const builder = require('xmlbuilder');
 class RegimenControlador {
+    // METODO PARA BUSCAR LISTA DE REGIMEN
     ListarRegimen(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const REGIMEN = yield database_1.default.query('SELECT * FROM cg_regimenes ORDER BY descripcion ASC');
+            const REGIMEN = yield database_1.default.query(`
+            SELECT * FROM cg_regimenes ORDER BY descripcion ASC
+            `);
             if (REGIMEN.rowCount > 0) {
                 return res.jsonp(REGIMEN.rows);
             }

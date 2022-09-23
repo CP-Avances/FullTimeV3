@@ -99,8 +99,8 @@ export class PermisosService {
   }
 
   // SUBIR RESPALDOS DE PERMISOS
-  SubirArchivoRespaldo(formData, id: number) {
-    return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento`, formData)
+  SubirArchivoRespaldo(formData, id: number, documento: string) {
+    return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento/${documento}`, formData)
   }
 
 }

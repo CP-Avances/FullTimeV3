@@ -63,6 +63,23 @@ export class HomeComponent implements OnInit {
 
     this.ModeloGraficas();
     this.BuscarParametro();
+
+
+
+    const date = new Date();
+    const hora = date.getHours();
+    const minutos = date.getMinutes();
+    const fecha = date.toJSON().slice(4).split("T")[0];
+    console.log('datos h ', hora, ' minutos .. ', minutos, ' date ', date, ' fecha .. ', fecha)
+
+    var f = moment();
+
+
+    //console.log('horas .. ', hora, '    fecha .. ', fecha)
+
+    console.log('horas .. ', f.format('HH'), '    fecha .. ', f.format('MM-DD'))
+
+
   }
 
 

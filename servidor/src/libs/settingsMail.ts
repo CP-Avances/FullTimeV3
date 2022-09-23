@@ -86,6 +86,32 @@ export const enviarMail = function (servidor: any, puerto: number) {
   return transporter;
 }
 
+export const enviarCorreos = function (servidor: any, puerto: number, email: string, pass: string) {
+  var seguridad: boolean = false;
+  if (puerto === 465) {
+    seguridad = true;
+  } else {
+    seguridad = false;
+  }
+
+  const transporter = nodemailer.createTransport({
+    pool: true,
+    //maxConnections: 2,
+    maxMessages: Infinity,
+    //rateLimit: 14, // 14 emails/second max
+    //rateDelta: 1000,
+    host: servidor,
+    port: puerto,
+    secure: seguridad,
+    auth: {
+      user: email,
+      pass: pass
+    },
+  });
+
+  return transporter;
+}
+
 export const fechaHora = function () {
   var f = moment();
   var dia = moment.weekdays(moment(f.format('YYYY-MM-DD')).day()).charAt(0).toUpperCase()

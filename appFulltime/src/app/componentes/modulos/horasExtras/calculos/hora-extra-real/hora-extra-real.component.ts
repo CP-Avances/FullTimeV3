@@ -100,7 +100,7 @@ export class HoraExtraRealComponent implements OnInit {
   // metodo para ver la informacion del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleadoD = [];
-    this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoD = data;
     })
   }
@@ -582,7 +582,7 @@ export class HoraExtraRealComponent implements OnInit {
     this.empleadoTimbre = [];
     this.restH.ObtenerTimbres(emple_id).subscribe(data => {
       this.timbresEntradaSalida = data;
-      this.rest.getOneEmpleadoRest(emple_id).subscribe(data => {
+      this.rest.BuscarUnEmpleado(emple_id).subscribe(data => {
         this.empleadoTimbre = data;
       })
     })

@@ -20,7 +20,7 @@ class VacunaRutas {
         // METODO REGISTRO DE VACUNACIÓN
         this.router.post('/', verificarToken_1.TokenValidation, vacunasControlador_1.default.CrearRegistro);
         // METODO PARA GUARDAR DOCUMENTO 
-        this.router.put('/:id/documento', [verificarToken_1.TokenValidation, multipartMiddleware], vacunasControlador_1.default.GuardarDocumento);
+        this.router.put('/:id/documento/:nombre', [verificarToken_1.TokenValidation, multipartMiddleware], vacunasControlador_1.default.GuardarDocumento);
         // METODO PARA LISTAR REGISTROS DE UN USUARIO
         this.router.get('/:id_empleado', verificarToken_1.TokenValidation, vacunasControlador_1.default.ListarUnRegistro);
         // METODO PARA LEER TODOS LOS REGISTROS DE VACUNACION
@@ -30,7 +30,11 @@ class VacunaRutas {
         // METODO ACTUALIZACION DE REGISTROS DE VACUNACION
         this.router.put('/:id', verificarToken_1.TokenValidation, vacunasControlador_1.default.ActualizarRegistro);
         // METODO DE ELIMINACION D EREGISTRO DE VACUNA
-        this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, vacunasControlador_1.default.EliminarRegistro);
+        this.router.delete('/eliminar/:id/:documento', verificarToken_1.TokenValidation, vacunasControlador_1.default.EliminarRegistro);
+        // ELIMINAR DOCUMENTO DE VACUNAS
+        this.router.put('/eliminar_carnet/base_servidor', [verificarToken_1.TokenValidation], vacunasControlador_1.default.EliminarDocumento);
+        // ELIMINAR DOCUMENTO DE VACUNAS DEL SERVIDOR
+        this.router.put('/eliminar_carnet/servidor', [verificarToken_1.TokenValidation], vacunasControlador_1.default.EliminarDocumentoServidor);
         // METODO REGISTRO DE TIPO DE VACUNA
         this.router.post('/tipo_vacuna', verificarToken_1.TokenValidation, vacunasControlador_1.default.CrearTipoVacuna);
         // METODO DE BUSQUEDA DE TIPOS DE VACUNA REGISTRADOS

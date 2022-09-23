@@ -1,68 +1,74 @@
-import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialogRef } from '@angular/material/dialog';
+
+import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
 
 @Component({
   selector: 'app-registrar-birthday',
   templateUrl: './registrar-birthday.component.html',
   styleUrls: ['./registrar-birthday.component.css']
 })
+
 export class RegistrarBirthdayComponent implements OnInit {
 
+  imagenF = new FormControl('');
+  archivoForm = new FormControl('');
+  mensajeF = new FormControl('', [Validators.required]);
   tituloF = new FormControl('', [Validators.required]);
   linkF = new FormControl('');
-  mensajeF = new FormControl('', [Validators.required]);
-  nombreCertificadoF = new FormControl('', Validators.required);
-  archivoForm = new FormControl('');
 
   public birthdayForm = new FormGroup({
+    imagenForm: this.imagenF,
+    mensajeForm: this.mensajeF,
     tituloForm: this.tituloF,
     linkForm: this.linkF,
-    mensajeForm: this.mensajeF,
-    nombreCertificadoForm: this.nombreCertificadoF
   })
 
   id_empresa: number = parseInt(localStorage.getItem("empresa"));
 
   constructor(
-    private restB: BirthdayService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegistrarBirthdayComponent>
+    private restB: BirthdayService,
+    public ventana: MatDialogRef<RegistrarBirthdayComponent>
   ) { }
 
   ngOnInit(): void {
 
   }
 
+  // GUARDAR DATOS DE MENSAJE
   InsertarMensajeBirthday(form) {
     let dataMensaje = {
-      id_empresa: this.id_empresa, 
-      titulo: form.tituloForm, 
-      link: form.linkForm, 
-      mensaje: form.mensajeForm 
-    } 
-    console.log(dataMensaje);
-    
+      id_empresa: this.id_empresa,
+      titulo: form.tituloForm,
+      link: form.linkForm,
+      mensaje: form.mensajeForm
+    }
     this.restB.CrearBirthday(dataMensaje).subscribe(res => {
-      console.log(res);
-      this.dialogRef.close(true);
+      this.ventana.close(true);
       this.SubirRespaldo(res[0].id)
     })
-    
   }
 
+  // CERRAR VENTANA DE REGISTRO
   cerrarVentana() {
-    this.dialogRef.close(false);
+    this.ventana.close(false);
   }
 
+  // LIMPIAR CAMPO DE NOMBRE DE ARCHIVO
   LimpiarNombreArchivo() {
     this.birthdayForm.patchValue({
-      nombreCertificadoForm: '',
+      imagenForm: '',
     });
   }
 
+  /** *********************************************************************************** **
+   ** **                       TRATAMIENTO DE ARCHIVO                                  ** **
+   ** *********************************************************************************** **/
+
+  // CARGAR ARCHIVO
   nameFile: string;
   archivoSubido: Array<File>;
 
@@ -71,10 +77,32 @@ export class RegistrarBirthdayComponent implements OnInit {
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
       console.log(this.archivoSubido[0].name);
-      this.birthdayForm.patchValue({ nombreCertificadoForm: name });
+      let arrayItems = name.split(".");
+      let itemExtencion = arrayItems[arrayItems.length - 1];
+      let itemName = arrayItems[0].slice(0, 16);
+      console.log(itemName.toLowerCase());
+      if (this.archivoSubido[0].size <= 2e+6) {
+        if (itemExtencion == 'png' || itemExtencion == 'jpg' ||
+          itemExtencion == 'jpeg' || itemExtencion == 'gif') {
+          this.birthdayForm.patchValue({ imagenForm: name });
+        }
+        else {
+          this.toastr.warning('Formatos aceptados .png, .jpg, .gif y .jpeg.', 'Error formato del archivo.', {
+            timeOut: 6000,
+          });
+          this.ResetearDatos();
+        }
+      }
+      else {
+        this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
+          timeOut: 6000,
+        });
+        this.ResetearDatos();
+      }
     }
   }
 
+  // GUARDAR DATOS DE IMAGEN
   SubirRespaldo(id: number) {
     let formData = new FormData();
     console.log("tamaño", this.archivoSubido[0].size);
@@ -82,12 +110,16 @@ export class RegistrarBirthdayComponent implements OnInit {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.restB.SubirImagenBirthday(formData, id).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
+      this.toastr.success('Operación Exitosa.', 'Imagen subida con éxito.', {
         timeOut: 6000,
       });
-      this.archivoForm.reset();
-      this.nameFile = '';
+      this.ResetearDatos();
     });
+  }
+
+  ResetearDatos() {
+    this.archivoForm.reset();
+    this.nameFile = '';
   }
 
 }

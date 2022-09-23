@@ -295,13 +295,18 @@ const SERVIDOR = new Servidor();
 SERVIDOR.start();
 
 import { cumpleanios } from './libs/sendBirthday';
+
 import { beforeFiveDays, beforeTwoDays, Peri_Vacacion_Automatico } from './libs/avisoVacaciones';
 import { RegistrarAsistenciaByTimbres } from './libs/ContarHoras';
 import { NotificacionTimbreAutomatica } from './libs/NotiTimbres'
 import { NotificacionSinTimbres } from './libs/SinTimbres'
 import { DesactivarFinContratoEmpleado } from './libs/DesactivarEmpleado'
-// llama al meodo de cumpleaños
+
+// LLAMA AL MEODO DE CUMPLEAÑOS
 cumpleanios();
+
+
+
 // llama al metodo de avisos de vacaciones
 beforeFiveDays();
 beforeTwoDays();

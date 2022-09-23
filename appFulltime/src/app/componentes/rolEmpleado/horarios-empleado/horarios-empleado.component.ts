@@ -82,7 +82,7 @@ export class HorariosEmpleadoComponent implements OnInit {
   empleado: any = [];
   ObtenerEmpleado() {
     this.empleado = [];
-    this.restEmpleado.getOneEmpleadoRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleado = data;
     })
   }

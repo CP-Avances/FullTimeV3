@@ -127,7 +127,6 @@ export class CrearVacunaComponent implements OnInit {
     let dataCarnet = {
       id_tipo_vacuna: form.vacunaForm,
       descripcion: form.nombreForm,
-      nom_carnet: form.certificadoForm,
       id_empleado: parseInt(this.idEmploy),
       fecha: form.fechaForm,
     }
@@ -137,28 +136,26 @@ export class CrearVacunaComponent implements OnInit {
   // MÉTODO PARA REGISTRAR DATOS EN EL SISTEMA
   GuardarDatosSistema(datos: any, form: any) {
     if (form.certificadoForm != '' && form.certificadoForm != null && form.certificadoForm != undefined) {
-      this.VerificarArchivo(datos);
+      this.VerificarArchivo(datos, form);
     }
     else {
-      this.Registrar_sinCarnet(datos, form);
+      this.Registrar_sinCarnet(datos);
+      this.CerrarRegistro();
     }
   }
 
-  Registrar_sinCarnet(datos: any, form: any) {
+  Registrar_sinCarnet(datos: any) {
     this.restVacuna.CrearRegistroVacunacion(datos).subscribe(response => {
       this.toastr.success('', 'Registro guardado.', {
         timeOut: 6000,
       });
-      if (form.certificadoForm === '' || form.certificadoForm === null || form.certificadoForm === undefined) {
-        this.CerrarRegistro();
-      }
     });
   }
 
   // MÉTODO PARA GUARDAR DATOS DE REGISTROS SI EL ARCHIVO CUMPLE CON LOS REQUISITOS
-  VerificarArchivo(datos: any) {
+  VerificarArchivo(datos: any, form: any) {
     if (this.archivoSubido[0].size <= 2e+6) {
-      this.CargarDocumento(datos);
+      this.CargarDocumento(datos, form);
       this.CerrarRegistro();
     }
     else {
@@ -169,13 +166,13 @@ export class CrearVacunaComponent implements OnInit {
   }
 
   // MÉTODO PARA GUARDAR ARCHIVO SELECCIONADO
-  CargarDocumento(datos: any) {
+  CargarDocumento(datos: any, form: any) {
     this.restVacuna.CrearRegistroVacunacion(datos).subscribe(vacuna => {
       let formData = new FormData();
       for (var i = 0; i < this.archivoSubido.length; i++) {
         formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
       }
-      this.restVacuna.SubirDocumento(formData, vacuna.id).subscribe(res => {
+      this.restVacuna.SubirDocumento(formData, vacuna.id, form.certificadoForm).subscribe(res => {
         this.archivoF.reset();
         this.nameFile = '';
         this.toastr.success('', 'Registro guardado.', {

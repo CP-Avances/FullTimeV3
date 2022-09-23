@@ -69,7 +69,7 @@ export class VistaElementosComponent implements OnInit {
   // Método para ver la información del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }

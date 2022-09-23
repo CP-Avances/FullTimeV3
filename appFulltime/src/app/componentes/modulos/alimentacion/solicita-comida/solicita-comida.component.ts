@@ -190,7 +190,7 @@ export class SolicitaComidaComponent implements OnInit {
   // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
       this.PlanificacionComidasForm.patchValue({
         fechaForm: this.FechaActual,

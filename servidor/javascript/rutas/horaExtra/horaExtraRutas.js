@@ -56,6 +56,8 @@ class HorasExtrasPedidasRutas {
         this.router.put('/eliminar-documento', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation, multipartMiddleware], horaExtraControlador_1.default.EliminarDocumentoHoras);
         // ELIMINAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS MOVIL
         this.router.delete('/eliminar-documento-movil/:documento', horaExtraControlador_1.default.EliminarArchivoMovil);
+        // ELIMINAR DOCUMENTO DE RESPALDO DE HORAS EXTRAS WEB
+        this.router.delete('/eliminar-documento-web/:documento', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.EliminarArchivoMovil);
         /** ************************************************************************************************** **
          ** **                         METODO PARA ENVIO DE NOTIFICACIONES                                  ** **
          ** ************************************************************************************************** **/

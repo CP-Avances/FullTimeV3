@@ -1,18 +1,19 @@
 import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import pool from '../../../database';
+import fs from 'fs';
 
 class VacunasControlador {
 
     // CREAR REGISTRO DE VACUNACIÓN
     public async CrearRegistro(req: Request, res: Response): Promise<Response> {
-        const { id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet } = req.body;
+        const { id_empleado, descripcion, fecha, id_tipo_vacuna } = req.body;
         const response: QueryResult = await pool.query(
             `
-            INSERT INTO empl_vacunas (id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet) 
-            VALUES ($1, $2, $3, $4, $5) RETURNING *
+            INSERT INTO empl_vacunas (id_empleado, descripcion, fecha, id_tipo_vacuna) 
+            VALUES ($1, $2, $3, $4) RETURNING *
             `
-            , [id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet]);
+            , [id_empleado, descripcion, fecha, id_tipo_vacuna]);
 
         const [vacuna] = response.rows;
 
@@ -28,8 +29,13 @@ class VacunasControlador {
     public async GuardarDocumento(req: Request, res: Response): Promise<void> {
         let list: any = req.files;
         let documento = list.uploads[0].path.split("\\")[1];
+        let { nombre } = req.params;
         let id = req.params.id;
-        await pool.query('UPDATE empl_vacunas SET carnet = $2 WHERE id = $1', [id, documento]);
+        await pool.query(
+            `
+            UPDATE empl_vacunas SET carnet = $2, nom_carnet = $3 WHERE id = $1
+            `
+            , [id, documento, nombre]);
         res.jsonp({ message: 'Registro guardado.' });
     }
 
@@ -75,26 +81,63 @@ class VacunasControlador {
     // ACTUALIZAR REGISTRO DE VACUNACIÓN
     public async ActualizarRegistro(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
-        const { id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet } = req.body;
+        const { id_empleado, descripcion, fecha, id_tipo_vacuna } = req.body;
         await pool.query(
             `
             UPDATE empl_vacunas SET id_empleado = $1, descripcion = $2, fecha = $3, 
-            id_tipo_vacuna = $4, nom_carnet = $5 WHERE id = $6
+            id_tipo_vacuna = $4 WHERE id = $5
             `
-            , [id_empleado, descripcion, fecha, id_tipo_vacuna, nom_carnet, id]);
+            , [id_empleado, descripcion, fecha, id_tipo_vacuna, id]);
 
         res.jsonp({ message: 'Registro actualizado.' });
     }
 
     // ELIMINAR REGISTRO DE VACUNACIÓN
     public async EliminarRegistro(req: Request, res: Response): Promise<void> {
-        const { id } = req.params;
+        const { id, documento } = req.params;
         await pool.query(
             `
             DELETE FROM empl_vacunas WHERE id = $1
             `
             , [id]);
+
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\carnetVacuna\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
         res.jsonp({ message: 'Registro eliminado.' });
+    }
+
+    // ELIMINAR DOCUMENTO CARNET DE VACUNACION
+    public async EliminarDocumento(req: Request, res: Response): Promise<void> {
+        let { documento, id } = req.body;
+
+        await pool.query(
+            `
+            UPDATE empl_vacunas SET carnet = null, nom_carnet = null WHERE id = $1
+            `
+            , [id]);
+
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\carnetVacuna\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+
+        res.jsonp({ message: 'Documento Actualizado' });
+    }
+
+    // ELIMINAR DOCUMENTO CARNET DE VACUNACION DEL SERVIDOR
+    public async EliminarDocumentoServidor(req: Request, res: Response): Promise<void> {
+        let { documento } = req.body;
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\carnetVacuna\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+
+        res.jsonp({ message: 'Documento Actualizado' });
     }
 
     // OBTENER CERTIFICADO DE VACUNACIÓN
@@ -133,6 +176,10 @@ class VacunasControlador {
         }
     }
 
+
+
+
+    
     // LISTAR REGISTRO TIPO DE VACUNA
     public async ListarTipoVacuna(req: Request, res: Response) {
         const VACUNA = await pool.query(`SELECT * FROM tipo_vacuna`);

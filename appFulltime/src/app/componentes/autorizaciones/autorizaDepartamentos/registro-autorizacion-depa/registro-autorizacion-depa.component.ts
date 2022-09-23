@@ -54,7 +54,7 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
-    this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
       console.log(this.empleados)
       this.autorizarDepaForm.patchValue({

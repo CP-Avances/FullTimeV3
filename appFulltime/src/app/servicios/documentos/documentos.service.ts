@@ -12,49 +12,58 @@ export class DocumentosService {
     private http: HttpClient,
   ) { }
 
+  /** ************************************************************************************* ** 
+   ** **                       MANEJO DE ARCHIVOS DESDE EL SERVIDOR                      ** ** 
+   ** ************************************************************************************* **/
+
+  // METODO PARA LISTAR CARPETAS EXISTENTES EN EL SERVIDOR
   ListarCarpeta() {
     return this.http.get<any>(`${environment.url}/archivosCargados/carpetas`)
   }
 
-  ListarArchivosDeCarpeta(nom_carpeta) {
+  // METODO PARA LISTAR LOS ARCHIVOS DE CADA CARPETA
+  ListarArchivosDeCarpeta(nom_carpeta: string) {
     return this.http.get<any>(`${environment.url}/archivosCargados/lista-carpetas/${nom_carpeta}`)
   }
 
+  // METODO PARA LISTAR LOS ARCHIVOS DE CONTRATOS
+  ListarContratos(nom_carpeta: string) {
+    return this.http.get<any>(`${environment.url}/archivosCargados/lista-contratos/${nom_carpeta}`)
+  }
+
+  // METODO PARA LISTAR LOS ARCHIVOS DE PERMISOS
+  ListarPermisos(nom_carpeta: string) {
+    return this.http.get<any>(`${environment.url}/archivosCargados/lista-permisos/${nom_carpeta}`)
+  }
+
+  // METODO PARA LISTAR LOS ARCHIVOS DE HORARIOS
+  ListarHorarios(nom_carpeta: string) {
+    return this.http.get<any>(`${environment.url}/archivosCargados/lista-horarios/${nom_carpeta}`)
+  }
+
+  // METODO PARA DESCARGAR LOS ARCHIVOS
   DownloadFile(nom_carpeta: string, filename: string) {
     return this.http.get<any>(`${environment.url}/archivosCargados/download/files/${nom_carpeta}/${filename}`)
   }
 
-  EliminarArchivo(nom_carpeta: string, filename: string) {
-    return this.http.delete<any>(`${environment.url}/archivosCargados/eliminar/files/${nom_carpeta}/${filename}`)
+  /** ********************************************************************************************* **
+   ** **                        MANEJO DE ARCHIVOS DOCUMENTACION                                 ** **        
+   ** ********************************************************************************************* **/
+
+  // RECGISTRAR DOCUMENTO
+  CrearArchivo(data: any, doc_nombre: string) {
+    return this.http.post(`${environment.url}/archivosCargados/registrar/${doc_nombre}`, data);
   }
 
-  SubirArchivo(formData) {
-    return this.http.post(`${environment.url}/archivosCargados/documento`, formData)
+  // ELIMINAR REGISTRO DE DOCUMENTACION
+  EliminarRegistro(id: number, documento: string) {
+    return this.http.delete(`${environment.url}/archivosCargados/eliminar/${id}/${documento}`);
   }
 
-
-
-
-  ListarArchivos() {
-    return this.http.get(`${environment.url}/archivosCargados`);
+  // METODO PARA LISTAR LOS ARCHIVOS DE CADA CARPETA
+  ListarDocumentacion(nom_carpeta: string) {
+    return this.http.get<any>(`${environment.url}/archivosCargados/documentacion/${nom_carpeta}`)
   }
 
-  ListarUnArchivo(id: number) {
-    return this.http.get(`${environment.url}/archivosCargados/${id}`);
-  }
-
-  CrearArchivo(data: any) {
-    return this.http.post(`${environment.url}/archivosCargados`, data);
-  }
-
-  EditarArchivo(id: number, data: any) {
-    return this.http.put(`${environment.url}/archivosCargados/editar/${id}`, data);
-  }
-
-
-
-  EliminarRegistro(id: number) {
-    return this.http.delete(`${environment.url}/archivosCargados/eliminar/${id}`);
-  }
 
 }

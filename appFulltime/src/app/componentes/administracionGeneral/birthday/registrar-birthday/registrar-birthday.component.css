@@ -6,7 +6,7 @@ mat-form-field {width: 100%; padding: 10px 10px 0px 10px;}
 
 textarea {height: 75px; }
 
-#nombreCertific { font-size: 13px; display: inline-block;}
+#imagen { font-size: 13px; display: inline-block;}
 
 [type="file"] {
     height: 0;
@@ -34,7 +34,7 @@ textarea {height: 75px; }
 }
 
 [type="file"] + label.btn-2 {
-    background-color: #93a3c7;
+    background-color: rgb(150, 243, 141);
     overflow: hidden;
 }
 

@@ -1,9 +1,12 @@
+import { DescargarArchivo, listaCarpetas, ListarContratos, ListarDocumentos, ListarHorarios, ListarPermisos, VerCarpeta } from '../../libs/listarArchivos';
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { DescargarArchivo, EliminarArchivo, listaCarpetas } from '../../libs/listarArchivos';
+import fs from 'fs';
+export var carpeta: any;
 
 class DocumentosControlador {
 
+    // METODO PARA MOSTRAR LISTA DE CARPETAS DEL SERVIDOR
     public Carpetas(req: Request, res: Response) {
         let carpetas = [
             { nombre: 'Contratos', filename: 'contratos' },
@@ -15,80 +18,78 @@ class DocumentosControlador {
         res.status(200).jsonp(carpetas)
     }
 
-    public async listarArchivosCarpeta(req: Request, res: Response) {
+    public async ListarArchivosCarpeta(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
         res.status(200).jsonp(await listaCarpetas(nombre));
     }
 
+    // METODO PARA LISTAR ARCHIVOS DE LA CARPETA CONTRATOS
+    public async ListarCarpetaContratos(req: Request, res: Response) {
+        let nombre = req.params.nom_carpeta;
+        console.log('ver contratos.. ', await ListarContratos(nombre))
+        res.status(200).jsonp(await ListarContratos(nombre));
+    }
+
+    // METODO PARA LISTAR ARCHIVOS DE LA CARPETA PERMISOS
+    public async ListarCarpetaPermisos(req: Request, res: Response) {
+        let nombre = req.params.nom_carpeta;
+        console.log('ver permisos.. ', await ListarPermisos(nombre))
+        res.status(200).jsonp(await ListarPermisos(nombre));
+    }
+
+    // METODO PARA LISTAR ARCHIVOS DE LA CARPETA HORARIOS
+    public async ListarCarpetaHorarios(req: Request, res: Response) {
+        let nombre = req.params.nom_carpeta;
+        console.log('ver horarios.. ', await ListarHorarios(nombre))
+        res.status(200).jsonp(await ListarHorarios(nombre));
+    }
+
+    // METODO PARA DESCARGAR ARCHIVOS
     public async DownLoadFile(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
         let filename = req.params.filename;
-        console.log(nombre, '==========', filename);
         const path = DescargarArchivo(nombre, filename);
-        console.log(path);
-
         res.status(200).sendFile(path);
     }
 
-    public async EliminarDocumento(req: Request, res: Response) {
-        let nombre = req.params.nom_carpeta;
-        let filename = req.params.filename;
-        console.log(nombre, '==========', filename);
-        const path = EliminarArchivo(nombre, filename);
-        console.log(path);
-        res.jsonp({ message: 'Documento eliminado' });
-    }
+    /** **************************************************************************************** **
+     ** **                MANEJO DE DOCUMENTOS BASE DE DATOS Y SERVIDOR                       ** **
+     ** **************************************************************************************** **/
 
-    public async ListarDocumentos(req: Request, res: Response) {
-        const DOCUMENTOS = await pool.query('SELECT * FROM documentacion ORDER BY id');
-        if (DOCUMENTOS.rowCount > 0) {
-            return res.jsonp(DOCUMENTOS.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
-    }
-
-    public async ObtenerUnDocumento(req: Request, res: Response): Promise<any> {
-        const { id } = req.params;
-        const UN_DOCUMENTO = await pool.query('SELECT * FROM documentacion WHERE id = $1', [id]);
-        if (UN_DOCUMENTO.rowCount > 0) {
-            return res.jsonp(UN_DOCUMENTO.rows)
-        }
-        else {
-            res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
-    }
-
+    // METODO PARA REGISTRAR UN DOCUMENTO
     public async CrearDocumento(req: Request, res: Response): Promise<void> {
-        const { doc_nombre } = req.body;
-        await pool.query('INSERT INTO documentacion (doc_nombre) VALUES ($1)', [doc_nombre]);
-        const ultimo = await pool.query('SELECT MAX(id) AS id FROM documentacion');
-        res.jsonp({ message: 'Documento cargado', id: ultimo.rows[0].id });
+        let list: any = req.files;
+        let documento = list.uploads[0].path.split("\\")[1];
+        console.log('ver path ... ', list.uploads[0].path)
+        let { doc_nombre } = req.params;
+        await pool.query(
+            `
+            INSERT INTO documentacion (documento, doc_nombre) VALUES ($1, $2)
+            `, [documento, doc_nombre]);
+        res.jsonp({ message: 'Documento cargado' });
     }
 
-    public async EditarDocumento(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        const { doc_nombre } = req.body;
-        await pool.query('UPDATE documentacion SET doc_nombre = $1 WHERE id = $2', [doc_nombre, id]);
-        res.jsonp({ message: 'Documento actualizado' });
+    // METODO PARA LISTAR DOCUMENTOS 
+    public async ListarCarpetaDocumentos(req: Request, res: Response) {
+        let nombre = req.params.nom_carpeta;
+        res.status(200).jsonp(await ListarDocumentos(nombre));
     }
 
-    public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
-        const docs = req.params.docs;
-        let filePath = `servidor\\documentacion\\${docs}`
-        res.sendFile(__dirname.split("servidor")[0] + filePath);
-    }
-
-    public async GuardarDocumentos(req: Request, res: Response): Promise<void> {
-        res.jsonp({ message: 'Documento Guardado' });
-    }
-
+    // METODO PARA ELIMINAR REGISTROS DE DOCUMENTACION
     public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        await pool.query('DELETE FROM documentacion WHERE id = $1', [id]);
+        let { id, documento } = req.params;
+        await pool.query(
+            `
+            DELETE FROM documentacion WHERE id = $1
+            `
+            , [id]);
+        let filePath = `servidor\\documentacion\\${documento}`
+        let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+        fs.unlinkSync(direccionCompleta);
+
         res.jsonp({ message: 'Registro eliminado' });
     }
+
 
 }
 

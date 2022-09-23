@@ -31,7 +31,7 @@ export class VerTipoPermisoComponent implements OnInit {
 
   CargarDatosPermiso() {
     this.datosPermiso = [];
-    this.rest.getOneTipoPermisoRest(parseInt(this.idPermiso)).subscribe(datos => {
+    this.rest.BuscarUnTipoPermiso(parseInt(this.idPermiso)).subscribe(datos => {
       this.datosPermiso = datos;
     })
   }

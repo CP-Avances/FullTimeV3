@@ -131,7 +131,7 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
   empleado: any = [];
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }

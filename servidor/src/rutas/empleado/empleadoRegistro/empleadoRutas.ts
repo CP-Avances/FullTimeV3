@@ -22,10 +22,16 @@ class EmpleadoRutas {
 
     configuracion(): void {
 
-        // REGISTRO EMPLEADO
-        this.router.get('/', TokenValidation, EMPLEADO_CONTROLADOR.Listar);
-        this.router.get('/buscador-empl', TokenValidation, EMPLEADO_CONTROLADOR.ListarBusquedaEmpleados);
+        /** **************************************************************************************** **
+         ** **                            MANEJO DE DATOS DE EMPLEADOS                            ** ** 
+         ** **************************************************************************************** **/
+
+        // LISTAR DATOS DE UN USUARIO
         this.router.get('/:id', TokenValidation, EMPLEADO_CONTROLADOR.BuscarEmpleado);
+        // LISTAR EMPLEADOS REGISTRADOS
+        this.router.get('/buscador/empleado', TokenValidation, EMPLEADO_CONTROLADOR.ListarBusquedaEmpleados);
+
+        this.router.get('/', TokenValidation, EMPLEADO_CONTROLADOR.Listar);
         this.router.post('/buscar/informacion', TokenValidation, EMPLEADO_CONTROLADOR.BuscarEmpleadoNombre);
         this.router.post('/', TokenValidation, EMPLEADO_CONTROLADOR.InsertarEmpleado);
         this.router.put('/:id/usuario', TokenValidation, EMPLEADO_CONTROLADOR.EditarEmpleado);

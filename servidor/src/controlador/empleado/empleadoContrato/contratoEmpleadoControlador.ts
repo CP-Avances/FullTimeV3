@@ -1,7 +1,130 @@
 import { Request, Response } from 'express';
+import { QueryResult } from 'pg';
 import pool from '../../../database';
+import fs from 'fs';
 
 class ContratoEmpleadoControlador {
+
+    // REGISTRAR CONTRATOS
+    public async CrearContrato(req: Request, res: Response): Promise<Response> {
+        const { id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla,
+            id_regimen, id_tipo_contrato } = req.body;
+
+        const response: QueryResult = await pool.query(
+            `
+            INSERT INTO empl_contratos (id_empleado, fec_ingreso, fec_salida, vaca_controla, 
+            asis_controla, id_regimen, id_tipo_contrato) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+            `,
+            [id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen,
+                id_tipo_contrato]);
+
+        const [contrato] = response.rows;
+
+        if (contrato) {
+            return res.status(200).jsonp(contrato)
+        }
+        else {
+            return res.status(404).jsonp({ message: 'error' })
+        }
+    }
+
+    // METODO PARA GUARDAR DOCUMENTO
+    public async GuardarDocumentoContrato(req: Request, res: Response): Promise<void> {
+        let list: any = req.files;
+        let doc = list.uploads[0].path.split("\\")[1];
+        let { nombre } = req.params;
+        let id = req.params.id;
+        await pool.query(
+            `
+            UPDATE empl_contratos SET documento = $2, doc_nombre = $3  WHERE id = $1
+            `
+            , [id, doc, nombre]);
+        res.jsonp({ message: 'Documento Actualizado' });
+    }
+
+    // METODO PARA VER DOCUMENTO
+    public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
+        const docs = req.params.docs;
+        let filePath = `servidor\\contratos\\${docs}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+    }
+
+
+    // METODO PARA LISTAR CONTRATOS POR ID DE EMPLEADO
+    public async BuscarContratoEmpleado(req: Request, res: Response): Promise<any> {
+        const { id_empleado } = req.params;
+        const CONTRATO_EMPLEADO_REGIMEN = await pool.query(
+            `
+            SELECT ec.id, ec.fec_ingreso, ec.fec_salida FROM empl_contratos AS ec
+            WHERE ec.id_empleado = $1 ORDER BY ec.id ASC
+            `
+            , [id_empleado]);
+        if (CONTRATO_EMPLEADO_REGIMEN.rowCount > 0) {
+            return res.jsonp(CONTRATO_EMPLEADO_REGIMEN.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'Registro no encontrado' });
+        }
+    }
+
+    // EDITAR DATOS DE CONTRATO
+    public async EditarContrato(req: Request, res: Response): Promise<any> {
+        const { id } = req.params;
+        const { fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen,
+            id_tipo_contrato } = req.body;
+        await pool.query(
+            `
+            UPDATE empl_contratos SET fec_ingreso = $1, fec_salida = $2, vaca_controla = $3,
+            asis_controla = $4, id_regimen = $5, id_tipo_contrato = $6 
+            WHERE id = $7
+            `
+            , [fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen,
+                id_tipo_contrato, id]);
+
+        res.jsonp({ message: 'Contrato del empleado actualizada exitosamente' });
+    }
+
+    // ELIMINAR DOCUMENTO CONTRATO BASE DE DATOS - SERVIDOR
+    public async EliminarDocumento(req: Request, res: Response): Promise<void> {
+        let { documento, id } = req.body;
+
+        await pool.query(
+            `
+            UPDATE empl_contratos SET documento = null, doc_nombre = null  WHERE id = $1
+            `
+            , [id]);
+
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\contratos\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+
+        res.jsonp({ message: 'Documento Actualizado' });
+    }
+
+    // ELIMINAR DOCUMENTO CONTRATO DEL SERVIDOR
+    public async EliminarDocumentoServidor(req: Request, res: Response): Promise<void> {
+        let { documento } = req.body;
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\contratos\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+
+        res.jsonp({ message: 'Documento Actualizado' });
+    }
+
+
+
+
+
+
+
+
+
+
 
     public async ListarContratos(req: Request, res: Response) {
         const CONTRATOS = await pool.query('SELECT * FROM empl_contratos');
@@ -24,15 +147,7 @@ class ContratoEmpleadoControlador {
         }
     }
 
-    public async CrearContrato(req: Request, res: Response) {
-        const { id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato } = req.body;
-        await pool.query('INSERT INTO empl_contratos (id_empleado, fec_ingreso, fec_salida, vaca_controla, ' +
-            'asis_controla, id_regimen, doc_nombre, id_tipo_contrato) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-            [id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato]);
-        const ultimo = await pool.query('SELECT MAX(id) AS id FROM empl_contratos');
 
-        res.jsonp({ message: 'El contrato ha sido registrado', id: ultimo.rows[0].id });
-    }
 
     public async EncontrarIdContrato(req: Request, res: Response): Promise<any> {
         const { id_empleado } = req.params;
@@ -77,44 +192,11 @@ class ContratoEmpleadoControlador {
 
     }
 
-    public async EncontrarContratoEmpleadoRegimen(req: Request, res: Response): Promise<any> {
-        const { id_empleado } = req.params;
-        const CONTRATO_EMPLEADO_REGIMEN = await pool.query('SELECT ec.id, ec.fec_ingreso, fec_salida, ' +
-            'cr.descripcion, cr.meses_periodo, dia_anio_vacacion FROM empl_contratos AS ec, cg_regimenes AS cr ' +
-            'WHERE ec.id_empleado = $1 and ec.id_regimen = cr.id ORDER BY ec.id ASC', [id_empleado]);
-        if (CONTRATO_EMPLEADO_REGIMEN.rowCount > 0) {
-            return res.jsonp(CONTRATO_EMPLEADO_REGIMEN.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'Registro no encontrado' });
-        }
 
-    }
 
-    public async EditarContrato(req: Request, res: Response): Promise<any> {
-        const { id_empleado, id } = req.params;
-        const { fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato } = req.body;
-        await pool.query('UPDATE empl_contratos SET fec_ingreso = $1, fec_salida = $2, vaca_controla = $3, ' +
-            'asis_controla = $4, id_regimen = $5, doc_nombre = $6, id_tipo_contrato = $7 ' +
-            'WHERE id_empleado = $8 AND id = $9',
-            [fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato,
-                id_empleado, id]);
-        res.jsonp({ message: 'Contrato del empleado actualizada exitosamente' });
-    }
 
-    public async GuardarDocumentoContrato(req: Request, res: Response): Promise<void> {
-        let list: any = req.files;
-        let doc = list.uploads[0].path.split("\\")[1];
-        let id = req.params.id;
-        await pool.query('UPDATE empl_contratos SET documento = $2 WHERE id = $1', [id, doc]);
-        res.jsonp({ message: 'Documento Actualizado' });
-    }
 
-    public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
-        const docs = req.params.docs;
-        let filePath = `servidor\\contratos\\${docs}`
-        res.sendFile(__dirname.split("servidor")[0] + filePath);
-    }
+
 
     public async EditarDocumento(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
@@ -150,7 +232,12 @@ class ContratoEmpleadoControlador {
         }
     }
 
-    /** MÉTODOS PARA LA TABLA MODAL_TRABAJO O TIPO DE CONTRATOS */
+
+    /** **************************************************************************** ** 
+     ** **          MÉTODOS PARA LA TABLA MODAL_TRABAJO O TIPO DE CONTRATOS       ** **
+     ** **************************************************************************** **/
+
+    // LISTAR TIPOS DE MODALIDAD DE TRABAJO
     public async ListarTiposContratos(req: Request, res: Response) {
         const CONTRATOS = await pool.query('SELECT * FROM modal_trabajo');
         if (CONTRATOS.rowCount > 0) {
@@ -161,23 +248,28 @@ class ContratoEmpleadoControlador {
         }
     }
 
-    public async CrearTipoContrato(req: Request, res: Response) {
+    // REGISTRAR MODALIDAD DE TRABAJO
+    public async CrearTipoContrato(req: Request, res: Response): Promise<Response> {
         const { descripcion } = req.body;
-        await pool.query('INSERT INTO modal_trabajo (descripcion) VALUES ($1)',
-            [descripcion]);
-        const ultimo = await pool.query('SELECT MAX(id) AS id FROM modal_trabajo');
-        res.jsonp({ message: 'El contrato ha sido registrado', id: ultimo.rows[0].id });
-    }
 
-    public async ListarUltimoTipoContrato(req: Request, res: Response) {
-        const CONTRATOS = await pool.query('SELECT MAX(id) AS id FROM modal_trabajo');
-        if (CONTRATOS.rowCount > 0) {
-            return res.jsonp(CONTRATOS.rows)
+        const response: QueryResult = await pool.query(
+            `
+            INSERT INTO modal_trabajo (descripcion) VALUES ($1) RETURNING *
+            `,
+            [descripcion]);
+
+
+        const [contrato] = response.rows;
+
+        if (contrato) {
+            return res.status(200).jsonp(contrato)
         }
         else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            return res.status(404).jsonp({ message: 'error' })
         }
+
     }
+
 }
 
 const CONTRATO_EMPLEADO_CONTROLADOR = new ContratoEmpleadoControlador();

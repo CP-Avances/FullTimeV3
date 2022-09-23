@@ -1,6 +1,6 @@
-import { Router } from 'express';
 import REGIMEN_CONTROLADOR from '../../controlador/catalogos/catRegimenControlador';
 import { TokenValidation } from '../../libs/verificarToken';
+import { Router } from 'express';
 
 class RegimenRuta {
     public router: Router = Router();
@@ -10,7 +10,11 @@ class RegimenRuta {
     }
 
     configuracion(): void {
+
+        // LISTAR REGISTROS DE REGIMEN LABORAL
         this.router.get('/', TokenValidation, REGIMEN_CONTROLADOR.ListarRegimen);
+
+
         this.router.get('/:id', TokenValidation, REGIMEN_CONTROLADOR.ListarUnRegimen);
         this.router.post('/', TokenValidation, REGIMEN_CONTROLADOR.CrearRegimen);
         this.router.put('/', TokenValidation, REGIMEN_CONTROLADOR.ActualizarRegimen);

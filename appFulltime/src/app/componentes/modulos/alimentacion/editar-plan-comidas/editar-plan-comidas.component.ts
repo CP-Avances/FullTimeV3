@@ -212,7 +212,7 @@ export class EditarPlanComidasComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
     })
   }

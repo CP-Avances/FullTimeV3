@@ -8,17 +8,17 @@
     <form method="post" enctype="multipart/form-data">
         <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
         <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" id="iHor" matSuffix matTooltipPosition="right"
-            matTooltip="Subir documentos. Tamaño máximo permitido 2MB">Subir
+            matTooltip="Subir documentos. Tamaño máximo permitido 2MB.">Subir
             Archivo</label>
     </form>
     <form [formGroup]="GuardarDocumentoForm">
         <input readonly id="nomDoc" type="text" placeholder="Ningún archivo seleccionado" class="form-control"
-            style="width: 230px;" [formControl]="nombreDocumentoF">
+            style="width: 230px;" [formControl]="documentoF">
     </form>
 </div>
 <br>
 <div class="d-flex flex-wrap justify-content-center">
     <input type="submit" class="btn btn-sm" [disabled]="!GuardarDocumentoForm.valid"
         (click)="InsertarDocumento(GuardarDocumentoForm.value)" value="Guardar">
-    <input type="submit" class="btn btn-sm" (click)="CerrarVentanaEditar()" value="Salir">
+    <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Salir">
 </div>

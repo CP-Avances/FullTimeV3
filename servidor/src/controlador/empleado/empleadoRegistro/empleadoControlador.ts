@@ -9,6 +9,46 @@ const builder = require('xmlbuilder');
 
 class EmpleadoControlador {
 
+  // BÚSQUEDA DE UN SOLO EMPLEADO
+  public async BuscarEmpleado(req: Request, res: Response): Promise<any> {
+    const { id } = req.params;
+    const EMPLEADO = await pool.query(
+      `
+      SELECT * FROM empleados WHERE id = $1
+      `
+      , [id]);
+    if (EMPLEADO.rowCount > 0) {
+      return res.jsonp(EMPLEADO.rows)
+    }
+    else {
+      return res.status(404).jsonp({ text: 'El empleado no ha sido encontrado' });
+    }
+  }
+
+  // BÚSQUEDA DE INFORMACION ESPECIFICA DE EMPLEADOS
+  public async ListarBusquedaEmpleados(req: Request, res: Response): Promise<any> {
+    const empleado = await pool.query(
+      `
+        SELECT id, nombre, apellido FROM empleados ORDER BY apellido
+        `
+    ).then(result => {
+      return result.rows.map(obj => {
+        return {
+          id: obj.id,
+          empleado: obj.apellido + ' ' + obj.nombre
+        }
+      })
+    })
+
+    res.jsonp(empleado);
+  }
+
+
+
+
+
+
+
   // LISTAR EMPLEADOS ACTIVOS EN EL SISTEMA
   public async Listar(req: Request, res: Response) {
     const empleado = await pool.query('SELECT * FROM empleados WHERE estado = 1 ORDER BY id');
@@ -28,18 +68,7 @@ class EmpleadoControlador {
     }
   }
 
-  // BÚSQUEDA DE UN SOLO EMPLEADO
-  public async BuscarEmpleado(req: Request, res: Response): Promise<any> {
-    const { id } = req.params;
-    const EMPLEADO = await pool.query('SELECT * FROM empleados WHERE id = $1', [id]);
-    if (EMPLEADO.rowCount > 0) {
-      return res.jsonp(EMPLEADO.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'El empleado no ha sido encontrado' });
-    }
 
-  }
 
   // BÚSQUEDA DE IMAGEN DE EMPLEADO
   public async BuscarImagen(req: Request, res: Response): Promise<any> {
@@ -234,20 +263,7 @@ class EmpleadoControlador {
     }
   }
 
-  // BÚSQUEDA DE INFORMACIÓN ESPECÍFICA DE EMPLEADOS
-  public async ListarBusquedaEmpleados(req: Request, res: Response): Promise<any> {
-    const empleado = await pool.query('SELECT id, nombre, apellido FROM empleados ORDER BY apellido')
-      .then(result => {
-        return result.rows.map(obj => {
-          return {
-            id: obj.id,
-            empleado: obj.apellido + ' ' + obj.nombre
-          }
-        })
-      })
 
-    res.jsonp(empleado);
-  }
 
   // MÉTODO PARA INHABILITAR USUARIOS EN EL SISTEMA
   public async DesactivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {

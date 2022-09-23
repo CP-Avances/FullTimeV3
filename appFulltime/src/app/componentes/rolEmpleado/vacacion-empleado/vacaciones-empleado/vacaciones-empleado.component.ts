@@ -71,7 +71,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
   empleadoUno: any = [];
   VerEmpleado(formato_fecha: string) {
     this.empleadoUno = [];
-    this.restEmpleado.getOneEmpleadoRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleadoUno = data;
       this.ObtenerPeriodoVacaciones(formato_fecha);
     })

@@ -16,24 +16,45 @@ class DepartamentoRutas {
     }
 
     configuracion(): void {
+
+        /** ******************************************************************************************** **
+         ** **                      MANEJO DE DATOS DE CONTRATO DEL USUARIO                           ** ** 
+         ** ******************************************************************************************** **/
+
+        // REGISTRAR DATOS DE CONTRATO
+        this.router.post('/', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.CrearContrato);
+        // GUARDAR DOCUMENTO 
+        this.router.put('/:id/documento/:nombre', [TokenValidation, multipartMiddleware], CONTRATO_EMPLEADO_CONTROLADOR.GuardarDocumentoContrato);
+        // MOSTRAR DOCUMENTO CARGADO EN EL SISTEMA
+        this.router.get('/documentos/:docs', CONTRATO_EMPLEADO_CONTROLADOR.ObtenerDocumento);
+        // METODO PARA BUSCAR CONTRATOS POR ID DE EMPLEADO
+        this.router.get('/contrato-empleado/:id_empleado', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.BuscarContratoEmpleado);
+        // EDITAR DATOS DE CONTRATO
+        this.router.put('/:id/actualizar', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EditarContrato);
+        // ELIMINAR DOCUMENTO DE CONTRATO BASE DE DATOS - SERVIDOR
+        this.router.put('/eliminar_contrato/base_servidor', [TokenValidation], CONTRATO_EMPLEADO_CONTROLADOR.EliminarDocumento);
+        // ELIMINAR DOCUMENTO DE CONTRATOS DEL SERVIDOR
+        this.router.put('/eliminar_contrato/servidor', [TokenValidation], CONTRATO_EMPLEADO_CONTROLADOR.EliminarDocumentoServidor);
+
+        
         this.router.get('/', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.ListarContratos);
         this.router.get('/:id/get', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.ObtenerUnContrato);
         this.router.get('/:id_empleado', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EncontrarIdContrato);
         this.router.get('/contratoActual/:id_empleado', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EncontrarIdContratoActual);
         this.router.get('/contrato/:id', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EncontrarDatosUltimoContrato);
-        this.router.get('/contratoRegimen/:id_empleado', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EncontrarContratoEmpleadoRegimen);
-        this.router.post('/', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.CrearContrato);
-        this.router.put('/:id_empleado/:id/actualizar', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EditarContrato);
-        this.router.put('/:id/documento', [TokenValidation, multipartMiddleware], CONTRATO_EMPLEADO_CONTROLADOR.GuardarDocumentoContrato);
-        this.router.get('/documentos/:docs', CONTRATO_EMPLEADO_CONTROLADOR.ObtenerDocumento);
         this.router.put('/editar/editarDocumento/:id', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EditarDocumento);
         this.router.post('/buscarFecha', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EncontrarFechaContrato);
         this.router.post('/buscarFecha/contrato', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.EncontrarFechaContratoId);
 
-        /** MÉTODOS PARA SER USADOS EN LA TABLA MODAL_TRABAJO O TIPO DE CONTRATOS */
+        /** ********************************************************************************************* **
+         ** **            MÉTODOS PARA SER USADOS EN LA TABLA MODAL_TRABAJO O TIPO DE CONTRATOS        ** **
+         ** ********************************************************************************************* **/
+
+        // REGISTRAR MODALIDAD DE TRABAJO
         this.router.post('/modalidad/trabajo', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.CrearTipoContrato);
+        // BUSCAR LISTA DE MODALIDAD DE TRABAJO
         this.router.get('/modalidad/trabajo', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.ListarTiposContratos);
-        this.router.get('/modalidad/trabajo/ultimo', TokenValidation, CONTRATO_EMPLEADO_CONTROLADOR.ListarUltimoTipoContrato);
+
     }
 }
 

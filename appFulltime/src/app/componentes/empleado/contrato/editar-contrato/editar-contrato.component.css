@@ -1,14 +1,36 @@
-mat-form-field { width: 200px; margin: 10px;}
+mat-form-field {
+    width: 200px;
+    margin: 10px;
+}
 
-.mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
+.mat-radio-button~.mat-radio-button {
+    margin-left: 16px;
+}
 
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+mat-radio-group {
+    width: 210px;
+    padding: 15px 20px 15px 20x;
+    margin-bottom: 10px;
+}
 
-#nomEmple { font-size: 13px; }
+.btn {
+    margin-left: 15px;
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
-#nomContrato { font-size: 14px; display: inline-block; }
+.separar {
+    padding: 10px 10px 0px 10px
+}
 
-#tamañoLetra { font-size: 14px; margin-right: 7px;}
+#respaldo {
+    font-size: 14px;
+    display: inline-block;
+}
+
+#letras {
+    font-size: 14px;
+}
 
 [type="file"] {
     height: 0;
@@ -16,7 +38,7 @@ mat-form-field { width: 200px; margin: 10px;}
     width: 0;
 }
 
-[type="file"] + label {
+[type="file"]+label {
     background: #f15d22;
     border: none;
     border-radius: 5px;
@@ -35,16 +57,16 @@ mat-form-field { width: 200px; margin: 10px;}
     vertical-align: middle;
 }
 
-[type="file"] + label.btn-2 {
+[type="file"]+label.btn-2 {
     background-color: #93a3c7;
     overflow: hidden;
 }
 
-[type="file"] + label.btn-2::before {
+[type="file"]+label.btn-2::before {
     color: #fff;
     content: "\f382";
     font-family: "Font Awesome 5 Pro";
-    font-size: 100%;
+    font-size: 90%;
     height: 100%;
     right: 130%;
     line-height: 3.3;
@@ -55,10 +77,10 @@ mat-form-field { width: 200px; margin: 10px;}
     transition: all 0.3s;
 }
 
-[type="file"] + label.btn-2:hover {
+[type="file"]+label.btn-2:hover {
     background-color: rgb(0, 76, 255)
 }
 
-[type="file"] + label.btn-2:hover::before {
+[type="file"]+label.btn-2:hover::before {
     right: 80%
 }

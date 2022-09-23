@@ -295,7 +295,7 @@ export class EditarPedidoAccionComponent implements OnInit {
   // MÉTODO PARA OBTENER LISTA DE EMPLEADOS
   ObtenerEmpleados() {
     this.empleados = [];
-    this.restE.getBuscadorEmpledosRest().subscribe(data => {
+    this.restE.BuscarListaEmpleados().subscribe(data => {
       this.empleados = data;
       this.seleccionarEmpleados = '';
       this.seleccionEmpleadoH = '';

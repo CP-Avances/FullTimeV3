@@ -168,7 +168,7 @@ export class VerVacacionComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }

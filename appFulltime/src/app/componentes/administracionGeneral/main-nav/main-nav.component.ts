@@ -586,7 +586,7 @@ export class MainNavComponent implements OnInit {
         icono: 'info',
         children: [
           { name: 'Autoridades', url: '/informacion' },
-          { name: 'Archivos', url: '/verDocumentacion' },
+          { name: 'Documentos', url: '/verDocumentacion' },
         ]
       },
       {

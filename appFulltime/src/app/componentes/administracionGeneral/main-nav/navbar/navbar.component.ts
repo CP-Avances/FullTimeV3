@@ -34,7 +34,7 @@ export class NavbarComponent implements OnInit {
     console.log(fullname, correo, iniciales, view_imagen);
 
     if (fullname === null && correo === null && iniciales === null && view_imagen === null) {
-      this.empleadoService.getOneEmpleadoRest(id_empleado).subscribe(res => {
+      this.empleadoService.BuscarUnEmpleado(id_empleado).subscribe(res => {
 
         localStorage.setItem('fullname', res[0].nombre.split(" ")[0] + " " + res[0].apellido.split(" ")[0])
         localStorage.setItem('fullname_print', res[0].nombre + " " + res[0].apellido)

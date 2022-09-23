@@ -38,7 +38,7 @@ export class ButtonAvisosComponent implements OnInit {
           // BUSQUEDA DE LOS DATOS DE LA NOTIFICACION RECIBIDA
           this.aviso.ObtenerUnAviso(data.id).subscribe(res => {
             // TRATAMIENTO DE LOS DATOS DE LA NOTIFICACION
-            res.fecha_ = this.validar.FormatearFecha(moment(res.create_at).format('DD/MM/YYYY'), this.formato_fecha, this.validar.dia_abreviado);
+            res.fecha_ = this.validar.FormatearFecha(moment(res.create_at).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_abreviado);
             res.hora_ = this.validar.FormatearHora(moment(res.create_at).format('HH:mm:ss'), this.formato_hora);
             if (res.descripcion.split('para')[0] != undefined && res.descripcion.split('para')[1] != undefined) {
               res.aviso = res.descripcion.split('para')[0];;
@@ -120,7 +120,7 @@ export class ButtonAvisosComponent implements OnInit {
               this.num_timbre_false = this.num_timbre_false + 1;
               this.estadoTimbres = false;
             }
-            obj.fecha_ = this.validar.FormatearFecha(moment(obj.create_at).format('DD/MM/YYYY'), formato_fecha, this.validar.dia_abreviado);
+            obj.fecha_ = this.validar.FormatearFecha(moment(obj.create_at).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_abreviado);
             obj.hora_ = this.validar.FormatearHora(moment(obj.create_at).format('HH:mm:ss'), formato_hora);
             if (obj.descripcion.split('para')[0] != undefined && obj.descripcion.split('para')[1] != undefined) {
               obj.aviso = obj.descripcion.split('para')[0];;

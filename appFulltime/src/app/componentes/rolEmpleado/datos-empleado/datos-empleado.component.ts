@@ -169,7 +169,7 @@ export class DatosEmpleadoComponent implements OnInit {
   textoBoton: string = 'Subir foto';
   VerEmpleado(formato_fecha: string) {
     this.empleadoUno = [];
-    this.restEmpleado.getOneEmpleadoRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleadoUno = data;
       this.empleadoUno[0].fec_nacimiento_ = this.validar.FormatearFecha(this.empleadoUno[0].fec_nacimiento, formato_fecha, this.validar.dia_abreviado);
       if (data[0]['imagen'] != null) {
@@ -355,7 +355,7 @@ export class DatosEmpleadoComponent implements OnInit {
   // EDITAR REGISTRO DE VACUNA
   AbrirVentanaEditar(datos: any) {
     this.ventana.open(EditarVacunaComponent, {
-      data: { idEmpleado: this.idEmpleado, vacuna: datos }, width: '360px'
+      data: { idEmpleado: this.idEmpleado, vacuna: datos }, width: '600px'
     })
       .afterClosed().subscribe(result => {
         this.ObtenerDatosVacunas(this.formato_fecha);
@@ -365,7 +365,7 @@ export class DatosEmpleadoComponent implements OnInit {
   // LÓGICA DE BOTÓN PARA MOSTRAR COMPONENTE DEL REGISTRO DE VACUNACION 
   MostrarVentanaVacuna() {
     this.ventana.open(CrearVacunaComponent, {
-      data: { idEmpleado: this.idEmpleado }, width: '360px'
+      data: { idEmpleado: this.idEmpleado }, width: '600px'
     })
       .afterClosed().subscribe(result => {
         this.ObtenerDatosVacunas(this.formato_fecha);
@@ -373,8 +373,8 @@ export class DatosEmpleadoComponent implements OnInit {
   }
 
   // ELIMINAR REGISTRO DE VACUNA
-  EliminarVacuna(id: number) {
-    this.restVacuna.EliminarRegistroVacuna(id).subscribe(res => {
+  EliminarVacuna(datos: any) {
+    this.restVacuna.EliminarRegistroVacuna(datos.id, datos.carnet).subscribe(res => {
       this.ObtenerDatosVacunas(this.formato_fecha);
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
@@ -383,11 +383,11 @@ export class DatosEmpleadoComponent implements OnInit {
   }
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
-  ConfirmarEliminarVacuna(id: number) {
+  ConfirmarEliminarVacuna(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
-          this.EliminarVacuna(id);
+          this.EliminarVacuna(datos);
         } else {
           this.router.navigate(['/datosEmpleado']);
         }

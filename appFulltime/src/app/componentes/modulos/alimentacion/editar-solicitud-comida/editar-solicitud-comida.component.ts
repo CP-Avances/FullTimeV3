@@ -147,7 +147,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     this.empleados = [];
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
       this.PlanificacionComidasForm.patchValue({
         fechaForm: this.FechaActual,

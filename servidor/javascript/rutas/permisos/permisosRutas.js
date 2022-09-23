@@ -34,7 +34,7 @@ class PermisosRutas {
         // CREAR PERMISO
         this.router.post('/', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.CrearPermisos);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO
-        this.router.put('/:id/documento', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation, multipartMiddleware], permisosControlador_1.default.GuardarDocumentoPermiso);
+        this.router.put('/:id/documento/:documento', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation, multipartMiddleware], permisosControlador_1.default.GuardarDocumentoPermiso);
         // ACTUALIZAR PERMISO
         this.router.put('/:id/permiso-solicitado', [verificarToken_1.TokenValidation, verificarPermisos_1.ModuloPermisosValidation], permisosControlador_1.default.EditarPermiso);
         // ELIMINAR PERMISO
@@ -57,7 +57,7 @@ class PermisosRutas {
         // ENVIAR CORREO MEDIANTE APLICACION MOVIL
         this.router.post('/mail-noti-permiso-movil/:id_empresa', permisosControlador_1.default.EnviarCorreoPermisoMovil);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO APLICACION MOVIL
-        this.router.put('/:id/documento-movil', [multipartMiddleware], permisosControlador_1.default.GuardarDocumentoPermiso);
+        this.router.put('/:id/documento-movil/:documento', [multipartMiddleware], permisosControlador_1.default.GuardarDocumentoPermiso);
     }
 }
 const PERMISOS_RUTAS = new PermisosRutas();

@@ -495,6 +495,7 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
     else if (this.opcion === 2) {
       if (form.respaldoForm != '' && form.respaldoForm != null) {
         if (this.archivoSubido[0].size <= 2e+6) {
+          this.EliminarServidor();
           this.GuardarDatos(datos);
           this.SubirRespaldo(form);
           this.ventana.close(true);
@@ -532,6 +533,12 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
         this.toastr.error(message)
         this.ventana.close();
       }
+    });
+  }
+
+  EliminarServidor() {
+    console.log('ver doc..', this.datos.documento)
+    this.restHE.EliminarArchivoServidor(this.datos.documento).subscribe(res => {
     });
   }
 

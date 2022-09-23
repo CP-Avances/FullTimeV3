@@ -1,78 +1,90 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+
+import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
 
 @Component({
   selector: 'app-editar-birthday',
   templateUrl: './editar-birthday.component.html',
   styleUrls: ['./editar-birthday.component.css']
 })
+
 export class EditarBirthdayComponent implements OnInit {
 
+  archivoForm = new FormControl('');
+  mensajeF = new FormControl('', [Validators.required]);
+  imagenF = new FormControl('');
   tituloF = new FormControl('', [Validators.required]);
   linkF = new FormControl('');
-  mensajeF = new FormControl('', [Validators.required]);
-  nombreCertificadoF = new FormControl('', Validators.required);
-  archivoForm = new FormControl('');
 
   public birthdayForm = new FormGroup({
+    mensajeForm: this.mensajeF,
+    imagenForm: this.imagenF,
     tituloForm: this.tituloF,
     linkForm: this.linkF,
-    mensajeForm: this.mensajeF,
-    nombreCertificadoForm: this.nombreCertificadoF
   })
 
   id_empresa: number = parseInt(localStorage.getItem("empresa"));
   constructor(
     private restB: BirthdayService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<EditarBirthdayComponent>,
+    public ventana: MatDialogRef<EditarBirthdayComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
     console.log(this.data);
-    this.setData();
+    this.ImprimirDatos();
   }
 
-  setData(){
+  // MOSTRAR DATOS EN FORMULARIO
+  ImprimirDatos() {
     this.birthdayForm.patchValue({
-      tituloForm: this.data.titulo,
       mensajeForm: this.data.mensaje,
+      tituloForm: this.data.titulo,
       linkForm: this.data.url
     })
   }
 
-  ModificarMensajeBirthday(form) {
+  // ACTUALIZAR DATOS DE CUMPLEAÑOS
+  ModificarMensajeBirthday(form: any) {
     let dataMensaje = {
-      titulo: form.tituloForm, 
       mensaje: form.mensajeForm,
+      titulo: form.tituloForm,
       link: form.linkForm
-    } 
-    console.log(dataMensaje);
-    this.restB.EditarBirthday(this.data.id, dataMensaje).subscribe(res => {
-      console.log(res);
-      this.toastr.success('Operación exitosa', 'Mensaje Actualizados', {
-        timeOut: 6000,
-      });
-      this.dialogRef.close(true);
-      this.SubirRespaldo(this.data.id)
-    })
-    
+    }
+    if (form.imagenForm != undefined && form.imagenForm != '' && form.imagenForm != 'null') {
+      this.VerificarArchivo(dataMensaje);
+    }
+    else {
+      this.restB.EditarBirthday(this.data.id, dataMensaje).subscribe(res => {
+        this.toastr.success('Operación exitosa', 'Mensaje Actualizados', {
+          timeOut: 6000,
+        });
+        this.ventana.close(true);
+      })
+    }
   }
 
-  cerrarVentana() {
-    this.dialogRef.close(false);
+  // CERRAR VENTANA DE REGISTRO
+  CerrarVentana() {
+    this.ventana.close(false);
   }
 
+  // LIMPIAR CAMPO DE FORMATO ARCHIVO
   LimpiarNombreArchivo() {
     this.birthdayForm.patchValue({
-      nombreCertificadoForm: '',
+      imagenForm: '',
     });
   }
 
+  /** ******************************************************************************** **
+   ** **                             SUBIR IMAGEN DE CUMPLEÑOS                      ** **
+   ** ******************************************************************************** **/
+
+  // SELECCIONAR IMAGEN
   nameFile: string;
   archivoSubido: Array<File>;
 
@@ -81,22 +93,56 @@ export class EditarBirthdayComponent implements OnInit {
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
       console.log(this.archivoSubido[0].name);
-      this.birthdayForm.patchValue({ nombreCertificadoForm: name });
+      let arrayItems = name.split(".");
+      let itemExtencion = arrayItems[arrayItems.length - 1];
+      let itemName = arrayItems[0].slice(0, 16);
+      console.log(itemName.toLowerCase());
+      if (itemExtencion == 'png' || itemExtencion == 'jpg' ||
+        itemExtencion == 'jpeg' || itemExtencion == 'gif') {
+        this.birthdayForm.patchValue({ imagenForm: name });
+      }
+      else {
+        this.toastr.warning('Formatos aceptados .png, .jpg, .gif y .jpeg.', 'Error formato del archivo.', {
+          timeOut: 6000,
+        });
+        this.archivoForm.reset();
+        this.nameFile = '';
+      }
     }
   }
 
-  SubirRespaldo(id: number) {
+  // GUARDAR DATOS DE IMAGEN
+  SubirImagen(id: number) {
     let formData = new FormData();
-    console.log("tamaño", this.archivoSubido[0].size);
     for (var i = 0; i < this.archivoSubido.length; i++) {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.restB.SubirImagenBirthday(formData, id).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
+      this.toastr.success('Operación Exitosa.', 'Imagen subida con éxito.', {
         timeOut: 6000,
       });
       this.archivoForm.reset();
       this.nameFile = '';
     });
   }
+
+  VerificarArchivo(data: any) {
+    if (this.archivoSubido[0].size <= 2e+6) {
+      this.restB.EditarBirthday(this.data.id, data).subscribe(res => {
+        console.log(res);
+        this.toastr.success('Operación exitosa', 'Mensaje Actualizados', {
+          timeOut: 6000,
+        });
+        this.SubirImagen(this.data.id);
+        this.ventana.close(true);
+      })
+    }
+    else {
+      this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB', {
+        timeOut: 6000,
+      });
+    }
+  }
 }
+
+

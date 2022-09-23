@@ -3,15 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
 const catRegimenControlador_1 = __importDefault(require("../../controlador/catalogos/catRegimenControlador"));
 const verificarToken_1 = require("../../libs/verificarToken");
+const express_1 = require("express");
 class RegimenRuta {
     constructor() {
         this.router = (0, express_1.Router)();
         this.configuracion();
     }
     configuracion() {
+        // LISTAR REGISTROS DE REGIMEN LABORAL
         this.router.get('/', verificarToken_1.TokenValidation, catRegimenControlador_1.default.ListarRegimen);
         this.router.get('/:id', verificarToken_1.TokenValidation, catRegimenControlador_1.default.ListarUnRegimen);
         this.router.post('/', verificarToken_1.TokenValidation, catRegimenControlador_1.default.CrearRegimen);

@@ -27,16 +27,12 @@ export class VerDocumentacionComponent implements OnInit {
 
   MostrarArchivos() {
     this.Dirname = 'documentacion'
-    this.ObtenerArchivos(this.Dirname)
-    if (this.Dirname === 'documentacion') {
-      this.subir = true;
-    } else {
-      this.subir = false;
-    }
+    this.ObtenerArchivos(this.Dirname);
+    this.subir = true;
   }
 
-  ObtenerArchivos(nombre_carpeta) {
-    this.rest.ListarArchivosDeCarpeta(nombre_carpeta).subscribe(res => {
+  ObtenerArchivos(nombre_carpeta: string) {
+    this.rest.ListarDocumentacion(nombre_carpeta).subscribe(res => {
       console.log(res);
       this.archivos = res
     })
@@ -49,13 +45,12 @@ export class VerDocumentacionComponent implements OnInit {
     })
   }
 
-  EliminarArchivo(filename: string) {
+  EliminarArchivo(filename: string, id: number) {
     console.log('llego');
-    this.rest.EliminarArchivo(this.Dirname, filename).subscribe(res => {
+    this.rest.EliminarRegistro(id, filename).subscribe(res => {
       console.log(res);
       this.MostrarArchivos();
     })
-
   }
 
   AbrirVentanaRegistrar(): void {

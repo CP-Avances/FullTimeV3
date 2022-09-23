@@ -100,10 +100,10 @@
                         <div class="bd-highlight" style="text-align: center;">
                             <input type="text" id="respaldo" placeholder="Ningún archivo seleccionado"
                                 class="form-control" style="width: 200px;" [formControl]="respaldoF" readonly>
-                        </div>
-                        <div class="bd-highlight" style="text-align: center; padding-top: 20px;" *ngIf="HabilitarBtn">
-                            <button mat-button class="btn-sm" id="boton" type="submit" (click)="RetirarArchivo()">Quitar
-                                Documento</button>
+                            <i *ngIf="HabilitarBtn" class="far fa-trash-alt" style="color:red; margin-left: 5px;"
+                                id="i-cursor" (click)="RetirarArchivo()" matSuffix matTooltipPosition="right"
+                                matTooltip="Eliminar archivo seleccionado.">
+                            </i>
                         </div>
                     </section>
                 </div>

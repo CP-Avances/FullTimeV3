@@ -18,7 +18,7 @@ class VacunaRutas {
         // METODO REGISTRO DE VACUNACIÓN
         this.router.post('/', TokenValidation, VACUNA_CONTROLADOR.CrearRegistro);
         // METODO PARA GUARDAR DOCUMENTO 
-        this.router.put('/:id/documento', [TokenValidation, multipartMiddleware], VACUNA_CONTROLADOR.GuardarDocumento);
+        this.router.put('/:id/documento/:nombre', [TokenValidation, multipartMiddleware], VACUNA_CONTROLADOR.GuardarDocumento);
         // METODO PARA LISTAR REGISTROS DE UN USUARIO
         this.router.get('/:id_empleado', TokenValidation, VACUNA_CONTROLADOR.ListarUnRegistro);
         // METODO PARA LEER TODOS LOS REGISTROS DE VACUNACION
@@ -28,7 +28,11 @@ class VacunaRutas {
         // METODO ACTUALIZACION DE REGISTROS DE VACUNACION
         this.router.put('/:id', TokenValidation, VACUNA_CONTROLADOR.ActualizarRegistro);
         // METODO DE ELIMINACION D EREGISTRO DE VACUNA
-        this.router.delete('/eliminar/:id', TokenValidation, VACUNA_CONTROLADOR.EliminarRegistro);
+        this.router.delete('/eliminar/:id/:documento', TokenValidation, VACUNA_CONTROLADOR.EliminarRegistro);
+        // ELIMINAR DOCUMENTO DE VACUNAS
+        this.router.put('/eliminar_carnet/base_servidor', [TokenValidation], VACUNA_CONTROLADOR.EliminarDocumento);
+        // ELIMINAR DOCUMENTO DE VACUNAS DEL SERVIDOR
+        this.router.put('/eliminar_carnet/servidor', [TokenValidation], VACUNA_CONTROLADOR.EliminarDocumentoServidor);
 
 
         // METODO REGISTRO DE TIPO DE VACUNA

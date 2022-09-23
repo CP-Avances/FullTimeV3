@@ -38,13 +38,13 @@
                     *ngIf="a.extencion === 'jpg' || a.extencion === 'jpeg' || a.extencion === 'png'">
                     <mat-icon style="color: rgb(58, 160, 255);">photo</mat-icon>
                 </td>
-                <td>{{a.file}}</td>
+                <td>{{a.nombre}}</td>
                 <td style="padding-top: 10px; text-align: center;">
                     <a mat-buttom type="button" (click)="DescargarArchivo(a.file)"
                         href="{{hipervinculo}}/archivosCargados/download/files/{{Dirname}}/{{a.file}}" target="_blank">
                         <mat-icon style="color: rgb(38, 184, 46);">cloud_download</mat-icon>
                     </a>
-                    <i *ngIf="subir" class="far fa-trash-alt" (click)="EliminarArchivo(a.file)" matSuffix
+                    <i *ngIf="subir" class="far fa-trash-alt" (click)="EliminarArchivo(a.file, a.id)" matSuffix
                         matTooltipPosition="right" matTooltip="Eliminar este documento">
                         <p>Eliminar</p>
                     </i>

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BuscarHora = exports.BuscarFecha = exports.FormatearHora = exports.FormatearFecha = exports.dia_completo = exports.dia_abreviado = exports.fechaHora = exports.enviarMail = exports.Credenciales = exports.puerto = exports.servidor = exports.cabecera_firma = exports.pie_firma = exports.logo_ = exports.nombre = exports.email = void 0;
+exports.BuscarHora = exports.BuscarFecha = exports.FormatearHora = exports.FormatearFecha = exports.dia_completo = exports.dia_abreviado = exports.fechaHora = exports.enviarCorreos = exports.enviarMail = exports.Credenciales = exports.puerto = exports.servidor = exports.cabecera_firma = exports.pie_firma = exports.logo_ = exports.nombre = exports.email = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const database_1 = __importDefault(require("../database"));
 const moment_1 = __importDefault(require("moment"));
@@ -88,6 +88,31 @@ const enviarMail = function (servidor, puerto) {
     return transporter;
 };
 exports.enviarMail = enviarMail;
+const enviarCorreos = function (servidor, puerto, email, pass) {
+    var seguridad = false;
+    if (puerto === 465) {
+        seguridad = true;
+    }
+    else {
+        seguridad = false;
+    }
+    const transporter = nodemailer_1.default.createTransport({
+        pool: true,
+        //maxConnections: 2,
+        maxMessages: Infinity,
+        //rateLimit: 14, // 14 emails/second max
+        //rateDelta: 1000,
+        host: servidor,
+        port: puerto,
+        secure: seguridad,
+        auth: {
+            user: email,
+            pass: pass
+        },
+    });
+    return transporter;
+};
+exports.enviarCorreos = enviarCorreos;
 const fechaHora = function () {
     var f = (0, moment_1.default)();
     var dia = moment_1.default.weekdays((0, moment_1.default)(f.format('YYYY-MM-DD')).day()).charAt(0).toUpperCase()

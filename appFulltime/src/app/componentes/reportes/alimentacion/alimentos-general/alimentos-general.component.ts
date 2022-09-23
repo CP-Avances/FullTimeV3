@@ -105,7 +105,7 @@ export class AlimentosGeneralComponent implements OnInit {
   // Método para ver la información del empleado 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
-    this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoLogueado = data;
       console.log('emple', this.empleadoLogueado)
     })

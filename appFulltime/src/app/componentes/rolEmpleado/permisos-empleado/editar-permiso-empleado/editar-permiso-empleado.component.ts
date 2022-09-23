@@ -189,7 +189,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   empleado: any = [];
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -401,7 +401,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     this.LimpiarCamposFecha();
     this.readonly = false;
     this.datosPermiso = [];
-    this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(datos => {
+    this.restTipoP.BuscarUnTipoPermiso(form.idPermisoForm).subscribe(datos => {
       this.datosPermiso = datos;
       console.log(this.datosPermiso);
       if (this.datosPermiso[0].num_dia_maximo === 0) {
@@ -542,7 +542,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     }
   }
 
-  InsertarPermiso(form) {
+  InsertarPermiso(form: any) {
     var depa_user_loggin = parseInt(this.actuales[0].id_departamento);
     let datosPermiso = {
       depa_user_loggin: depa_user_loggin,
@@ -566,16 +566,16 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     console.log(datosPermiso);
     this.CambiarValoresDiasHoras(form, datosPermiso);
     console.log(datosPermiso);
-    this.CambiarValorDiaLibre(datosPermiso);
+    this.CambiarValorDiaLibre(datosPermiso, form);
   }
 
-  CambiarValorDiaLibre(datos) {
+  CambiarValorDiaLibre(datos: any, form: any) {
     if (datos.dia_libre === '') {
       datos.dia_libre = 0;
-      this.ActualizarDatos(datos);
+      this.ActualizarDatos(datos, form);
     }
     else {
-      this.ActualizarDatos(datos);
+      this.ActualizarDatos(datos, form);
     }
   }
 
@@ -825,7 +825,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   }
 
   NotifiRes: any;
-  ActualizarDatos(datos) {
+  ActualizarDatos(datos: any, form: any) {
     if (this.isChecked === true) {
       this.LimpiarNombreArchivo();
       if (this.archivoSubido != undefined) {
@@ -834,7 +834,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
             this.toastr.success('Operación Exitosa', 'Permiso Editado', {
               timeOut: 6000,
             });
-            this.SubirRespaldo(this.info.dataPermiso.id);
+            this.SubirRespaldo(this.info.dataPermiso.id, form);
             permiso.EmpleadosSendNotiEmail.push(this.solInfo);
             this.EnviarCorreo(permiso);
             this.EnviarNotificacion(permiso);
@@ -922,13 +922,13 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     }
   }
 
-  SubirRespaldo(id: number) {
+  SubirRespaldo(id: number, form: any) {
     let formData = new FormData();
     console.log("tamaño", this.archivoSubido[0].size);
     for (var i = 0; i < this.archivoSubido.length; i++) {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
-    this.restP.SubirArchivoRespaldo(formData, id).subscribe(res => {
+    this.restP.SubirArchivoRespaldo(formData, id, form.nombreCertificadoForm).subscribe(res => {
       this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
         timeOut: 6000,
       });
@@ -1003,7 +1003,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   CargarInformacion(id) {
     this.LimpiarCamposFecha();
     this.datosPermiso = [];
-    this.restTipoP.getOneTipoPermisoRest(id).subscribe(datos => {
+    this.restTipoP.BuscarUnTipoPermiso(id).subscribe(datos => {
       this.datosPermiso = datos;
       console.log(this.datosPermiso);
       if (this.datosPermiso[0].num_dia_maximo === 0) {

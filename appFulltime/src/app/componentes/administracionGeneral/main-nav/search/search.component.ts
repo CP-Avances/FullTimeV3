@@ -49,7 +49,7 @@ export class SearchComponent implements OnInit {
       this.buscar_empl = empleados
     } else {
       // console.log('entra aqui solo al iniciar sesion');
-      this.empleadoService.getBuscadorEmpledosRest().subscribe(res => {
+      this.empleadoService.BuscarListaEmpleados().subscribe(res => {
         let ObjetoJSON = JSON.stringify(res)
         sessionStorage.setItem('lista-empleados', ObjetoJSON)
         res.forEach(obj => {

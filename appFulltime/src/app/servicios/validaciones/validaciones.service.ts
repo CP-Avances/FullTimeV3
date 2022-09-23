@@ -139,10 +139,18 @@ export class ValidacionesService {
   dia_completo: string = 'dddd';
 
   FormatearFecha(fecha: string, formato: string, dia: string) {
-    let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
-      moment(fecha).format(dia).slice(1) +
-      ', ' + moment(fecha).format(formato);
-    return valor;
+    if (dia === 'ddd') {
+      let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
+        moment(fecha).format(dia).slice(1) +
+        ' ' + moment(fecha).format(formato);
+      return valor;
+    }
+    else {
+      let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
+        moment(fecha).format(dia).slice(1) +
+        ', ' + moment(fecha).format(formato);
+      return valor;
+    }
   }
 
   FormatearHora(hora: string, formato: string) {

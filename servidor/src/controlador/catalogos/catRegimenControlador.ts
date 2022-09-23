@@ -1,13 +1,17 @@
-import { Request, Response, text } from 'express';
+import { Request, Response } from 'express';
 import fs from 'fs';
-const builder = require('xmlbuilder');
-
 import pool from '../../database';
+const builder = require('xmlbuilder');
 
 class RegimenControlador {
 
+    // METODO PARA BUSCAR LISTA DE REGIMEN
     public async ListarRegimen(req: Request, res: Response) {
-        const REGIMEN = await pool.query('SELECT * FROM cg_regimenes ORDER BY descripcion ASC');
+        const REGIMEN = await pool.query(
+            `
+            SELECT * FROM cg_regimenes ORDER BY descripcion ASC
+            `
+        );
         if (REGIMEN.rowCount > 0) {
             return res.jsonp(REGIMEN.rows)
         }
@@ -16,6 +20,9 @@ class RegimenControlador {
         }
     }
 
+
+
+    
     public async ListarUnRegimen(req: Request, res: Response): Promise<any> {
         const { id } = req.params;
         const REGIMEN = await pool.query('SELECT * FROM cg_regimenes WHERE id = $1', [id]);

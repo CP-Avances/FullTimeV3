@@ -89,7 +89,7 @@ export class CrearTimbreComponent implements OnInit {
   empleadoUno: any = [];
   VerDatosEmpleado(idemploy: number) {
     this.empleadoUno = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoUno = data;
     })
   }

@@ -109,7 +109,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
   contratoBuscado: any = [];
   ObtenerContratosEmpleado(formato_fecha: string) {
     this.contratoBuscado = [];
-    this.restEmpleado.BuscarContratoEmpleadoRegimen(parseInt(this.idEmpleado)).subscribe(res => {
+    this.restEmpleado.BuscarContratosEmpleado(parseInt(this.idEmpleado)).subscribe(res => {
       this.contratoBuscado = res;
       this.contratoBuscado.forEach(data => {
         data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);

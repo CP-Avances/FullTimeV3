@@ -166,18 +166,20 @@ class PermisosControlador {
 
         const { fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
             id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
-            docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo,
+            estado, id_empl_cargo, hora_salida, hora_ingreso, codigo,
             depa_user_loggin } = req.body;
 
         const response: QueryResult = await pool.query(
-            'INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, ' +
-            'dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, ' +
-            'docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) ' +
-            'VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 ) ' +
-            'RETURNING * ',
+            `
+            INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, 
+            dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, 
+            estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) 
+            VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17 ) 
+            RETURNING * 
+            `,
             [fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
                 id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
-                docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
+                estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
 
         const [objetoPermiso] = response.rows;
 
@@ -251,11 +253,12 @@ class PermisosControlador {
     public async GuardarDocumentoPermiso(req: Request, res: Response): Promise<void> {
         let list: any = req.files;
         let doc = list.uploads[0].path.split("\\")[1];
+        let { documento } = req.params;
         let id = req.params.id
         await pool.query(
             `
-            UPDATE permisos SET documento = $2 WHERE id = $1
-            `, [id, doc]);
+            UPDATE permisos SET documento = $2, docu_nombre = $3 WHERE id = $1
+            `, [id, doc, documento]);
         res.jsonp({ message: 'Documento Actualizado' });
     }
 

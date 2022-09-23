@@ -176,7 +176,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
       this.usuario = this.empleado[0].nombre + ' ' + this.empleado[0].apellido;
     })

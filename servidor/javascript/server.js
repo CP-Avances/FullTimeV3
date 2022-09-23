@@ -252,7 +252,7 @@ const ContarHoras_1 = require("./libs/ContarHoras");
 const NotiTimbres_1 = require("./libs/NotiTimbres");
 const SinTimbres_1 = require("./libs/SinTimbres");
 const DesactivarEmpleado_1 = require("./libs/DesactivarEmpleado");
-// llama al meodo de cumpleaños
+// LLAMA AL MEODO DE CUMPLEAÑOS
 (0, sendBirthday_1.cumpleanios)();
 // llama al metodo de avisos de vacaciones
 (0, avisoVacaciones_1.beforeFiveDays)();

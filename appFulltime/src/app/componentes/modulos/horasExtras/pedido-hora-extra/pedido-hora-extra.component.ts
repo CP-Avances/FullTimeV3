@@ -151,7 +151,7 @@ export class PedidoHoraExtraComponent implements OnInit {
   empleados: any = [];
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
     })
   }

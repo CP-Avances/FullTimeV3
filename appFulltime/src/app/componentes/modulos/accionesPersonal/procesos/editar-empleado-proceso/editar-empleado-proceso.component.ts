@@ -56,7 +56,7 @@ export class EditarEmpleadoProcesoComponent implements OnInit {
   // metodo para ver la informacion del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
-    this.rest.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
       console.log(this.empleados)
       this.EmpleProcesoForm.patchValue({

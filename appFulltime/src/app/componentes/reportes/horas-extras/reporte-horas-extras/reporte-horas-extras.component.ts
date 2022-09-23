@@ -91,7 +91,7 @@ export class ReporteHorasExtrasComponent implements OnInit {
   // Método para ver la informacion del empleado 
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
     this.empleadoD = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoD = data;
     });
 

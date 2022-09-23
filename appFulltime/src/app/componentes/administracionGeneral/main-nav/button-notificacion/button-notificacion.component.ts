@@ -46,7 +46,7 @@ export class ButtonNotificacionComponent implements OnInit {
           // BUSQUEDA DE LOS DATOS DE LA NOTIFICACION RECIBIDA
           this.realTime.ObtenerUnaNotificacion(data.id).subscribe(res => {
             // TRATAMIENTO DE LOS DATOS DE LA NOTIFICACION
-            res.fecha_ = this.validar.FormatearFecha(moment(res.create_at).format('DD/MM/YYYY'), this.formato_fecha, this.validar.dia_abreviado);
+            res.fecha_ = this.validar.FormatearFecha(moment(res.create_at).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_abreviado);
             res.hora_ = this.validar.FormatearHora(moment(res.create_at).format('HH:mm:ss'), this.formato_hora);
 
             if (res.mensaje.split('para')[0] != undefined && res.mensaje.split('para')[1] != undefined) {
@@ -130,7 +130,7 @@ export class ButtonNotificacionComponent implements OnInit {
       if (!this.avisos.text) {
         if (this.avisos.length > 0) {
           this.avisos.forEach(obj => {
-            obj.fecha_ = this.validar.FormatearFecha(moment(obj.create_at).format('DD/MM/YYYY'), formato_fecha, this.validar.dia_abreviado);
+            obj.fecha_ = this.validar.FormatearFecha(moment(obj.create_at).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_abreviado);
             obj.hora_ = this.validar.FormatearHora(moment(obj.create_at).format('HH:mm:ss'), formato_hora);
             if (obj.visto === false) {
               this.num_noti_false = this.num_noti_false + 1;

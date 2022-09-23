@@ -13,76 +13,92 @@
     <br>
     <form [formGroup]="nuevoHorarioForm">
         <div class="row">
-            <div class="col">
-                <mat-form-field>
-                    <mat-label>Nombre de Horario</mat-label>
-                    <input matInput placeholder="Ej: Contabilidad" [formControl]="nombre" required>
-                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                        matTooltip="Indicar un nombre con el cual se va a identificar al nuevo horario">
-                        help_outline</mat-icon>
-                    <mat-error *ngIf="nombre.invalid">{{ObtenerMensajeErrorNombre()}}</mat-error>
-                    <mat-error *ngIf="nombre.invalid">Ingresar un nombre válido</mat-error>
-                    <br>
-                </mat-form-field>
-                <mat-form-field>
-                    <mat-label>Minutos de alimentación</mat-label>
-                    <input type="number" matInput placeholder="Ej: 60" [formControl]="minAlmuerzo"
-                        (keypress)="IngresarSoloNumerosEnteros($event)">
-                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                        matTooltip="Indicar los minutos de alimentación que se disponen el empleado en el nuevo horario.">
-                        help_outline</mat-icon>
-                </mat-form-field>
-            </div>
-            <div class="col">
-                <mat-form-field>
-                    <mat-label>Horas de Trabajo</mat-label>
-                    <input matInput placeholder="Ej: 8:15 " [formControl]="horaTrabajo" required
-                        (keypress)="IngresarNumeroDecimal($event)">
-                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Indicar el número de horas de trabajo. 
-                    En caso de que sean horas y minutos ingresar de esta manera 10 : 35">
-                        help_outline</mat-icon>
-                    <mat-error id="hora" *ngIf="horaTrabajo.invalid">{{ObtenerMensajeErrorHoraTrabajo()}}</mat-error>
-                </mat-form-field>
-                <div>
-                    <mat-checkbox [formControl]="tipoF" [(ngModel)]="nocturno">Horario Nocturno
-                    </mat-checkbox>
-                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                        matTooltip="Indicar si el horario es Nocturno.">
-                        help_outline</mat-icon>
-                </div>
-                <div>
-                    <mat-checkbox [formControl]="detalleF" [(ngModel)]="detalle">Requiere Detalle
-                    </mat-checkbox>
-                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                        matTooltip="Indicar si el horario requiere ingreso de detalles.">
-                        help_outline</mat-icon>
+            <div class="col-md">
+                <div class="d-flex flex-wrap justify-content-around">
+                    <mat-form-field>
+                        <mat-label>Nombre de Horario</mat-label>
+                        <input matInput placeholder="Ej: Contabilidad" [formControl]="nombre" required>
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Ingresar un nombre de horario.">
+                            help_outline</mat-icon>
+                        <mat-error *ngIf="nombre.invalid">Ingresar un nombre válido</mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Minutos de alimentación</mat-label>
+                        <input type="number" matInput placeholder="Ej: 60" [formControl]="minAlmuerzo"
+                            (keypress)="IngresarSoloNumerosEnteros($event)">
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Ingresar minutos de alimentación que dispondrá el usuario.">
+                            help_outline</mat-icon>
+                    </mat-form-field>
                 </div>
             </div>
-            <div class="col" *ngIf="isChecked">
+            <div class="col-md">
+                <div class="d-flex flex-wrap justify-content-around">
+                    <mat-form-field>
+                        <mat-label>Horas de Trabajo</mat-label>
+                        <input matInput placeholder="Ej: 8:15 " [formControl]="horaTrabajo" required
+                            (keypress)="IngresarNumeroCaracter($event)">
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Indicar el número de horas de trabajo. 
+                    En caso de horas y minutos ingresar en el siguiente formato 10 : 35">
+                            help_outline</mat-icon>
+                        <mat-error id="hora" *ngIf="horaTrabajo.invalid">{{ObtenerMensajeErrorHoraTrabajo()}}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-checkbox id="check" [formControl]="tipoF" [(ngModel)]="nocturno" matSuffix
+                        matTooltipPosition="right" matTooltip="Marcar si el horario es Nocturno.">Horario Nocturno
+                    </mat-checkbox>
+
+                    <mat-checkbox id="check_" [formControl]="detalleF" [(ngModel)]="detalle" matSuffix
+                        matTooltipPosition="right"
+                        matTooltip="Marcar si el horario requiere detalles de entrada, alimentación, salida.">Requiere
+                        Detalle
+                    </mat-checkbox>
+                </div>
+            </div>
+            <div class="col-md" *ngIf="isChecked">
                 <div class="d-flex flex-wrap justify-content-center">
-                    <div class="row">
-                        <form method="post" enctype="multipart/form-data">
-                            <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
-                            <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" id="i-cursor" matSuffix
-                                matTooltipPosition="right"
-                                matTooltip="Subir documento que respalde la creación de horario, solo en caso de ser necesario como un respaldo de cambios en el horario.">
-                                Documento</label>
-                        </form>
-                        <br>
-                        <div class="row">
-                            <input type="text" placeholder="Ningún archivo seleccionado" class="form-control"
-                                style="width: 230px;" [formControl]="nombreCertificadoF">
-                        </div>
-                        <br><br>
-                        <div class="row" *ngIf="HabilitarBtn">
-                            <div class="col"></div>
-                            <div class="col">
-                                <button class="btn btn-sm" type="submit" (click)="deseleccionarArchivo()">Quitar
-                                    Documento</button>
+                    <section class="d-flex flex-column bd-highlight" style="padding-top: 20px;">
+                        <mat-radio-group aria-label="Select an option" [formControl]="seleccion">
+                            <div class="bd-highlight">
+                                <div class="row">
+                                    <div class="col-md">
+                                        <mat-radio-button value=1 (click)="QuitarArchivo()">Retirar archivo
+                                        </mat-radio-button>
+                                    </div>
+                                    <div class="col-md">
+                                        <mat-radio-button value=2 (click)="ActivarArchivo()">Actualizar archivo
+                                        </mat-radio-button>
+                                    </div>
+                                    <div class="col-md" *ngIf="acciones">
+                                        <mat-radio-button value=3 (click)="LimpiarAcciones()">Cancelar
+                                        </mat-radio-button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col"></div>
+                        </mat-radio-group>
+                    </section>
+                    <section class="d-flex flex-column bd-highlight" style="padding-top: 20px;" *ngIf="activar">
+                        <div class="separar">
+                            <form method="post" enctype="multipart/form-data">
+                                <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
+                                <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" id="i-cursor" matSuffix
+                                    matTooltipPosition="right"
+                                    matTooltip="Subir documento que respalde la creación de horario, solo en caso de ser necesario como un respaldo de cambios en el horario.">
+                                    Documento</label>
+                            </form>
                         </div>
-                    </div>
+                        <div class="separar">
+                            <input type="text" id="respaldo" placeholder="Ningún archivo seleccionado"
+                                class="form-control" style="width: 200px;" [formControl]="documentoF">
+
+                            <i *ngIf="HabilitarBtn" class="far fa-trash-alt" style="color:red; margin-left: 5px;"
+                                id="i-cursor" (click)="RetirarArchivo()" matSuffix matTooltipPosition="right"
+                                matTooltip="Eliminar archivo seleccionado.">
+                            </i>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
