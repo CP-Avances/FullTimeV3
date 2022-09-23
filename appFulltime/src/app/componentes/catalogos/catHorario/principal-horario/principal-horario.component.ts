@@ -156,9 +156,11 @@ export class PrincipalHorarioComponent implements OnInit {
 
   // MÉTODO PARA ABRIR VENTANA EDITAR HORARIO
   AbrirVentanaEditarHorario(datosSeleccionados: any): void {
-    this.ventana.open(EditarHorarioComponent, { width: '900px', data: { horario: datosSeleccionados, actualizar: false } }).afterClosed().subscribe(items => {
-      this.ObtenerHorarios();
-    });
+    this.ventana.open(EditarHorarioComponent,
+      { width: '900px', data: { horario: datosSeleccionados, actualizar: false } })
+      .afterClosed().subscribe(items => {
+        this.ObtenerHorarios();
+      });
   }
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN

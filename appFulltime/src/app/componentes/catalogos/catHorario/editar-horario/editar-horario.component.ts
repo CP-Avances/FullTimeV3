@@ -222,14 +222,12 @@ export class EditarHorarioComponent implements OnInit {
   // MÉTODO PARA NAVEGAR ENTRE VENTANAS
   SalirActualizar(datos: any, response: any) {
     if (this.data.actualizar === false) {
-      this.LimpiarCampos();
       this.ventana.close(response);
       if (datos.detalle != false) {
         this.router.navigate(['/verHorario/', this.data.horario.id]);
       }
     }
     else {
-      this.LimpiarCampos();
       this.ventana.close(response);
       if (datos.detalle != true) {
         this.router.navigate(['/horario']);
@@ -268,9 +266,6 @@ export class EditarHorarioComponent implements OnInit {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.rest.SubirArchivo(formData, id, form.documentoForm).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
-        timeOut: 6000,
-      });
       this.archivoForm.reset();
       this.nameFile = '';
     });

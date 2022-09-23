@@ -72,9 +72,9 @@ class HorarioControlador {
     try {
       const respuesta = await pool.query(
         `
-        UPDATE cg_horarios SET nombre = $1, min_almuerzo = $2, hora_trabajo = $3, doc_nombre = $4, 
-        nocturno = $5, detalle = $6 
-        WHERE id = $7 RETURNING *
+        UPDATE cg_horarios SET nombre = $1, min_almuerzo = $2, hora_trabajo = $3,  
+        nocturno = $4, detalle = $5 
+        WHERE id = $6 RETURNING *
         `
         , [nombre, min_almuerzo, hora_trabajo, nocturno, detalle, id])
         .then(result => { return result.rows })
@@ -94,7 +94,7 @@ class HorarioControlador {
 
     await pool.query(
       `
-            UPDATE cg_horarios SET documento = null, doc_nombre = null  WHERE id = $1
+            UPDATE cg_horarios SET documento = null, doc_nombre = null WHERE id = $1
             `
       , [id]);
 
@@ -126,7 +126,7 @@ class HorarioControlador {
 
 
 
-  
+
 
 
   public async ListarHorarios(req: Request, res: Response) {
