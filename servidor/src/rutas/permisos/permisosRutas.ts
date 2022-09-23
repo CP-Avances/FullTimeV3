@@ -30,7 +30,7 @@ class PermisosRutas {
 
         this.router.post('/fechas_permiso/:codigo', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerFechasPermiso);
         this.router.post('/permisos-solicitados', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisos_Fechas);
-
+        this.router.post('/permisos-solicitados/movil', PERMISOS_CONTROLADOR.BuscarPermisos_Fechas);
         /** ************************************************************************************************** **
          ** **                         METODOS PARA MANEJO DE PERMISOS                                      ** **
          ** ************************************************************************************************** **/
