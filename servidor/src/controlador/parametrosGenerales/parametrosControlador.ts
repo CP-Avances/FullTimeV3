@@ -7,7 +7,7 @@ class ParametrosControlador {
 
     // MÉTODO PARA LISTAR PARÁMETROS GENERALES
     public async ListarParametros(req: Request, res: Response) {
-        const PARAMETRO = await pool.query('SELECT * FROM tipo_parametro ORDER BY descripcion ASC');
+        const PARAMETRO = await pool.query('SELECT * FROM tipo_parametro ORDER BY id DESC');
         if (PARAMETRO.rowCount > 0) {
             return res.jsonp(PARAMETRO.rows)
         }
@@ -16,7 +16,7 @@ class ParametrosControlador {
         }
     }
 
-    // MÉTODO PARA LISTAR UN PARÁMETRO GENERALE
+    // MÉTODO PARA LISTAR UN PARÁMETRO GENERALES
     public async ListarUnParametro(req: Request, res: Response) {
         const { id } = req.params;
         const PARAMETRO = await pool.query('SELECT * FROM tipo_parametro WHERE id = $1', [id]);

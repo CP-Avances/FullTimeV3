@@ -4,7 +4,7 @@
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <span class="w-100 bd-highlight">
-                LISTA DE PLANIFICACIONES REGISTRADAS</span>
+                LISTA DE PLANIFICACIONES DE ALIMENTACIÓN REGISTRADAS</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -23,10 +23,10 @@
                     <tr *ngFor="let e of planificaciones | paginate:tamanio_pagina:numero_pagina">
                         <td>{{e.nombre_servicio}}</td>
                         <td>{{e.nombre_menu}}</td>
-                        <td>{{e.fec_inicio.split('T')[0]}}</td>
-                        <td>{{e.fec_final.split('T')[0]}}</td>
-                        <td>{{e.hora_inicio}}</td>
-                        <td>{{e.hora_fin}}</td>
+                        <td>{{e.fecInicio}}</td>
+                        <td>{{e.fecFinal}}</td>
+                        <td>{{e.horaInicio}}</td>
+                        <td>{{e.horaFin}}</td>
                         <td class="d-flex justify-content-center">
                             <i *ngIf="ver_icono" class="fas fa-edit" (click)="HabilitarTablaEditar(e.id)" matSuffix
                                 matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro.">
@@ -66,7 +66,7 @@
                 id="cerrar">
                 close</mat-icon>
             <span class="w-100 bd-highlight">
-                LISTA DE COLABORADORES CON PLANIFICACIÓN</span>
+                LISTA DE COLABORADORES CON PLANIFICACIÓN DE ALIMENTACIÓN</span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -100,10 +100,10 @@
                         <td>{{e.nombre}}</td>
                         <td>{{e.nombre_servicio}}</td>
                         <td>{{e.nombre_menu}}</td>
-                        <td>{{e.fec_inicio.split('T')[0]}}</td>
-                        <td>{{e.fec_final.split('T')[0]}}</td>
-                        <td>{{e.hora_inicio}}</td>
-                        <td>{{e.hora_fin}}</td>
+                        <td>{{e.fecInicio}}</td>
+                        <td>{{e.fecFinal}}</td>
+                        <td>{{e.horaInicio}}</td>
+                        <td>{{e.horaFin}}</td>
                         <td class="d-flex justify-content-center">
                             <i *ngIf="ver_editar" class="fas fa-edit" (click)="AbrirEditarPlanComidas(e, 'individual')"
                                 matSuffix matTooltipPosition="right"

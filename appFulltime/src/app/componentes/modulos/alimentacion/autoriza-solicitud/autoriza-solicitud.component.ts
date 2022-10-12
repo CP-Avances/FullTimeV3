@@ -6,6 +6,8 @@ import * as moment from 'moment';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-autoriza-solicitud',
@@ -19,7 +21,9 @@ export class AutorizaSolicitudComponent implements OnInit {
   idEmpleadoIngresa: number;
 
   constructor(
+    public parametro: ParametrosService,
     public restPlan: PlanComidasService,
+    public validar: ValidacionesService,
     public ventana: MatDialogRef<AutorizaSolicitudComponent>,
     public aviso: RealTimeService,
     private informacion: DatosGeneralesService,
@@ -35,23 +39,60 @@ export class AutorizaSolicitudComponent implements OnInit {
   boton_negar: boolean = true;
 
   ngOnInit(): void {
-
-
     console.log('datos', this.data)
+
+    this.obtenerInformacionEmpleado();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.MostrarDatos(fecha);
+      },
+      vacio => {
+        this.MostrarDatos(fecha);
+      });
+  }
+
+  MostrarDatos(formato_fecha: string) {
     if (this.data.carga === 'multiple') {
       this.multiple = true;
     }
     else {
       this.individual = true;
-      this.data.datosMultiple.fecha_comida = moment.weekdays(moment(this.data.datosMultiple.fec_comida).day()).charAt(0).toUpperCase() +
-        moment.weekdays(moment(this.data.datosMultiple.fec_comida).day()).slice(1) +
-        ' ' + moment(this.data.datosMultiple.fec_comida).format('DD/MM/YYYY');
+      var info = this.data.datosMultiple;
+      info.fecha_comida_ = this.validar.FormatearFecha(info.fec_comida, formato_fecha, this.validar.dia_completo);
+      info.hora_inicio_ = this.validar.FormatearHora(info.hora_inicio, this.formato_hora);
+      info.hora_fin_ = this.validar.FormatearHora(info.hora_fin, this.formato_hora);
 
-      if (this.data.datosMultiple.aprobada === 'AUTORIZADO') {
+      if (info.aprobada === 'AUTORIZADO') {
         this.boton_autorizar = false;
         this.boton_negar = true;
       }
-      else if (this.data.datosMultiple.aprobada === 'NEGADO') {
+      else if (info.aprobada === 'NEGADO') {
         this.boton_autorizar = true;
         this.boton_negar = false;
       }
@@ -60,7 +101,6 @@ export class AutorizaSolicitudComponent implements OnInit {
         this.boton_negar = true;
       }
     }
-    this.obtenerInformacionEmpleado();
   }
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
@@ -109,8 +149,6 @@ export class AutorizaSolicitudComponent implements OnInit {
     })
   }
 
-
-
   // METODO DE APROBACIÓN DE SOLICITUDES DE ALIMENTACIÓN
   AprobarComida(alimentacion: any, estado: boolean) {
     let datosPlanEmpleado = {
@@ -126,7 +164,6 @@ export class AutorizaSolicitudComponent implements OnInit {
       this.NotificarAprobacion(estado, alimentacion);
     });
   }
-
 
   ActualizarEstadoMultiple(estado: boolean) {
     var nombre_estado = '';
@@ -174,9 +211,6 @@ export class AutorizaSolicitudComponent implements OnInit {
         }
       })
     })
-
-
-
   }
 
 
@@ -214,7 +248,7 @@ export class AutorizaSolicitudComponent implements OnInit {
     var correo_usuarios = '';
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
-    let solicitud = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
 
     alimentacion.EmpleadosSendNotiEmail.forEach(e => {
 
@@ -237,15 +271,15 @@ export class AutorizaSolicitudComponent implements OnInit {
         let comida = {
           id_usua_solicita: alimentacion.id_empleado,
           tipo_solicitud: 'Servicio de alimentación ' + estado_a.toLowerCase() + ' por',
-          fec_solicitud: solicitud + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY'),
+          fec_solicitud: solicitud,
           observacion: alimentacion.observacion,
           id_comida: alimentacion.id_comida,
           proceso: estado_a.toLowerCase(),
           estadoc: estado_a,
           correo: correo_usuarios,
           asunto: 'SOLICITUD DE SERVICIO DE ALIMENTACION ' + estado_c.toUpperCase(),
-          inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
-          final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),
+          inicio: this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora),
+          final: this.validar.FormatearHora(alimentacion.hora_fin, this.formato_hora),
           extra: alimentacion.extra,
           id: alimentacion.id,
           solicitado_por: localStorage.getItem('fullname_print'),
@@ -280,9 +314,10 @@ export class AutorizaSolicitudComponent implements OnInit {
   NotificarEvento(alimentacion: any, estado_a: string) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
-    let desde = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
-    let inicio = moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm');
-    let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
+    let desde = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
+
+    let inicio = this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora);
+    let final = this.validar.FormatearHora(alimentacion.hora_fin, this.formato_hora);
 
     let mensaje = {
       id_empl_envia: this.idEmpleadoIngresa,
@@ -290,7 +325,7 @@ export class AutorizaSolicitudComponent implements OnInit {
       tipo: 2, // SOLICITUD SERVICIO DE ALIMENTACIÓN REVISADAS
       mensaje: 'Ha ' + estado_a.toLowerCase() + ' la solicitud de alimentación para ' +
         this.solInfo.fullname + ' desde ' +
-        desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
+        desde +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',
       id_comida: alimentacion.id_comida
     }
@@ -306,21 +341,6 @@ export class AutorizaSolicitudComponent implements OnInit {
     })
 
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   Cerrar() {
     this.ventana.close();

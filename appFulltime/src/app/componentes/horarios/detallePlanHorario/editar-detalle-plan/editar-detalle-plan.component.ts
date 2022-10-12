@@ -67,12 +67,12 @@ export class EditarDetallePlanComponent implements OnInit {
 
   BuscarHorarios() {
     this.horarios = [];
-    this.restH.getHorariosRest().subscribe(datos => {
+    this.restH.BuscarListaHorarios().subscribe(datos => {
       this.horarios = datos;
     })
   }
 
-  ValidarRegistro(form) {
+  ValidarRegistro(form: any) {
     var fin = this.data.plan.fec_final.split('T')[0];
     var inicio = this.data.plan.fec_inicio.split('T')[0];
     var ingreso = String(moment(form.fechaForm, "YYYY/MM/DD").format("YYYY-MM-DD"));

@@ -15,6 +15,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EMPLEADO_CARGO_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../../database"));
 class EmpleadoCargosControlador {
+    // METODO BUSQUEDA DATOS DEL CARGO DE UN USUARIO
+    ObtenerCargoID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const unEmplCargp = yield database_1.default.query(`
+      SELECT ec.id, ec.id_empl_contrato, ec.cargo, ec.fec_inicio, ec.fec_final, ec.sueldo, 
+      ec.hora_trabaja, ec.id_sucursal, s.nombre AS sucursal, ec.id_departamento, 
+      d.nombre AS departamento, e.id AS id_empresa, e.nombre AS empresa, tc.cargo AS nombre_cargo 
+      FROM empl_cargos AS ec, sucursales AS s, cg_departamentos AS d, cg_empresa AS e, 
+      tipo_cargo AS tc 
+      WHERE ec.id = $1 AND ec.id_sucursal = s.id AND ec.id_departamento = d.id AND 
+      s.id_empresa = e.id AND ec.cargo = tc.id 
+      ORDER BY ec.id
+      `, [id]);
+            if (unEmplCargp.rowCount > 0) {
+                return res.jsonp(unEmplCargp.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Cargo del empleado no encontrado' });
+            }
+        });
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const Cargos = yield database_1.default.query('SELECT * FROM empl_cargos');
@@ -46,18 +68,6 @@ class EmpleadoCargosControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'Registro no encontrado' });
-            }
-        });
-    }
-    getOne(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const unEmplCargp = yield database_1.default.query('SELECT ec.id, ec.id_empl_contrato, ec.cargo, ec.fec_inicio, ec.fec_final, ec.sueldo, ec.hora_trabaja, ec.id_sucursal, s.nombre AS sucursal, d.id AS id_departamento, d.nombre AS departamento, e.id AS id_empresa, e.nombre AS empresa FROM empl_cargos AS ec, sucursales AS s, cg_departamentos AS d, cg_empresa AS e WHERE ec.id = $1 AND ec.id_sucursal = s.id AND ec.id_departamento = d.id AND s.id_empresa = e.id ORDER BY ec.id', [id]);
-            if (unEmplCargp.rowCount > 0) {
-                return res.jsonp(unEmplCargp.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Cargo del empleado no encontrado' });
             }
         });
     }

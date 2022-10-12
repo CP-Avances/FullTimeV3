@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
+
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
   templateUrl: './recuperar-frase.component.html',
   styleUrls: ['./recuperar-frase.component.css']
 })
+
 export class RecuperarFraseComponent implements OnInit {
 
   token: string;
@@ -20,7 +22,7 @@ export class RecuperarFraseComponent implements OnInit {
   NuevaFrase = new FormControl('', Validators.maxLength(100));
 
   // CAMPOS DEL FORMULARIO EN UN GRUPO
-  public fraseForm = new FormGroup({
+  public formulario = new FormGroup({
     nFrase: this.NuevaFrase,
   });
 

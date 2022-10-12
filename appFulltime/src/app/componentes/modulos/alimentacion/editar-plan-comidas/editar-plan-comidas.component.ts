@@ -14,6 +14,7 @@ import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.s
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-editar-plan-comidas',
@@ -61,12 +62,13 @@ export class EditarPlanComidasComponent implements OnInit {
 
   constructor(
     public restPlan: PlanComidasService, // SERVICIO DATOS PLAN COMIDAS
+    public validar: ValidacionesService,
     public ventana: MatDialogRef<EditarPlanComidasComponent>, // VENTANA EN FORMATO DIALOGO
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADOS
     public aviso: RealTimeService,
     private toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
     private restH: EmpleadoHorariosService, // SERVICIO DATOS HORARIO DE EMPLEADOS
-    private restP: ParametrosService,
+    private parametro: ParametrosService,
     private rest: TipoComidasService, // SERVICIO DATOS TIPOS DE COMIDAS
     @Inject(MAT_DIALOG_DATA) public data: any, // PASAR DATOS DE LA VENTANA ANTERIOR
   ) {
@@ -74,10 +76,36 @@ export class EditarPlanComidasComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('datos', this.data)
+    console.log('datos editar plan', this.data)
     this.ObtenerServicios();
     this.CargarDatos();
     this.BuscarParametro();
+    this.BuscarFecha();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarFecha() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   // MÉTODO PARA CARGAR LA INFORMACIÓN DE LA PLANIFICACIÓN SELECCIONADA EN EL FORMULARIO
@@ -184,7 +212,7 @@ export class EditarPlanComidasComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
     })
   }
@@ -304,10 +332,11 @@ export class EditarPlanComidasComponent implements OnInit {
           let cuenta_correo = this.data.solicitud.correo;
 
           // LECTURA DE DATOS DE LA PLANIFICACIÓN
-          let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-          let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-          let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-          let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+          let desde = this.validar.FormatearFecha(plan.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+          let hasta = this.validar.FormatearFecha(plan.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+          let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora);
+          let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
           this.fechasHorario.map(obj => {
             planEmpleado.fecha = obj;
@@ -485,10 +514,11 @@ export class EditarPlanComidasComponent implements OnInit {
       var plan = res.info;
 
       // LECTURA DE DATOS DE LA PLANIFICACIÓN
-      let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-      let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-      let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-      let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+      let desde = this.validar.FormatearFecha(plan.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+      let hasta = this.validar.FormatearFecha(plan.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+      let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora);
+      let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
       this.fechasHorario = []; // ARRAY QUE CONTIENE TODAS LAS FECHAS DEL MES INDICADO
       // INICIALIZAR DATOS DE FECHA
@@ -568,8 +598,8 @@ export class EditarPlanComidasComponent implements OnInit {
       correo: cuenta_correo,
       inicio: h_inicio,
       extra: datos.extra,
-      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       final: h_fin,
     }
 
@@ -606,8 +636,7 @@ export class EditarPlanComidasComponent implements OnInit {
       id_empl_recive: id_empleado_recibe,
       tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
       mensaje: 'Planificación de alimentación actualizada desde ' +
-        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        desde + ' hasta ' + hasta +
         ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
     }
     this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {
@@ -626,7 +655,7 @@ export class EditarPlanComidasComponent implements OnInit {
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
     let datos = [];
-    this.restP.ListarDetalleParametros(24).subscribe(
+    this.parametro.ListarDetalleParametros(24).subscribe(
       res => {
         datos = res;
         if (datos.length != 0) {

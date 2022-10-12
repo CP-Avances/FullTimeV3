@@ -150,7 +150,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
     this.empleadoD = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoD = data;
     });
   }

@@ -1,12 +1,31 @@
 import { Request, Response } from 'express';
 import { RestarPeriodoVacacionAutorizada } from '../../libs/CargarVacacion';
-import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales }
+import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales,
+  FormatearFecha, FormatearHora, dia_completo }
   from '../../libs/settingsMail'
 import { QueryResult } from 'pg';
 import pool from '../../database';
 import path from 'path';
 
 class VacacionesControlador {
+
+  public async VacacionesIdPeriodo(req: Request, res: Response) {
+    const { id } = req.params;
+    const VACACIONES = await pool.query(
+      `
+      SELECT v.fec_inicio, v.fec_final, fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, 
+      v.legalizado, v.id, v.id_peri_vacacion 
+      FROM vacaciones AS v, peri_vacaciones AS p 
+      WHERE v.id_peri_vacacion = p.id AND p.id = $1 ORDER BY v.id DESC
+      `
+      , [id]);
+    if (VACACIONES.rowCount > 0) {
+      return res.jsonp(VACACIONES.rows)
+    }
+    else {
+      return res.status(404).jsonp({ text: 'No se encuentran registros' });
+    }
+  }
 
   public async ListarVacaciones(req: Request, res: Response) {
     const VACACIONES = await pool.query(`
@@ -41,21 +60,7 @@ class VacacionesControlador {
   }
 
 
-  public async VacacionesIdPeriodo(req: Request, res: Response) {
-    const { id } = req.params;
-    const VACACIONES = await pool.query(`
-    SELECT v.fec_inicio, v.fec_final, fec_ingreso, v.estado, v.dia_libre, v.dia_laborable, v.legalizado, 
-    v.id, v.id_peri_vacacion 
-    FROM vacaciones AS v, peri_vacaciones AS p 
-    WHERE v.id_peri_vacacion = p.id AND p.id = $1 ORDER BY v.fec_inicio DESC
-    `, [id]);
-    if (VACACIONES.rowCount > 0) {
-      return res.jsonp(VACACIONES.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'No se encuentran registros' });
-    }
-  }
+
 
 
 
@@ -366,6 +371,8 @@ class VacacionesControlador {
   public async EnviarCorreoVacacion(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
 
     const path_folder = path.resolve('logos');
 
@@ -414,13 +421,13 @@ class VacacionesControlador {
                        <b>Cargo:</b> ${correoInfoPideVacacion.rows[0].tipo_cargo} <br>
                        <b>Departamento:</b> ${correoInfoPideVacacion.rows[0].departamento} <br>
                        <b>Generado mediante:</b> Aplicación Web <br>
-                       <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                       <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                       <b>Fecha de envío:</b> ${fecha} <br> 
+                       <b>Hora de envío:</b> ${hora} <br><br> 
                    </p>
                    <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                        <b>Motivo:</b> Vacaciones <br>   
-                       <b>Fecha de Solicitud:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                       <b>Fecha de Solicitud:</b> ${fecha} <br> 
                        <b>Desde:</b> ${desde} <br>
                        <b>Hasta:</b> ${hasta} <br>
                        <b>Estado:</b> ${estado_v} <br><br>
@@ -470,6 +477,8 @@ class VacacionesControlador {
   public async EnviarCorreoVacacionesMovil(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
 
     const path_folder = path.resolve('logos');
 
@@ -517,13 +526,13 @@ class VacacionesControlador {
                          <b>Cargo:</b> ${correoInfoPideVacacion.rows[0].tipo_cargo} <br>
                          <b>Departamento:</b> ${correoInfoPideVacacion.rows[0].departamento} <br>
                          <b>Generado mediante:</b> Aplicación Móvil <br>
-                         <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                         <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                         <b>Fecha de envío:</b> ${fecha} <br> 
+                         <b>Hora de envío:</b> ${hora} <br><br> 
                      </p>
                      <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                      <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                          <b>Motivo:</b> Vacaciones <br>   
-                         <b>Fecha de Solicitud:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
+                         <b>Fecha de Solicitud:</b> ${fecha} <br> 
                          <b>Desde:</b> ${desde} <br>
                          <b>Hasta:</b> ${hasta} <br>
                          <b>Estado:</b> ${estado_v} <br><br>

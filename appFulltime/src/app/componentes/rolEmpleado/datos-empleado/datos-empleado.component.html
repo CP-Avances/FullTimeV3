@@ -18,17 +18,20 @@
                             <div class="container" style="padding-top: 15px;">
                                 <div class="row">
                                     <div class="col-md d-flex align-items-center justify-content-center">
-                                        <div mat-card-avatar id="avatar" *ngIf="mostrarImagen">
+                                        <div mat-card-avatar id="avatar" *ngIf="mostrarImagen; else inic">
                                             <img src="{{urlImagen}}" alt="" id="avatarImagen">
                                         </div>
-                                        <div mat-card-avatar id="avatar" *ngIf="mostrarIniciales">
-                                            <span
-                                                class="btn iniciales d-flex align-items-center justify-content-center">{{iniciales}}</span>
-                                        </div>
+                                        <ng-template #inic>
+                                            <div mat-card-avatar id="avatar">
+                                                <span
+                                                    class="btn iniciales d-flex align-items-center justify-content-center">
+                                                    {{iniciales}}</span>
+                                            </div>
+                                        </ng-template>
                                     </div>
                                     <div class="col-md d-flex align-items-center justify-content-center">
                                         <form method="post" enctype="multipart/form-data">
-                                            <input (change)="fileChange($event)" type="file" [formControl]="archivoForm"
+                                            <input (change)="FileChange($event)" type="file" [formControl]="archivoForm"
                                                 id="file" accept="image/png, image/jpeg">
                                             <label for="file" class="btn-2">{{textoBoton}}</label>
                                         </form>
@@ -63,7 +66,7 @@
                                         <label class="col-sm col-form-label">Domicilio:</label>
                                     </div>
                                     <div class="col">
-                                        <label class="col col-form-label">{{e.domicilio}}</label>
+                                        <label class="col col-form-label">{{e.domicilio | titlecase}}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -79,7 +82,8 @@
                                         <label class="col-sm col-form-label">Fecha de Nacimiento:</label>
                                     </div>
                                     <div class="col">
-                                        <label class="col col-form-label">{{fechaNacimiento}}</label>
+                                        <label class="col col-form-label"> {{ e.fec_nacimiento_ }}
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -102,45 +106,41 @@
                                 </button>
                             </mat-grid-tile>
                             <mat-grid-tile>
-                                <button (click)="generarPdf('open')"
+                                <button (click)="GenerarPdf('open')"
                                     class="btn btn-block d-flex align-items-center justify-content-center"
                                     id="Selector">
                                     <i class="material-icons">picture_as_pdf</i><span>Abrir PDF</span>
                                 </button>
                             </mat-grid-tile>
                             <mat-grid-tile>
-                                <button (click)="generarPdf('download')"
+                                <button (click)="GenerarPdf('download')"
                                     class="btn btn-block d-flex align-items-center justify-content-center"
                                     id="Selector">
                                     <i class="material-icons">cloud_download</i><span>Descargar PDF</span>
                                 </button>
                             </mat-grid-tile>
                             <mat-grid-tile>
-                                <button (click)="exportToXML()"
+                                <button (click)="ExportToXML()"
                                     class="btn btn-block d-flex align-items-center justify-content-center"
                                     id="Selector">
                                     <i class="material-icons fas fa-file-code"></i><span>Exportar a XML</span>
                                 </button>
                             </mat-grid-tile>
                             <mat-grid-tile>
-                                <button (click)="exportToExcel()"
+                                <button (click)="ExportToExcel()"
                                     class="btn btn-block d-flex align-items-center justify-content-center"
                                     id="Selector">
                                     <i class="material-icons fas fa-file-excel"></i><span>Exportar a Excel</span>
                                 </button>
                             </mat-grid-tile>
                             <mat-grid-tile>
-                                <button (click)="exportToCVS()"
+                                <button (click)="ExportToCVS()"
                                     class="btn btn-block d-flex align-items-center justify-content-center"
                                     id="Selector">
                                     <i class="material-icons fas fa-file-csv"></i><span>Exportar a CSV</span>
                                 </button>
                             </mat-grid-tile>
                         </mat-grid-list>
-                        <!-- <div class="form-group">
-                        <label class="h4 mb-3" for="">Show your picture in Resume</label>
-                        <input type="file" class="form-control-file" (change)="fileChanged($event)">
-                    </div> -->
                     </mat-card>
                 </div>
             </div>
@@ -156,42 +156,48 @@
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
-                <div class="col-md">
+                <div class="col-md" style="padding-bottom: 20px;">
                     <mat-card class="mat-elevation-z8">
-                        <div id="titulo">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col" style="text-align: center;">
-                                        <h5>TÍTULO PROFESIONAL</h5>
-                                    </div>
-                                </div>
+                        <div class="d-flex bd-highlight" id="titulo">
+                            <div class="w-100 bd-highlight">
+                                <h5>TÍTULO PROFESIONAL</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="AbrirVentanaRegistarTituloEmpleado()">Añadir</button>
                             </div>
                         </div>
                         <mat-card-content>
-                            <div class="container" style="padding-top: 15px;"
-                                *ngFor="let rte of relacionTituloEmpleado">
+                            <div class="container" style="padding-top: 15px;" *ngFor="let rte of tituloEmpleado">
                                 <div class="row">
-                                    <div class="col">
-                                        <label class="col-sm col-form-label">Observaciones:</label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="col col-form-label">{{rte.observaciones}}</label>
+                                    <div class="col-md">
+                                        <div class="espacio d-flex justify-content-start">
+                                            <label id="datosF">Observaciones:</label>
+                                            <label>{{rte.observaciones}}</label>
+                                        </div>
+                                        <div class="espacio d-flex justify-content-start">
+                                            <label id="datosF">Título:</label>
+                                            <label>{{rte.nombre}}</label>
+                                        </div>
+                                        <div class="espacio d-flex justify-content-start">
+                                            <label id="datosF">Nivel:</label>
+                                            <label>{{rte.nivel}}</label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="col-sm col-form-label">Nombre:</label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="col col-form-label">{{rte.nombre}}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="col-sm col-form-label">Nivel:</label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="col col-form-label">{{rte.nivel}}</label>
+                                <div class="row" style="margin-top: 5px;">
+                                    <div class="col" style="text-align: right;">
+                                        <a mat-button type="submit" class="btn" matSuffix matTooltipPosition="right"
+                                            matTooltip="Editar los datos generales de este registro."
+                                            (click)="AbrirVentanaEditarTitulo(rte)">
+                                            <i class="fas fa-edit" id="edit">
+                                                <p>Editar</p>
+                                            </i>
+                                        </a>
+                                        <i class="far fa-trash-alt" (click)="ConfirmarDeleteTitulo(rte.id)"
+                                            matTooltipPosition="right" id="delete" matTooltip="Eliminar este registro">
+                                            <p>Eliminar</p>
+                                        </i>
                                     </div>
                                 </div>
                                 <mat-divider></mat-divider>
@@ -201,39 +207,42 @@
                 </div>
                 <div class="col-md">
                     <mat-card class="mat-elevation-z8" style="padding-bottom: 5px;">
-                        <div id="titulo">
-                            <div class="container">
-                                <div class="row" style="text-align: center;">
-                                    <div class="col">
-                                        <h5>DISCAPACIDAD</h5>
-                                    </div>
-                                </div>
+                        <div class="d-flex bd-highlight" id="titulo">
+                            <div class="w-100 bd-highlight">
+                                <h5>DISCAPACIDAD</h5>
+                            </div>
+                            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="MostrarDis()">{{btnDisc}}</button>
                             </div>
                         </div>
                         <mat-card-content>
                             <div class="container" style="padding-top: 15px;" *ngFor="let d of discapacidadUser">
                                 <div class="row">
-                                    <div class="col">
-                                        <label class="col-sm col-form-label">Carnet Conadis:</label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="col col-form-label">{{d.carn_conadis}}</label>
+                                    <div class="col-md">
+                                        <div class="espacio d-flex justify-content-start">
+                                            <label id="datosF">Carnet Conadis:</label>
+                                            <label>{{d.carn_conadis}}</label>
+                                        </div>
+                                        <div class="espacio d-flex justify-content-start">
+                                            <label id="datosF">Discapacidad:</label>
+                                            <label>{{d.nom_tipo}}</label>
+                                        </div>
+                                        <div class="espacio d-flex justify-content-start">
+                                            <label id="datosF">Porcentaje:</label>
+                                            <label>{{d.porcentaje}} %</label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="col-sm col-form-label">Tipo:</label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="col col-form-label">{{d.nom_tipo}}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="col-sm col-form-label">Porcentaje:</label>
-                                    </div>
-                                    <div class="col">
-                                        <label class="col col-form-label">{{d.porcentaje}} %</label>
+                                <div class="row" style="margin-top: 5px;">
+                                    <div class="col" style="text-align: right;">
+                                        <a mat-button type="submit" (click)="ConfirmarDeleteDiscapacidad(d.id_empleado)"
+                                            matSuffix>
+                                            <i class="far fa-trash-alt" matTooltipPosition="right" id="delete"
+                                                matTooltip="Eliminar registro">
+                                                <p>Eliminar</p>
+                                            </i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +256,7 @@
     <!-- REGISTRO DE VACUNACION -->
     <mat-tab>
         <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">local_pharmacy</mat-icon>
+            <mat-icon class="example-tab-icon">local_hospital</mat-icon>
             Vacunación
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
@@ -259,71 +268,62 @@
                                 <h5>REGISTRO DE VACUNACIÓN</h5>
                             </div>
                             <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
-                                <!--     <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
-                                    [disabled]="!btnHabilitadoVacuna"
-                                    (click)="MostrarVentanaVacuna()">{{btnVacuna}}</button>-->
+                                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                                    (click)="MostrarVentanaVacuna()">Añadir</button>
                             </div>
                         </div>
                         <mat-card-content>
-                            <div class="container" style="padding-top: 15px;" *ngFor="let dv of datosVacuna">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <label *ngIf="dv.dosis_1 === true"><b>Primera Dosis</b></label>
-                                        <br>
-                                        <label><b>Vacuna:</b> {{dv.id_tipo_vacuna_1}}</label>
-                                        <br>
-                                        <label *ngIf="dv.fecha_1 != null"><b>Fecha:</b>
-                                            {{dv.fecha_1.split('T')[0]}}</label>
+                            <div *ngFor="let dv of datosVacuna | paginate:tamanio_pagina:numero_pagina"
+                                style="padding-top: 15px;">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Descripción:</label>
+                                                <label>{{dv.descripcion}}</label>
+                                            </div>
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Fecha:</label>
+                                                <label>{{dv.fecha_}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="espacio d-flex justify-content-start">
+                                                <label id="datosF">Vacuna:</label>
+                                                <label>{{dv.nombre}}</label>
+                                            </div>
+                                            <div class="espacio d-flex justify-content-start" *ngIf="dv.carnet != null">
+                                                <label id="datosF">Carnet:</label>
+                                                <a matSuffix matTooltipPosition="right"
+                                                    matTooltip="Dar click para descargar carnet de vacunación."
+                                                    href="{{hipervinculo}}/vacunas/documentos/{{dv.carnet}}"
+                                                    target="_blank">
+                                                    <label style="font-size: 14px;">{{dv.nom_carnet}}</label>
+                                                </a>
+                                            </div>
+                                        </div>
+
                                     </div>
-                                    <div class="col-lg-4">
-                                        <label *ngIf="dv.dosis_2 === true"><b>Segunda Dosis</b></label>
-                                        <br>
-                                        <label><b>Vacuna:</b> {{dv.id_tipo_vacuna_2}}</label>
-                                        <br>
-                                        <label *ngIf="dv.fecha_2 != null"><b>Fecha:</b>
-                                            {{dv.fecha_2.split('T')[0]}}</label>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <label *ngIf="dv.dosis_3 === true"><b>Tercera Dosis</b></label>
-                                        <br>
-                                        <label><b>Vacuna:</b> {{dv.id_tipo_vacuna_3}}</label>
-                                        <br>
-                                        <label *ngIf="dv.fecha_3 != null"><b>Fecha:</b>
-                                            {{dv.fecha_3.split('T')[0]}}</label>
+                                    <div style="text-align: right;">
+                                        <i class="fas fa-edit" id="edit" style="margin-right: 20px;"
+                                            (click)="AbrirVentanaEditar(dv)" matSuffix matTooltipPosition="right"
+                                            matTooltip="Modificar los datos generales de este registro.">
+                                            <p>Editar</p>
+                                        </i>
+                                        <i class="fas fa-backspace" id="cancel" (click)="ConfirmarEliminarVacuna(dv)"
+                                            matSuffix matTooltipPosition="right" matTooltip="Eliminar registro.">
+                                            <p>Eliminar</p>
+                                        </i>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg">
-                                        <label><b>Carnet:</b> <a *ngIf="dv.nom_carnet != null && dv.nom_carnet != ''"
-                                                class="fas fa-file-alt"
-                                                style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px;"
-                                                matSuffix matTooltipPosition="right"
-                                                matTooltip="Dar click para descargar carnet de vacunación."
-                                                href="{{hipervinculo}}/vacunas/documentos/{{dv.carnet}}"
-                                                target="_blank">
-                                                <p>{{dv.nom_carnet}}</p>
-                                            </a></label>
-                                    </div>
-                                </div>
-                                <!--    <div class="row" style="margin-top: 5px;">
-                                    <div class="col" style="text-align: right;">
-                                        <a mat-button type="submit" (click)="ConfirmarEliminarVacuna(dv.id)" matSuffix>
-                                            <i class="far fa-trash-alt" matTooltipPosition="right" id="delete"
-                                                matTooltip="Eliminar registro">
-                                                <p>Eliminar</p>
-                                            </i>
-                                        </a>
-                                    </div>
-                                </div>-->
+                                <mat-divider style="margin-bottom: 10px;"></mat-divider>
                             </div>
+                            <mat-paginator id="pagina" [length]="datosVacuna.length" [pageSize]="tamanio_pagina"
+                                [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
+                                showFirstLastButtons>
+                            </mat-paginator>
                         </mat-card-content>
                     </mat-card>
-                    <div style="padding-bottom: 35px; padding-top: 35px;">
-                        <app-crear-vacuna [idEmploy]="idEmpleado" *ngIf="!mostrarVacuna">
-                        </app-crear-vacuna>
-                        <app-editar-vacuna [idEmploy]="idEmpleado" [dvacuna]="datosVacuna" *ngIf="!mostrarVacunaEditar">
-                        </app-editar-vacuna>
-                    </div>
                 </div>
             </div>
         </div>

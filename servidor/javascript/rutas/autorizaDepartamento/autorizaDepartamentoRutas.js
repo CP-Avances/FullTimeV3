@@ -13,7 +13,7 @@ class DepartamentoRutas {
     configuracion() {
         this.router.get('/', autorizaDepartamentoControlador_1.default.ListarAutorizaDepartamento);
         this.router.post('/', autorizaDepartamentoControlador_1.default.CrearAutorizaDepartamento);
-        this.router.get('/autoriza/:id_empl_cargo', autorizaDepartamentoControlador_1.default.EncontrarAutorizacionCargo);
+        this.router.get('/autoriza/:id_empleado', autorizaDepartamentoControlador_1.default.EncontrarAutorizacionUsuario);
         this.router.get('/empleadosAutorizan/:id_depar', autorizaDepartamentoControlador_1.default.ObtenerQuienesAutorizan);
         this.router.put('/', autorizaDepartamentoControlador_1.default.ActualizarAutorizaDepartamento);
         this.router.delete('/eliminar/:id', autorizaDepartamentoControlador_1.default.EliminarAutorizacionDepartamento);

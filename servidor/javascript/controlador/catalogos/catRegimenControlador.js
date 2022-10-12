@@ -13,12 +13,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
-const builder = require('xmlbuilder');
 const database_1 = __importDefault(require("../../database"));
+const builder = require('xmlbuilder');
 class RegimenControlador {
+    // REGISTRO DE REGIMEN LABORAL
+    CrearRegimen(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { descripcion, meses_periodo, dias_per_vacacion_laboral, dias_per_vacacion_calendario, dias_mes_vacacion_laboral, dias_mes_vacacion_calendario, dias_libre_vacacion, anio_antiguedad, dia_incr_antiguedad, max_dia_acumulacion, dias_totales_mes, dias_totales_anio } = req.body;
+                yield database_1.default.query(`
+                INSERT INTO cg_regimenes 
+                    (descripcion, meses_periodo, dias_per_vacacion_laboral, dias_per_vacacion_calendario,
+                    dias_mes_vacacion_laboral, dias_mes_vacacion_calendario, dias_libre_vacacion, 
+                    anio_antiguedad, dia_incr_antiguedad, max_dia_acumulacion, dias_totales_mes, 
+                    dias_totales_anio)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                `, [descripcion, meses_periodo, dias_per_vacacion_laboral, dias_per_vacacion_calendario,
+                    dias_mes_vacacion_laboral, dias_mes_vacacion_calendario, dias_libre_vacacion,
+                    anio_antiguedad, dia_incr_antiguedad, max_dia_acumulacion, dias_totales_mes,
+                    dias_totales_anio]);
+                res.jsonp({ message: 'Regimen guardado' });
+            }
+            catch (error) {
+                return res.jsonp({ message: 'error' });
+            }
+        });
+    }
+    // ACTUALIZAR REGISTRO DE REGIMEN LABORAL
+    ActualizarRegimen(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { descripcion, meses_periodo, dias_per_vacacion_laboral, dias_per_vacacion_calendario, dias_mes_vacacion_laboral, dias_mes_vacacion_calendario, dias_libre_vacacion, anio_antiguedad, dia_incr_antiguedad, max_dia_acumulacion, dias_totales_mes, dias_totales_anio, id } = req.body;
+            yield database_1.default.query(`
+            UPDATE cg_regimenes SET descripcion = $1, meses_periodo = $2, dias_per_vacacion_laboral = $3,
+            dias_per_vacacion_calendario = $4, dias_mes_vacacion_laboral = $5,
+            dias_mes_vacacion_calendario = $6, dias_libre_vacacion = $7, anio_antiguedad = $8,
+            dia_incr_antiguedad = $9, max_dia_acumulacion = $10, dias_totales_mes = $11, 
+            dias_totales_anio = $12 WHERE id = $13
+            `, [descripcion, meses_periodo, dias_per_vacacion_laboral, dias_per_vacacion_calendario,
+                dias_mes_vacacion_laboral, dias_mes_vacacion_calendario, dias_libre_vacacion,
+                anio_antiguedad, dia_incr_antiguedad, max_dia_acumulacion, dias_totales_mes,
+                dias_totales_anio, id]);
+            res.jsonp({ message: 'Regimen guardado' });
+        });
+    }
+    // METODO PARA BUSCAR LISTA DE REGIMEN
     ListarRegimen(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const REGIMEN = yield database_1.default.query('SELECT * FROM cg_regimenes ORDER BY descripcion ASC');
+            const REGIMEN = yield database_1.default.query(`
+            SELECT * FROM cg_regimenes ORDER BY descripcion ASC
+            `);
             if (REGIMEN.rowCount > 0) {
                 return res.jsonp(REGIMEN.rows);
             }
@@ -37,31 +80,6 @@ class RegimenControlador {
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
             }
-        });
-    }
-    CrearRegimen(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { descripcion, dia_anio_vacacion, dia_incr_antiguedad, anio_antiguedad, dia_mes_vacacion, max_dia_acumulacion, dia_libr_anio_vacacion, meses_periodo } = req.body;
-                yield database_1.default.query('INSERT INTO cg_regimenes (descripcion, dia_anio_vacacion, dia_incr_antiguedad, ' +
-                    'anio_antiguedad, dia_mes_vacacion, max_dia_acumulacion, dia_libr_anio_vacacion, meses_periodo) ' +
-                    'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [descripcion, dia_anio_vacacion, dia_incr_antiguedad, anio_antiguedad, dia_mes_vacacion,
-                    max_dia_acumulacion, dia_libr_anio_vacacion, meses_periodo]);
-                res.jsonp({ message: 'Regimen guardado' });
-            }
-            catch (error) {
-                return res.jsonp({ message: 'error' });
-            }
-        });
-    }
-    ActualizarRegimen(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { descripcion, dia_anio_vacacion, dia_incr_antiguedad, anio_antiguedad, dia_mes_vacacion, max_dia_acumulacion, dia_libr_anio_vacacion, meses_periodo, id } = req.body;
-            yield database_1.default.query('UPDATE cg_regimenes SET descripcion = $1, dia_anio_vacacion = $2, ' +
-                'dia_incr_antiguedad = $3, anio_antiguedad = $4, dia_mes_vacacion = $5, max_dia_acumulacion = $6, ' +
-                'dia_libr_anio_vacacion = $7, meses_periodo = $8 WHERE id = $9', [descripcion, dia_anio_vacacion, dia_incr_antiguedad, anio_antiguedad, dia_mes_vacacion,
-                max_dia_acumulacion, dia_libr_anio_vacacion, meses_periodo, id]);
-            res.jsonp({ message: 'Regimen guardado' });
         });
     }
     FileXML(req, res) {

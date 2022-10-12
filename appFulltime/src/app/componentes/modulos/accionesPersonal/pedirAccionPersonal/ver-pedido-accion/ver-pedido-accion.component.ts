@@ -7,6 +7,8 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 import { AccionPersonalService } from 'src/app/servicios/accionPersonal/accion-personal.service';
 import { Router } from '@angular/router';
 import { ProcesoService } from 'src/app/servicios/catalogos/catProcesos/proceso.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 @Component({
   selector: 'app-ver-pedido-accion',
   templateUrl: './ver-pedido-accion.component.html',
@@ -21,11 +23,12 @@ export class VerPedidoAccionComponent implements OnInit {
   departamento: any;
 
   constructor(
-    public router: Router,
-    public restAccion: AccionPersonalService,
     public restProcesos: ProcesoService,
     public restEmpresa: EmpresaService,
-    private toastr: ToastrService,
+    public restAccion: AccionPersonalService,
+    public parametro: ParametrosService,
+    public validar: ValidacionesService,
+    public router: Router,
     public restE: EmpleadoService,
   ) {
     var cadena = this.router.url;
@@ -36,7 +39,27 @@ export class VerPedidoAccionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.CargarInformacion();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.CargarInformacion(this.formato_fecha)
+      },
+      vacio => {
+        this.CargarInformacion(this.formato_fecha)
+      });
   }
 
   datosPedido: any = [];
@@ -49,9 +72,10 @@ export class VerPedidoAccionComponent implements OnInit {
   cargoG: string = '';
   departamentoE: string = '';
   cedula: string = '';
-  CargarInformacion() {
+  CargarInformacion(formato_fecha: string) {
     this.restAccion.BuscarDatosPedidoId(parseInt(this.idPedido)).subscribe(data => {
       this.datosPedido = data;
+      this.datosPedido[0].fec_creacion_ = this.validar.FormatearFecha(this.datosPedido[0].fec_creacion, formato_fecha, this.validar.dia_completo);
       console.log('datos', this.datosPedido);
       this.restAccion.BuscarDatosPedidoEmpleados(this.datosPedido[0].id_empleado).subscribe(data1 => {
         console.log('empleado', data1)

@@ -11,6 +11,10 @@ export class PlanHorarioService {
     private http: HttpClient,
   ) { }
 
+  ObtenerHorarioRotativo(codigo: number) {
+    return this.http.get<any>(`${environment.url}/planHorario/rotativo/${codigo}`);
+  }
+
   ObtenerPlanHorario() {
     return this.http.get(`${environment.url}/planHorario`);
   }
@@ -21,10 +25,6 @@ export class PlanHorarioService {
 
   BuscarIDPlanHorario(id: number) {
     return this.http.get(`${environment.url}/planHorario/buscar/${id}`);
-  }
-
-  ObtenerPlanHorarioPorIdCargo(id: number) {
-    return this.http.get<any>(`${environment.url}/planHorario/infoPlan/${id}`);
   }
 
   ObtenerPlanHorarioPorId(id: number) {

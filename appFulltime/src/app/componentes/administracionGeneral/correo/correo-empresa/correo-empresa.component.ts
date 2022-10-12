@@ -3,10 +3,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { ToastrService } from 'ngx-toastr';
 import { ThemePalette } from '@angular/material/core';
 
 // SECCIÓN DE SERVICIOS
-import { ToastrService } from 'ngx-toastr';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 @Component({
@@ -33,12 +33,12 @@ export class CorreoEmpresaComponent implements OnInit {
   dis_correo: boolean = false;
 
   // VARIABLES PROGRESS SPINNER 
+  habilitarprogress: boolean = false;
   mode: ProgressSpinnerMode = 'indeterminate';
   color: ThemePalette = 'primary';
-  habilitarprogress: boolean = false;
   value = 10;
 
-  public ConfiguracionCorreoForm = new FormGroup({
+  public formulario = new FormGroup({
     email: this.emailF,
     puertoF: this.puertoF,
     passwordF: this.passwordF,
@@ -54,7 +54,7 @@ export class CorreoEmpresaComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.ConfiguracionCorreoForm.patchValue({
+    this.formulario.patchValue({
       email: this.data.correo,
       puertoF: this.data.puerto,
       servidorF: this.data.servidor,

@@ -8,11 +8,9 @@ mat-form-field {padding: 10px 10px 0px 10px;}
 
 .separar {padding: 10px 10px 0px 10px}
 
-#nomEmple { font-size: 13px; }
+#letras { font-size: 14px; }
 
-#tamañoLetra { font-size: 14px; }
-
-#nomContrato { font-size: 14px; display: inline-block;}
+#respaldo { font-size: 14px; display: inline-block;}
 
 [type="file"] {
     height: 0;

@@ -1,61 +1,61 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
+import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-editar-contrato',
   templateUrl: './editar-contrato.component.html',
   styleUrls: ['./editar-contrato.component.css']
 })
+
 export class EditarContratoComponent implements OnInit {
 
   idSelectContrato: number;
   idEmpleado: number;
 
-  // Datos Régimen
+  // DATOS RÉGIMEN
   regimenLaboral: any = [];
-  seleccionarRegimen;
+  seleccionarRegimen: any;
 
   contador: number = 0;
-
   isChecked: boolean;
-
   habilitarSeleccion: boolean = true;
   habilitarContrato: boolean = false;
 
-  // Control de campos y validaciones del formulario
-  idRegimenF = new FormControl('', [Validators.required]);
-  fechaIngresoF = new FormControl('', [Validators.required]);
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
+  controlVacacionesF = new FormControl('', Validators.required);
+  controlAsistenciaF = new FormControl('', Validators.required);
+  fechaIngresoF = new FormControl('', Validators.required);
   fechaSalidaF = new FormControl('');
-  controlVacacionesF = new FormControl('', [Validators.required]);
-  controlAsistenciaF = new FormControl('', [Validators.required]);
-  nombreContratoF = new FormControl('');
   archivoForm = new FormControl('');
+  idRegimenF = new FormControl('', Validators.required);
+  documentoF = new FormControl('');
+  contratoF = new FormControl('', Validators.minLength(3));
+  seleccion = new FormControl('');
   tipoF = new FormControl('');
-  contratoF = new FormControl('', [Validators.minLength(3)]);
 
-  // Asignación de validaciones a inputs del formulario
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
   public ContratoForm = new FormGroup({
-    idRegimenForm: this.idRegimenF,
-    fechaIngresoForm: this.fechaIngresoF,
-    fechaSalidaForm: this.fechaSalidaF,
     controlVacacionesForm: this.controlVacacionesF,
     controlAsistenciaForm: this.controlAsistenciaF,
-    nombreContratoForm: this.nombreContratoF,
+    fechaIngresoForm: this.fechaIngresoF,
+    fechaSalidaForm: this.fechaSalidaF,
+    idRegimenForm: this.idRegimenF,
+    documentoForm: this.documentoF,
+    contratoForm: this.contratoF,
     tipoForm: this.tipoF,
-    contratoForm: this.contratoF
   });
 
   constructor(
     private restRegimen: RegimenService,
     private rest: EmpleadoService,
     private toastr: ToastrService,
-    private dialogRef: MatDialogRef<EditarContratoComponent>,
+    private ventana: MatDialogRef<EditarContratoComponent>,
     @Inject(MAT_DIALOG_DATA) public contrato: any
   ) { }
 
@@ -64,45 +64,79 @@ export class EditarContratoComponent implements OnInit {
     this.idSelectContrato = this.contrato.id;
     this.idEmpleado = this.contrato.id_empleado;
     this.ObtenerRegimen();
+    this.ObtenerEmpleados();
     this.ObtenerTipoContratos();
     this.tipoContrato[this.tipoContrato.length] = { descripcion: "OTRO" };
   }
 
-  llenarContratoSeleccionado() {
-    const { id_regimen, fec_ingreso, fec_salida, vaca_controla, asis_controla, doc_nombre, id_tipo_contrato } = this.contrato;
-    
-    this.ContratoForm.patchValue({
-      idRegimenForm: id_regimen,
-      fechaIngresoForm: fec_ingreso,
-      fechaSalidaForm: fec_salida,
-      controlVacacionesForm: vaca_controla,
-      controlAsistenciaForm: asis_controla,
-      nombreContratoForm: doc_nombre,
-      tipoForm: id_tipo_contrato
-    });
-
-    if (this.contrato.doc_nombre != '' && this.contrato.doc_nombre != null) {
-      this.HabilitarBtn = true;
-      this.isChecked = true;
-    }
-    else {
-      this.HabilitarBtn = false;
-      this.isChecked = false;
-    }
-
-  }
-
+  // BUSQUEDA DE LISTA DE REGIMEN LABORAL
   ObtenerRegimen() {
     this.regimenLaboral = [];
     this.restRegimen.ConsultarRegimen().subscribe(datos => {
       this.regimenLaboral = datos;
-      this.llenarContratoSeleccionado();
-      // this.regimenLaboral[this.regimenLaboral.length] = { nombre: "Seleccionar Régimen" };
-      // this.seleccionarRegimen = this.regimenLaboral[this.regimenLaboral.length - 1].nombre;
+      this.ImprimirDatos();
     })
   }
 
-  ValidarDatosContrato(form) {
+  // MÉTODO PARA OBTENER TIPOS DE CONTRATOS MODALIDAD LABORAL
+  tipoContrato: any = [];
+  ObtenerTipoContratos() {
+    this.tipoContrato = [];
+    this.rest.BuscarTiposContratos().subscribe(datos => {
+      this.tipoContrato = datos;
+      this.tipoContrato[this.tipoContrato.length] = { descripcion: "OTRO" };
+    })
+  }
+
+  // MOSTRAR LISTA DE MODALIDAD LABORAL
+  VerTiposContratos() {
+    this.ContratoForm.patchValue({
+      contratoForm: '',
+    });
+    this.habilitarContrato = false;
+    this.habilitarSeleccion = true;
+  }
+
+  // INGRESAR MODALIDAD LABORAL
+  IngresarOtro(form: any) {
+    if (form.tipoForm === undefined) {
+      this.ContratoForm.patchValue({
+        contratoForm: '',
+      });
+      this.habilitarContrato = true;
+      this.toastr.info('Ingresar modalidad laboral.', '', {
+        timeOut: 6000,
+      })
+      this.habilitarSeleccion = false;
+    }
+  }
+
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
+  empleados: any = [];
+  ObtenerEmpleados() {
+    this.empleados = [];
+    this.rest.BuscarUnEmpleado(this.idEmpleado).subscribe(data => {
+      this.empleados = data[0];
+      this.empleados.nombre_ = this.empleados.nombre.toUpperCase() + ' ' + this.empleados.apellido.toUpperCase();
+    })
+  }
+
+  // METODO PARA MOSTRAR DATOS DEL FORMULARIO
+  ImprimirDatos() {
+    const { id_regimen, fec_ingreso, fec_salida, vaca_controla, asis_controla, doc_nombre,
+      id_tipo_contrato } = this.contrato;
+    this.ContratoForm.patchValue({
+      controlVacacionesForm: vaca_controla,
+      controlAsistenciaForm: asis_controla,
+      fechaIngresoForm: fec_ingreso,
+      fechaSalidaForm: fec_salida,
+      idRegimenForm: id_regimen,
+      tipoForm: id_tipo_contrato
+    });
+  }
+
+  // VALIDAR DATOS DE FECHAS
+  ValidarDatosContrato(form: any) {
     if (form.fechaSalidaForm === '' || form.fechaSalidaForm === null) {
       form.fechaSalidaForm = null;
       this.ActualizarContrato(form);
@@ -111,81 +145,77 @@ export class EditarContratoComponent implements OnInit {
         this.ActualizarContrato(form);
       }
       else {
-        this.toastr.info('La fecha de salida debe ser mayor a la fecha de ingreso', '', {
+        this.toastr.info('Las fechas no se encuentran correctamente ingresadas.', '', {
           timeOut: 6000,
         })
       }
     }
   }
 
-  HabilitarBtn: boolean = false;
-  deseleccionarArchivo() {
-    this.archivoSubido = [];
-    this.isChecked = false;
-    this.LimpiarNombreArchivo();
-  }
-
-
-  ActualizarContrato(form) {
-    let datosContrato = {
-      fec_ingreso: form.fechaIngresoForm,
-      fec_salida: form.fechaSalidaForm,
-      vaca_controla: form.controlVacacionesForm,
-      asis_controla: form.controlAsistenciaForm,
-      id_regimen: form.idRegimenForm,
-      doc_nombre: form.nombreContratoForm,
-      id_tipo_contrato: form.tipoForm
-    };
-    if (form.tipoForm === undefined) {
-      if (form.contratoForm != '') {
-        let tipo_contrato = {
-          descripcion: form.contratoForm
-        }
-        this.rest.CrearTiposContrato(tipo_contrato).subscribe(res => {
-          // Buscar id de último cargo ingresado
-          this.rest.BuscarUltimoTiposContratos().subscribe(data => {
-            // Buscar id de último cargo ingresado
-            datosContrato.id_tipo_contrato = data[0].id;
-            if (datosContrato.fec_ingreso === this.contrato.fec_ingreso) {
-              this.RegistrarContrato(datosContrato);
-            }
-            else {
-              this.ValidarDuplicidad(datosContrato, form);
-            }
-          });
-        });
+  // REGISTRAR MODALIDAD DE TRABAJO
+  InsertarModalidad(form: any, datos: any) {
+    if (form.contratoForm != '') {
+      let tipo_contrato = {
+        descripcion: form.contratoForm
       }
-      else {
-        this.toastr.info('Ingresar el nuevo cargo a desempeñar', 'Verificar datos', {
-          timeOut: 6000,
-        });
-      }
+      this.rest.CrearTiposContrato(tipo_contrato).subscribe(res => {
+        datos.id_tipo_contrato = res.id;
+        this.VerificarDatos(datos, form);
+      });
     }
     else {
-      if (datosContrato.fec_ingreso === this.contrato.fec_ingreso) {
-        this.RegistrarContrato(datosContrato);
-      }
-      else {
-        this.ValidarDuplicidad(datosContrato, form);
-      }
+      this.toastr.info('Ingresar modalidad laboral.', 'Verificar datos.', {
+        timeOut: 6000,
+      });
     }
-
   }
 
+  // METODO PARA VERIFICAR SI EL REGISTRO ENTRA O NO A VERIFICACION DE DUPLICIDAD
+  VerificarDatos(datos: any, form: any) {
+    if (datos.fec_ingreso === this.contrato.fec_ingreso) {
+      this.VerificarInformacion(datos, form);
+    }
+    else {
+      this.ValidarDuplicidad(datos, form);
+    }
+  }
+
+  // METODO PARA TOMAR DATOS DEL CONTRATO
+  ActualizarContrato(form: any) {
+    let datosContrato = {
+      id_tipo_contrato: form.tipoForm,
+      vaca_controla: form.controlVacacionesForm,
+      asis_controla: form.controlAsistenciaForm,
+      fec_ingreso: form.fechaIngresoForm,
+      fec_salida: form.fechaSalidaForm,
+      id_regimen: form.idRegimenForm,
+    };
+    if (form.tipoForm === undefined) {
+      this.InsertarModalidad(form, datosContrato);
+    }
+    else {
+      this.VerificarDatos(datosContrato, form);
+    }
+  }
+
+  // VALIDACIONES DE DUPLICIDAD DE REGISTROS
   revisarFecha: any = [];
   duplicado: number = 0;
-  ValidarDuplicidad(datos, form): any {
+  ValidarDuplicidad(datos: any, form: any): any {
     this.revisarFecha = [];
-    this.rest.BuscarContratoEmpleadoRegimen(this.contrato.id_empleado).subscribe(data => {
+    this.duplicado = 0;
+    // BUSQUEDA DE CONTRATOS QUE TIENE EL USUARIO
+    this.rest.BuscarContratosEmpleado(this.contrato.id_empleado).subscribe(data => {
       this.revisarFecha = data;
       var ingreso = String(moment(datos.fec_ingreso, "YYYY/MM/DD").format("YYYY-MM-DD"));
-      console.log('fechas', ingreso, ' ', this.revisarFecha);
+      // COMPARACION DE CADA REGISTRO
       for (var i = 0; i <= this.revisarFecha.length - 1; i++) {
-        console.log('fechas1', this.revisarFecha[i].fec_ingreso.split('T')[0]);
-        if (this.revisarFecha[i].fec_ingreso.split('T')[0] === ingreso) {
+        var fecha = String(moment(this.revisarFecha[i].fec_ingreso, "YYYY/MM/DD").format("YYYY-MM-DD"));
+        if (fecha === ingreso) {
           this.duplicado = 1;
         }
       }
+      // SI EL REGISTRO ESTA DUPLICADO SE INDICA AL USUARIO
       if (this.duplicado === 1) {
         this.toastr.error('La fecha de ingreso de contrato ya se encuentra registrada.', 'Contrato ya existe.', {
           timeOut: 6000,
@@ -193,70 +223,20 @@ export class EditarContratoComponent implements OnInit {
         this.duplicado = 0;
       }
       else {
-        if (form.nombreContratoForm === '') {
-          datos.doc_nombre = null;
-          this.rest.ActualizarContratoEmpleado(this.idSelectContrato, this.idEmpleado, datos).subscribe(response => {
-            this.toastr.success('Operación Exitosa', 'Datos de Contrato Actualizado', {
-              timeOut: 6000,
-            });
-            this.ModificarDocumento();
-            this.dialogRef.close(datos);
-          }, error => {
-            this.toastr.error('Operación Fallida', 'Datos de Contrato no fueron actualizados', {
-              timeOut: 6000,
-            })
-          });
-        }
-        else {
-          this.RegistrarContrato(datos);
-        }
+        this.VerificarInformacion(datos, form);
       }
+
+    }, error => {
+      this.VerificarInformacion(datos, form);
     });
   }
 
-  nameFile: string;
-  archivoSubido: Array<File>;
-
-  fileChange(element) {
-    this.contador = 1;
-    this.archivoSubido = element.target.files;
-    if (this.archivoSubido.length != 0) {
-      const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
-      this.ContratoForm.patchValue({ nombreContratoForm: name });
-      this.HabilitarBtn = true;
-    }
-
-  }
-
-  CargarContrato(id: number) {
-    let formData = new FormData();
-    for (var i = 0; i < this.archivoSubido.length; i++) {
-      formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
-    }
-    this.rest.SubirContrato(formData, id).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Contrato subido con exito', {
-        timeOut: 6000,
-      });
-      this.archivoForm.reset();
-      this.nameFile = '';
-    });
-  }
-
-  ModificarDocumento() {
-    let datoDocumento = {
-      documento: null
-    }
-    this.rest.EditarDocumento(this.idSelectContrato, datoDocumento).subscribe(response => {
-    }, error => { });
-  }
-
-  GuardarDatos(datos) {
-    this.rest.ActualizarContratoEmpleado(this.idSelectContrato, this.idEmpleado, datos).subscribe(response => {
+  // GUARDAR DATOS DE CONTRATO
+  GuardarDatos(datos: any) {
+    this.rest.ActualizarContratoEmpleado(this.idSelectContrato, datos).subscribe(response => {
       this.toastr.success('Operación Exitosa', 'Datos de Contrato actualizado', {
         timeOut: 6000,
       });
-      this.dialogRef.close(datos)
     }, error => {
       this.toastr.error('Operación Fallida', 'Datos de Contrato no pudieron ser actualizados', {
         timeOut: 6000,
@@ -264,77 +244,130 @@ export class EditarContratoComponent implements OnInit {
     });
   }
 
-  RegistrarContrato(datos) {
-    if (this.contador === 0) {
+  // VERIFICACION DE OPCIONES SELECCIONADOS PARA ACTUALIZACION DE ARCHIVOS
+  VerificarInformacion(datos: any, form: any) {
+    if (this.opcion === 1) {
+      let eliminar = {
+        documento: this.contrato.documento,
+        id: parseInt(this.contrato.id)
+      }
       this.GuardarDatos(datos);
+      this.rest.EliminarArchivo(eliminar).subscribe(res => {
+      });
+      this.Cancelar();
     }
-    else {
-      this.ActualizarDatos(datos);
-    }
-  }
-
-  ActualizarDatos(datos) {
-    if (this.archivoSubido[0].size <= 2e+6) {
-      this.rest.ActualizarContratoEmpleado(this.idSelectContrato, this.idEmpleado, datos).subscribe(response => {
-        this.toastr.success('Operación Exitosa', 'Datos de Contrato actualizado', {
+    else if (this.opcion === 2) {
+      if (form.documentoForm != '' && form.documentoForm != null) {
+        this.EliminarDocumentoServidor();
+        this.GuardarDatos(datos);
+        this.CargarContrato(this.contrato.id, form);
+        this.Cancelar();
+      }
+      else {
+        this.toastr.info('No ha seleccionado ningún archivo.', '', {
           timeOut: 6000,
         });
-        this.CargarContrato(this.idSelectContrato);
-        this.dialogRef.close(datos)
-      }, error => {
-        this.toastr.error('Operación Fallida', 'Datos de Contrato no pudieron ser actualizados', {
-          timeOut: 6000,
-        })
-      });
+      }
     }
     else {
-      this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
-        timeOut: 6000,
-      });
+      this.GuardarDatos(datos);
+      this.Cancelar();
     }
   }
 
+  // ELIMINAR DOCUMENTO DEL SERVIDOR
+  EliminarDocumentoServidor() {
+    let eliminar = {
+      documento: this.contrato.documento,
+    }
+    this.rest.EliminarArchivoServidor(eliminar).subscribe(res => {
+    });
+  }
+
+  /** ******************************************************************************************* **
+   ** **                                METODO PARA SUBIR ARCHIVO                              ** **
+   ** ******************************************************************************************* **/
+
+  // SELECCIONAR ARCHIVO
+  nameFile: string;
+  archivoSubido: Array<File>;
+  fileChange(element: any) {
+    this.contador = 1;
+    this.archivoSubido = element.target.files;
+    if (this.archivoSubido.length != 0) {
+      const name = this.archivoSubido[0].name;
+      console.log(this.archivoSubido[0].name);
+      if (this.archivoSubido[0].size <= 2e+6) {
+        this.ContratoForm.patchValue({ documentoForm: name });
+        this.HabilitarBtn = true;
+      }
+      else {
+        this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
+          timeOut: 6000,
+        });
+      }
+    }
+  }
+
+  // METODO PARA GUARDAR DATOS DE DOCUMENTO
+  CargarContrato(id: number, form: any) {
+    let formData = new FormData();
+    for (var i = 0; i < this.archivoSubido.length; i++) {
+      formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
+    }
+    this.rest.SubirContrato(formData, id, form.documentoForm).subscribe(res => {
+      this.archivoForm.reset();
+      this.nameFile = '';
+    });
+  }
+
+  // RETIRAR ARCHIVO SELECCIONADO
+  HabilitarBtn: boolean = false;
+  QuitarArchivo() {
+    this.archivoSubido = [];
+    this.HabilitarBtn = false;
+    this.LimpiarNombreArchivo();
+    this.archivoForm.patchValue('');
+  }
+
+  // LIMPIAR CAMPO NOMBRE DE ARCHIVO
   LimpiarNombreArchivo() {
     this.ContratoForm.patchValue({
-      nombreContratoForm: '',
+      documentoForm: '',
     });
   }
 
-  cancelar() {
-    console.log("cancelado");
-    this.dialogRef.close(false)
+  // METODOS DE ACTIVACION DE CARGA DE ARCHIVO 
+  activar: boolean = false;
+  opcion: number = 0;
+  ActivarArchivo() {
+    this.acciones = true;
+    this.activar = true;
+    this.opcion = 2;
   }
 
-  VerTiposContratos() {
-    this.ContratoForm.patchValue({
-      contratoForm: '',
-    });
-    this.estilo = { 'visibility': 'hidden' }; this.habilitarContrato = false;
-    this.habilitarSeleccion = true;
+  // METODO PARA INDICAR QUE SE ELIMINE EL ARCHIVO DEL REGISTRO
+  RetirarArchivo() {
+    this.acciones = true;
+    this.activar = false;
+    this.opcion = 1;
+    this.QuitarArchivo();
   }
 
-  estilo: any;
-  IngresarOtro(form) {
-    if (form.tipoForm === undefined) {
-      this.ContratoForm.patchValue({
-        contratoForm: '',
-      });
-      this.estilo = { 'visibility': 'visible' }; this.habilitarContrato = true;
-      this.toastr.info('Ingresar nombre del nuevo tipo de contrato.', 'Etiqueta Tipo Contrato activa', {
-        timeOut: 6000,
-      })
-      this.habilitarSeleccion = false;
-    }
+  // METODO PARA CANCELAR OPCION SELECCIONADA
+  acciones: boolean = false;
+  LimpiarAcciones() {
+    this.seleccion.reset();
+    this.isChecked = false;
+    this.acciones = false;
+    this.activar = false;
+    this.QuitarArchivo();
+    this.opcion = 0;
   }
 
-  // Método para obtener tipos de contratos
-  tipoContrato: any = [];
-  ObtenerTipoContratos() {
-    this.tipoContrato = [];
-    this.rest.BuscarTiposContratos().subscribe(datos => {
-      this.tipoContrato = datos;
-      this.tipoContrato[this.tipoContrato.length] = { descripcion: "OTRO" };
-    })
+  // CERRAR VENTA DE REGISTRO
+  Cancelar() {
+    this.ventana.close(false)
   }
 
 }

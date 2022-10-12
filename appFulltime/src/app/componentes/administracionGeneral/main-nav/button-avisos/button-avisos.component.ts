@@ -1,15 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import * as moment from 'moment';
-import { LoginService } from 'src/app/servicios/login/login.service';
 import { Socket } from 'ngx-socket-io';
 import { Router } from '@angular/router';
+import * as moment from 'moment';
+
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
+import { LoginService } from 'src/app/servicios/login/login.service';
 
 @Component({
   selector: 'app-button-avisos',
   templateUrl: './button-avisos.component.html',
   styleUrls: ['../main-nav.component.css']
 })
+
 export class ButtonAvisosComponent implements OnInit {
 
   estado: boolean = true;
@@ -21,6 +25,8 @@ export class ButtonAvisosComponent implements OnInit {
 
   constructor(
     public loginService: LoginService,
+    public parametro: ParametrosService,
+    public validar: ValidacionesService,
     private socket: Socket,
     private aviso: TimbresService,
     private router: Router,
@@ -34,7 +40,8 @@ export class ButtonAvisosComponent implements OnInit {
           // BUSQUEDA DE LOS DATOS DE LA NOTIFICACION RECIBIDA
           this.aviso.ObtenerUnAviso(data.id).subscribe(res => {
             // TRATAMIENTO DE LOS DATOS DE LA NOTIFICACION
-            res.create_at = moment(res.create_at).format('DD/MM/YYYY') + ' ' + moment(res.create_at).format('HH:mm:ss')
+            res.fecha_ = this.validar.FormatearFecha(moment(res.create_at).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_abreviado);
+            res.hora_ = this.validar.FormatearHora(moment(res.create_at).format('HH:mm:ss'), this.formato_hora);
             if (res.descripcion.split('para')[0] != undefined && res.descripcion.split('para')[1] != undefined) {
               res.aviso = res.descripcion.split('para')[0];;
               res.usuario = 'del usuario ' + res.descripcion.split('para')[1].split('desde')[0];
@@ -62,7 +69,39 @@ export class ButtonAvisosComponent implements OnInit {
 
   ngOnInit(): void {
     this.id_empleado_logueado = parseInt(localStorage.getItem('empleado'));
-    this.LlamarNotificacionesAvisos(this.id_empleado_logueado);
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+  ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+  ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.LlamarNotificacionesAvisos(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.LlamarNotificacionesAvisos(fecha, this.formato_hora);
+      });
   }
 
   numeroTimbres() {
@@ -72,8 +111,8 @@ export class ButtonAvisosComponent implements OnInit {
     }
   }
 
-  LlamarNotificacionesAvisos(id: number) {
-    this.aviso.BuscarAvisosGenerales(id).subscribe(res => {
+  LlamarNotificacionesAvisos(formato_fecha: string, formato_hora: string) {
+    this.aviso.BuscarAvisosGenerales(this.id_empleado_logueado).subscribe(res => {
       this.avisos = res;
       if (!this.avisos.message) {
         if (this.avisos.length > 0) {
@@ -83,9 +122,8 @@ export class ButtonAvisosComponent implements OnInit {
               this.num_timbre_false = this.num_timbre_false + 1;
               this.estadoTimbres = false;
             }
-
-            obj.create_at = moment(obj.create_at).format('DD/MM/YYYY') + ' ' + moment(obj.create_at).format('HH:mm:ss')
-
+            obj.fecha_ = this.validar.FormatearFecha(moment(obj.create_at).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_abreviado);
+            obj.hora_ = this.validar.FormatearHora(moment(obj.create_at).format('HH:mm:ss'), formato_hora);
             if (obj.descripcion.split('para')[0] != undefined && obj.descripcion.split('para')[1] != undefined) {
               obj.aviso = obj.descripcion.split('para')[0];;
               obj.usuario = 'del usuario ' + obj.descripcion.split('para')[1].split('desde')[0];
@@ -94,8 +132,6 @@ export class ButtonAvisosComponent implements OnInit {
               obj.aviso = obj.descripcion.split('desde')[0];
               obj.usuario = '';
             }
-
-
           });
         }
       }
@@ -105,7 +141,7 @@ export class ButtonAvisosComponent implements OnInit {
 
   ActualizarVista(data: any) {
     this.aviso.PutVistaTimbre(data.id).subscribe(res => {
-      this.LlamarNotificacionesAvisos(this.id_empleado_logueado);
+      this.LlamarNotificacionesAvisos(this.formato_fecha, this.formato_hora);
     });
 
     const rol = parseInt(localStorage.getItem('rol'));
@@ -137,13 +173,13 @@ export class ButtonAvisosComponent implements OnInit {
 
     if (rol != 1) {
       if (data.tipo === 1) {
-        this.router.navigate(['/almuerzosEmpleado']);
+        this.router.navigate(['/comidasPlanEmpleado']);
       }
       if (data.tipo === 2) {
-        this.router.navigate(['/almuerzosEmpleado']);
+        this.router.navigate(['/comidasPlanEmpleado']);
       }
       if (data.tipo === 20) {
-        this.router.navigate(['/almuerzosEmpleado']);
+        this.router.navigate(['/comidasPlanEmpleado']);
       }
       if (data.tipo === 10) {
         this.router.navigate(['/horaExtraEmpleado']);

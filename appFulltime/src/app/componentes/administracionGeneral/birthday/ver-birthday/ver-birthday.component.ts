@@ -1,31 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
+import { environment } from '../../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
+
 import { RegistrarBirthdayComponent } from '../registrar-birthday/registrar-birthday.component';
 import { EditarBirthdayComponent } from '../editar-birthday/editar-birthday.component';
-import { environment } from '../../../../../environments/environment';
+
+import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
 
 @Component({
   selector: 'app-ver-birthday',
   templateUrl: './ver-birthday.component.html',
   styleUrls: ['./ver-birthday.component.css']
 })
+
 export class VerBirthdayComponent implements OnInit {
 
-  cumple: any = [];
   HabilitarBtn: boolean = false;
   API_URL: string = environment.url;
+  cumple: any = [];
 
   constructor(
     private restB: BirthdayService,
-    private vistaPantalla: MatDialog
+    private ventana: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.ObtenerMensajeCumple();
   }
 
-  ObtenerMensajeCumple(){
+  ObtenerMensajeCumple() {
     let id_empresa = parseInt(localStorage.getItem("empresa"));
     this.restB.ObtenerBirthdayEmpresa(id_empresa).subscribe(res => {
       this.cumple = res;
@@ -36,18 +39,18 @@ export class VerBirthdayComponent implements OnInit {
   }
 
   AbrirRegistrarMensaje() {
-    this.vistaPantalla.open(RegistrarBirthdayComponent, {width: '500px'}).afterClosed().subscribe(items => {
-      console.log(items);
-      this.ObtenerMensajeCumple();
-    })
+    this.ventana.open(RegistrarBirthdayComponent, { width: '500px' })
+      .afterClosed().subscribe(items => {
+        this.ObtenerMensajeCumple();
+      })
   }
-  
-  EditarMensaje(dataSelect) {
-    this.vistaPantalla.open(EditarBirthdayComponent, {width: '500px', data: dataSelect}).afterClosed().subscribe(items => {
-      console.log(items);
-      this.ObtenerMensajeCumple();
-    })
+
+  EditarMensaje(dataSelect: any) {
+    this.ventana.open(EditarBirthdayComponent, { width: '500px', data: dataSelect })
+      .afterClosed().subscribe(items => {
+        this.ObtenerMensajeCumple();
+      })
   }
-  
+
 
 }

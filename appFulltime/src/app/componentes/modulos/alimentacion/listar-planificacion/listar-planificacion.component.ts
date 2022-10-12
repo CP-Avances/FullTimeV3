@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
 
 // LLAMADO A COMPONENTES
 import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
@@ -15,7 +14,9 @@ import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.s
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
 export interface SolicitudElemento {
@@ -79,19 +80,53 @@ export class ListarPlanificacionComponent implements OnInit {
 
   constructor(
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
+    public validar: ValidacionesService,
     public toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
     public router: Router,
     public aviso: RealTimeService,
     public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
     private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
-    private restP: ParametrosService,
+    private parametro: ParametrosService,
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerPlanificaciones(); // LISTA DE PLANIFCACIONES DE SERVICIOS DE ALIMENTACIÓN
     this.BuscarParametro();
+    this.BuscarFecha();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarFecha() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        // LISTA DE PLANIFCACIONES DE SERVICIOS DE ALIMENTACIÓN
+        this.ObtenerPlanificaciones(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.ObtenerPlanificaciones(fecha, this.formato_hora);
+      });
   }
 
   /** ********************************************************************************************* */
@@ -105,13 +140,14 @@ export class ListarPlanificacionComponent implements OnInit {
   }
 
   // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
-  ObtenerPlanificaciones() {
+  ObtenerPlanificaciones(formato_fecha: string, formato_hora: string) {
     this.planificaciones = [];
     this.restC.ObtenerPlanComidas().subscribe(res => {
       this.planificaciones = res;
       if (this.planificaciones.length != 0) {
         this.lista_planificaciones = true;
       }
+      this.FormatearDatos(this.planificaciones, formato_fecha, formato_hora);
     });
   }
 
@@ -135,7 +171,7 @@ export class ListarPlanificacionComponent implements OnInit {
     this.botonSeleccion = false;
     this.botonEditar = false;
     this.botonEliminar = false;
-    this.ObtenerPlanificaciones();
+    this.BuscarFecha();
     this.selectionUno.clear();
   }
 
@@ -174,7 +210,7 @@ export class ListarPlanificacionComponent implements OnInit {
         this.botonEditar = false;
         this.botonEliminar = false;
         this.selectionUno.clear();
-        this.ObtenerPlanificaciones();
+        this.BuscarFecha();
       });
   }
 
@@ -188,11 +224,10 @@ export class ListarPlanificacionComponent implements OnInit {
     let cuenta_correo = datos.correo;
 
     // LECTURA DE DATOS DE LA PLANIFICACIÓN
-    let desde = moment.weekdays(moment(datos.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_inicio).day()).slice(1);
-    let hasta = moment.weekdays(moment(datos.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fec_final).day()).slice(1);
-    let h_inicio = moment(datos.hora_inicio, 'HH:mm').format('HH:mm');
-    let h_fin = moment(datos.hora_fin, 'HH:mm').format('HH:mm');
-
+    let desde = this.validar.FormatearFecha(datos.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(datos.fec_final, this.formato_fecha, this.validar.dia_completo);
+    let h_inicio = this.validar.FormatearHora(datos.hora_inicio, this.formato_hora);
+    let h_fin = this.validar.FormatearHora(datos.hora_fin, this.formato_hora);
 
     this.restC.EliminarPlanComida(id_plan, id_empleado).subscribe(res => {
       this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
@@ -230,6 +265,15 @@ export class ListarPlanificacionComponent implements OnInit {
     });
   }
 
+  FormatearDatos(lista: any, formato_fecha: string, formato_hora: string) {
+    lista.forEach(data => {
+      data.fecInicio = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+      data.fecFinal = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+      data.horaInicio = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+      data.horaFin = this.validar.FormatearHora(data.hora_fin, formato_hora);
+    })
+  }
+
 
   /** ********************************************************************************************* */
   /**      MÉTODOS USADOS PARA MANEJO DE DATOS EMPLEADOS CON PLANIFICACIÓN SELECCIONADA             */
@@ -247,6 +291,7 @@ export class ListarPlanificacionComponent implements OnInit {
 
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.planEmpleados = res;
+      this.FormatearDatos(this.planEmpleados, this.formato_fecha, this.formato_hora);
       this.tipo_accion = accion;
       this.lista_empleados = lista_empleados;
       this.ver_icono = icono;
@@ -258,7 +303,7 @@ export class ListarPlanificacionComponent implements OnInit {
           timeOut: 6000,
         })
         // window.location.reload();
-        this.ObtenerPlanificaciones();
+        this.BuscarFecha();
       });
     });
   }
@@ -396,10 +441,10 @@ export class ListarPlanificacionComponent implements OnInit {
       console.log('ver eliminar 56666 ', plan)
       var plan = obj.alimentacion
       // LECTURA DE DATOS DE LA PLANIFICACIÓN
-      let desde = moment.weekdays(moment(plan.fec_inicio).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_inicio).day()).slice(1);
-      let hasta = moment.weekdays(moment(plan.fec_final).day()).charAt(0).toUpperCase() + moment.weekdays(moment(plan.fec_final).day()).slice(1);
-      let h_inicio = moment(plan.hora_inicio, 'HH:mm').format('HH:mm');
-      let h_fin = moment(plan.hora_fin, 'HH:mm').format('HH:mm');
+      let desde = this.validar.FormatearFecha(plan.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+      let hasta = this.validar.FormatearFecha(plan.fec_final, this.formato_fecha, this.validar.dia_completo);
+      let h_inicio = this.validar.FormatearHora(plan.hora_inicio, this.formato_hora);
+      let h_fin = this.validar.FormatearHora(plan.hora_fin, this.formato_hora);
 
       // LECTURA DE NOMBRES DE USUARIOS
       usuario = usuario + '<tr><th>' + plan.nombre + '</th><th>' + plan.cedula + '</th></tr>';
@@ -494,6 +539,7 @@ export class ListarPlanificacionComponent implements OnInit {
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.lista_empleados = true;
       this.planEmpleados = res;
+      this.FormatearDatos(this.planEmpleados, this.formato_fecha, this.formato_hora);
       this.ver_eliminar = eliminar;
       this.tipo_accion = accion;
       this.ver_editar = editar;
@@ -505,7 +551,7 @@ export class ListarPlanificacionComponent implements OnInit {
         this.ver_icono = true;
         this.ver_editar = false;
         this.ver_eliminar = false;
-        this.ObtenerPlanificaciones();
+        this.BuscarFecha();
       });
     });
   }
@@ -530,8 +576,8 @@ export class ListarPlanificacionComponent implements OnInit {
       correo: cuenta_correo,
       inicio: h_inicio,
       extra: datos.extra,
-      desde: desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       final: h_fin,
     }
 
@@ -562,8 +608,7 @@ export class ListarPlanificacionComponent implements OnInit {
       id_empl_recive: id_empleado_recibe,
       tipo: 20, // PLANIFICACIÓN DE ALIMENTACION
       mensaje: 'Planificación de alimentación eliminada desde ' +
-        desde + ' ' + moment(datos.fec_inicio).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fec_final).format('DD/MM/YYYY') +
+        desde + ' hasta ' + hasta +
         ' horario de ' + h_inicio + ' a ' + h_fin + ' servicio ',
     }
     this.restC.EnviarMensajePlanComida(mensaje).subscribe(res => {
@@ -576,7 +621,7 @@ export class ListarPlanificacionComponent implements OnInit {
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
     let datos = [];
-    this.restP.ListarDetalleParametros(24).subscribe(
+    this.parametro.ListarDetalleParametros(24).subscribe(
       res => {
         datos = res;
         if (datos.length != 0) {

@@ -1,6 +1,9 @@
 import { QueryResult } from 'pg';
 import { Request, Response } from 'express';
-import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales, fechaHora } from '../../libs/settingsMail'
+import {
+    enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales, fechaHora,
+    FormatearFecha, FormatearHora, dia_completo
+} from '../../libs/settingsMail'
 import fs from 'fs';
 import pool from '../../database';
 import path from 'path';
@@ -98,11 +101,7 @@ class PermisosControlador {
         }
     }
 
-    public async getDoc(req: Request, res: Response): Promise<any> {
-        const docs = req.params.docs;
-        let filePath = `servidor\\docRespaldosPermisos\\${docs}`
-        res.sendFile(__dirname.split("servidor")[0] + filePath);
-    }
+
 
     public async ObtenerDatosSolicitud(req: Request, res: Response) {
         const id = req.params.id_emple_permiso;
@@ -167,18 +166,20 @@ class PermisosControlador {
 
         const { fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
             id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
-            docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo,
+            estado, id_empl_cargo, hora_salida, hora_ingreso, codigo,
             depa_user_loggin } = req.body;
 
         const response: QueryResult = await pool.query(
-            'INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, ' +
-            'dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, ' +
-            'docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) ' +
-            'VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 ) ' +
-            'RETURNING * ',
+            `
+            INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, 
+            dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, 
+            estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) 
+            VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17 ) 
+            RETURNING * 
+            `,
             [fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
                 id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
-                docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
+                estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
 
         const [objetoPermiso] = response.rows;
 
@@ -252,11 +253,12 @@ class PermisosControlador {
     public async GuardarDocumentoPermiso(req: Request, res: Response): Promise<void> {
         let list: any = req.files;
         let doc = list.uploads[0].path.split("\\")[1];
+        let { documento } = req.params;
         let id = req.params.id
         await pool.query(
             `
-            UPDATE permisos SET documento = $2 WHERE id = $1
-            `, [id, doc]);
+            UPDATE permisos SET documento = $2, docu_nombre = $3 WHERE id = $1
+            `, [id, doc, documento]);
         res.jsonp({ message: 'Documento Actualizado' });
     }
 
@@ -355,7 +357,7 @@ class PermisosControlador {
                 , [descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero,
                     num_permiso, docu_nombre, hora_salida, hora_ingreso, id]);
 
-            let filePath = `servidor\\docRespaldosPermisos\\${anterior_doc}`
+            let filePath = `servidor\\permisos\\${anterior_doc}`
             let direccionCompleta = __dirname.split("servidor")[0] + filePath;
             fs.unlinkSync(direccionCompleta);
 
@@ -451,7 +453,7 @@ class PermisosControlador {
 
         if (doc != 'null' && doc != '' && doc != null) {
             console.log(id_permiso, doc, ' entra ');
-            let filePath = `servidor\\docRespaldosPermisos\\${doc}`
+            let filePath = `servidor\\permisos\\${doc}`
             let direccionCompleta = __dirname.split("servidor")[0] + filePath;
             fs.unlinkSync(direccionCompleta);
         }
@@ -464,6 +466,17 @@ class PermisosControlador {
         else {
             return res.status(404).jsonp({ message: 'Solicitud no eliminada.' })
         }
+    }
+
+    // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+    public async EliminarPermisoMovil(req: Request, res: Response) {
+        let { documento } = req.params;
+        if (documento != 'null' && documento != '' && documento != null) {
+            let filePath = `servidor\\permisos\\${documento}`
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+        }
+        res.jsonp({ message: 'ok' });
     }
 
     // METODO PARA ACTUALIZAR ESTADO DEL PERMISO
@@ -520,6 +533,13 @@ class PermisosControlador {
         }
     }
 
+    // BUSQUEDA DE DOCUMENTO PERMISO
+    public async getDoc(req: Request, res: Response): Promise<any> {
+        const docs = req.params.docs;
+        let filePath = `servidor\\permisos\\${docs}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+    }
+
     /** ********************************************************************************************* **
      ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * ** 
      ** ********************************************************************************************* **/
@@ -528,6 +548,8 @@ class PermisosControlador {
     public async EnviarCorreoWeb(req: Request, res: Response): Promise<void> {
 
         var tiempo = fechaHora();
+        var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+        var hora = await FormatearHora(tiempo.hora);
 
         const path_folder = path.resolve('logos');
 
@@ -539,14 +561,17 @@ class PermisosControlador {
                 observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso,
                 solicitado_por, id, asunto, tipo_solicitud, proceso } = req.body;
 
-            const correoInfoPidePermiso = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
-                'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
-                'd.nombre AS departamento ' +
-                'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
-                'cg_departamentos AS d ' +
-                'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
-                '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id ) = ecr.id ' +
-                'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC',
+            const correoInfoPidePermiso = await pool.query(
+                `
+                SELECT e.id, e.correo, e.nombre, e.apellido, 
+                e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, 
+                d.nombre AS departamento 
+                FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, 
+                cg_departamentos AS d 
+                WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND 
+                (SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id ) = ecr.id 
+                AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC
+                `,
                 [id_empl_contrato]);
 
             // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
@@ -576,8 +601,8 @@ class PermisosControlador {
                                 <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
                                 <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
                                 <b>Generado mediante:</b> Aplicación Web <br>
-                                <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                                <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                                <b>Fecha de envío:</b> ${fecha} <br> 
+                                <b>Hora de envío:</b> ${hora} <br><br> 
                             </p>
                             <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -634,6 +659,8 @@ class PermisosControlador {
     public async EnviarCorreoPermisoMovil(req: Request, res: Response): Promise<void> {
 
         var tiempo = fechaHora();
+        var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+        var hora = await FormatearHora(tiempo.hora);
 
         const path_folder = path.resolve('logos');
 
@@ -679,8 +706,8 @@ class PermisosControlador {
                                    <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
                                    <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
                                    <b>Generado mediante:</b> Aplicación Móvil <br>
-                                   <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                                   <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                                   <b>Fecha de envío:</b> ${fecha} <br> 
+                                   <b>Hora de envío:</b> ${hora} <br><br> 
                                </p>
                                <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -728,7 +755,7 @@ class PermisosControlador {
             });
         }
         else {
-            res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+            res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' + datos });
         }
 
     }

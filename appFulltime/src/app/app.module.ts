@@ -309,6 +309,8 @@ import { ButtonNotificacionComponent } from './componentes/administracionGeneral
 import { ButtonAvisosComponent } from './componentes/administracionGeneral/main-nav/button-avisos/button-avisos.component';
 import { ButtonOpcionesComponent } from './componentes/administracionGeneral/main-nav/button-opciones/button-opciones.component';
 import { MainNavService } from './componentes/administracionGeneral/main-nav/main-nav.service';
+import { HorasPlanificadasEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/horas-planificadas-empleado/horas-planificadas-empleado.component';
+import { ComidasSolicitadasEmpleadoComponent } from './componentes/rolEmpleado/comidas-empleado/comidas-solicitadas-empleado/comidas-solicitadas-empleado.component';
 
 const config: SocketIoConfig = { url: environment.url, options: {} };
 
@@ -558,6 +560,8 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ComunicadosComponent,
     ConfiguracionComponent,
     CancelarComidaComponent,
+    HorasPlanificadasEmpleadoComponent,
+    ComidasSolicitadasEmpleadoComponent,
 
   ],
 

@@ -6,8 +6,18 @@ import moment from 'moment';
 
 class EmpleadoHorariosControlador {
 
-    public async ListarEmpleadoHorarios(req: Request, res: Response) {
-        const HORARIOS = await pool.query('SELECT * FROM empl_horarios WHERE estado = 1');
+    // BUSCAR HORARIOS DEL USUARIO
+    public async ListarHorarioUsuario(req: Request, res: Response) {
+        const { codigo } = req.params;
+        const HORARIOS = await pool.query(
+            `
+            SELECT eh.id, eh.id_empl_cargo, eh.id_hora, eh.fec_inicio, eh.fec_final,
+                eh.lunes, eh.martes, eh.miercoles, eh.jueves, eh.viernes, eh.sabado, eh.domingo, 
+                eh.id_horarios, eh.estado, eh.codigo, ch.nombre AS nom_horario
+            FROM empl_horarios AS eh, cg_horarios AS ch
+            WHERE eh.id_horarios = ch.id AND eh.codigo = $1 ORDER BY eh.id DESC
+            `
+            , [codigo]);
         if (HORARIOS.rowCount > 0) {
             return res.jsonp(HORARIOS.rows)
         }
@@ -16,21 +26,23 @@ class EmpleadoHorariosControlador {
         }
     }
 
+    // CREACIÓN DE HORARIO
     public async CrearEmpleadoHorarios(req: Request, res: Response): Promise<void> {
         const { id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves,
             viernes, sabado, domingo, id_horarios, estado, codigo } = req.body;
-        await pool.query('INSERT INTO empl_horarios (id_empl_cargo, id_hora, fec_inicio, fec_final, ' +
-            'lunes, martes, miercoles, jueves, viernes, sabado, domingo, id_horarios, estado, codigo) ' +
-            'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
-            [id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves,
+        await pool.query(
+            `
+            INSERT INTO empl_horarios (id_empl_cargo, id_hora, fec_inicio, fec_final, 
+            lunes, martes, miercoles, jueves, viernes, sabado, domingo, id_horarios, estado, codigo) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            `
+            , [id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves,
                 viernes, sabado, domingo, id_horarios, estado, codigo]);
         res.jsonp({ message: 'El horario del empleado se registró con éxito' });
     }
 
-    public async ListarHorarioCargo(req: Request, res: Response) {
-        const { id_empl_cargo } = req.params;
-        const HORARIOS = await pool.query('SELECT * FROM VistaHorarioEmpleado WHERE id_empl_cargo = $1',
-            [id_empl_cargo]);
+    public async ListarEmpleadoHorarios(req: Request, res: Response) {
+        const HORARIOS = await pool.query('SELECT * FROM empl_horarios WHERE estado = 1');
         if (HORARIOS.rowCount > 0) {
             return res.jsonp(HORARIOS.rows)
         }

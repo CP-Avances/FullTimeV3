@@ -6,6 +6,8 @@ import * as moment from 'moment';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-cancelar-comida',
@@ -26,6 +28,8 @@ export class CancelarComidaComponent implements OnInit {
     public restP: PlanComidasService, // SERVICIO DE DATOS PLAN COMIDAS
     public ventana: MatDialogRef<CancelarComidaComponent>,
     public informacion: DatosGeneralesService,
+    public parametro: ParametrosService,
+    public validar: ValidacionesService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
@@ -34,6 +38,32 @@ export class CancelarComidaComponent implements OnInit {
   ngOnInit(): void {
     console.log('datos comida ... ', this.data)
     this.obtenerInformacionEmpleado();
+    this.BuscarParametro();
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
   }
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
@@ -90,7 +120,7 @@ export class CancelarComidaComponent implements OnInit {
     var correo_usuarios = '';
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
-    let solicitud = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
 
     alimentacion.EmpleadosSendNotiEmail.forEach(e => {
 
@@ -113,15 +143,15 @@ export class CancelarComidaComponent implements OnInit {
         let comida = {
           id_usua_solicita: alimentacion.id_empleado,
           tipo_solicitud: 'Servicio de alimentación eliminado por',
-          fec_solicitud: solicitud + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY'),
+          fec_solicitud: solicitud,
           observacion: alimentacion.observacion,
           id_comida: alimentacion.id_comida,
           proceso: 'eliminado',
           correo: correo_usuarios,
           estadoc: 'Pendiente de autorización',
           asunto: 'ELIMINACION DE SOLICITUD DE SERVICIO DE ALIMENTACION',
-          inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
-          final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),
+          inicio: this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora),
+          final: this.validar.FormatearHora(alimentacion.hora_fin, this.formato_hora),
           extra: alimentacion.extra,
           id: alimentacion.id,
           solicitado_por: localStorage.getItem('fullname_print'),
@@ -156,16 +186,17 @@ export class CancelarComidaComponent implements OnInit {
   NotificarEvento(alimentacion: any) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
-    let desde = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
-    let inicio = moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm');
-    let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
+    let desde = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
+
+    let inicio = this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora);
+    let final = this.validar.FormatearHora(alimentacion.hora_fin, this.formato_hora);
 
     let mensaje = {
       id_empl_envia: this.idEmpleadoIngresa,
       id_empl_recive: '',
       tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
       mensaje: 'Ha eliminado ' + this.nota + ' de alimentación ' + this.user + ' desde ' +
-        desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
+        desde +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',
       id_comida: alimentacion.id_comida
     }

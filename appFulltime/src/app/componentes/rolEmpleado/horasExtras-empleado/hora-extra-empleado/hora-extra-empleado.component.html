@@ -1,5 +1,4 @@
-<br>
-<div class="container" style="padding-bottom: 25px;">
+<div class="container" style="padding-bottom: 25px; padding-top: 20px;">
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <div class="w-100 bd-highlight">
@@ -16,7 +15,7 @@
                     <div class="col-md">
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Fecha:</label>
-                            <label>{{h.fec_solicita}}</label>
+                            <label>{{h.fec_solicita_}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Motivo:</label>
@@ -24,27 +23,28 @@
                         </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Fecha Desde:</label>
-                            <label>{{h.fecha_inicio}}</label>
+                            <label>{{h.fecha_inicio_}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Fecha Hasta:</label>
-                            <label>{{h.fecha_fin}}</label>
+                            <label>{{h.fecha_fin_}}</label>
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Hora Desde:</label>
-                            <label>{{h.hora_inicio}}</label>
+                            <label>{{h.hora_inicio_}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Hora Hasta:</label>
-                            <label>{{h.hora_fin}}</label>
+                            <label>{{h.hora_fin_}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Horas Solicitadas:</label>
                             <label>{{h.num_hora}}</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-start" *ngIf="h.estado != 'Pendiente' && h.estado != 'Negado'">
+                        <div class="caja1 d-flex justify-content-start"
+                            *ngIf="h.estado != 'Pendiente' && h.estado != 'Negado'">
                             <label id="datosF">Horas Aprobadas:</label>
                             <label>{{h.tiempo_autorizado}}</label>
                         </div>
@@ -53,6 +53,13 @@
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Estado:</label>
                             <label>{{h.estado}}</label>
+                        </div>
+                        <div class="caja1 d-flex justify-content-start" *ngIf="h.documento != null && h.documento != ''">
+                            <label id="datosF">Documento:</label>
+                            <a matSuffix matTooltipPosition="right" matTooltip="Dar click para descargar documento."
+                                href="{{hipervinculo}}/horas-extras-pedidas/documentos/{{h.documento}}" target="_blank">
+                                <label style="font-size: 14px;">{{h.docu_nombre}}</label>
+                            </a>
                         </div>
                     </div>
                 </div>

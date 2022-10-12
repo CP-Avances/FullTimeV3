@@ -1,27 +1,29 @@
 // IMPORTACIÓN DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import pdfMake from 'pdfmake/build/pdfmake';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR COMPONENTES
 import { EditarTipoComidasComponent } from 'src/app/componentes/catalogos/catTipoComidas/editar-tipo-comidas/editar-tipo-comidas.component';
 import { TipoComidasComponent } from 'src/app/componentes/catalogos/catTipoComidas/tipo-comidas/tipo-comidas.component';
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { DetalleMenuComponent } from '../detalle-menu/detalle-menu.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 // IMPORTAR SERVICIOS
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
@@ -67,24 +69,45 @@ export class ListarTipoComidasComponent implements OnInit {
 
   constructor(
     private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
-    public vistaRegistrarDatos: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
-    private rest: TipoComidasService, // SERVICIO DATOS DE TIPOS DE SERVICIOS DE COMIDAS
-    public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
+    private rest: TipoComidasService, // SERVICIO DATOS DE TIPOS DE SERVICIOS DE COMIDAS
+    public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
+    public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     public router: Router, // VARIABLE DE MANEJO DE RUTAS URL
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
     this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerTipoComidas();
+    this.BuscarHora();
+  }
+
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_hora: string = 'HH:mm:ss';
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.ObtenerTipoComidas(this.formato_hora);
+      },
+      vacio => {
+        this.ObtenerTipoComidas(this.formato_hora);
+      });
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -96,29 +119,34 @@ export class ListarTipoComidasComponent implements OnInit {
   }
 
   // LECTURA DE DATOS
-  ObtenerTipoComidas() {
+  ObtenerTipoComidas(formato_hora: string) {
     this.tipoComidas = [];
     this.rest.ConsultarTipoComida().subscribe(datos => {
       this.tipoComidas = datos;
       console.log('tipo_comidas', this.tipoComidas)
+      this.tipoComidas.forEach(data => {
+        data.horaInicio = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+        data.horaFin = this.validar.FormatearHora(data.hora_fin, formato_hora);
+      })
     })
   }
 
   AbrirVentanaRegistrarTipoComidas(): void {
-    this.vistaRegistrarDatos.open(TipoComidasComponent, { width: '350px' }).afterClosed().subscribe(items => {
-      this.ObtenerTipoComidas();
+    this.ventana.open(TipoComidasComponent, { width: '350px' }).afterClosed().subscribe(items => {
+      this.BuscarHora();
     });
   }
 
   AbrirVentanaEditar(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarTipoComidasComponent, { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(items => {
-      this.ObtenerTipoComidas();
-    });
+    this.ventana.open(EditarTipoComidasComponent, { width: '350px', data: datosSeleccionados })
+      .afterClosed().subscribe(items => {
+        this.BuscarHora();
+      });
   }
 
   AbrirVentanaDetalles(datosSeleccionados): void {
-    this.vistaRegistrarDatos.open(DetalleMenuComponent,
+    this.ventana.open(DetalleMenuComponent,
       { width: '350px', data: { menu: datosSeleccionados, vista: 'lista' } })
       .afterClosed().subscribe(item => {
       });
@@ -129,7 +157,7 @@ export class ListarTipoComidasComponent implements OnInit {
       nombreForm: '',
       tipoForm: ''
     });
-    this.ObtenerTipoComidas();
+    this.BuscarHora();
   }
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
@@ -138,13 +166,13 @@ export class ListarTipoComidasComponent implements OnInit {
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
-      this.ObtenerTipoComidas();
+      this.BuscarHora();
     });
   }
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -155,9 +183,9 @@ export class ListarTipoComidasComponent implements OnInit {
   }
 
 
-  /****************************************************************************************************** 
-   *                                         MÉTODO PARA EXPORTAR A PDF
-   ******************************************************************************************************/
+  /** ********************************************************************************************** **
+   ** **                              MÉTODO PARA EXPORTAR A PDF                                  ** **
+   ** ********************************************************************************************** **/
   GenerarPdf(action = 'open') {
     const documentDefinition = this.GetDocumentDefinicion();
     switch (action) {

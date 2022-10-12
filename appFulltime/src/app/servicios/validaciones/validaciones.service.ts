@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../login/login.service';
-import { ParametrosService } from '../parametrosGenerales/parametros.service';
+import * as moment from 'moment';
 
 
 @Injectable({
@@ -133,6 +133,29 @@ export class ValidacionesService {
     }
     this.audit.Auditar(data).subscribe(res => {
     });
+  }
+
+  dia_abreviado: string = 'ddd';
+  dia_completo: string = 'dddd';
+
+  FormatearFecha(fecha: string, formato: string, dia: string) {
+    if (dia === 'ddd') {
+      let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
+        moment(fecha).format(dia).slice(1) +
+        ' ' + moment(fecha).format(formato);
+      return valor;
+    }
+    else {
+      let valor = moment(fecha).format(dia).charAt(0).toUpperCase() +
+        moment(fecha).format(dia).slice(1) +
+        ', ' + moment(fecha).format(formato);
+      return valor;
+    }
+  }
+
+  FormatearHora(hora: string, formato: string) {
+    let valor = moment(hora, 'HH:mm:ss').format(formato);
+    return valor;
   }
 
 }

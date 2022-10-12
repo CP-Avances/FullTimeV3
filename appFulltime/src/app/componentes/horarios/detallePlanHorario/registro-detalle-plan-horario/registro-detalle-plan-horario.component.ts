@@ -72,7 +72,7 @@ export class RegistroDetallePlanHorarioComponent implements OnInit {
   BuscarHorarios() {
     this.horarios = [];
     this.vista_horarios = [];
-    this.restH.getHorariosRest().subscribe(datos => {
+    this.restH.BuscarListaHorarios().subscribe(datos => {
       this.horarios = datos;
 
       this.horarios.map(hor => {
@@ -194,7 +194,7 @@ export class RegistroDetallePlanHorarioComponent implements OnInit {
       this.router.navigate(['/verDetalles/', this.data.planHorario.id, this.data.idEmpleado]);
     }
     if (this.data.actualizarPage === false && this.data.direccionarE === true) {
-      this.router.navigate(['/detallesHEmpleado/', this.data.planHorario.id, this.data.idEmpleado]);
+      this.router.navigate(['/horarioRotativo/', this.data.planHorario.id, this.data.idEmpleado]);
     }
   }
 

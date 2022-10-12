@@ -12,23 +12,31 @@ export class RegimenService {
     private http: HttpClient
   ) { }
 
-  // Invocación del método post para crear nuevo régimen laboral
+  // REGISTRAR NUEVO REGIMEN LABORAL
   CrearNuevoRegimen(datos: any) {
     return this.http.post(`${environment.url}/regimenLaboral`, datos).pipe(
       catchError(datos));
   }
 
+  // LISTAR REGISTROS DE REGIMEN LABORAL
   ConsultarRegimen() {
     return this.http.get(`${environment.url}/regimenLaboral`);
   }
 
+  // ACTUALIZAR REGISTRO DE REGIMEN LABORAL
+  ActualizarRegimen(datos: any) {
+    return this.http.put(`${environment.url}/regimenLaboral`, datos);
+  }
+
+
+
+
+  
   ConsultarUnRegimen(id: number) {
     return this.http.get(`${environment.url}/regimenLaboral/${id}`);
   }
 
-  ActualizarRegimen(datos: any) {
-    return this.http.put(`${environment.url}/regimenLaboral`, datos);
-  }
+
 
   DownloadXMLRest(data: any) {
     return this.http.post(`${environment.url}/regimenLaboral/xmlDownload`, data);

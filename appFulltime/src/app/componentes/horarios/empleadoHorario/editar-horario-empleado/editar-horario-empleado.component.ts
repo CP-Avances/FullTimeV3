@@ -89,7 +89,7 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
     this.horarios = [];
     this.vista_horarios = [];
     // BÚSQUEDA DE HORARIOS
-    this.restH.getHorariosRest().subscribe(datos => {
+    this.restH.BuscarListaHorarios().subscribe(datos => {
       this.horarios = datos;
       this.horarios.map(hor => {
         // BÚSQUEDA DE DETALLES DE ACUERDO AL ID DE HORARIO
@@ -131,7 +131,7 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
   empleado: any = [];
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }

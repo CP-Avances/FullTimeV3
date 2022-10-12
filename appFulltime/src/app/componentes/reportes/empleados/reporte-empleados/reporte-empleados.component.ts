@@ -79,7 +79,7 @@ export class ReporteEmpleadosComponent implements OnInit {
   nombreEmpresa: string;
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
     this.empleadoD = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoD = data;
     });
     this.restKardex.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {

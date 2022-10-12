@@ -1,95 +1,87 @@
-<!-- <div class="container" style="padding-top: 25px; padding-bottom: 25px;">
-    <div class="row">
-        <div class="col"> -->
-<mat-card class="example-card mat-elevation-z8">
-    <div id="titulo">
-        <h5>{{texto}} DISCAPACIDAD</h5>
-    </div>
-    <!-- Formulario Completo -->
-    <form [formGroup]="nuevoCarnetForm">
-        <mat-card-content>
-            <div class="container" style="padding-top: 15px; text-align: center;">
-                <div class="nota">
-                    <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
-                        Guardar.</span>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <mat-form-field>
-                            <mat-label>N° de Carnet Conadis</mat-label>
-                            <input matInput type="number" placeholder="Ej: " [formControl]="carnet" maxlength="7"
-                                oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                (keypress)="IngresarSoloNumeros($event)" required>
-                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                matTooltip="Ingresar número del carnet del Conadis">
-                                help_outline
-                            </mat-icon>
-                            <mat-error *ngIf="carnet.invalid">{{obtenerMensajeErrorCarnet()}}</mat-error>
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <mat-form-field>
-                            <mat-label id="tipoD">Seleccionar Discapacidad</mat-label>
-                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                matTooltip="Seleccione el tipo de discapacidad que posee el empleado">
-                                help_outline
-                            </mat-icon>
-                            <mat-select [formControl]="tipo">
-                                <mat-option *ngFor="let td of tipoDiscapacidad" [value]="td.id"
-                                    (click)="ActivarDesactivarNombre(nuevoCarnetForm.value)">
-                                    {{td.nombre}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <mat-form-field *ngIf="!HabilitarDescrip">
-                            <mat-label>Registrar Tipo</mat-label>
-                            <input matInput placeholder="Ej: Descripcion del tipo de permiso"
-                                (keypress)="IngresarSoloLetras($event)" formControlName="nombreForm" id="nombreTD"
-                                [ngStyle]="estilo">
-                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                matTooltip="Ingresar nombre del nuevo tipo de discapacidad">
-                                help_outline</mat-icon>
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <mat-label>Porcentaje de discapacidad *</mat-label>
+<div id="titulo">
+    <h5>{{texto}} DISCAPACIDAD</h5>
+</div>
+<!-- FORMULARIO COMPLETO -->
+<form [formGroup]="nuevoCarnetForm">
+    <mat-card-content>
+        <div class="container" style="text-align: center;">
+            <div class="nota">
+                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    Guardar.</span>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <mat-form-field>
+                        <mat-label>N° de Carnet Conadis</mat-label>
+                        <input matInput type="number" placeholder="Ej: " [formControl]="carnet" maxlength="7"
+                            oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                            (keypress)="IngresarSoloNumeros($event)" required>
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Indique el valor porcentual de discapacidad que posee el empleado">
+                            matTooltip="Ingresar número del carnet del Conadis">
                             help_outline
                         </mat-icon>
-                        <br>
-                        <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="1" min="1" max="100"
-                            [formControl]="porcentaje" required>
-                        </mat-slider>
-                    </div>
+                        <mat-error *ngIf="carnet.invalid">{{obtenerMensajeErrorCarnet()}}</mat-error>
+                    </mat-form-field>
                 </div>
             </div>
-        </mat-card-content>
-    </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn" (click)="insertarCarnet(nuevoCarnetForm.value)"
-            [disabled]="!nuevoCarnetForm.valid">
-            <span class="material-icons alinear" matSuffix matTooltipPosition="right"
-                matTooltip="Guardar registro">save</span>
-        </button>
-        <button type="submit" class="btn" (click)="limpiarCampos()">
-            <span class="material-icons alinear" matSuffix matTooltipPosition="right"
-                matTooltip="Borrar datos ingresados">backspace</span>
-        </button>
-        <button type="submit" class="btn" (click)="cerrarRegistro()">
-            <span class="material-icons alinear" matSuffix matTooltipPosition="right"
-                matTooltip="Cancelar registro">close</span>
-        </button>
-    </div>
-</mat-card>
-<!-- </div>
-    </div>
-</div> -->
+            <div class="row">
+                <div class="col">
+                    <mat-form-field>
+                        <mat-label id="tipoD">Seleccionar Discapacidad</mat-label>
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Seleccione el tipo de discapacidad que posee el empleado">
+                            help_outline
+                        </mat-icon>
+                        <mat-select [formControl]="tipo">
+                            <mat-option *ngFor="let td of tipoDiscapacidad" [value]="td.id"
+                                (click)="ActivarDesactivarNombre(nuevoCarnetForm.value)">
+                                {{td.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <mat-form-field *ngIf="!HabilitarDescrip">
+                        <mat-label>Registrar Tipo</mat-label>
+                        <input matInput placeholder="Ej: Descripcion del tipo de permiso"
+                            (keypress)="IngresarSoloLetras($event)" formControlName="nombreForm" id="nombreTD"
+                            [ngStyle]="estilo">
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Ingresar nombre del nuevo tipo de discapacidad">
+                            help_outline</mat-icon>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <mat-label>Porcentaje de discapacidad *</mat-label>
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                        matTooltip="Indique el valor porcentual de discapacidad que posee el empleado">
+                        help_outline
+                    </mat-icon>
+                    <br>
+                    <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="1" min="1" max="100"
+                        [formControl]="porcentaje" required>
+                    </mat-slider>
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+</form>
+<div style="text-align: center;">
+    <button type="submit" class="btn" (click)="insertarCarnet(nuevoCarnetForm.value)"
+        [disabled]="!nuevoCarnetForm.valid">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Guardar registro">save</span>
+    </button>
+    <button type="submit" class="btn" (click)="LimpiarCampos()">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Borrar datos ingresados">backspace</span>
+    </button>
+    <button type="submit" class="btn" (click)="cerrarRegistro()">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Cancelar registro">close</span>
+    </button>
+</div>

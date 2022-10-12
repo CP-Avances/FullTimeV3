@@ -82,7 +82,7 @@ export class AdministradorTodasComponent implements OnInit {
   empleado: any = [];
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }

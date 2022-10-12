@@ -2,6 +2,33 @@ import { Request, Response } from 'express';
 import pool from '../../../database';
 
 class EmpleadoCargosControlador {
+
+  // METODO BUSQUEDA DATOS DEL CARGO DE UN USUARIO
+  public async ObtenerCargoID(req: Request, res: Response): Promise<any> {
+    const { id } = req.params;
+    const unEmplCargp = await pool.query(
+      `
+      SELECT ec.id, ec.id_empl_contrato, ec.cargo, ec.fec_inicio, ec.fec_final, ec.sueldo, 
+      ec.hora_trabaja, ec.id_sucursal, s.nombre AS sucursal, ec.id_departamento, 
+      d.nombre AS departamento, e.id AS id_empresa, e.nombre AS empresa, tc.cargo AS nombre_cargo 
+      FROM empl_cargos AS ec, sucursales AS s, cg_departamentos AS d, cg_empresa AS e, 
+      tipo_cargo AS tc 
+      WHERE ec.id = $1 AND ec.id_sucursal = s.id AND ec.id_departamento = d.id AND 
+      s.id_empresa = e.id AND ec.cargo = tc.id 
+      ORDER BY ec.id
+      `
+      , [id]);
+    if (unEmplCargp.rowCount > 0) {
+      return res.jsonp(unEmplCargp.rows)
+    }
+    else {
+      return res.status(404).jsonp({ text: 'Cargo del empleado no encontrado' });
+    }
+
+  }
+
+
+
   public async list(req: Request, res: Response) {
     const Cargos = await pool.query('SELECT * FROM empl_cargos');
     if (Cargos.rowCount > 0) {
@@ -33,17 +60,7 @@ class EmpleadoCargosControlador {
     }
   }
 
-  public async getOne(req: Request, res: Response): Promise<any> {
-    const { id } = req.params;
-    const unEmplCargp = await pool.query('SELECT ec.id, ec.id_empl_contrato, ec.cargo, ec.fec_inicio, ec.fec_final, ec.sueldo, ec.hora_trabaja, ec.id_sucursal, s.nombre AS sucursal, d.id AS id_departamento, d.nombre AS departamento, e.id AS id_empresa, e.nombre AS empresa FROM empl_cargos AS ec, sucursales AS s, cg_departamentos AS d, cg_empresa AS e WHERE ec.id = $1 AND ec.id_sucursal = s.id AND ec.id_departamento = d.id AND s.id_empresa = e.id ORDER BY ec.id', [id]);
-    if (unEmplCargp.rowCount > 0) {
-      return res.jsonp(unEmplCargp.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Cargo del empleado no encontrado' });
-    }
 
-  }
 
   public async Crear(req: Request, res: Response): Promise<void> {
     const { id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo } = req.body;

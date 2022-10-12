@@ -7,11 +7,10 @@
                         <mat-card class="mat-elevation-z8">
                             <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
                             <span>Confirmar nueva frase</span>
-                            <form [formGroup]="fraseForm">
+                            <form [formGroup]="formulario">
                                 <div class="nota">
                                     <span>NOTA: Ingresar una frase que pueda recordar. Esta frase la usará para realizar
-                                        cambios importantes
-                                        dentro del sistema.</span>
+                                        cambios importantes dentro del sistema.</span>
                                 </div>
                                 <mat-form-field>
                                     <mat-label>Nueva Frase</mat-label>
@@ -22,8 +21,8 @@
                                 </mat-form-field>
                                 <br><br>
                                 <div style="margin: auto;">
-                                    <button type="submit" class="btn" (click)="IngresarFrase(fraseForm.value)"
-                                        [disabled]="!fraseForm.valid">Resetear Frase</button>
+                                    <button type="submit" class="btn" (click)="IngresarFrase(formulario.value)"
+                                        [disabled]="!formulario.valid">Resetear Frase</button>
                                 </div>
                             </form>
                         </mat-card>

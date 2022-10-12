@@ -1,15 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
+import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 import { DetalleCatHorariosService } from 'src/app/servicios/horarios/detalleCatHorarios/detalle-cat-horarios.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { HorarioService } from 'src/app/servicios/catalogos/catHorarios/horario.service';
+
+import { EditarDetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/editar-detalle-cat-horario/editar-detalle-cat-horario.component';
 import { DetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/detalle-cat-horario/detalle-cat-horario.component';
 import { EditarHorarioComponent } from 'src/app/componentes/catalogos/catHorario/editar-horario/editar-horario.component';
-import { EditarDetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/editar-detalle-cat-horario/editar-detalle-cat-horario.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
@@ -17,13 +20,14 @@ import { MetodosComponent } from 'src/app/componentes/administracionGeneral/meto
   templateUrl: './ver-horario-detalle.component.html',
   styleUrls: ['./ver-horario-detalle.component.css']
 })
+
 export class VerHorarioDetalleComponent implements OnInit {
 
   idHorario: string;
   datosHorario: any = [];
   datosDetalle: any = [];
 
-  // items de paginación de la tabla
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
@@ -32,11 +36,13 @@ export class VerHorarioDetalleComponent implements OnInit {
   hipervinculo: string = environment.url;
 
   constructor(
-    public router: Router,
-    private rest: HorarioService,
-    private restD: DetalleCatHorariosService,
     private toastr: ToastrService,
-    public vistaRegistrarDatos: MatDialog,
+    private restD: DetalleCatHorariosService,
+    private rest: HorarioService,
+    public router: Router,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -45,8 +51,27 @@ export class VerHorarioDetalleComponent implements OnInit {
 
   ngOnInit(): void {
     this.BuscarDatosHorario(this.idHorario);
-    this.ListarDetalles(this.idHorario);
+    this.BuscarHora();
   }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_hora: string = 'HH:mm:ss';
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.ListarDetalles(this.idHorario, this.formato_hora);
+      },
+      vacio => {
+        this.ListarDetalles(this.idHorario, this.formato_hora);
+      });
+  }
+
 
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
@@ -61,39 +86,42 @@ export class VerHorarioDetalleComponent implements OnInit {
     })
   }
 
-  ListarDetalles(id_horario: any) {
+  ListarDetalles(id_horario: any, formato_hora: string) {
     this.datosDetalle = [];
     this.restD.ConsultarUnDetalleHorario(id_horario).subscribe(datos => {
       this.datosDetalle = datos;
+      this.datosDetalle.forEach(data => {
+        data.hora_ = this.validar.FormatearHora(data.hora, formato_hora);
+      });
     })
   }
 
   AbrirVentanaDetalles(datosSeleccionados): void {
-    this.vistaRegistrarDatos.open(DetalleCatHorarioComponent,
+    this.ventana.open(DetalleCatHorarioComponent,
       { width: '600px', data: { datosHorario: datosSeleccionados, actualizar: true } })
       .afterClosed().subscribe(item => {
         this.BuscarDatosHorario(this.idHorario);
-        this.ListarDetalles(this.idHorario);
+        this.ListarDetalles(this.idHorario, this.formato_hora);
       });
   }
 
   AbrirVentanaEditar(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarHorarioComponent, { width: '900px', data: { horario: datosSeleccionados, actualizar: true } })
+    this.ventana.open(EditarHorarioComponent, { width: '900px', data: { horario: datosSeleccionados, actualizar: true } })
       .afterClosed().subscribe(result => {
         if (result !== undefined) {
           this.datosHorario = result
         }
-        this.ListarDetalles(this.idHorario);
+        this.ListarDetalles(this.idHorario, this.formato_hora);
       });
   }
 
   AbrirVentanaEditarDetalle(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarDetalleCatHorarioComponent,
+    this.ventana.open(EditarDetalleCatHorarioComponent,
       { width: '600px', data: { detalle: datosSeleccionados, horario: this.datosHorario[0] } }).afterClosed().subscribe(item => {
         this.BuscarDatosHorario(this.idHorario);
-        this.ListarDetalles(this.idHorario);
+        this.ListarDetalles(this.idHorario, this.formato_hora);
       });
   }
 
@@ -104,14 +132,14 @@ export class VerHorarioDetalleComponent implements OnInit {
         timeOut: 6000,
       });
       this.BuscarDatosHorario(this.idHorario);
-      this.ListarDetalles(this.idHorario);
+      this.ListarDetalles(this.idHorario, this.formato_hora);
     });
   }
 
   /** Función para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarDetalle(datos.id);
@@ -253,8 +281,8 @@ export class VerHorarioDetalleComponent implements OnInit {
 return window.encodeURIComponent(str)
 .replace(/["()]/g, window.escape)
 .replace(/*//*g, "%2A")
-                                                                  /*.replace(/%(?:7C|60|5E)/g, window.unescape);
-                                                                  }
-                                                                     */
+                                                                            /*.replace(/%(?:7C|60|5E)/g, window.unescape);
+                                                                            }
+                                                                               */
 
 }

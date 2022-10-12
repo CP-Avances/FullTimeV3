@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
+import { PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
-import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
 import { EditarTipoComidasComponent } from '../editar-tipo-comidas/editar-tipo-comidas.component';
-import { DetalleMenuComponent } from '../detalle-menu/detalle-menu.component';
 import { EditarDetalleMenuComponent } from '../editar-detalle-menu/editar-detalle-menu.component';
+import { DetalleMenuComponent } from '../detalle-menu/detalle-menu.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+
+import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-vista-menu',
@@ -29,9 +32,11 @@ export class VistaMenuComponent implements OnInit {
 
   constructor(
     public router: Router,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
     private rest: TipoComidasService,
     private toastr: ToastrService,
-    public vistaRegistrarDatos: MatDialog,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -39,7 +44,29 @@ export class VistaMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.BuscarDatosMenu(this.idMenu);
+    this.BuscarHora();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_hora: string = 'HH:mm:ss';
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.LlamarMetodos(this.formato_hora);
+      },
+      vacio => {
+        this.LlamarMetodos(this.formato_hora);
+      });
+  }
+
+  LlamarMetodos(formato_hora: string) {
+    this.BuscarDatosMenu(this.idMenu, formato_hora);
     this.ListarDetalles(this.idMenu);
   }
 
@@ -48,11 +75,15 @@ export class VistaMenuComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1
   }
 
-  BuscarDatosMenu(id_menu: any) {
+  BuscarDatosMenu(id_menu: any, formato_hora: string) {
     this.datosMenu = [];
-    this.rest.ConsultarUnMenu(id_menu).subscribe(data => {
-      this.datosMenu = data;
+    this.rest.ConsultarUnMenu(id_menu).subscribe(datos => {
+      this.datosMenu = datos;
       console.log('menu', this.datosMenu)
+      this.datosMenu.forEach(data => {
+        data.hora_inicio_ = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+        data.hora_fin_ = this.validar.FormatearHora(data.hora_fin, formato_hora);
+      })
     })
   }
 
@@ -65,28 +96,28 @@ export class VistaMenuComponent implements OnInit {
   }
 
   AbrirVentanaDetalles(datosSeleccionados): void {
-    this.vistaRegistrarDatos.open(DetalleMenuComponent,
+    this.ventana.open(DetalleMenuComponent,
       { width: '350px', data: { menu: datosSeleccionados } })
       .afterClosed().subscribe(item => {
-        this.BuscarDatosMenu(this.idMenu);
+        this.BuscarDatosMenu(this.idMenu, this.formato_hora);
         this.ListarDetalles(this.idMenu);
       });
   }
 
   AbrirVentanaEditar(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarTipoComidasComponent, { width: '350px', data: datosSeleccionados })
+    this.ventana.open(EditarTipoComidasComponent, { width: '350px', data: datosSeleccionados })
       .afterClosed().subscribe(items => {
-        this.BuscarDatosMenu(this.idMenu);
+        this.BuscarDatosMenu(this.idMenu, this.formato_hora);
         this.ListarDetalles(this.idMenu);
       });
   }
 
   AbrirVentanaEditarDetalle(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarDetalleMenuComponent,
+    this.ventana.open(EditarDetalleMenuComponent,
       { width: '350px', data: datosSeleccionados }).afterClosed().subscribe(item => {
-        this.BuscarDatosMenu(this.idMenu);
+        this.BuscarDatosMenu(this.idMenu, this.formato_hora);
         this.ListarDetalles(this.idMenu);
       });
   }
@@ -97,7 +128,7 @@ export class VistaMenuComponent implements OnInit {
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
-      this.BuscarDatosMenu(this.idMenu);
+      this.BuscarDatosMenu(this.idMenu, this.formato_hora);
       this.ListarDetalles(this.idMenu);
     });
   }
@@ -105,7 +136,7 @@ export class VistaMenuComponent implements OnInit {
   /** Función para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarDetalle(datos.id_detalle);

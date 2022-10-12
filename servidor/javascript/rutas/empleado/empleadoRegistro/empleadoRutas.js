@@ -20,10 +20,14 @@ class EmpleadoRutas {
         this.configuracion();
     }
     configuracion() {
-        // REGISTRO EMPLEADO
-        this.router.get('/', verificarToken_1.TokenValidation, empleadoControlador_1.default.Listar);
-        this.router.get('/buscador-empl', verificarToken_1.TokenValidation, empleadoControlador_1.default.ListarBusquedaEmpleados);
+        /** **************************************************************************************** **
+         ** **                            MANEJO DE DATOS DE EMPLEADOS                            ** **
+         ** **************************************************************************************** **/
+        // LISTAR DATOS DE UN USUARIO
         this.router.get('/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.BuscarEmpleado);
+        // LISTAR EMPLEADOS REGISTRADOS
+        this.router.get('/buscador/empleado', verificarToken_1.TokenValidation, empleadoControlador_1.default.ListarBusquedaEmpleados);
+        this.router.get('/', verificarToken_1.TokenValidation, empleadoControlador_1.default.Listar);
         this.router.post('/buscar/informacion', verificarToken_1.TokenValidation, empleadoControlador_1.default.BuscarEmpleadoNombre);
         this.router.post('/', verificarToken_1.TokenValidation, empleadoControlador_1.default.InsertarEmpleado);
         this.router.put('/:id/usuario', verificarToken_1.TokenValidation, empleadoControlador_1.default.EditarEmpleado);

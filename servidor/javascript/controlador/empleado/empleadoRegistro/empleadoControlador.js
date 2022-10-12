@@ -21,6 +21,37 @@ const database_1 = __importDefault(require("../../../database"));
 const fs_1 = __importDefault(require("fs"));
 const builder = require('xmlbuilder');
 class EmpleadoControlador {
+    // BÚSQUEDA DE UN SOLO EMPLEADO
+    BuscarEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const EMPLEADO = yield database_1.default.query(`
+      SELECT * FROM empleados WHERE id = $1
+      `, [id]);
+            if (EMPLEADO.rowCount > 0) {
+                return res.jsonp(EMPLEADO.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'El empleado no ha sido encontrado' });
+            }
+        });
+    }
+    // BÚSQUEDA DE INFORMACION ESPECIFICA DE EMPLEADOS
+    ListarBusquedaEmpleados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const empleado = yield database_1.default.query(`
+        SELECT id, nombre, apellido FROM empleados ORDER BY apellido
+        `).then(result => {
+                return result.rows.map(obj => {
+                    return {
+                        id: obj.id,
+                        empleado: obj.apellido + ' ' + obj.nombre
+                    };
+                });
+            });
+            res.jsonp(empleado);
+        });
+    }
     // LISTAR EMPLEADOS ACTIVOS EN EL SISTEMA
     Listar(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,19 +65,6 @@ class EmpleadoControlador {
             const { informacion } = req.body;
             const EMPLEADO = yield database_1.default.query('SELECT * FROM empleados WHERE ' +
                 '(UPPER (apellido) || \' \' || UPPER (nombre)) = $1', [informacion]);
-            if (EMPLEADO.rowCount > 0) {
-                return res.jsonp(EMPLEADO.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'El empleado no ha sido encontrado' });
-            }
-        });
-    }
-    // BÚSQUEDA DE UN SOLO EMPLEADO
-    BuscarEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const EMPLEADO = yield database_1.default.query('SELECT * FROM empleados WHERE id = $1', [id]);
             if (EMPLEADO.rowCount > 0) {
                 return res.jsonp(EMPLEADO.rows);
             }
@@ -255,21 +273,6 @@ class EmpleadoControlador {
             else {
                 return res.status(404).jsonp({ text: 'Registros no encontrados' });
             }
-        });
-    }
-    // BÚSQUEDA DE INFORMACIÓN ESPECÍFICA DE EMPLEADOS
-    ListarBusquedaEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const empleado = yield database_1.default.query('SELECT id, nombre, apellido FROM empleados ORDER BY apellido')
-                .then(result => {
-                return result.rows.map(obj => {
-                    return {
-                        id: obj.id,
-                        empleado: obj.apellido + ' ' + obj.nombre
-                    };
-                });
-            });
-            res.jsonp(empleado);
         });
     }
     // MÉTODO PARA INHABILITAR USUARIOS EN EL SISTEMA

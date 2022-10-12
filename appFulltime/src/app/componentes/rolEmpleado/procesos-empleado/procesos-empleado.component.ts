@@ -1,14 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProcesos/empleado-procesos.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
+
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { RegistrarEmpleProcesoComponent } from '../../modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { EditarEmpleadoProcesoComponent } from '../../modulos/accionesPersonal/procesos/editar-empleado-proceso/editar-empleado-proceso.component';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-procesos-empleado',
@@ -18,25 +23,39 @@ import { EditarEmpleadoProcesoComponent } from '../../modulos/accionesPersonal/p
 export class ProcesosEmpleadoComponent implements OnInit {
 
   idEmpleado: string;
-  idCargo: any = [];
-  cont: number = 0;
-  /* Items de paginación de la tabla */
-  tamanio_pagina: number = 5;
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA 
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   constructor(
     public restEmpleadoProcesos: EmpleadoProcesosService,
-    public restCargo: EmplCargosService,
-    public vistaRegistrarDatos: MatDialog,
-    private toastr: ToastrService,
+    public informacion: DatosGeneralesService,
+    public parametro: ParametrosService,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
     public router: Router,
+    private toastr: ToastrService,
   ) {
     this.idEmpleado = localStorage.getItem('empleado');
   }
 
   ngOnInit(): void {
-    this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                       METODOS GENERALES DEL SISTEMA                                ** ** 
+   ** **************************************************************************************** **/
+
+  // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
+  datoActual: any = [];
+  VerDatosActuales() {
+    this.datoActual = [];
+    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(res => {
+      this.datoActual = res[0];
+    });
   }
 
   ManejarPagina(e: PageEvent) {
@@ -44,85 +63,94 @@ export class ProcesosEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  /** Método para mostrar datos de los procesos del empleado */
-  buscarProcesos: any = [];
-  empleadoProcesos: any = [];
-  obtenerEmpleadoProcesos(id_empleado: number) {
-    this.buscarProcesos = [];
-    this.empleadoProcesos = [];
-    this.restCargo.BuscarIDCargo(id_empleado).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idCargo Procesos", this.idCargo[0].id);
-      for (let i = 0; i <= this.idCargo.length - 1; i++) {
-        this.restEmpleadoProcesos.ObtenerProcesoPorIdCargo(this.idCargo[i]['id']).subscribe(datos => {
-          this.buscarProcesos = datos;
-          if (this.buscarProcesos.length === 0) {
-            console.log("No se encuentran registros")
-          }
-          else {
-            if (this.cont === 0) {
-              this.empleadoProcesos = datos
-              this.cont++;
-            }
-            else {
-              this.empleadoProcesos = this.empleadoProcesos.concat(datos);
-              console.log("Datos procesos" + i + '', this.empleadoProcesos)
-            }
-          }
-        })
-      }
-    });
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.LlamarMetodos(this.formato_fecha);
+      },
+      vacio => {
+        this.LlamarMetodos(this.formato_fecha);
+      });
   }
 
-  /* Ventana para ingresar procesos del empleado */
+  // LLAMAR METODOS DE PRESENTACION DE INFORMACION
+  LlamarMetodos(formato_fecha: string) {
+    this.VerDatosActuales();
+    this.ObtenerEmpleadoProcesos(formato_fecha);
+  }
+
+  /** ******************************************************************************************* **
+   ** **                   METODO DE PRSENTACION DE DATOS DE PROCESOS                          ** ** 
+   ** ******************************************************************************************* **/
+
+  // MÉTODO PARA MOSTRAR DATOS DE LOS PROCESOS DEL EMPLEADO 
+  empleadoProcesos: any = [];
+  ObtenerEmpleadoProcesos(formato_fecha: string) {
+    this.empleadoProcesos = [];
+    this.restEmpleadoProcesos.ObtenerProcesoUsuario(parseInt(this.idEmpleado)).subscribe(datos => {
+      this.empleadoProcesos = datos;
+      this.empleadoProcesos.forEach(data => {
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+      })
+    })
+  }
+
+  // VENTANA PARA INGRESAR PROCESOS DEL EMPLEADO 
   AbrirVentanaProcesos(): void {
-    this.restCargo.BuscarIDCargoActual(parseInt(this.idEmpleado)).subscribe(datos => {
-      this.idCargo = datos;
-      console.log("idcargo ", this.idCargo[0].max)
-      this.vistaRegistrarDatos.open(RegistrarEmpleProcesoComponent,
-        { width: '600px', data: { idEmpleado: this.idEmpleado, idCargo: this.idCargo[0].max } }).afterClosed().subscribe(item => {
-          this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
+    if (this.datoActual.id_cargo != undefined) {
+      this.ventana.open(RegistrarEmpleProcesoComponent,
+        { width: '600px', data: { idEmpleado: this.idEmpleado, idCargo: this.datoActual.id_cargo } })
+        .afterClosed().subscribe(item => {
+          this.ObtenerEmpleadoProcesos(this.formato_fecha);
         });
-    }, error => {
-      this.toastr.info('El empleado no tiene registrado un Cargo', 'Primero Registrar Cargo', {
+    }
+    else {
+      this.toastr.info('El usuario no tiene registrado un Cargo.', '', {
         timeOut: 6000,
       })
-    });
+    }
   }
 
+  // VENTANA PARA EDITAR PROCESOS DEL EMPLEADO 
+  AbrirVentanaEditarProceso(datoSeleccionado: any): void {
+    this.ventana.open(EditarEmpleadoProcesoComponent,
+      { width: '500px', data: { idEmpleado: this.idEmpleado, datosProcesos: datoSeleccionado } })
+      .afterClosed().subscribe(item => {
+        this.ObtenerEmpleadoProcesos(this.formato_fecha);
+      });
+  }
 
-  /** Función para eliminar registro seleccionado Planificación*/
+  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PROCESOS
   EliminarProceso(id_plan: number) {
     this.restEmpleadoProcesos.EliminarRegistro(id_plan).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
-      this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
+      this.ObtenerEmpleadoProcesos(this.formato_fecha);
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteProceso(datos: any) {
     console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarProceso(datos.id);
         } else {
-          this.router.navigate(['/verEmpleado/', this.idEmpleado]);
+          this.router.navigate(['/procesosEmpleado']);
         }
       });
   }
-
-  /* Ventana para editar procesos del empleado */
-  AbrirVentanaEditarProceso(datoSeleccionado: any): void {
-    console.log(datoSeleccionado);
-    this.vistaRegistrarDatos.open(EditarEmpleadoProcesoComponent
-      ,
-      { width: '400px', data: { idEmpleado: this.idEmpleado, datosProcesos: datoSeleccionado } })
-      .afterClosed().subscribe(item => {
-        this.obtenerEmpleadoProcesos(parseInt(this.idEmpleado));
-      });
-  }
-
 }

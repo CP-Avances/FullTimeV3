@@ -1,5 +1,6 @@
 // SECCIÓN DE LIBRERIAS
 import { Component, OnInit } from '@angular/core';
+import { MatRadioChange } from '@angular/material/radio';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
@@ -34,10 +35,17 @@ export class VerParametroComponent implements OnInit {
   formato: boolean = true;
   formato_fecha: boolean = false;
   formato_hora: boolean = false;
+  carga: boolean = false;
+  kardex: boolean = false;
+  feriados: boolean = false;
+  recuperables: boolean = false;
+  laboral_calendario: boolean = false;
+
+  ingreso: number = 0;
 
   constructor(
     private toastr: ToastrService,
-    public restP: ParametrosService,
+    public parametro: ParametrosService,
     public router: Router,
     public ventana: MatDialog,
   ) {
@@ -61,7 +69,26 @@ export class VerParametroComponent implements OnInit {
       this.formato = false;
       this.formato_hora = true;
     }
-
+    if (this.idParametro === '27') {
+      this.formato = false;
+      this.carga = true;
+    }
+    if (this.idParametro === '28') {
+      this.formato = false;
+      this.kardex = true;
+    }
+    if (this.idParametro === '29') {
+      this.formato = false;
+      this.feriados = true;
+    }
+    if (this.idParametro === '30') {
+      this.formato = false;
+      this.recuperables = true;
+    }
+    if (this.idParametro === '31') {
+      this.formato = false;
+      this.laboral_calendario = true;
+    }
   }
 
   // MÉTODO PARA MANEJAR PAGINACIÓN DE TABLAS
@@ -73,7 +100,7 @@ export class VerParametroComponent implements OnInit {
   // MÉTODO PARA BUSCAR DATOS TIPO PARÁMETRO
   BuscarParametros(id: any) {
     this.parametros = [];
-    this.restP.ListarUnParametro(id).subscribe(data => {
+    this.parametro.ListarUnParametro(id).subscribe(data => {
       this.parametros = data;
     })
   }
@@ -82,8 +109,14 @@ export class VerParametroComponent implements OnInit {
   // MÉTODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
   ListarDetalles(id: any) {
     this.datosDetalle = [];
-    this.restP.ListarDetalleParametros(id).subscribe(datos => {
+    this.parametro.ListarDetalleParametros(id).subscribe(datos => {
       this.datosDetalle = datos;
+      if (this.ingreso === 0) {
+        this.seleccion = this.datosDetalle[0].descripcion;
+        this.opcion_kardex = this.datosDetalle[0].descripcion;
+        this.opcion_feriados = this.datosDetalle[0].descripcion;
+        this.opcion_laboral = this.datosDetalle[0].descripcion;
+      }
     })
   }
 
@@ -119,10 +152,11 @@ export class VerParametroComponent implements OnInit {
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarDetalle(id_detalle: number) {
-    this.restP.EliminarDetalleParametro(id_detalle).subscribe(res => {
+    this.parametro.EliminarDetalleParametro(id_detalle).subscribe(res => {
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
+      this.LimpiarSeleccion();
       this.BuscarParametros(this.idParametro);
       this.ListarDetalles(this.idParametro);
     });
@@ -141,10 +175,10 @@ export class VerParametroComponent implements OnInit {
   }
 
   /** ******************************************************************************************* **
-   ** **             REGISTRAR O EDITAR DETALLE DE PARAMETRO FORMATO DE FECHA                  ** ** 
+   ** **        REGISTRAR O EDITAR DETALLE DE PARAMETRO FORMATO DE FECHA Y HORA                ** ** 
    ** ******************************************************************************************* **/
 
-  GuardarDatos(seleccion: number, tipo: string) {
+  GuardarDatos(seleccion: number) {
     let formato = '';
     if (seleccion === 1) {
       formato = 'DD/MM/YYYY';
@@ -162,56 +196,125 @@ export class VerParametroComponent implements OnInit {
       formato = 'HH:mm:ss';
     }
 
-    this.restP.ListarDetalleParametros(parseInt(this.idParametro)).subscribe(datos => {
-      this.ActualizarDetalle(datos[0].id_detalle, formato, tipo);
-    }, vacio => {
-      this.CrearDetalle(formato, tipo);
-    })
+    this.RegistrarValores(formato);
+  }
 
+  /** ******************************************************************************************* **
+   ** **           REGISTRAR O EDITAR DETALLE DE PARAMETRO CARGA DE VACACIONES                 ** ** 
+   ** ******************************************************************************************* **/
+
+  seleccion: any;
+  SelecionarCarga(event: MatRadioChange) {
+    this.seleccion = event.value;
+    console.log('seleccion ... ', this.seleccion)
+    this.RegistrarValores(this.seleccion);
+  }
+
+
+  /** ******************************************************************************************* **
+   ** **           REGISTRAR O EDITAR DETALLE DE PARAMETRO CARGA DE VACACIONES                 ** ** 
+   ** ******************************************************************************************* **/
+
+  opcion_kardex: any;
+  SelecionarDescarga(event: MatRadioChange) {
+    this.opcion_kardex = event.value;
+    console.log('seleccion ... ', this.opcion_kardex)
+    this.RegistrarValores(this.opcion_kardex);
+  }
+
+  /** ******************************************************************************************* **
+   ** **           CONSIDERAR FERIADOS DENTRO DE SOLICITUDES CON CARGO A VACACIONES            ** ** 
+   ** ******************************************************************************************* **/
+
+  opcion_feriados: any;
+  ConsiderarFeriados(event: MatRadioChange) {
+    this.opcion_feriados = event.value;
+    console.log('seleccion ... ', this.opcion_feriados)
+    this.RegistrarValores(this.opcion_feriados);
+  }
+
+
+  /** ******************************************************************************************* **
+   ** **    CONSIDERAR FECHAS DE RECUPERACION DENTRO DE SOLICITUDES CON CARGO A VACACIONES     ** ** 
+   ** ******************************************************************************************* **/
+
+  opcion_recuperar: any;
+  ConsiderarRecuperacion(event: MatRadioChange) {
+    this.opcion_recuperar = event.value;
+    console.log('seleccion ... ', this.opcion_recuperar)
+    this.RegistrarValores(this.opcion_recuperar);
+  }
+
+
+  /** ******************************************************************************************* **
+   ** **           REGISTRAR O EDITAR DETALLE DE PARAMETRO LABORAL - CALENDARIO                ** ** 
+   ** ******************************************************************************************* **/
+
+  opcion_laboral: any;
+  SelecionarLaboral(event: MatRadioChange) {
+    this.opcion_laboral = event.value;
+    console.log('seleccion ... ', this.opcion_laboral)
+    this.RegistrarValores(this.opcion_laboral);
+  }
+
+
+  /** ******************************************************************************************* **
+   ** **                   ALMACENAMIENTO DE PARAMETROS EN BASE DE DATOS                       ** ** 
+   ** ******************************************************************************************* **/
+
+  // METODO PARA REGISTRAR DETALLES 
+  RegistrarValores(detalle: string) {
+    this.ingreso = 1;
+    this.parametro.ListarDetalleParametros(parseInt(this.idParametro)).subscribe(datos => {
+      this.ActualizarDetalle(datos[0].id_detalle, detalle);
+    }, vacio => {
+      this.CrearDetalle(detalle);
+    })
   }
 
   // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
-  CrearDetalle(formato: string, tipo: string) {
+  CrearDetalle(detalle: string) {
     let datos = {
       id_tipo: this.idParametro,
-      descripcion: formato
+      descripcion: detalle
     };
-    this.restP.IngresarDetalleParametro(datos).subscribe(response => {
+    this.parametro.IngresarDetalleParametro(datos).subscribe(response => {
       this.toastr.success('Detalle registrado exitosamente.',
         '', {
         timeOut: 2000,
       })
-      this.LeerFormato(formato, tipo);
+      this.LeerDatos();
     });
   }
 
-  ActualizarDetalle(id_detalle: number, formato: string, tipo: string) {
+  // METODO PARA ACTUALIZAR DETALLE DEL PARAMETRO
+  ActualizarDetalle(id_detalle: number, detalle: string) {
     let datos = {
       id: id_detalle,
-      descripcion: formato
+      descripcion: detalle
     };
-    this.restP.ActualizarDetalleParametro(datos).subscribe(response => {
+    this.parametro.ActualizarDetalleParametro(datos).subscribe(response => {
       this.toastr.success('Detalle registrado exitosamente.',
         '', {
         timeOut: 2000,
       })
-      this.LeerFormato(formato, tipo);
+      this.LeerDatos();
     });
   }
 
-  LeerFormato(tipo: string, formato: string) {
-    if (tipo === 'fecha') {
-      localStorage.removeItem('fechas');
-      localStorage.setItem('fechas', formato);
-      this.BuscarParametros(this.idParametro);
-      this.ListarDetalles(this.idParametro);
-    }
-    else {
-      localStorage.removeItem('horas');
-      localStorage.setItem('horas', formato);
-      this.BuscarParametros(this.idParametro);
-      this.ListarDetalles(this.idParametro);
-    }
+  // MOSTRAR DATOS DE PARAMETROS Y DETALLES
+  LeerDatos() {
+    this.BuscarParametros(this.idParametro);
+    this.ListarDetalles(this.idParametro);
+  }
+
+  // LIMPIAR OPCIONES DE SELECCION
+  LimpiarSeleccion() {
+    this.seleccion = '';
+    this.opcion_kardex = '';
+    this.opcion_feriados = '';
+    this.opcion_recuperar = '';
+    this.opcion_laboral = '';
   }
 
 }

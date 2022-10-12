@@ -13,7 +13,105 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../../../database"));
+const fs_1 = __importDefault(require("fs"));
 class ContratoEmpleadoControlador {
+    // REGISTRAR CONTRATOS
+    CrearContrato(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, id_tipo_contrato } = req.body;
+            const response = yield database_1.default.query(`
+            INSERT INTO empl_contratos (id_empleado, fec_ingreso, fec_salida, vaca_controla, 
+            asis_controla, id_regimen, id_tipo_contrato) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+            `, [id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen,
+                id_tipo_contrato]);
+            const [contrato] = response.rows;
+            if (contrato) {
+                return res.status(200).jsonp(contrato);
+            }
+            else {
+                return res.status(404).jsonp({ message: 'error' });
+            }
+        });
+    }
+    // METODO PARA GUARDAR DOCUMENTO
+    GuardarDocumentoContrato(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let list = req.files;
+            let doc = list.uploads[0].path.split("\\")[1];
+            let { nombre } = req.params;
+            let id = req.params.id;
+            yield database_1.default.query(`
+            UPDATE empl_contratos SET documento = $2, doc_nombre = $3  WHERE id = $1
+            `, [id, doc, nombre]);
+            res.jsonp({ message: 'Documento Actualizado' });
+        });
+    }
+    // METODO PARA VER DOCUMENTO
+    ObtenerDocumento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const docs = req.params.docs;
+            let filePath = `servidor\\contratos\\${docs}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
+    // METODO PARA LISTAR CONTRATOS POR ID DE EMPLEADO
+    BuscarContratoEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado } = req.params;
+            const CONTRATO_EMPLEADO_REGIMEN = yield database_1.default.query(`
+            SELECT ec.id, ec.fec_ingreso, ec.fec_salida FROM empl_contratos AS ec
+            WHERE ec.id_empleado = $1 ORDER BY ec.id ASC
+            `, [id_empleado]);
+            if (CONTRATO_EMPLEADO_REGIMEN.rowCount > 0) {
+                return res.jsonp(CONTRATO_EMPLEADO_REGIMEN.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registro no encontrado' });
+            }
+        });
+    }
+    // EDITAR DATOS DE CONTRATO
+    EditarContrato(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const { fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, id_tipo_contrato } = req.body;
+            yield database_1.default.query(`
+            UPDATE empl_contratos SET fec_ingreso = $1, fec_salida = $2, vaca_controla = $3,
+            asis_controla = $4, id_regimen = $5, id_tipo_contrato = $6 
+            WHERE id = $7
+            `, [fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen,
+                id_tipo_contrato, id]);
+            res.jsonp({ message: 'Contrato del empleado actualizada exitosamente' });
+        });
+    }
+    // ELIMINAR DOCUMENTO CONTRATO BASE DE DATOS - SERVIDOR
+    EliminarDocumento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento, id } = req.body;
+            yield database_1.default.query(`
+            UPDATE empl_contratos SET documento = null, doc_nombre = null  WHERE id = $1
+            `, [id]);
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\contratos\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'Documento Actualizado' });
+        });
+    }
+    // ELIMINAR DOCUMENTO CONTRATO DEL SERVIDOR
+    EliminarDocumentoServidor(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento } = req.body;
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\contratos\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'Documento Actualizado' });
+        });
+    }
     ListarContratos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const CONTRATOS = yield database_1.default.query('SELECT * FROM empl_contratos');
@@ -35,15 +133,6 @@ class ContratoEmpleadoControlador {
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
             }
-        });
-    }
-    CrearContrato(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato } = req.body;
-            yield database_1.default.query('INSERT INTO empl_contratos (id_empleado, fec_ingreso, fec_salida, vaca_controla, ' +
-                'asis_controla, id_regimen, doc_nombre, id_tipo_contrato) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [id_empleado, fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato]);
-            const ultimo = yield database_1.default.query('SELECT MAX(id) AS id FROM empl_contratos');
-            res.jsonp({ message: 'El contrato ha sido registrado', id: ultimo.rows[0].id });
         });
     }
     EncontrarIdContrato(req, res) {
@@ -91,47 +180,6 @@ class ContratoEmpleadoControlador {
             }
         });
     }
-    EncontrarContratoEmpleadoRegimen(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado } = req.params;
-            const CONTRATO_EMPLEADO_REGIMEN = yield database_1.default.query('SELECT ec.id, ec.fec_ingreso, fec_salida, ' +
-                'cr.descripcion, cr.meses_periodo, dia_anio_vacacion FROM empl_contratos AS ec, cg_regimenes AS cr ' +
-                'WHERE ec.id_empleado = $1 and ec.id_regimen = cr.id ORDER BY ec.id ASC', [id_empleado]);
-            if (CONTRATO_EMPLEADO_REGIMEN.rowCount > 0) {
-                return res.jsonp(CONTRATO_EMPLEADO_REGIMEN.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registro no encontrado' });
-            }
-        });
-    }
-    EditarContrato(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado, id } = req.params;
-            const { fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato } = req.body;
-            yield database_1.default.query('UPDATE empl_contratos SET fec_ingreso = $1, fec_salida = $2, vaca_controla = $3, ' +
-                'asis_controla = $4, id_regimen = $5, doc_nombre = $6, id_tipo_contrato = $7 ' +
-                'WHERE id_empleado = $8 AND id = $9', [fec_ingreso, fec_salida, vaca_controla, asis_controla, id_regimen, doc_nombre, id_tipo_contrato,
-                id_empleado, id]);
-            res.jsonp({ message: 'Contrato del empleado actualizada exitosamente' });
-        });
-    }
-    GuardarDocumentoContrato(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let list = req.files;
-            let doc = list.uploads[0].path.split("\\")[1];
-            let id = req.params.id;
-            yield database_1.default.query('UPDATE empl_contratos SET documento = $2 WHERE id = $1', [id, doc]);
-            res.jsonp({ message: 'Documento Actualizado' });
-        });
-    }
-    ObtenerDocumento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const docs = req.params.docs;
-            let filePath = `servidor\\contratos\\${docs}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
     EditarDocumento(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
@@ -167,7 +215,10 @@ class ContratoEmpleadoControlador {
             }
         });
     }
-    /** MÉTODOS PARA LA TABLA MODAL_TRABAJO O TIPO DE CONTRATOS */
+    /** **************************************************************************** **
+     ** **          MÉTODOS PARA LA TABLA MODAL_TRABAJO O TIPO DE CONTRATOS       ** **
+     ** **************************************************************************** **/
+    // LISTAR TIPOS DE MODALIDAD DE TRABAJO
     ListarTiposContratos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const CONTRATOS = yield database_1.default.query('SELECT * FROM modal_trabajo');
@@ -179,22 +230,19 @@ class ContratoEmpleadoControlador {
             }
         });
     }
+    // REGISTRAR MODALIDAD DE TRABAJO
     CrearTipoContrato(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { descripcion } = req.body;
-            yield database_1.default.query('INSERT INTO modal_trabajo (descripcion) VALUES ($1)', [descripcion]);
-            const ultimo = yield database_1.default.query('SELECT MAX(id) AS id FROM modal_trabajo');
-            res.jsonp({ message: 'El contrato ha sido registrado', id: ultimo.rows[0].id });
-        });
-    }
-    ListarUltimoTipoContrato(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const CONTRATOS = yield database_1.default.query('SELECT MAX(id) AS id FROM modal_trabajo');
-            if (CONTRATOS.rowCount > 0) {
-                return res.jsonp(CONTRATOS.rows);
+            const response = yield database_1.default.query(`
+            INSERT INTO modal_trabajo (descripcion) VALUES ($1) RETURNING *
+            `, [descripcion]);
+            const [contrato] = response.rows;
+            if (contrato) {
+                return res.status(200).jsonp(contrato);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ message: 'error' });
             }
         });
     }

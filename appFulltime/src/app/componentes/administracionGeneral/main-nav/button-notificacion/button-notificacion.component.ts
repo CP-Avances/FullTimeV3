@@ -7,8 +7,11 @@ import * as moment from 'moment';
 
 
 import { SettingsComponent } from "src/app/componentes/administracionGeneral/preferecias/settings/settings.component";
+
 import { LoginService } from 'src/app/servicios/login/login.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-button-notificacion',
@@ -26,7 +29,9 @@ export class ButtonNotificacionComponent implements OnInit {
 
   constructor(
     public loginService: LoginService,
+    public parametro: ParametrosService,
     public ventana: MatDialog,
+    public validar: ValidacionesService,
     private realTime: RealTimeService,
     private toaster: ToastrService,
     private socket: Socket,
@@ -42,7 +47,9 @@ export class ButtonNotificacionComponent implements OnInit {
           // BUSQUEDA DE LOS DATOS DE LA NOTIFICACION RECIBIDA
           this.realTime.ObtenerUnaNotificacion(data.id).subscribe(res => {
             // TRATAMIENTO DE LOS DATOS DE LA NOTIFICACION
-            res.create_at = moment(res.create_at).format('DD/MM/YYYY') + ' ' + moment(res.create_at).format('HH:mm:ss')
+            res.fecha_ = this.validar.FormatearFecha(moment(res.create_at).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_abreviado);
+            res.hora_ = this.validar.FormatearHora(moment(res.create_at).format('HH:mm:ss'), this.formato_hora);
+
             if (res.mensaje.split('para')[0] != undefined && res.mensaje.split('para')[1] != undefined) {
               res.aviso = res.mensaje.split('para')[0];;
               res.usuario = 'del usuario ' + res.mensaje.split('para')[1].split('desde')[0];
@@ -70,9 +77,41 @@ export class ButtonNotificacionComponent implements OnInit {
 
   ngOnInit(): void {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
-    this.LlamarNotificaciones(this.idEmpleadoIngresa);
+    this.BuscarParametro();
     this.VerificarConfiguracion(this.idEmpleadoIngresa);
 
+  }
+
+  /** **************************************************************************************** **
+  ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+  ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.LlamarNotificaciones(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.LlamarNotificaciones(fecha, this.formato_hora);
+      });
   }
 
   estadoNotificacion: boolean = true;
@@ -86,13 +125,14 @@ export class ButtonNotificacionComponent implements OnInit {
   // METODO DE BUSQUEDA DE NOTIFICACIONES
   avisos: any = [];
   nota: string = '';
-  LlamarNotificaciones(id: number) {
-    this.realTime.ObtenerNotasUsuario(id).subscribe(res => {
+  LlamarNotificaciones(formato_fecha: string, formato_hora: string) {
+    this.realTime.ObtenerNotasUsuario(this.idEmpleadoIngresa).subscribe(res => {
       this.avisos = res;
       if (!this.avisos.text) {
         if (this.avisos.length > 0) {
           this.avisos.forEach(obj => {
-            obj.create_at = moment(obj.create_at).format('DD/MM/YYYY') + ' ' + moment(obj.create_at).format('HH:mm:ss')
+            obj.fecha_ = this.validar.FormatearFecha(moment(obj.create_at).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_abreviado);
+            obj.hora_ = this.validar.FormatearHora(moment(obj.create_at).format('HH:mm:ss'), formato_hora);
             if (obj.visto === false) {
               this.num_noti_false = this.num_noti_false + 1;
               this.estadoNotificacion = false
@@ -133,7 +173,7 @@ export class ButtonNotificacionComponent implements OnInit {
 
   CambiarVistaNotificacion(data: any) {
     this.realTime.PutVistaNotificacion(data.id).subscribe(res => {
-      this.LlamarNotificaciones(this.idEmpleadoIngresa);
+      this.LlamarNotificaciones(this.formato_fecha, this.formato_hora);
     });
 
     const rol = parseInt(localStorage.getItem('rol'));

@@ -8,6 +8,9 @@ import { CancelarHoraExtraComponent } from '../cancelar-hora-extra/cancelar-hora
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
 import { PedidoHoraExtraComponent } from 'src/app/componentes/modulos/horasExtras/pedido-hora-extra/pedido-hora-extra.component';
+import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-hora-extra-empleado',
@@ -17,22 +20,64 @@ import { PedidoHoraExtraComponent } from 'src/app/componentes/modulos/horasExtra
 
 export class HoraExtraEmpleadoComponent implements OnInit {
 
-  id_user_loggin: number;
+  idEmpleado: number;
   // ITEMS DE PAGINACIÓN DE LA TABLA 
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
 
+  hipervinculo: string = environment.url
+
   constructor(
     private restHE: PedHoraExtraService,
     private ventana: MatDialog,
-    private validar: ValidacionesService
+    private validar: ValidacionesService,
+    public parametro: ParametrosService,
+    public informacion: DatosGeneralesService,
   ) {
-    this.id_user_loggin = parseInt(localStorage.getItem("empleado"));
+    this.idEmpleado = parseInt(localStorage.getItem("empleado"));
   }
 
   ngOnInit(): void {
-    this.ObtenerlistaHorasExtrasEmpleado();
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha);
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha);
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        // LLAMADO A PRESENTACION DE DATOS
+        this.LlamarMetodos(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.LlamarMetodos(fecha, this.formato_hora);
+      });
+  }
+
+  // LLAMAR METODOS DE PRESENTACION DE INFORMACION
+  LlamarMetodos(formato_fecha: string, formato_hora: string) {
+    this.ObtenerListaHorasExtras(formato_fecha, formato_hora);
   }
 
   ManejarPagina(e: PageEvent) {
@@ -40,15 +85,17 @@ export class HoraExtraEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  /** *************************************************************************************** **
+   ** **                 METODO PARA MOSTRAR DATOS DE HORAS EXTRAS                         ** ** 
+   ** *************************************************************************************** **/
+
+  // METODO DE BUSQUEDA DE HORAS EXTRAS
   hora_extra: any = [];
-  ObtenerlistaHorasExtrasEmpleado() {
+  ObtenerListaHorasExtras(formato_fecha: string, formato_hora: string) {
     this.hora_extra = [];
-    this.restHE.ObtenerListaEmpleado(this.id_user_loggin).subscribe(res => {
-      console.log('estado -------------', res);
+    this.restHE.ObtenerListaEmpleado(this.idEmpleado).subscribe(res => {
       this.hora_extra = res;
-
       this.hora_extra.forEach(h => {
-
         if (h.estado === 1) {
           h.estado = 'Pendiente';
         }
@@ -62,48 +109,32 @@ export class HoraExtraEmpleadoComponent implements OnInit {
           h.estado = 'Negado';
         }
 
-        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        h.fec_inicio = moment(h.fec_inicio).format('YYYY-MM-DD') + ' ' + moment(h.fec_inicio).format('HH:mm:ss')
-        h.fec_final = moment(h.fec_final).format('YYYY-MM-DD') + ' ' + moment(h.fec_final).format('HH:mm:ss')
+        h.fecha_inicio_ = this.validar.FormatearFecha(moment(h.fec_inicio).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_completo);
+        h.hora_inicio_ = this.validar.FormatearHora(moment(h.fec_inicio).format('HH:mm:ss'), formato_hora);
 
+        h.fecha_fin_ = this.validar.FormatearFecha(moment(h.fec_final).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_completo);;
+        h.hora_fin_ = this.validar.FormatearHora(moment(h.fec_final).format('HH:mm:ss'), formato_hora);
 
-        h.fecha_inicio = moment.weekdays(moment(h.fec_inicio.split(' ')[0]).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(h.fec_inicio.split(' ')[0]).day()).slice(1) +
-          ' ' + moment(h.fec_inicio).format('DD/MM/YYYY');
-
-        h.hora_inicio = h.fec_inicio.split(' ')[1];
-
-        h.fecha_fin = moment.weekdays(moment(h.fec_final.split(' ')[0]).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(h.fec_final.split(' ')[0]).day()).slice(1) +
-          ' ' + moment(h.fec_final).format('DD/MM/YYYY');
-
-        h.hora_fin = h.fec_final.split(' ')[1];
-
-        h.fec_solicita = moment.weekdays(moment(h.fec_solicita).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(h.fec_solicita).day()).slice(1) +
-          ' ' + moment(h.fec_solicita).format('DD/MM/YYYY');
+        h.fec_solicita_ = this.validar.FormatearFecha(h.fec_solicita, formato_fecha, this.validar.dia_completo);
       })
 
     }, err => {
-      console.log(err.error);
       return this.validar.RedireccionarEstadisticas(err.error);
     });
+  }
+
+  CancelarHoraExtra(h: any) {
+    this.ventana.open(CancelarHoraExtraComponent,
+      { width: '450px', data: h }).afterClosed().subscribe(items => {
+        console.log(items);
+        this.ObtenerListaHorasExtras(this.formato_fecha, this.formato_hora);
+      });
   }
 
   AbrirVentanaHoraExtra() {
     this.ventana.open(PedidoHoraExtraComponent,
       { width: '900px' }).afterClosed().subscribe(items => {
-        this.ObtenerlistaHorasExtrasEmpleado();
-      });
-  }
-
-  CancelarHoraExtra(h) {
-    this.ventana.open(CancelarHoraExtraComponent,
-      { width: '450px', data: h }).afterClosed().subscribe(items => {
-        console.log(items);
-        if (items === true) {
-          this.ObtenerlistaHorasExtrasEmpleado();
-        }
+        this.ObtenerListaHorasExtras(this.formato_fecha, this.formato_hora);
       });
   }
 
@@ -111,9 +142,7 @@ export class HoraExtraEmpleadoComponent implements OnInit {
     this.ventana.open(EditarHoraExtraEmpleadoComponent,
       { width: '900px', data: h }).afterClosed().subscribe(items => {
         console.log(items);
-        if (items === true) {
-          this.ObtenerlistaHorasExtrasEmpleado();
-        }
+        this.ObtenerListaHorasExtras(this.formato_fecha, this.formato_hora);
       });
   }
 

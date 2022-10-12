@@ -49,9 +49,9 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   idEmpleado: number;
 
   constructor(
-    private validacionesService: ValidacionesService, // VARIABLE DE VALIDACIONES DE ACCESO
     private parametro: ParametrosService,
     private ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
+    private validar: ValidacionesService, // VARIABLE DE VALIDACIONES DE ACCESO
     private router: Router, // VARIABLE DE MANEJO DE RUTAS
     private restHE: PedHoraExtraService, // SERVICIO DE DATOS DE SOLICITUD DE HORA EXTRA
     private restA: AutorizacionService, // SERVICIO DE DATOS DE AUTORIZACIONES
@@ -64,6 +64,8 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    var f = moment();
+    this.fechaActual = f.format('YYYY-MM-DD');
     this.ObtenerLogo();
     this.ObtenerColores();
     this.BuscarParametro();
@@ -110,7 +112,8 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   cont: number;
 
   // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
-  BuscarInfo(f_fecha: string, f_hora: string) {
+  BuscarInfo(formato_fecha: string, formato_hora: string) {
+
     this.hora_extra = [];
 
     // BÚSQUEDA DE DATOS DE HORAS EXTRAS
@@ -123,33 +126,21 @@ export class VerPedidoHoraExtraComponent implements OnInit {
 
       this.hora_extra.forEach(h => {
 
-        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        h.fec_inicio = moment(h.fec_inicio).format('YYYY-MM-DD') + ' ' + moment(h.fec_inicio).format('HH:mm:ss')
-        h.fec_final = moment(h.fec_final).format('YYYY-MM-DD') + ' ' + moment(h.fec_final).format('HH:mm:ss')
+        h.fecha_inicio_ = this.validar.FormatearFecha(moment(h.fec_inicio).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_completo);
+        h.hora_inicio_ = this.validar.FormatearHora(moment(h.fec_inicio).format('HH:mm:ss'), formato_hora);
 
+        h.fecha_fin_ = this.validar.FormatearFecha(moment(h.fec_final).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_completo);;
+        h.hora_fin_ = this.validar.FormatearHora(moment(h.fec_final).format('HH:mm:ss'), formato_hora);
 
-        h.fecha_inicio = moment.weekdays(moment(h.fec_inicio.split(' ')[0]).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(h.fec_inicio.split(' ')[0]).day()).slice(1) +
-          ' ' + moment(h.fec_inicio).format(f_fecha);
+        h.fec_solicita_ = this.validar.FormatearFecha(h.fec_solicita, formato_fecha, this.validar.dia_completo);
 
-        h.hora_inicio = moment(moment(h.fec_inicio).format('HH:mm:ss'), 'HH:mm').format(f_hora);
-
-        h.fecha_fin = moment.weekdays(moment(h.fec_final.split(' ')[0]).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(h.fec_final.split(' ')[0]).day()).slice(1) +
-          ' ' + moment(h.fec_final).format(f_fecha);
-
-        h.hora_fin = moment(moment(h.fec_final).format('HH:mm:ss'), 'HH:mm').format(f_hora);
-
-        h.fec_solicita = moment.weekdays(moment(h.fec_solicita).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(h.fec_solicita).day()).slice(1) +
-          ' ' + moment(h.fec_solicita).format(f_fecha);
       })
 
       console.log('data horas .. ', this.hora_extra)
 
       this.ObtenerAprobacion();
     }, err => {
-      return this.validacionesService.RedireccionarMixto(err.error)
+      return this.validar.RedireccionarMixto(err.error)
     });
     this.ObtenerEmpleados(this.idEmpleado);
     this.ObtenerSolicitud(this.dataParams.id);
@@ -244,19 +235,18 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
   ObtenerSolicitud(id: any) {
-    var f = moment();
-    this.fechaActual = f.format('YYYY-MM-DD');
     this.datoSolicitud = [];
     // BÚSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
     this.restHE.BuscarDatosSolicitud(id).subscribe(data => {
       this.datoSolicitud = data;
+      console.log('ver data solicitud .. ', this.datoSolicitud[0])
       // BÚSQUEDA DE DATOS DE EMPRESA
       this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
         var fecha_inicio = moment(this.datoSolicitud[0].fec_inicio);
@@ -279,7 +269,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
         }
       });
     }, err => {
-      return this.validacionesService.RedireccionarMixto(err.error)
+      return this.validar.RedireccionarMixto(err.error)
     })
   }
 
@@ -312,12 +302,6 @@ export class VerPedidoHoraExtraComponent implements OnInit {
       })
   }
 
-  ObtenerFecha() {
-    var fecha
-    var f = moment();
-    fecha = f.format('YYYY-MM-DD');
-    return fecha;
-  }
 
   /** ******************************************************************************************************* * 
    **                                 MÉTODO PARA EXPORTAR A PDF ----HORAS EXTRAS                             *
@@ -360,7 +344,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
         { text: this.datoSolicitud[0].nom_empresa.toUpperCase(), bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         { text: 'SOLICITUD DE HORAS EXTRAS', fontSize: 10, alignment: 'center', margin: [0, 0, 0, 10] },
-        this.SeleccionarMetodo(this.ObtenerFecha()),
+        this.SeleccionarMetodo(),
       ],
       styles: {
         tableHeaderA: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.s_color, margin: [20, 0, 20, 0], },
@@ -371,7 +355,16 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     };
   }
 
-  SeleccionarMetodo(f) {
+  SeleccionarMetodo() {
+
+
+    let fecha = this.validar.FormatearFecha(this.fechaActual, this.formato_fecha, this.validar.dia_completo);
+    let fec_inicio_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_inicio, this.formato_fecha, this.validar.dia_completo);
+    let fec_final_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_final, this.formato_fecha, this.validar.dia_completo);
+
+    let hora_inicio_ = this.validar.FormatearHora(this.datoSolicitud[0].hora_inicio, this.formato_hora);
+    let hora_final_ = this.validar.FormatearHora(this.datoSolicitud[0].hora_final, this.formato_hora);
+
     return {
       table: {
         widths: ['*'],
@@ -379,7 +372,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
           [{ text: 'INFORMACIÓN GENERAL', style: 'tableHeader' }],
           [{
             columns: [
-              { text: [{ text: 'FECHA: ' + f, style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA: ' + fecha, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
               { text: [{ text: 'CIUDAD: ' + this.datoSolicitud[0].nom_ciudad, style: 'itemsTableD' }] }
             ]
@@ -402,14 +395,15 @@ export class VerPedidoHoraExtraComponent implements OnInit {
           [{
             columns: [
               { text: [{ text: 'DESCRIPCIÓN: ' + this.datoSolicitud[0].descripcion, style: 'itemsTableD' }] },
-              { text: [{ text: '', style: 'itemsTableD' }] },
-              { text: [{ text: 'FECHA DE INICIO: ' + this.datoSolicitud[0].fec_inicio.split('T')[0], style: 'itemsTableD' }] },]
+              { text: [{ text: 'FECHA DE INICIO: ' + fec_inicio_, style: 'itemsTableD' }] },
+              { text: [{ text: 'HORA INICIO: ' + hora_inicio_, style: 'itemsTableD' }] }]
+
           }],
           [{
             columns: [
               { text: [{ text: 'TOTAL HORAS EXTRAS: ' + this.datoSolicitud[0].num_hora + ' horas', style: 'itemsTableD' }] },
-              { text: [{ text: '', style: 'itemsTableD' }] },
-              { text: [{ text: 'FECHA DE FINALIZACIÓN: ' + this.datoSolicitud[0].fec_final.split('T')[0], style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA DE FINALIZACIÓN: ' + fec_final_, style: 'itemsTableD' }] },
+              { text: [{ text: 'HORA FINALIZA: ' + hora_final_, style: 'itemsTableD' }] }
             ]
           }],
           [{

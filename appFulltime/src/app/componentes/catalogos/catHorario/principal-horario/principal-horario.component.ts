@@ -1,17 +1,17 @@
 // IMPORTAR LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR SERVICIOS
 import { DetalleCatHorariosService } from 'src/app/servicios/horarios/detalleCatHorarios/detalle-cat-horarios.service';
@@ -22,9 +22,9 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 // IMPORTAR COMPONENTES
 import { DetalleCatHorarioComponent } from 'src/app/componentes/catalogos/catHorario/detalle-cat-horario/detalle-cat-horario.component';
 import { RegistroHorarioComponent } from 'src/app/componentes/catalogos/catHorario/registro-horario/registro-horario.component';
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarHorarioComponent } from '../editar-horario/editar-horario.component';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-principal-horario',
@@ -64,34 +64,34 @@ export class PrincipalHorarioComponent implements OnInit {
   empleado: any = [];
   idEmpleado: number;
 
-  // VARIABLES DE 
+  // VARIABLE DE NAVEGABILIDAD
   hipervinculo: string = environment.url;
 
   constructor(
-    private restD: DetalleCatHorariosService, // SERVICIO DE DATOS DE DETALLES DE HORARIOS
-    public validar: ValidacionesService, // VARIABLE USADA PARA CONTROL DE VALIDACIONES
     public restEmpre: EmpresaService, // SERVICIO DATOS DE EMPRESA
-    public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
-    private toastr: ToastrService, // VARIABLE DE MANEJO DE NOTIFICACIONES
-    private rest: HorarioService, // SERVICIO DATOS DE HORARIO
+    public validar: ValidacionesService, // VARIABLE USADA PARA CONTROL DE VALIDACIONES
     public ventana: MatDialog, // VARIABLES MANEJO DE VENTANAS
     public router: Router, // VARIABLE DE MANEJO DE RUTAS
+    public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    private rest: HorarioService, // SERVICIO DATOS DE HORARIO
+    private restD: DetalleCatHorariosService, // SERVICIO DE DATOS DE DETALLES DE HORARIOS
+    private toastr: ToastrService, // VARIABLE DE MANEJO DE NOTIFICACIONES
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerHorarios();
     this.nameFile = '';
-    this.ObtenerEmpleados(this.idEmpleado);
     this.ObtenerLogo();
     this.ObtenerColores();
+    this.ObtenerHorarios();
+    this.ObtenerEmpleados();
   }
 
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
-  ObtenerEmpleados(idemploy: any) {
+  ObtenerEmpleados() {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(this.idEmpleado).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -125,7 +125,7 @@ export class PrincipalHorarioComponent implements OnInit {
   // MÉTODO PARA OBTENER HORARIOS
   ObtenerHorarios() {
     this.horarios = [];
-    this.rest.getHorariosRest().subscribe(datos => {
+    this.rest.BuscarListaHorarios().subscribe(datos => {
       this.horarios = datos;
     })
   }
@@ -137,10 +137,11 @@ export class PrincipalHorarioComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA ABRIR VENTANA REGISTRAR DETALLEE DE HORARIO
+  // MÉTODO PARA ABRIR VENTANA REGISTRAR DETALLE DE HORARIO
   AbrirRegistraDetalle(datosSeleccionados: any): void {
     this.ventana.open(DetalleCatHorarioComponent,
-      { width: '600px', data: { datosHorario: datosSeleccionados, actualizar: false } }).afterClosed().subscribe(items => {
+      { width: '600px', data: { datosHorario: datosSeleccionados, actualizar: false } })
+      .afterClosed().subscribe(items => {
         this.ObtenerHorarios();
       });
   }
@@ -155,9 +156,11 @@ export class PrincipalHorarioComponent implements OnInit {
 
   // MÉTODO PARA ABRIR VENTANA EDITAR HORARIO
   AbrirVentanaEditarHorario(datosSeleccionados: any): void {
-    this.ventana.open(EditarHorarioComponent, { width: '900px', data: { horario: datosSeleccionados, actualizar: false } }).afterClosed().subscribe(items => {
-      this.ObtenerHorarios();
-    });
+    this.ventana.open(EditarHorarioComponent,
+      { width: '900px', data: { horario: datosSeleccionados, actualizar: false } })
+      .afterClosed().subscribe(items => {
+        this.ObtenerHorarios();
+      });
   }
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
@@ -185,11 +188,11 @@ export class PrincipalHorarioComponent implements OnInit {
   }
 
 
-  /****************************************************************************************************** 
-   *                                 PLANTILLA CARGAR SOLO HORARIOS
-   ******************************************************************************************************/
+  /** ************************************************************************************************* ** 
+   ** **                              PLANTILLA CARGAR SOLO HORARIOS                                 ** **
+   ** ************************************************************************************************* **/
 
-  fileChangeCatalogoHorario(element) {
+  fileChangeCatalogoHorario(element: any) {
     this.archivoSubido = element.target.files;
     this.nameFile = this.archivoSubido[0].name;
     let arrayItems = this.nameFile.split(".");
@@ -314,12 +317,22 @@ export class PrincipalHorarioComponent implements OnInit {
     });
   }
 
-  /****************************************************************************************************** 
-   *                                MÉTODO PARA EXPORTAR A PDF 
-   ******************************************************************************************************/
 
-  generarPdf(action = 'open') {
-    const documentDefinition = this.getDocumentDefinicion();
+
+
+
+
+
+
+
+
+  /** ************************************************************************************************* ** 
+   ** **                                MÉTODO PARA EXPORTAR A PDF                                   ** **
+   ** ************************************************************************************************* **/
+
+  // GENERAR ARCHIVO PDF
+  GenerarPDF(action = 'open') {
+    const documentDefinition = this.EstructurarPDF();
 
     switch (action) {
       case 'open': pdfMake.createPdf(documentDefinition).open(); break;
@@ -330,7 +343,8 @@ export class PrincipalHorarioComponent implements OnInit {
 
   }
 
-  getDocumentDefinicion() {
+  // DEFINICION DEL DOCUMENTO PDF
+  EstructurarPDF() {
     sessionStorage.setItem('Empleados', this.horarios);
     return {
       // ENCABEZADO DE PÁGINA
@@ -360,7 +374,7 @@ export class PrincipalHorarioComponent implements OnInit {
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
         { text: 'Lista de Horarios', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
-        this.presentarDataPDFEmpleados(),
+        this.PresentarDataPDFEmpleados(),
       ],
       styles: {
         tableHeader: { fontSize: 12, bold: true, alignment: 'center', fillColor: this.p_color },
@@ -370,7 +384,8 @@ export class PrincipalHorarioComponent implements OnInit {
     };
   }
 
-  presentarDataPDFEmpleados() {
+  // METODO PARA PRESENTAR DATOS DEL DOCUMENTO PDF
+  PresentarDataPDFEmpleados() {
     return {
       columns: [
         { width: '*', text: '' },
@@ -414,36 +429,36 @@ export class PrincipalHorarioComponent implements OnInit {
   }
 
 
-  /* ***************************************************************************************************** 
-   *                                    MÉTODO PARA EXPORTAR A EXCEL 
-   * *****************************************************************************************************/
+  /** ************************************************************************************************* ** 
+   ** **                                 MÉTODO PARA EXPORTAR A EXCEL                                ** **
+   ** ************************************************************************************************* **/
 
-  exportToExcel() {
+  ExportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horarios);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, wsr, 'horarios');
     xlsx.writeFile(wb, "CatHorariosEXCEL" + new Date().getTime() + '.xlsx');
   }
 
-  /* ***************************************************************************************************** 
-   *                                                MÉTODO PARA EXPORTAR A CSV 
-   * *****************************************************************************************************/
+  /** ************************************************************************************************* ** 
+   ** **                               MÉTODO PARA EXPORTAR A CSV                                    ** **
+   ** ************************************************************************************************* **/
 
-  exportToCVS() {
+  ExportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horarios);
     const csvDataH = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataH], { type: 'text/csv;charset=utf-8;' });
     FileSaver.saveAs(data, "CatHorarioCSV" + new Date().getTime() + '.csv');
   }
 
-  /* ****************************************************************************************************
-   *                                  PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                           PARA LA EXPORTACIÓN DE ARCHIVOS XML                               ** **
+   ** ************************************************************************************************* **/
 
   urlxml: string;
   data: any = [];
-  exportToXML() {
-    var objeto;
+  ExportToXML() {
+    var objeto: any;
     var arregloHorarios = [];
     this.horarios.forEach(obj => {
       objeto = {

@@ -1,5 +1,13 @@
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+#letras {
+    font-size: 14px;
+}
 
-.mat-radio-button ~ .mat-radio-button { margin-left: 30px; }
+.mat-radio-button~.mat-radio-button {
+    margin-left: 30px;
+}
 
-#letras { font-size: 14px; }
+.btn {
+    margin-left: 15px;
+    background-color: rgb(80, 87, 97);
+    color: white;
+}

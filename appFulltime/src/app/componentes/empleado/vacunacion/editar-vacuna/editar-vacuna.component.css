@@ -4,9 +4,13 @@
 
 mat-form-field { padding: 10px 15px 0px 15px; }
 
-.separar { padding: 10px 10px 0px 10px; }
+#respaldo { font-size: 13px; display: inline-block;}
 
-#nomDocumento { font-size: 14px; display: inline-block; }
+#boton {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
+
 
 [type="file"] {
     height: 0;

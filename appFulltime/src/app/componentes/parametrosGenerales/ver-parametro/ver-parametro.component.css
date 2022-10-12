@@ -11,3 +11,11 @@ hr { background-color: black; }
 #editarF { color:green; cursor: pointer; text-align: center; margin-left: 15px; }
 
 #datosF { font-weight: bold; font-size: 16px; padding-right: 5px; }
+
+.mat-radio-button~.mat-radio-button {
+    margin-left: 15px;
+}
+mat-radio-group {
+    padding: 20px 20px 20px 20x;
+    margin-bottom: 10px;
+}

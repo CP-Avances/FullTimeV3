@@ -13,10 +13,10 @@ label {
 }
 
 .fa-edit {
-    color: green;
     margin-left: 20px;
-    cursor: pointer;
     text-align: center;
+    cursor: pointer;
+    color: green;
 }
 
 p {

@@ -104,14 +104,14 @@ export class VerEmpleadoPermisoComponent implements OnInit {
       });
   }
 
-  // VARIABE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
+  // VARIABLE DE ALMACENAMIENTO DE DATOS DE COLABORADORES QUE REVISARON SOLICITUD
   empleado_estado: any = [];
   // CONTADOR DE REVISIONES DE SOLICITUD
   lectura: number = 1;
   cont: number;
 
   // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
-  BuscarDatos(f_fecha: string, f_hora: string) {
+  BuscarDatos(formato_fecha: string, formato_hora: string) {
     this.InfoPermiso = [];
 
     // BÚSQUEDA DE DATOS DE PERMISO
@@ -120,21 +120,12 @@ export class VerEmpleadoPermisoComponent implements OnInit {
 
       this.InfoPermiso.forEach(p => {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        p.fec_creacion = moment.weekdays(moment(p.fec_creacion).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(p.fec_creacion).day()).slice(1) +
-          ' ' + moment(p.fec_creacion).format(f_fecha);
+        p.fec_creacion_ = this.validar.FormatearFecha(p.fec_creacion, formato_fecha, this.validar.dia_completo);
+        p.fec_inicio_ = this.validar.FormatearFecha(p.fec_inicio, formato_fecha, this.validar.dia_completo);
+        p.fec_final_ = this.validar.FormatearFecha(p.fec_final, formato_fecha, this.validar.dia_completo);
 
-        p.fec_inicio = moment.weekdays(moment(p.fec_inicio).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(p.fec_inicio).day()).slice(1) +
-          ' ' + moment(p.fec_inicio).format(f_fecha);
-
-        p.fec_final = moment.weekdays(moment(p.fec_final).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(p.fec_final).day()).slice(1) +
-          ' ' + moment(p.fec_final).format(f_fecha);
-
-        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format(f_hora);
-
-        p.hora_salida = moment(p.hora_salida, 'HH:mm').format(f_hora);
+        p.hora_ingreso_ = this.validar.FormatearHora(p.hora_ingreso, formato_hora);
+        p.hora_salida_ = this.validar.FormatearHora(p.hora_salida, formato_hora);
 
       })
 
@@ -238,7 +229,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -349,6 +340,10 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   }
 
   SeleccionarMetodo() {
+    let fec_creacion_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_creacion.split('T')[0], this.formato_fecha, this.validar.dia_completo)
+    let fec_inicio_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_inicio.split('T')[0], this.formato_fecha, this.validar.dia_completo)
+    let fec_final_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_final.split('T')[0], this.formato_fecha, this.validar.dia_completo)
+
     return {
       table: {
         widths: ['*'],
@@ -356,7 +351,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
           [{ text: 'INFORMACIÓN GENERAL', style: 'tableHeader' }],
           [{
             columns: [
-              { text: [{ text: 'FECHA: ' + this.datoSolicitud[0].fec_creacion.split('T')[0], style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA: ' + fec_creacion_, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
               { text: [{ text: 'CIUDAD: ' + this.datoSolicitud[0].nom_ciudad, style: 'itemsTableD' }] }
             ]
@@ -380,13 +375,13 @@ export class VerEmpleadoPermisoComponent implements OnInit {
             columns: [
               { text: [{ text: 'TIPO DE SOLICITUD: ' + this.datoSolicitud[0].nom_permiso, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
-              { text: [{ text: 'FECHA DE INICIO: ' + this.datoSolicitud[0].fec_inicio.split('T')[0], style: 'itemsTableD' }] },]
+              { text: [{ text: 'FECHA DE INICIO: ' + fec_inicio_, style: 'itemsTableD' }] },]
           }],
           [{
             columns: [
               { text: [{ text: 'OBSERVACIÓN: ' + this.datoSolicitud[0].descripcion, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
-              { text: [{ text: 'FECHA DE FINALIZACIÓN: ' + this.datoSolicitud[0].fec_final.split('T')[0], style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA DE FINALIZACIÓN: ' + fec_final_, style: 'itemsTableD' }] },
             ]
           }],
           [{

@@ -1,37 +1,32 @@
-<div class="container" style="padding-top: 15px; padding-bottom: 25px;">
-  <div class="row">
-    <div class="col-sm"style="text-align: center;">
-      <span class="text-titulo">Estadísticas Empleado</span>
+<div class="container" style="padding-top: 20px; padding-bottom: 25px;">
+  <div class="d-flex bd-highlight" id="titulo">
+    <div class="w-100 bd-highlight">
+      <h5>GRÁFICAS ESTADÍSTICAS</h5>
     </div>
-    <div class="col-sm" style="margin-top: 3px; text-align: center;">
-      <span class="text-titulo-fecha">{{fecha}}</span>
-    </div>
-    <div class="col-sm d-flex justify-content-end">
+    <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
       <button class="btn btn-primary btn-sm d-flex justify-content-center" (click)="RefrescarGraficas()">
-        <mat-icon class="align-self-center" style="color: white; margin-right: 7px; font-size: 20px;" matTooltipPosition="right" 
-          matTooltip="Presione aquí para actualizar los datos de las gráficas">cached</mat-icon>
+        <mat-icon class="align-self-center" style="color: white; margin-right: 7px; font-size: 20px;"
+          matTooltipPosition="right" matTooltip="Presione aquí para actualizar los datos de las gráficas">cached
+        </mat-icon>
         <span class="align-self-center">Actualizar</span>
       </button>
     </div>
   </div>
-
+  <br>
   <div class="row">
-    <div class="col-sm"style="text-align: center;">
-      <span class="text-titulo">Último Timbre: </span>
+    <div class="col-md" style="margin-top: 3px; text-align: center;">
+      <span class="text-titulo-fecha">Acceso: {{fecha}}</span>
     </div>
-    <div class="col-sm" style="margin-top: 3px; text-align: center;">
-      <span class="text-titulo-fecha">{{ultimoTimbre.timbre}}</span>
+    <div class="col-md" style="text-align: center;">
+      <span class="text-titulo-fecha">Último Timbre: {{ultimoTimbre.fecha}}</span>
     </div>
-    <div class="col-sm"style="text-align: center;">
-      <span class="text-titulo">Acción: </span>
-    </div>
-    <div class="col-sm" style="margin-top: 3px; text-align: center;">
-      <span class="text-titulo-fecha">{{ultimoTimbre.accion}}</span>
+    <div class="col-md" style="text-align: center;">
+      <span class="text-titulo-fecha">Acción: {{ultimoTimbre.accion}}</span>
     </div>
   </div>
   <br>
-  <div class="row">  
-    <div class="d-flex justify-content-center flex-wrap">
+  <div class="row" style="text-align: center;">
+    <div class="col-md d-flex justify-content-center flex-wrap">
       <button class="btn btn-lg d-flex justify-content-center boton-dos" (click)="MenuRapido(1)">
         <mat-icon class="icon-menu align-self-center">work</mat-icon>
         <span class="align-self-center">Horas Extras</span>
@@ -54,7 +49,7 @@
       </button>
     </div>
   </div>
-  
+
   <div class="row">
     <div class="col-md-6">
       <mat-card class="example-card mat-elevation-z8">
@@ -114,4 +109,3 @@
   </div>
 
 </div>
-    

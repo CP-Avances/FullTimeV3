@@ -26,7 +26,9 @@ class BirthdayControlador {
     MensajeEmpresa(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empresa } = req.params;
-            const DAY = yield database_1.default.query('SELECT * FROM Message_birthday WHERE id_empresa = $1', [id_empresa]);
+            const DAY = yield database_1.default.query(`
+            SELECT * FROM Message_birthday WHERE id_empresa = $1
+            `, [id_empresa]);
             if (DAY.rowCount > 0) {
                 return res.jsonp(DAY.rows);
             }
@@ -38,10 +40,14 @@ class BirthdayControlador {
     CrearMensajeBirthday(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empresa, titulo, link, mensaje } = req.body;
-            yield database_1.default.query('INSERT INTO Message_birthday ( id_empresa, titulo, mensaje, url ) VALUES ($1, $2, $3, $4)', [id_empresa, titulo, mensaje, link]);
-            const oneMessage = yield database_1.default.query('SELECT id FROM Message_birthday WHERE id_empresa = $1', [id_empresa]);
+            yield database_1.default.query(`
+            INSERT INTO message_birthday (id_empresa, titulo, mensaje, url) VALUES ($1, $2, $3, $4)
+            `, [id_empresa, titulo, mensaje, link]);
+            const oneMessage = yield database_1.default.query(`
+            SELECT id FROM message_birthday WHERE id_empresa = $1
+            `, [id_empresa]);
             const idMessageGuardado = oneMessage.rows[0].id;
-            res.jsonp([{ message: 'Mensaje de cumpleaños empresarial guardado', id: idMessageGuardado }]);
+            res.jsonp([{ message: 'Mensaje de cumpleaños empresarial guardado.', id: idMessageGuardado }]);
         });
     }
     CrearImagenEmpleado(req, res) {
@@ -49,25 +55,32 @@ class BirthdayControlador {
             let list = req.files;
             let imagen = list.uploads[0].path.split("\\")[1];
             let id = req.params.id_empresa;
-            const unEmpleado = yield database_1.default.query('SELECT * FROM Message_birthday WHERE id = $1', [id]);
+            const unEmpleado = yield database_1.default.query(`
+            SELECT * FROM message_birthday WHERE id = $1
+            `, [id]);
             if (unEmpleado.rowCount > 0) {
                 unEmpleado.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {
                     if (obj.img != null) {
                         try {
-                            console.log(obj.img);
                             let filePath = `servidor\\cumpleanios\\${obj.img}`;
                             let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                             fs_1.default.unlinkSync(direccionCompleta);
-                            yield database_1.default.query('Update Message_birthday Set img = $2 Where id = $1 ', [id, imagen]);
+                            yield database_1.default.query(`
+                            UPDATE message_birthday SET img = $2 WHERE id = $1
+                            `, [id, imagen]);
                             res.jsonp({ message: 'Imagen Actualizada' });
                         }
                         catch (error) {
-                            yield database_1.default.query('Update Message_birthday Set img = $2 Where id = $1 ', [id, imagen]);
+                            yield database_1.default.query(`
+                            UPDATE message_birthday SET img = $2 WHERE id = $1
+                            `, [id, imagen]);
                             res.jsonp({ message: 'Imagen Actualizada' });
                         }
                     }
                     else {
-                        yield database_1.default.query('Update Message_birthday Set img = $2 Where id = $1 ', [id, imagen]);
+                        yield database_1.default.query(`
+                        UPDATE message_birthday SET img = $2 WHERE id = $1
+                        `, [id, imagen]);
                         res.jsonp({ message: 'Imagen Actualizada' });
                     }
                 }));
@@ -78,7 +91,9 @@ class BirthdayControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const { titulo, mensaje, link } = req.body;
             const { id_mensaje } = req.params;
-            yield database_1.default.query('UPDATE Message_birthday SET titulo = $1, mensaje = $2, url = $3 WHERE id = $4', [titulo, mensaje, link, id_mensaje]);
+            yield database_1.default.query(`
+            UPDATE Message_birthday SET titulo = $1, mensaje = $2, url = $3 WHERE id = $4
+            `, [titulo, mensaje, link, id_mensaje]);
             res.jsonp({ message: 'Mensaje de cumpleaños actualizado' });
         });
     }

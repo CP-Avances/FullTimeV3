@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { PageEvent } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
+import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment';
 
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
-import { HoraExtraAutorizacionesComponent } from 'src/app/componentes/autorizaciones/hora-extra-autorizaciones/hora-extra-autorizaciones.component';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+
+import { HoraExtraAutorizacionesComponent } from 'src/app/componentes/autorizaciones/hora-extra-autorizaciones/hora-extra-autorizaciones.component';
 
 export interface HoraExtraElemento {
   apellido: string;
@@ -52,17 +54,41 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
   constructor(
     private restHE: PedHoraExtraService,
-    private vistaFlotante: MatDialog,
-    private validacionesService: ValidacionesService
+    private ventana: MatDialog,
+    private validar: ValidacionesService,
+    public parametro: ParametrosService,
   ) { }
 
   ngOnInit(): void {
-    this.obtenerHorasExtras();
-    this.obtenerHorasExtrasAutorizadas();
-    this.obtenerHorasExtrasObservacion();
+    this.BuscarParametro();
     this.calcularHoraPaginacion();
     this.calcularHoraPaginacionObservacion();
   }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.obtenerHorasExtras(this.formato_fecha);
+        this.obtenerHorasExtrasAutorizadas(this.formato_fecha);
+        this.obtenerHorasExtrasObservacion(this.formato_fecha);
+      },
+      vacio => {
+        this.obtenerHorasExtras(this.formato_fecha);
+        this.obtenerHorasExtrasAutorizadas(this.formato_fecha);
+        this.obtenerHorasExtrasObservacion(this.formato_fecha);
+      });
+  }
+
 
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
@@ -94,10 +120,11 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
           t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
           tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
-          //Aquí hago la suma
+          // AQUÍ HAGO LA SUMA
           tt.setHours(tt.getHours() + t1.getHours(), tt.getMinutes() + t1.getMinutes(), tt.getSeconds() + tt.getSeconds());
           horaT = (moment(tt).format('HH:mm:ss')).split(':');
           this.horasSumadas = (moment(tt).format('HH:mm:ss'));
+
         }
         else {
           break;
@@ -105,12 +132,12 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
       }
       console.log(res);
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
   lista_pedidos: boolean = false;
-  obtenerHorasExtras() {
+  obtenerHorasExtras(formato_fecha: string) {
     var t1 = new Date();
     var tt = new Date();
     var hora1 = '00:00:00', horaT = '00:00:00'.split(":");
@@ -122,49 +149,55 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
       else {
         this.lista_pedidos = false;
       }
-      for (var i = 0; i <= this.horas_extras.length - 1; i++) {
-        if (this.horas_extras[i].estado === 1) {
-          this.horas_extras[i].estado = 'Pendiente';
+
+      this.horas_extras.forEach(data => {
+
+        if (data.estado === 1) {
+          data.estado = 'Pendiente';
         }
-        else if (this.horas_extras[i].estado === 2) {
-          this.horas_extras[i].estado = 'Pre-Autorizado';
+        else if (data.estado === 2) {
+          data.estado = 'Pre-Autorizado';
         }
-        else if (this.horas_extras[i].estado === 3) {
-          this.horas_extras[i].estado = 'Autorizado';
+        else if (data.estado === 3) {
+          data.estado = 'Autorizado';
         }
-        else if (this.horas_extras[i].estado === 4) {
-          this.horas_extras[i].estado = 'Negado';
+        else if (data.estado === 4) {
+          data.estado = 'Negado';
         }
 
-        hora1 = (this.horas_extras[i].num_hora).split(":");
+        hora1 = (data.num_hora).split(":");
         t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
         tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
-        //Aquí hago la suma
+        // AQUÍ HAGO LA SUMA
         tt.setHours(tt.getHours() + t1.getHours(), tt.getMinutes() + t1.getMinutes(), tt.getSeconds() + tt.getSeconds());
         horaT = (moment(tt).format('HH:mm:ss')).split(':');
         this.totalHorasExtras = (moment(tt).format('HH:mm:ss'));
-      }
+
+        data.fec_inicio = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+      })
+
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS.
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
     const numRows = this.horas_extras.length;
     return numSelected === numRows;
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
       this.horas_extras.forEach(row => this.selectionUno.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabel(row?: HoraExtraElemento): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
@@ -183,50 +216,57 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
     }
   }
 
-  /** **********************************************************************
-   *  LISTAS DE HORAS EXTRAS AUTORIZADAS 
-   *  **********************************************************************/
+  /** *********************************************************************************************** **
+   ** **                              LISTAS DE HORAS EXTRAS AUTORIZADAS                           ** **
+   ** *********************************************************************************************** **/
 
   solicitudes_observacion: any = [];
   lista_observacion: boolean = false;
   total_horas_observacion: any;
-  obtenerHorasExtrasObservacion() {
+  obtenerHorasExtrasObservacion(formato_fecha: string) {
     var t1 = new Date();
     var tt = new Date();
     var hora1 = '00:00:00', horaT = '00:00:00'.split(":");
     this.restHE.ListaAllHoraExtraObservacion().subscribe(res => {
       this.solicitudes_observacion = res;
+
       if (this.solicitudes_observacion.length != 0) {
         this.lista_observacion = true;
       }
       else {
         this.lista_observacion = false;
       }
-      for (var i = 0; i <= this.solicitudes_observacion.length - 1; i++) {
-        if (this.solicitudes_observacion[i].estado === 1) {
-          this.solicitudes_observacion[i].estado = 'Pendiente';
+
+      this.solicitudes_observacion.forEach(data => {
+
+        if (data.estado === 1) {
+          data.estado = 'Pendiente';
         }
-        else if (this.solicitudes_observacion[i].estado === 2) {
-          this.solicitudes_observacion[i].estado = 'Pre-Autorizado';
+        else if (data.estado === 2) {
+          data.estado = 'Pre-Autorizado';
         }
-        else if (this.solicitudes_observacion[i].estado === 3) {
-          this.solicitudes_observacion[i].estado = 'Autorizado';
+        else if (data.estado === 3) {
+          data.estado = 'Autorizado';
         }
-        else if (this.solicitudes_observacion[i].estado === 4) {
-          this.solicitudes_observacion[i].estado = 'Negado';
+        else if (data.estado === 4) {
+          data.estado = 'Negado';
         }
 
-        hora1 = (this.solicitudes_observacion[i].num_hora).split(":");
+        hora1 = (data.num_hora).split(":");
         t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
         tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
-        //Aquí hago la suma
+        // AQUÍ HAGO LA SUMA
         tt.setHours(tt.getHours() + t1.getHours(), tt.getMinutes() + t1.getMinutes(), tt.getSeconds() + tt.getSeconds());
         horaT = (moment(tt).format('HH:mm:ss')).split(':');
         this.total_horas_observacion = (moment(tt).format('HH:mm:ss'));
-      }
+
+        data.fec_inicio = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+
+      })
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
@@ -264,7 +304,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
           t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
           tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
-          //Aquí hago la suma
+          // AQUÍ HAGO LA SUMA
           tt.setHours(tt.getHours() + t1.getHours(), tt.getMinutes() + t1.getMinutes(), tt.getSeconds() + tt.getSeconds());
           horaT = (moment(tt).format('HH:mm:ss')).split(':');
           this.horasSumadas_observacion = (moment(tt).format('HH:mm:ss'));
@@ -275,26 +315,26 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
         }
       }
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
   selectionUnoObserva = new SelectionModel<HoraExtraElemento>(true, []);
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelectedObserva() {
     const numSelected = this.selectionUnoObserva.selected.length;
     const numRows = this.solicitudes_observacion.length;
     return numSelected === numRows;
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggleObserva() {
     this.isAllSelectedObserva() ?
       this.selectionUnoObserva.clear() :
       this.solicitudes_observacion.forEach(row => this.selectionUnoObserva.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabelObserva(row?: HoraExtraElemento): string {
     if (!row) {
       return `${this.isAllSelectedObserva() ? 'select' : 'deselect'} all`;
@@ -314,54 +354,63 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
     }
   }
 
-  /** **********************************************************************
-   *  LISTAS DE HORAS EXTRAS AUTORIZADAS 
-   *  **********************************************************************/
+  /** ************************************************************************************* **
+   ** **                       LISTAS DE HORAS EXTRAS AUTORIZADAS                        ** ** 
+   ** ************************************************************************************* **/
 
   pedido_hora_autoriza: any = [];
   total_horas_autorizadas: any;
-  obtenerHorasExtrasAutorizadas() {
+  obtenerHorasExtrasAutorizadas(formato_fecha: string) {
     var t1 = new Date();
     var tt = new Date();
     var hora1 = '00:00:00', horaT = '00:00:00'.split(":");
     this.restHE.ListaAllHoraExtraAutorizada().subscribe(res => {
       this.pedido_hora_autoriza = res;
+
       if (this.pedido_hora_autoriza.length != 0) {
         this.lista_autorizacion = true;
       }
       else {
         this.lista_autorizacion = false;
       }
-      for (var i = 0; i <= this.pedido_hora_autoriza.length - 1; i++) {
-        if (this.pedido_hora_autoriza[i].estado === 1) {
-          this.pedido_hora_autoriza[i].estado = 'Pendiente';
+
+      this.pedido_hora_autoriza.forEach(data => {
+
+        if (data.estado === 1) {
+          data.estado = 'Pendiente';
         }
-        else if (this.pedido_hora_autoriza[i].estado === 2) {
-          this.pedido_hora_autoriza[i].estado = 'Pre-Autorizado';
+        else if (data.estado === 2) {
+          data.estado = 'Pre-Autorizado';
         }
-        else if (this.pedido_hora_autoriza[i].estado === 3) {
-          this.pedido_hora_autoriza[i].estado = 'Autorizado';
+        else if (data.estado === 3) {
+          data.estado = 'Autorizado';
         }
-        else if (this.pedido_hora_autoriza[i].estado === 4) {
-          this.pedido_hora_autoriza[i].estado = 'Negado';
+        else if (data.estado === 4) {
+          data.estado = 'Negado';
         }
-        if (this.pedido_hora_autoriza[i].estado === 'Autorizado') {
-          hora1 = (this.pedido_hora_autoriza[i].tiempo_autorizado).split(":");
+
+        if (data.estado === 'Autorizado') {
+          hora1 = (data.tiempo_autorizado).split(":");
           t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
           tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
-          //Aquí hago la suma
+          // AQUÍ HAGO LA SUMA
           tt.setHours(tt.getHours() + t1.getHours(), tt.getMinutes() + t1.getMinutes(), tt.getSeconds() + tt.getSeconds());
           horaT = (moment(tt).format('HH:mm:ss')).split(':');
           this.total_horas_autorizadas = (moment(tt).format('HH:mm:ss'));
         }
-      }
+
+        data.fec_inicio = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+
+      })
+
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
-  // Paginación de lista de datos autorizados
+  // PAGINACIÓN DE LISTA DE DATOS AUTORIZADOS
   tamanio_pagina_auto: number = 5;
   numero_pagina_auto: number = 1;
   pageSizeOptions_auto = [5, 10, 20, 50];
@@ -397,17 +446,18 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
       this.restHE.AutorizarTiempoHoraExtra(EmpleadosSeleccionados[i].id, h).subscribe(res => {
         console.log(res);
       }, err => {
-        return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+        return this.validar.RedireccionarHomeAdmin(err.error)
       })
     }
     this.AbrirAutorizaciones(EmpleadosSeleccionados, 'multiple');
   }
 
 
-  // Autorización de horas extras planificadas
+  // AUTORIZACIÓN DE HORAS EXTRAS PLANIFICADAS
   AbrirAutorizaciones(datosHoraExtra, forma: string) {
-    this.vistaFlotante.open(HoraExtraAutorizacionesComponent,
-      { width: '300px', data: { datosHora: datosHoraExtra, carga: forma } }).afterClosed().subscribe(items => {
+    this.ventana.open(HoraExtraAutorizacionesComponent,
+      { width: '300px', data: { datosHora: datosHoraExtra, carga: forma } })
+      .afterClosed().subscribe(items => {
         window.location.reload();
       });
   }

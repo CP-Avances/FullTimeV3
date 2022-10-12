@@ -14,14 +14,14 @@ import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
+import { EditarParametroComponent } from '../editar-parametro/editar-parametro.component';
+import { CrearParametroComponent } from '../crear-parametro/crear-parametro.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { CrearParametroComponent } from '../crear-parametro/crear-parametro.component';
-import { EditarParametroComponent } from '../editar-parametro/editar-parametro.component';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 @Component({
   selector: 'app-listar-parametro',
@@ -46,7 +46,7 @@ export class ListarParametroComponent implements OnInit {
   descripcionF = new FormControl('', [Validators.minLength(2)]);
 
   // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public ParametrosForm = new FormGroup({
+  public formulario = new FormGroup({
     descripcionForm: this.descripcionF,
   });
 
@@ -74,7 +74,7 @@ export class ListarParametroComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -116,7 +116,7 @@ export class ListarParametroComponent implements OnInit {
 
   // MÉTODO PARA LIMPIAR CAMPO DE BÚSQUEDA
   LimpiarCampos() {
-    this.ParametrosForm.setValue({
+    this.formulario.setValue({
       descripcionForm: '',
     });
     this.ObtenerParametros();

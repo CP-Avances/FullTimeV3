@@ -16,9 +16,10 @@ class EmpleadoHorariosRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO DE BUSQUEDA DE HORARIOS DE UN USUARIO
+        this.router.get('/horarioCodigo/:codigo', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ListarHorarioUsuario);
         this.router.get('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ListarEmpleadoHorarios);
         this.router.post('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.CrearEmpleadoHorarios);
-        this.router.get('/horarioCargo/:id_empl_cargo', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ListarHorarioCargo);
         this.router.post('/cargaMultiple', [verificarToken_1.TokenValidation, multipartMiddleware], empleadoHorariosControlador_1.default.CargarMultiplesHorariosEmpleadosPlantilla);
         this.router.post('/horas', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerNumeroHoras);
         this.router.put('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ActualizarEmpleadoHorarios);

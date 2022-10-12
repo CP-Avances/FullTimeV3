@@ -30,11 +30,17 @@ class PlanHorarioControlador {
         }
     }
 
-    public async EncontrarPlanHorarioPorIdCargo(req: Request, res: Response): Promise<any> {
-        const { id_cargo } = req.params;
-        const HORARIO_CARGO = await pool.query('SELECT * FROM plan_horarios AS p WHERE p.id_cargo = $1', [id_cargo]);
-        if (HORARIO_CARGO.rowCount > 0) {
-            return res.jsonp(HORARIO_CARGO.rows)
+    public async BuscarHorarioRotativoCodigo(req: Request, res: Response): Promise<any> {
+        const { codigo } = req.params;
+        console.log('CODIGO .. ', codigo)
+        const HORARIO = await pool.query(
+            `
+            SELECT * FROM plan_horarios AS p WHERE p.codigo = $1
+            `
+            , [codigo]);
+            console.log('data .. ', HORARIO)
+        if (HORARIO.rowCount > 0) {
+            return res.jsonp(HORARIO.rows)
         }
         else {
             res.status(404).jsonp({ text: 'Registro no encontrado' });

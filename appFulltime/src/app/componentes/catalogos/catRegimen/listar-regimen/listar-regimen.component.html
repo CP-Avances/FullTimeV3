@@ -7,7 +7,7 @@
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
-                    <button mat-button type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarRegimen()">Crear
+                    <button mat-button type="submit" class="btn btn-sm" [routerLink]="['/regimenLaboral']">Crear
                         nuevo régimen laboral
                     </button>
                     <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix

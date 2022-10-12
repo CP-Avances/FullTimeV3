@@ -6,10 +6,11 @@
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
-                    <br>
-                    <div class="col-6">
-                        <label id="datosF" class="col-form-label">Descripción:</label>
-                        <label class="col-form-label">{{tp.descripcion}}</label>
+                    <div class="col-md">
+                        <div class="d-flex justify-content-start">
+                            <label id="datosF">Descripción:</label>
+                            <label>{{tp.descripcion}}</label>
+                        </div>
                     </div>
                 </div>
                 <div style="text-align: right;">
@@ -20,6 +21,7 @@
                 </div>
             </div>
             <hr>
+            <!-- CONTENIDO DE SELECCION DE FORMATO DE FECHAS -->
             <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="formato_fecha">
                 <div class="nota">
                     <span>NOTA: Seleccionar el tipo de formato de fecha con el cual se va a trabajar en el
@@ -28,24 +30,25 @@
                 <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
                     <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
                         <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
-                            (click)="GuardarDatos(1, 'fecha')">
+                            (click)="GuardarDatos(1)">
                             Formato americano: DD/MM/YYYY
                         </button>
                     </div>
                     <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
                         <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
-                            (click)="GuardarDatos(2, 'fecha')">
+                            (click)="GuardarDatos(2)">
                             Formato inglés: MM/DD/YYYY
                         </button>
                     </div>
                     <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
                         <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
-                            (click)="GuardarDatos(3, 'fecha')">
+                            (click)="GuardarDatos(3)">
                             Formato estándar: YYYY-MM-DD
                         </button>
                     </div>
                 </div>
             </div>
+            <!-- CONTENIDO DE SELECCION DE FORMATO DE HORAS -->
             <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="formato_hora">
                 <div class="nota">
                     <span>NOTA: Seleccionar el tipo de formato de hora con el cual se va a trabajar en el
@@ -54,16 +57,111 @@
                 <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
                     <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
                         <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
-                            (click)="GuardarDatos(4, 'hora')">
+                            (click)="GuardarDatos(4)">
                             Formato de 12 horas
                         </button>
                     </div>
                     <div class="d-flex flex-wrap justify-content-around" style="padding-bottom: 10px;">
                         <button mat-button type="button" class="btn btn-sm" style="font-size: 12px;"
-                            (click)="GuardarDatos(5, 'hora')">
+                            (click)="GuardarDatos(5)">
                             Formato de 24 horas
                         </button>
                     </div>
+                </div>
+            </div>
+            <!-- CONTENIDO DE SELECCION DE TIPO DE CARGA DE VACACIONES -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="carga">
+                <div class="nota">
+                    <span>NOTA: Seleccionar el tipo de carga de días de vacaciones.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
+                    <mat-radio-group aria-label="Select an option" [(ngModel)]="seleccion">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-radio-button value="diaria" (change)="SelecionarCarga($event)">
+                                Diaria
+                            </mat-radio-button>
+                            <mat-radio-button value="mensual" (change)="SelecionarCarga($event)">
+                                Mensual
+                            </mat-radio-button>
+                            <mat-radio-button value="anual" (change)="SelecionarCarga($event)">
+                                Anual
+                            </mat-radio-button>
+                        </div>
+                    </mat-radio-group>
+                </div>
+            </div>
+            <!-- CONTENIDO DE SELECCION DE TIPO DE DESCARGA DE KARDEX DE VACACIONES -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="kardex">
+                <div class="nota">
+                    <span>NOTA: Seleccionar el tipo de descarga de Kardex de vacaciones.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
+                    <mat-radio-group aria-label="Select an option" [(ngModel)]="opcion_kardex">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-radio-button value="periodos" (change)="SelecionarDescarga($event)">
+                                Periodos
+                            </mat-radio-button>
+                            <mat-radio-button value="global" (change)="SelecionarDescarga($event)">
+                                Global
+                            </mat-radio-button>
+                        </div>
+                    </mat-radio-group>
+                </div>
+            </div>
+            <!-- CONTENIDO HABILITAR CONSIDERACION DE FERIADOS DENTRO DE SOLICITUDES -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="feriados">
+                <div class="nota">
+                    <span>NOTA: Habilitar o deshabilitar consideración de feriados en solicitudes con cargo a
+                        vacaciones.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
+                    <mat-radio-group aria-label="Select an option" [(ngModel)]="opcion_feriados">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-radio-button value="habilitar" (change)="ConsiderarFeriados($event)">
+                                Habilitar
+                            </mat-radio-button>
+                            <mat-radio-button value="deshabilitar" (change)="ConsiderarFeriados($event)">
+                                Deshabilitar
+                            </mat-radio-button>
+                        </div>
+                    </mat-radio-group>
+                </div>
+            </div>
+            <!-- CONTENIDO HABILITAR CONSIDERACION DE FECHAS DE RECUPERACION DENTRO DE SOLICITUDES -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="recuperables">
+                <div class="nota">
+                    <span>NOTA: Habilitar o deshabilitar consideración de fechas de recuperación en solicitudes con
+                        cargo a vacaciones.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
+                    <mat-radio-group aria-label="Select an option" [(ngModel)]="opcion_recuperar">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-radio-button value="habilitar" (change)="ConsiderarRecuperacion($event)">
+                                Habilitar
+                            </mat-radio-button>
+                            <mat-radio-button value="deshabilitar" (change)="ConsiderarRecuperacion($event)">
+                                Deshabilitar
+                            </mat-radio-button>
+                        </div>
+                    </mat-radio-group>
+                </div>
+            </div>
+            <!-- CONTENIDO HABILITAR OPCIONES FORMATO LABORAL - CALENDARIO -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="laboral_calendario">
+                <div class="nota">
+                    <span>NOTA: Seleccionar tipo de formato laboral o calendario para visualización de datos.</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
+                    <mat-radio-group aria-label="Select an option" [(ngModel)]="opcion_laboral">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-radio-button value="laboral" (change)="SelecionarLaboral($event)">
+                                Laboral
+                            </mat-radio-button>
+                            <mat-radio-button value="calendario" (change)="SelecionarLaboral($event)">
+                                Calendario
+                            </mat-radio-button>
+                        </div>
+                    </mat-radio-group>
                 </div>
             </div>
             <div class="container" style="padding-bottom: 25px; text-align: center;">

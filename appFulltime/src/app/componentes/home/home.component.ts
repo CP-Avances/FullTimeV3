@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { GraficasService } from 'src/app/servicios/graficas/graficas.service';
 import { TooltipComponent, LegendComponent, GridComponent } from 'echarts/components';
 import { PieChart, BarChart, LineChart } from 'echarts/charts';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import * as echarts_asis from 'echarts/core';
 import * as echarts_hora from 'echarts/core';
@@ -12,13 +11,18 @@ import * as echarts_marc from 'echarts/core';
 import * as echarts_retr from 'echarts/core';
 import * as echarts_tiem from 'echarts/core';
 import * as echarts_sali from 'echarts/core';
+import * as moment from 'moment';
+
+import { GraficasService } from 'src/app/servicios/graficas/graficas.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
+
 export class HomeComponent implements OnInit {
 
   fecha: string;
@@ -27,7 +31,8 @@ export class HomeComponent implements OnInit {
     private restGraficas: GraficasService,
     private router: Router,
     private route: ActivatedRoute,
-    public restP: ParametrosService
+    public parametro: ParametrosService,
+    public validar: ValidacionesService,
   ) { }
 
   ngOnInit(): void {
@@ -56,30 +61,53 @@ export class HomeComponent implements OnInit {
       [TooltipComponent, LegendComponent, LineChart, GridComponent, CanvasRenderer]
     );
 
-    var meses = new Array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
-    var diasSemana = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
-    var f = new Date();
-    this.fecha = diasSemana[f.getDay()] + ", " + f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
     this.ModeloGraficas();
     this.BuscarParametro();
+
+
+
+    const date = new Date();
+    const hora = date.getHours();
+    const minutos = date.getMinutes();
+    const fecha = date.toJSON().slice(4).split("T")[0];
+    console.log('datos h ', hora, ' minutos .. ', minutos, ' date ', date, ' fecha .. ', fecha)
+
+    var f = moment();
+
+
+    //console.log('horas .. ', hora, '    fecha .. ', fecha)
+
+    console.log('horas .. ', f.format('HH'), '    fecha .. ', f.format('MM-DD'))
+
+
   }
+
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
 
   // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
-    this.restP.ListarDetalleParametros(25).subscribe(
+    this.parametro.ListarDetalleParametros(25).subscribe(
       res => {
-        localStorage.removeItem('fechas');
-        localStorage.setItem('fechas', res[0].descripcion)
-      });
-
-    // id_tipo_parametro Formato hora = 26
-    this.restP.ListarDetalleParametros(26).subscribe(
-      res => {
-        localStorage.removeItem('horas');
-        localStorage.setItem('horas', res[0].descripcion)
+        this.formato_fecha = res[0].descripcion;
+        this.FormatearFechas(this.formato_fecha)
+      },
+      vacio => {
+        this.FormatearFechas(this.formato_fecha)
       });
   }
+
+  FormatearFechas(formato_fecha: string) {
+    var f = moment();
+    this.fecha = this.validar.FormatearFecha(moment(f).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_completo);
+  }
+
 
   ModeloGraficas() {
     this.GraficaUno()

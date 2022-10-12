@@ -118,7 +118,7 @@ export class AuditoriaComponent implements OnInit {
   nombreEmpresa: string;
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoD = [];
-    this.restEmpleado.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoD = data;
     });
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {

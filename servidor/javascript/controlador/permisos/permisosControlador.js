@@ -118,13 +118,6 @@ class PermisosControlador {
             }
         });
     }
-    getDoc(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const docs = req.params.docs;
-            let filePath = `servidor\\docRespaldosPermisos\\${docs}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
     ObtenerDatosSolicitud(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_emple_permiso;
@@ -187,14 +180,16 @@ class PermisosControlador {
     // METODO PARA CREAR PERMISOS
     CrearPermisos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo, depa_user_loggin } = req.body;
-            const response = yield database_1.default.query('INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, ' +
-                'dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, ' +
-                'docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) ' +
-                'VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 ) ' +
-                'RETURNING * ', [fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
+            const { fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo, depa_user_loggin } = req.body;
+            const response = yield database_1.default.query(`
+            INSERT INTO permisos (fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, 
+            dia_libre, id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso, 
+            estado, id_empl_cargo, hora_salida, hora_ingreso, codigo) 
+            VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17 ) 
+            RETURNING * 
+            `, [fec_creacion, descripcion, fec_inicio, fec_final, dia, legalizado, dia_libre,
                 id_tipo_permiso, id_empl_contrato, id_peri_vacacion, hora_numero, num_permiso,
-                docu_nombre, estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
+                estado, id_empl_cargo, hora_salida, hora_ingreso, codigo]);
             const [objetoPermiso] = response.rows;
             if (!objetoPermiso)
                 return res.status(404).jsonp({ message: 'Solicitud no registrada.' });
@@ -255,10 +250,11 @@ class PermisosControlador {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
             let doc = list.uploads[0].path.split("\\")[1];
+            let { documento } = req.params;
             let id = req.params.id;
             yield database_1.default.query(`
-            UPDATE permisos SET documento = $2 WHERE id = $1
-            `, [id, doc]);
+            UPDATE permisos SET documento = $2, docu_nombre = $3 WHERE id = $1
+            `, [id, doc, documento]);
             res.jsonp({ message: 'Documento Actualizado' });
         });
     }
@@ -336,7 +332,7 @@ class PermisosControlador {
                     hora_salida = $10, hora_ingreso = $11 WHERE id = $12 RETURNING *
                 `, [descripcion, fec_inicio, fec_final, dia, dia_libre, id_tipo_permiso, hora_numero,
                     num_permiso, docu_nombre, hora_salida, hora_ingreso, id]);
-                let filePath = `servidor\\docRespaldosPermisos\\${anterior_doc}`;
+                let filePath = `servidor\\permisos\\${anterior_doc}`;
                 let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                 fs_1.default.unlinkSync(direccionCompleta);
                 const [objetoPermiso] = response.rows;
@@ -410,7 +406,7 @@ class PermisosControlador {
             `, [id_permiso]);
             if (doc != 'null' && doc != '' && doc != null) {
                 console.log(id_permiso, doc, ' entra ');
-                let filePath = `servidor\\docRespaldosPermisos\\${doc}`;
+                let filePath = `servidor\\permisos\\${doc}`;
                 let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                 fs_1.default.unlinkSync(direccionCompleta);
             }
@@ -421,6 +417,18 @@ class PermisosControlador {
             else {
                 return res.status(404).jsonp({ message: 'Solicitud no eliminada.' });
             }
+        });
+    }
+    // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+    EliminarPermisoMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { documento } = req.params;
+            if (documento != 'null' && documento != '' && documento != null) {
+                let filePath = `servidor\\permisos\\${documento}`;
+                let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+                fs_1.default.unlinkSync(direccionCompleta);
+            }
+            res.jsonp({ message: 'ok' });
         });
     }
     // METODO PARA ACTUALIZAR ESTADO DEL PERMISO
@@ -476,6 +484,14 @@ class PermisosControlador {
             }
         });
     }
+    // BUSQUEDA DE DOCUMENTO PERMISO
+    getDoc(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const docs = req.params.docs;
+            let filePath = `servidor\\permisos\\${docs}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
     /** ********************************************************************************************* **
      ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * **
      ** ********************************************************************************************* **/
@@ -483,18 +499,22 @@ class PermisosControlador {
     EnviarCorreoWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             if (datos === 'ok') {
                 const { id_empl_contrato, id_dep, correo, id_suc, desde, hasta, h_inicio, h_fin, observacion, estado_p, solicitud, tipo_permiso, dias_permiso, horas_permiso, solicitado_por, id, asunto, tipo_solicitud, proceso } = req.body;
-                const correoInfoPidePermiso = yield database_1.default.query('SELECT e.id, e.correo, e.nombre, e.apellido, ' +
-                    'e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, ' +
-                    'd.nombre AS departamento ' +
-                    'FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, ' +
-                    'cg_departamentos AS d ' +
-                    'WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND ' +
-                    '(SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id ) = ecr.id ' +
-                    'AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC', [id_empl_contrato]);
+                const correoInfoPidePermiso = yield database_1.default.query(`
+                SELECT e.id, e.correo, e.nombre, e.apellido, 
+                e.cedula, ecr.id_departamento, ecr.id_sucursal, ecr.id AS cargo, tc.cargo AS tipo_cargo, 
+                d.nombre AS departamento 
+                FROM empl_contratos AS ecn, empleados AS e, empl_cargos AS ecr, tipo_cargo AS tc, 
+                cg_departamentos AS d 
+                WHERE ecn.id = $1 AND ecn.id_empleado = e.id AND 
+                (SELECT MAX(cargo_id) AS cargo FROM datos_empleado_cargo WHERE empl_id = e.id ) = ecr.id 
+                AND tc.id = ecr.cargo AND d.id = ecr.id_departamento ORDER BY cargo DESC
+                `, [id_empl_contrato]);
                 // codigo para enviar notificacion o correo al jefe de su propio departamento, independientemente del nivel.
                 // && obj.id_dep === correoInfoPidePermiso.rows[0].id_departamento && obj.id_suc === correoInfoPidePermiso.rows[0].id_sucursal
                 var url = `${process.env.URL_DOMAIN}/ver-permiso`;
@@ -520,8 +540,8 @@ class PermisosControlador {
                                 <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
                                 <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
                                 <b>Generado mediante:</b> Aplicación Web <br>
-                                <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                                <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                                <b>Fecha de envío:</b> ${fecha} <br> 
+                                <b>Hora de envío:</b> ${hora} <br><br> 
                             </p>
                             <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                                 <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -579,6 +599,8 @@ class PermisosControlador {
     EnviarCorreoPermisoMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
             if (datos === 'ok') {
@@ -615,8 +637,8 @@ class PermisosControlador {
                                    <b>Cargo:</b> ${correoInfoPidePermiso.rows[0].tipo_cargo} <br>
                                    <b>Departamento:</b> ${correoInfoPidePermiso.rows[0].departamento} <br>
                                    <b>Generado mediante:</b> Aplicación Móvil <br>
-                                   <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                                   <b>Hora de envío:</b> ${tiempo.hora} <br><br> 
+                                   <b>Fecha de envío:</b> ${fecha} <br> 
+                                   <b>Hora de envío:</b> ${hora} <br><br> 
                                </p>
                                <h3 style="font-family: Arial; text-align: center;">INFORMACIÓN DE LA SOLICITUD</h3>
                                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
@@ -665,7 +687,7 @@ class PermisosControlador {
                 });
             }
             else {
-                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+                res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' + datos });
             }
         });
     }

@@ -15,6 +15,8 @@ import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.s
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-editar-solicitud-comida',
@@ -65,7 +67,9 @@ export class EditarSolicitudComidaComponent implements OnInit {
 
   constructor(
     public restUsuario: UsuarioService, // SERVICIO DE DATOS DE USUARIO
+    public parametro: ParametrosService,
     public restPlan: PlanComidasService, // SERVICIO DE DATOS DE PLAN COMIDAS
+    public validar: ValidacionesService,
     public ventana: MatDialogRef<EditarSolicitudComidaComponent>, // VARIABLE VENTANA DE DIÁLOGO
     public restH: EmpleadoHorariosService, // SERVICIO DE DATOS DE HORARIOS DE EMPLEADO
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
@@ -79,12 +83,38 @@ export class EditarSolicitudComidaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('ver data de actualizacion ', this.data)
+    console.log('ver data de actualizacion soliictud', this.data)
     this.ObtenerEmpleados(this.data.solicitud.id_empleado);
     this.obtenerInformacionEmpleado();
     this.ObtenerServicios();
     this.CargarDatos();
+    this.BuscarParametro();
   }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+      });
+  }
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+      });
+  }
+
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
   solInfo: any;
@@ -112,12 +142,12 @@ export class EditarSolicitudComidaComponent implements OnInit {
       })
   }
 
-  // MÉTODO PARA MOSTRAR LA INFORMCIÓN DEL EMPLEADO 
+  // MÉTODO PARA MOSTRAR LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
       this.PlanificacionComidasForm.patchValue({
         fechaForm: this.FechaActual,
@@ -290,7 +320,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     var correo_usuarios = '';
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
-    let solicitud = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
+    let solicitud = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
 
     alimentacion.EmpleadosSendNotiEmail.forEach(e => {
 
@@ -313,15 +343,15 @@ export class EditarSolicitudComidaComponent implements OnInit {
         let comida = {
           id_usua_solicita: alimentacion.id_empleado,
           tipo_solicitud: 'Servicio de alimentación actualizado por',
-          fec_solicitud: solicitud + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY'),
+          fec_solicitud: solicitud,
           observacion: alimentacion.observacion,
           id_comida: alimentacion.id_comida,
           proceso: 'actualizado',
           estadoc: 'Pendiente de autorización',
           correo: correo_usuarios,
           asunto: 'ACTUALIZACION DE SOLICITUD DE SERVICIO DE ALIMENTACION',
-          inicio: moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm'),
-          final: moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm'),
+          inicio: this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora),
+          final: this.validar.FormatearHora(alimentacion.hora_fin, this.formato_hora),
           extra: alimentacion.extra,
           id: alimentacion.id,
           solicitado_por: localStorage.getItem('fullname_print'),
@@ -356,16 +386,17 @@ export class EditarSolicitudComidaComponent implements OnInit {
   NotificarPlanificacion(alimentacion: any) {
 
     // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
-    let desde = moment.weekdays(moment(alimentacion.fec_comida).day()).charAt(0).toUpperCase() + moment.weekdays(moment(alimentacion.fec_comida).day()).slice(1);
-    let inicio = moment(alimentacion.hora_inicio, 'HH:mm').format('HH:mm');
-    let final = moment(alimentacion.hora_fin, 'HH:mm').format('HH:mm');
+    let desde = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
+
+    let inicio = this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora);
+    let final = this.validar.FormatearHora(alimentacion.hora_fin, this.formato_hora);
 
     let mensaje = {
       id_empl_envia: this.idEmpleadoIngresa,
       id_empl_recive: '',
       tipo: 1, // SOLICITUD SERVICIO DE ALIMENTACIÓN
       mensaje: 'Ha actualizado ' + this.nota + ' de alimentación ' + this.user + ' desde ' +
-        desde + ' ' + moment(alimentacion.fec_comida).format('DD/MM/YYYY') +
+        desde +
         ' horario de ' + inicio + ' a ' + final + ' servicio ',
       id_comida: alimentacion.id_comida
     }

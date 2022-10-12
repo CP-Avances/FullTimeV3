@@ -1,10 +1,11 @@
 // IMPORTACIÓN DE LIBRERIAS
-import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -16,11 +17,12 @@ import * as FileSaver from 'file-saver';
 import { EditarHorasExtrasComponent } from 'src/app/componentes/catalogos/catHorasExtras/editar-horas-extras/editar-horas-extras.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { HorasExtrasService } from 'src/app/servicios/catalogos/catHorasExtras/horas-extras.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
-import { environment } from 'src/environments/environment';
+import { HorasExtrasService } from 'src/app/servicios/catalogos/catHorasExtras/horas-extras.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+
 
 @Component({
   selector: 'app-lista-horas-extras',
@@ -33,50 +35,70 @@ export class ListaHorasExtrasComponent implements OnInit {
   horasExtras: any = [];
   filtroDescripcion = '';
 
-  // Items de paginación de la tabla
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   empleado: any = [];
   idEmpleado: number;
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   nombreF = new FormControl('', [Validators.minLength(2)]);
 
-  // Asignación de validaciones a inputs del formulario
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
   public BuscarHoraExtraForm = new FormGroup({
     nombreForm: this.nombreF,
   });
 
   constructor(
     private rest: HorasExtrasService,
-    public restE: EmpleadoService,
-    public restEmpre: EmpresaService,
-    public vistaRegistrarDatos: MatDialog,
     private toastr: ToastrService,
     private router: Router,
-    private validacionesService: ValidacionesService
+    private validar: ValidacionesService,
+    public restE: EmpleadoService,
+    public ventana: MatDialog,
+    public restEmpre: EmpresaService,
+    public parametro: ParametrosService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerHorasExtras();
-    this.ObtenerEmpleados(this.idEmpleado);
-       this.ObtenerLogo();
+    this.BuscarHora();
+    this.ObtenerLogo();
     this.ObtenerColores();
+    this.ObtenerEmpleados(this.idEmpleado);
   }
 
-  // Método para ver la información del empleado 
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_hora: string = 'HH:mm:ss';
+
+  BuscarHora() {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.ObtenerHorasExtras(this.formato_hora);
+      },
+      vacio => {
+        this.ObtenerHorasExtras(this.formato_hora);
+      });
+  }
+
+  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -101,34 +123,38 @@ export class ListaHorasExtrasComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  ObtenerHorasExtras() {
+  ObtenerHorasExtras(formato_hora: string) {
     this.rest.ListarHorasExtras().subscribe(datos => {
       this.horasExtras = datos;
-      for (var i = 0; i <= this.horasExtras.length - 1; i++) {
-        if (this.horasExtras[i].tipo_descuento === 1) {
-          this.horasExtras[i].tipo_descuento = 'Horas Extras';
+
+      this.horasExtras.forEach(data => {
+        data.h_inicio_ = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+        data.h_final_ = this.validar.FormatearHora(data.hora_final, formato_hora);
+
+        if (data.tipo_descuento === 1) {
+          data.tipo_descuento = 'Horas Extras';
         }
         else {
-          this.horasExtras[i].tipo_descuento = 'Recargo Nocturno';
+          data.tipo_descuento = 'Recargo Nocturno';
         }
-        if (this.horasExtras[i].hora_jornada === 1) {
-          this.horasExtras[i].hora_jornada = 'Diurna';
+        if (data.hora_jornada === 1) {
+          data.hora_jornada = 'Diurna';
         }
-        else if (this.horasExtras[i].hora_jornada === 2) {
-          this.horasExtras[i].hora_jornada = 'Nocturna';
+        else if (data.hora_jornada === 2) {
+          data.hora_jornada = 'Nocturna';
         }
-        if (this.horasExtras[i].tipo_dia === 1) {
-          this.horasExtras[i].tipo_dia = 'Libre';
+        if (data.tipo_dia === 1) {
+          data.tipo_dia = 'Libre';
         }
-        else if (this.horasExtras[i].tipo_dia === 2) {
-          this.horasExtras[i].tipo_dia = 'Feriado';
+        else if (data.tipo_dia === 2) {
+          data.tipo_dia = 'Feriado';
         }
         else {
-          this.horasExtras[i].tipo_dia = 'Normal';
+          data.tipo_dia = 'Normal';
         }
-      }
+      })
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
@@ -136,34 +162,33 @@ export class ListaHorasExtrasComponent implements OnInit {
     this.BuscarHoraExtraForm.setValue({
       nombreForm: '',
     });
-    this.ObtenerHorasExtras();
+    this.BuscarHora();
   }
 
-  /* Ventana para editar datos de hora extra seleccionado */
+  // VENTANA PARA EDITAR DATOS DE HORA EXTRA SELECCIONADO 
   EditarDatos(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarHorasExtrasComponent, { width: '900px', data: datosSeleccionados })
+    this.ventana.open(EditarHorasExtrasComponent, { width: '900px', data: datosSeleccionados })
       .afterClosed().subscribe(item => {
-        this.ObtenerHorasExtras();
+        this.BuscarHora();
       });
   }
 
-  /** Función para eliminar registro seleccionado */
+  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_permiso: number) {
-    //console.log("probando id", id_prov)
     this.rest.EliminarRegistro(id_permiso).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
       });
-      this.ObtenerHorasExtras();
+      this.BuscarHora();
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -173,9 +198,9 @@ export class ListaHorasExtrasComponent implements OnInit {
       });
   }
 
-  /****************************************************************************************************** 
- *                                         MÉTODO PARA EXPORTAR A PDF
- ******************************************************************************************************/
+  /** ******************************************************************************************** ** 
+   ** **                           MÉTODO PARA EXPORTAR A PDF                                   ** **
+   ** ******************************************************************************************** **/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
 
@@ -193,18 +218,18 @@ export class ListaHorasExtrasComponent implements OnInit {
     sessionStorage.setItem('HorasExtras', this.horasExtras);
     return {
 
-      // Encabezado de la página
+      // ENCABEZADO DE LA PÁGINA
       pageOrientation: 'landscape',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
-      // Pie de página
+      // PIE DE PÁGINA
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
         var f = moment();
         fecha = f.format('YYYY-MM-DD');
 
         var h = new Date();
-        // Formato de hora actual
+        // FORMATO DE HORA ACTUAL
         if (h.getMinutes() < 10) {
           var time = h.getHours() + ':0' + h.getMinutes();
         }
@@ -287,9 +312,9 @@ export class ListaHorasExtrasComponent implements OnInit {
     };
   }
 
-  /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
-   ******************************************************************************************************/
+  /** ********************************************************************************************** ** 
+   ** **                                  MÉTODO PARA EXPORTAR A EXCEL                            ** **
+   ** ********************************************************************************************** **/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -297,9 +322,9 @@ export class ListaHorasExtrasComponent implements OnInit {
     xlsx.writeFile(wb, "HorasExtras" + new Date().getTime() + '.xlsx');
   }
 
-  /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
-   ******************************************************************************************************/
+  /** ********************************************************************************************** ** 
+   ** **                                   MÉTODO PARA EXPORTAR A CSV                             ** **
+   ** ********************************************************************************************** **/
 
   exportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
@@ -308,9 +333,9 @@ export class ListaHorasExtrasComponent implements OnInit {
     FileSaver.saveAs(data, "HorasExtrasCSV" + new Date().getTime() + '.csv');
   }
 
-  /* ****************************************************************************************************
-   *                                 PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ********************************************************************************************** **
+   ** **                            PARA LA EXPORTACIÓN DE ARCHIVOS XML                           ** **
+   ** ********************************************************************************************** **/
 
   urlxml: string;
   data: any = [];
@@ -341,7 +366,7 @@ export class ListaHorasExtrasComponent implements OnInit {
       this.urlxml = `${environment.url}/horasExtras/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
     }, err => {
-      return this.validacionesService.RedireccionarHomeAdmin(err.error) 
+      return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 

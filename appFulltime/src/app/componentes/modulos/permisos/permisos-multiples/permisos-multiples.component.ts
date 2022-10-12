@@ -150,7 +150,7 @@ export class PermisosMultiplesComponent implements OnInit {
   empleado: any = [];
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -305,7 +305,7 @@ export class PermisosMultiplesComponent implements OnInit {
     this.selec2 = false;
     this.readonly = false;
     this.datosPermiso = [];
-    this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(datos => {
+    this.restTipoP.BuscarUnTipoPermiso(form.idPermisoForm).subscribe(datos => {
       this.datosPermiso = datos;
       if (this.datosPermiso[0].num_dia_maximo === 0) {
         this.estiloHoras = { 'visibility': 'visible' }; this.HabilitarHoras = false;
@@ -422,7 +422,7 @@ export class PermisosMultiplesComponent implements OnInit {
   ValidarPermiso(form) {
 
     // CONSULTA DE DATOS DE TIPO DE PERMISO
-    this.restTipoP.getOneTipoPermisoRest(form.idPermisoForm).subscribe(tipo => {
+    this.restTipoP.BuscarUnTipoPermiso(form.idPermisoForm).subscribe(tipo => {
 
       // VALIDAR SI DOCUMENTO ES OBLIGATORIO U OPCIONAL
       if (tipo[0].documento === true) {
@@ -714,16 +714,16 @@ export class PermisosMultiplesComponent implements OnInit {
   idPermisoRes: any;
   NotifiRes: any;
   arrayNivelesDepa: any = [];
-  GuardarDatos(datos, form, validar) {
+  GuardarDatos(datos: any, form: any, validar) {
 
     // VALIDAR SI DOCUMENTO ES OBLIGATORIO U OPCIONAL
     if (validar === true) {
-      this.RegistrarPermiso_Documento(datos);
+      this.RegistrarPermiso_Documento(datos, form);
 
     } else {
       // VALIDAR QUE SE HA SUBIDO UN DOCUMENTO AL SISTEMA
       if (form.nombreCertificadoForm != '' && form.nombreCertificadoForm != null) {
-        this.RegistrarPermiso_Documento(datos);
+        this.RegistrarPermiso_Documento(datos, form);
 
       } else {
         this.RegistrarPermiso(datos);
@@ -770,7 +770,7 @@ export class PermisosMultiplesComponent implements OnInit {
     });
   }
 
-  RegistrarPermiso_Documento(datos) {
+  RegistrarPermiso_Documento(datos: any, form: any) {
     // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
     this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
 
@@ -785,7 +785,7 @@ export class PermisosMultiplesComponent implements OnInit {
         this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(res => {
           this.idPermisoRes = res;
 
-          this.SubirRespaldo(this.idPermisoRes.id);
+          this.SubirRespaldo(this.idPermisoRes.id, form);
 
           // MÉTODO PARA REGISTRO DE AUTORIZACIÓN
           this.IngresarAutorizacion(this.idPermisoRes.id);
@@ -926,13 +926,13 @@ export class PermisosMultiplesComponent implements OnInit {
     }
   }
 
-  SubirRespaldo(id: number) {
+  SubirRespaldo(id: number, form: any) {
     let formData = new FormData();
     console.log("tamaño", this.archivoSubido[0].size);
     for (var i = 0; i < this.archivoSubido.length; i++) {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
-    this.restP.SubirArchivoRespaldo(formData, id).subscribe(res => {
+    this.restP.SubirArchivoRespaldo(formData, id, form.nombreCertificadoForm).subscribe(res => {
       /*  this.toastr.success('Operación Exitosa', 'Documento subido con exito', {
           timeOut: 6000,
         });*/

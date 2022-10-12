@@ -3,15 +3,16 @@ import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import * as moment from 'moment';
 
+import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarPermisoEmpleadoComponent } from '../editar-permiso-empleado/editar-permiso-empleado.component';
-import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { CancelarPermisoComponent } from '../cancelar-permiso/cancelar-permiso.component';
+
+import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
 
 @Component({
   selector: 'app-solicitar-permisos-empleado',
@@ -36,6 +37,7 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
 
   constructor(
     public restPermiso: PermisosService,
+    public parametro: ParametrosService,
     public restPerV: PeriodoVacacionesService,
     public ventana: MatDialog,
     private toastr: ToastrService,
@@ -46,7 +48,39 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.obtenerPermisos(parseInt(this.idEmpleado));
+    this.BuscarParametro();
+  }
+
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.ObtenerPermisos(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.ObtenerPermisos(fecha, this.formato_hora);
+      });
   }
 
   ManejarPagina(e: PageEvent) {
@@ -60,28 +94,19 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
    ** ******************************************************************************************** **/
 
   // MÉTODO PARA IMPRIMIR DATOS DEL PERMISO
-  permisosTotales: any;
-  obtenerPermisos(id_empleado: number) {
+  permisosTotales: any = [];
+  ObtenerPermisos(formato_fecha: string, formato_hora: string) {
     this.permisosTotales = [];
-    this.restPermiso.BuscarPermisoEmpleado(id_empleado).subscribe(datos => {
+    this.restPermiso.BuscarPermisoEmpleado(parseInt(this.idEmpleado)).subscribe(datos => {
       this.permisosTotales = datos;
       this.permisosTotales.forEach(p => {
-        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        p.fec_creacion = moment.weekdays(moment(p.fec_creacion).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(p.fec_creacion).day()).slice(1) +
-          ' ' + moment(p.fec_creacion).format('DD/MM/YYYY');
+        // TRATAMIENTO DE FECHAS Y HORAS
+        p.fec_creacion_ = this.validar.FormatearFecha(p.fec_creacion, formato_fecha, this.validar.dia_completo);
+        p.fec_inicio_ = this.validar.FormatearFecha(p.fec_inicio, formato_fecha, this.validar.dia_completo);
+        p.fec_final_ = this.validar.FormatearFecha(p.fec_final, formato_fecha, this.validar.dia_completo);
 
-        p.fec_inicio = moment.weekdays(moment(p.fec_inicio).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(p.fec_inicio).day()).slice(1) +
-          ' ' + moment(p.fec_inicio).format('DD/MM/YYYY');
-
-        p.fec_final = moment.weekdays(moment(p.fec_final).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(p.fec_final).day()).slice(1) +
-          ' ' + moment(p.fec_final).format('DD/MM/YYYY');
-
-        p.hora_ingreso = moment(p.hora_ingreso, 'HH:mm').format('HH:mm:ss');
-
-        p.hora_salida = moment(p.hora_salida, 'HH:mm').format('HH:mm:ss');
+        p.hora_ingreso_ = this.validar.FormatearHora(p.hora_ingreso, formato_hora);
+        p.hora_salida_ = this.validar.FormatearHora(p.hora_salida, formato_hora);
 
       })
     }, err => {
@@ -102,7 +127,7 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
               idPerVacacion: this.idPerVacacion[0].id, idCargo: actual[0].id_cargo
             }
           }).afterClosed().subscribe(item => {
-            this.obtenerPermisos(parseInt(this.idEmpleado));
+            this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
           });
       }, error => {
         this.toastr.info('El usuario no tiene registrado Periodo de Vacaciones.', '', {
@@ -122,7 +147,7 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
         width: '450px',
         data: { info: dataPermiso, id_empleado: parseInt(this.idEmpleado) }
       }).afterClosed().subscribe(items => {
-        this.obtenerPermisos(parseInt(this.idEmpleado));
+        this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
       });
   }
 
@@ -131,7 +156,7 @@ export class SolicitarPermisosEmpleadoComponent implements OnInit {
       width: '1200px',
       data: { dataPermiso: permisos, id_empleado: parseInt(this.idEmpleado) }
     }).afterClosed().subscribe(items => {
-      this.obtenerPermisos(parseInt(this.idEmpleado));
+      this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
     });
   }
 }

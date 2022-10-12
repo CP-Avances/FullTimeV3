@@ -6,10 +6,11 @@ import { PageEvent } from '@angular/material/paginator';
 import * as moment from 'moment';
 
 import { PlanHoraExtraService } from 'src/app/servicios/planHoraExtra/plan-hora-extra.service';
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
+
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarPlanHoraExtraComponent } from '../editar-plan-hora-extra/editar-plan-hora-extra.component';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
@@ -63,7 +64,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     public restPlan: PlanHoraExtraService,
     public ventana: MatDialog,
     public aviso: RealTimeService,
-    private restP: ParametrosService,
+    private parametro: ParametrosService,
     private toastr: ToastrService,
     private validar: ValidacionesService
   ) {
@@ -74,8 +75,8 @@ export class ListaPlanificacionesComponent implements OnInit {
   ngOnInit(): void {
     var f = moment();
     this.fecha = f.format('YYYY-MM-DD');
-    this.ListarPlanificaciones();
     this.BuscarParametro();
+    this.BuscarFecha();
   }
 
   ManejarPagina(e: PageEvent) {
@@ -89,11 +90,53 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.numero_pagina_empleado = e.pageIndex + 1;
   }
 
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarFecha() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.BuscarHora(this.formato_fecha)
+      },
+      vacio => {
+        this.BuscarHora(this.formato_fecha)
+      });
+  }
+
+  BuscarHora(fecha: string) {
+    // id_tipo_parametro Formato hora = 26
+    this.parametro.ListarDetalleParametros(26).subscribe(
+      res => {
+        this.formato_hora = res[0].descripcion;
+        this.ListarPlanificaciones(fecha, this.formato_hora);
+      },
+      vacio => {
+        this.ListarPlanificaciones(fecha, this.formato_hora);
+      });
+  }
+
   lista_plan: boolean = false;
-  ListarPlanificaciones() {
+  ListarPlanificaciones(formato_fecha: string, formato_hora: string) {
     this.listaPlan = [];
     this.restPlan.ConsultarPlanificaciones().subscribe(response => {
       this.listaPlan = response;
+
+      console.log('ver data ... ', this.listaPlan)
+
+      this.listaPlan.forEach(data => {
+        data.fecha_desde_ = this.validar.FormatearFecha(data.fecha_desde, formato_fecha, this.validar.dia_abreviado);
+        data.fecha_hasta_ = this.validar.FormatearFecha(data.fecha_hasta, formato_fecha, this.validar.dia_abreviado);
+        data.hora_inicio_ = this.validar.FormatearHora(data.hora_inicio, formato_hora);
+        data.hora_fin_ = this.validar.FormatearHora(data.hora_fin, formato_hora);
+      })
+
       if (this.listaPlan.length != 0) {
         this.lista_plan = true;
       }
@@ -108,6 +151,7 @@ export class ListaPlanificacionesComponent implements OnInit {
   ObtenerEmpleadosPlanificacion(id: any, accion: any, lista_empleados: any, icono: any, editar: any, eliminar: any) {
     this.restPlan.BuscarPlanEmpleados(id).subscribe(res => {
       this.planEmpleados = res;
+      this.FormatearDatos(this.planEmpleados);
       this.tipo_accion = accion;
       this.lista_empleados = lista_empleados;
       this.ver_icono = icono;
@@ -118,9 +162,18 @@ export class ListaPlanificacionesComponent implements OnInit {
         this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
           timeOut: 6000,
         })
-        this.ListarPlanificaciones();
+        this.BuscarFecha();
       });
     });
+  }
+
+  FormatearDatos(lista: any) {
+    lista.forEach(data => {
+      data.fecDesde = this.validar.FormatearFecha(data.fecha_desde, this.formato_fecha, this.validar.dia_abreviado);
+      data.fecHasta = this.validar.FormatearFecha(data.fecha_hasta, this.formato_fecha, this.validar.dia_abreviado);
+      data.horaInicio = this.validar.FormatearHora(data.hora_inicio, this.formato_hora);
+      data.horaFin = this.validar.FormatearHora(data.hora_fin, this.formato_hora);
+    })
   }
 
   // MÉTODO PARA VER LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA CON ÍCONO EDITAR ACTIVO
@@ -140,14 +193,8 @@ export class ListaPlanificacionesComponent implements OnInit {
       width: '600px',
       data: { planifica: datoSeleccionado, modo: forma }
     })
-      .afterClosed().subscribe(item => {
-        if (forma === 'multiple') {
-          var id = datoSeleccionado[0].id_plan;
-        }
-        else {
-          id = datoSeleccionado.id_plan;
-        }
-        this.VerificarPlanificacion(id, '1', true, false);
+      .afterClosed().subscribe(id_plan => {
+        this.VerificarPlanificacion(id_plan, '1', true, false);
         this.botonSeleccion = false;
         this.botonEditar = false;
         this.botonEliminar = false;
@@ -177,6 +224,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.restPlan.BuscarPlanEmpleados(id).subscribe(res => {
       this.lista_empleados = true;
       this.planEmpleados = res;
+      this.FormatearDatos(this.planEmpleados);
       this.ver_eliminar = eliminar;
       this.tipo_accion = accion;
       this.ver_editar = editar;
@@ -188,7 +236,7 @@ export class ListaPlanificacionesComponent implements OnInit {
         this.ver_icono = true;
         this.ver_editar = false;
         this.ver_eliminar = false;
-        this.ListarPlanificaciones();
+        this.BuscarFecha();
       });
     });
   }
@@ -213,13 +261,13 @@ export class ListaPlanificacionesComponent implements OnInit {
     let cuenta_correo = datos.correo;
 
     // LECTURA DE DATOS DE LA PLANIFICACIÓN
-    let desde = moment.weekdays(moment(datos.fecha_desde).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fecha_desde).day()).slice(1);
-    let hasta = moment.weekdays(moment(datos.fecha_hasta).day()).charAt(0).toUpperCase() + moment.weekdays(moment(datos.fecha_hasta).day()).slice(1);
-    let h_inicio = moment(datos.hora_inicio, 'HH:mm').format('HH:mm');
-    let h_fin = moment(datos.hora_fin, 'HH:mm').format('HH:mm');
+    let desde = this.validar.FormatearFecha(datos.fecha_desde, this.formato_fecha, this.validar.dia_completo);
+    let hasta = this.validar.FormatearFecha(datos.fecha_hasta, this.formato_fecha, this.validar.dia_completo);
+    let h_inicio = this.validar.FormatearHora(datos.hora_inicio, this.formato_hora);
+    let h_fin = this.validar.FormatearHora(datos.hora_fin, this.formato_hora);
 
     this.restPlan.EliminarPlanEmpleado(id_plan, id_empleado).subscribe(res => {
-      this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
+      this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, id_empleado);
       this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
       this.toastr.error('Registro eliminado', '', {
         timeOut: 6000,
@@ -296,7 +344,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       this.restPlan.EliminarPlanEmpleado(obj.id_plan, obj.id_empleado).subscribe(res => {
         // CONTAR DATOS PROCESADOS
         this.contar_eliminados = this.contar_eliminados + 1;
-        this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, obj.id_empleado);
+        this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, obj.id_empleado);
 
         // SI TODOS LOS DATOS HAN SIDO PROCESADOS ENVIAR CORREO
         if (this.contar_eliminados === datos.length) {
@@ -376,20 +424,19 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.botonSeleccion = false;
     this.botonEditar = false;
     this.botonEliminar = false;
-    this.ListarPlanificaciones();
+    this.BuscarFecha();
     this.selectionUno.clear();
   }
 
   // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
-  NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
+  NotificarPlanificacion(desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.idEmpleadoLogueado,
       id_empl_recive: recibe,
       tipo: 10, // PLANIFICACIÓN DE HORAS EXTRAS
       mensaje: 'Planificación de horas extras eliminada desde ' +
-        desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY') + ' hasta ' +
-        hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY') +
-        ' horario de ' + h_inicio + ' a ' + h_fin,
+        desde + ' hasta ' +
+        hasta + ' horario de ' + h_inicio + ' a ' + h_fin,
     }
     this.restPlan.EnviarNotiPlanificacion(mensaje).subscribe(res => {
       this.aviso.RecibirNuevosAvisos(res.respuesta);
@@ -409,8 +456,8 @@ export class ListaPlanificacionesComponent implements OnInit {
       nombres: usuario,
       asunto: 'ELIMINACION DE PLANIFICACION DE HORAS EXTRAS',
       inicio: h_inicio,
-      desde: desde + ' ' + moment(datos.fecha_desde).format('DD/MM/YYYY'),
-      hasta: hasta + ' ' + moment(datos.fecha_hasta).format('DD/MM/YYYY'),
+      desde: desde,
+      hasta: hasta,
       horas: moment(datos.horas_totales, 'HH:mm').format('HH:mm'),
       fin: h_fin,
     }
@@ -435,7 +482,7 @@ export class ListaPlanificacionesComponent implements OnInit {
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
     let datos = [];
-    this.restP.ListarDetalleParametros(24).subscribe(
+    this.parametro.ListarDetalleParametros(24).subscribe(
       res => {
         datos = res;
         if (datos.length != 0) {

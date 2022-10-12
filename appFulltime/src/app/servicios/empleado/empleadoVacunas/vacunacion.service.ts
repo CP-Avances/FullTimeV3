@@ -14,7 +14,7 @@ export class VacunacionService {
 
   // SERVICIO REGISTROS DE VACUNACIÓN
   CrearRegistroVacunacion(data: any) {
-    return this.http.post(`${environment.url}/vacunas`, data);
+    return this.http.post<any>(`${environment.url}/vacunas`, data);
   }
 
   ObtenerVacunaEmpleado(id_empleado: number) {
@@ -25,17 +25,27 @@ export class VacunacionService {
     return this.http.put(`${environment.url}/vacunas/${id}`, data);
   }
 
-  EliminarRegistroVacuna(id: number) {
-    return this.http.delete(`${environment.url}/vacunas/eliminar/${id}`);
+  EliminarRegistroVacuna(id: number, documento: string) {
+    return this.http.delete(`${environment.url}/vacunas/eliminar/${id}/${documento}`);
   }
 
-  SubirDocumento(formData, id: number) {
-    return this.http.put(`${environment.url}/vacunas/${id}/documento`, formData)
+  SubirDocumento(formData, id: number, nombre: string) {
+    return this.http.put(`${environment.url}/vacunas/${id}/documento/${nombre}`, formData)
   }
 
-  ConsultarUltimaVacuna() {
-    return this.http.get(`${environment.url}/vacunas/buscar/ultimo`);
+
+  
+  // ELIMINAR CARNET DE VACUNA
+  EliminarArchivo(datos: any) {
+    return this.http.put(`${environment.url}/vacunas/eliminar_carnet/base_servidor`, datos)
   }
+
+  // ELIMINAR CARNET DE VACUNA DEL SERVIDOR
+  EliminarArchivoServidor(datos: any) {
+    return this.http.put(`${environment.url}/vacunas/eliminar_carnet/servidor`, datos)
+  }
+
+
 
 
   // SERVICIOS DE REGISTROS DE TIPO DE VACUNACIÓN

@@ -32,9 +32,6 @@ export class PedHoraExtraService {
 
 
 
-  ObtenerListaEmpleado(id: number) {
-    return this.http.get(`${environment.url}/horas-extras-pedidas/lista/${id}`);
-  }
 
   GuardarHoraExtra(datos: any) {
     return this.http.post<any>(`${environment.url}/horas-extras-pedidas`, datos);
@@ -52,9 +49,8 @@ export class PedHoraExtraService {
     return this.http.get(`${environment.url}/horas-extras-pedidas/datosAutorizacion/${id_hora}`);
   }
 
-
-  EliminarHoraExtra(id_hora_extra: number) {
-    return this.http.delete(`${environment.url}/horas-extras-pedidas/eliminar/${id_hora_extra}`);
+  EliminarHoraExtra(id_hora_extra: number, documento: string) {
+    return this.http.delete(`${environment.url}/horas-extras-pedidas/eliminar/${id_hora_extra}/${documento}`);
   }
 
   HorarioEmpleadoSemanal(id_cargo: number) {
@@ -107,5 +103,24 @@ export class PedHoraExtraService {
     return this.http.put<any>(`${environment.url}/horas-extras-pedidas/${id}/solicitud`, datos);
   }
 
+  // LISTA DE HORAS EXTRAS SOLICITADOS POR EL USUARIO
+  ObtenerListaEmpleado(id: number) {
+    return this.http.get(`${environment.url}/horas-extras-pedidas/lista/${id}`);
+  }
+
+  // SUBIR RESPALDOS DE HORAS EXTRAS
+  SubirArchivoRespaldo(formData, id: number, nombre: string) {
+    return this.http.put(`${environment.url}/horas-extras-pedidas/${id}/documento/${nombre}`, formData)
+  }
+
+  // ELIMINAR RESPALDOS DE HORAS EXTRAS
+  EliminarArchivoRespaldo(datos: any) {
+    return this.http.put(`${environment.url}/horas-extras-pedidas/eliminar-documento`, datos)
+  }
+
+  // ELIMINAR RESPALDOS DE HORAS EXTRAS DEL SERVIDOR
+  EliminarArchivoServidor(documento: string) {
+    return this.http.delete(`${environment.url}/horas-extras-pedidas/eliminar-documento-web/${documento}`,)
+  }
 
 }

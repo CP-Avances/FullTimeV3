@@ -1,7 +1,7 @@
 <div style="text-align: center;">
     <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
     <span>Registrar su frase</span>
-    <form [formGroup]="fraseForm">
+    <form [formGroup]="formulario">
         <div class="nota">
             <span>NOTA: Ingresar una frase que pueda recordar. Esta frase la usará para realizar cambios importantes
                 dentro del sistema.</span>
@@ -15,8 +15,8 @@
         </mat-form-field>
         <br><br>
         <div style="text-align: center;">
-            <button type="submit" class="btn" (click)="IngresarFrase(fraseForm.value)"
-                [disabled]="!fraseForm.valid">Guardar Frase</button>
+            <button type="submit" class="btn" (click)="IngresarFrase(formulario.value)"
+                [disabled]="!formulario.valid">Guardar Frase</button>
         </div>
         <br>
         <div style="text-align: center;">

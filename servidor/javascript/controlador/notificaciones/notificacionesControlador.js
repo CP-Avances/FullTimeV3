@@ -209,6 +209,8 @@ class NotificacionTiempoRealControlador {
     EnviarCorreoComunicado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(req.id_empresa);
             const { id_envia, correo, mensaje, asunto } = req.body;
@@ -236,8 +238,8 @@ class NotificacionTiempoRealControlador {
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
                   <b>Generado mediante:</b> Sistema Web <br>
-                  <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                  <b>Hora de envío:</b> ${tiempo.hora} <br><br>                  
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                  
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">
@@ -305,6 +307,8 @@ class NotificacionTiempoRealControlador {
     EnviarCorreoComunicadoMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
             const path_folder = path_1.default.resolve('logos');
             var datos = yield (0, settingsMail_1.Credenciales)(parseInt(req.params.id_empresa));
             const { id_envia, correo, mensaje, asunto } = req.body;
@@ -332,8 +336,8 @@ class NotificacionTiempoRealControlador {
                   <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
                   <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
                   <b>Generado mediante:</b> Aplicación Móvil <br>
-                  <b>Fecha de envío:</b> ${tiempo.dia} ${tiempo.fecha} <br> 
-                  <b>Hora de envío:</b> ${tiempo.hora} <br><br>                   
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                   
                   <b>Mensaje:</b> ${mensaje} <br><br>
                 </p>
                 <p style="font-family: Arial; font-size:12px; line-height: 1em;">

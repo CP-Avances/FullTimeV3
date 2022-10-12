@@ -1,8 +1,10 @@
-import { Router } from 'express';
 import DOCUMENTOS_CONTROLADOR from '../../controlador/documentos/documentosControlador';
 import { TokenValidation } from '../../libs/verificarToken'
+import { Router } from 'express';
+import { carpeta } from '../../controlador/documentos/documentosControlador'
 
 const multipart = require('connect-multiparty');
+
 
 const multipartMiddleware = multipart({
     uploadDir: './documentacion',
@@ -16,21 +18,20 @@ class DoumentosRutas {
     }
 
     configuracion(): void {
-        // this.router.get('/', TokenValidation, DOCUMENTOS_CONTROLADOR.ListarDocumentos);
-        this.router.get('/carpetas/', DOCUMENTOS_CONTROLADOR.Carpetas);
-        this.router.get('/lista-carpetas/:nom_carpeta', DOCUMENTOS_CONTROLADOR.listarArchivosCarpeta);
+        this.router.get('/lista-carpetas/:nom_carpeta', DOCUMENTOS_CONTROLADOR.ListarArchivosCarpeta);
         this.router.get('/download/files/:nom_carpeta/:filename', DOCUMENTOS_CONTROLADOR.DownLoadFile);
-        this.router.delete('/eliminar/files/:nom_carpeta/:filename', DOCUMENTOS_CONTROLADOR.EliminarDocumento);
-        this.router.post('/documento', [TokenValidation, multipartMiddleware], DOCUMENTOS_CONTROLADOR.GuardarDocumentos);
+        this.router.get('/carpetas/', DOCUMENTOS_CONTROLADOR.Carpetas);
 
+        this.router.get('/lista-contratos/:nom_carpeta', DOCUMENTOS_CONTROLADOR.ListarCarpetaContratos);
+        this.router.get('/lista-permisos/:nom_carpeta', DOCUMENTOS_CONTROLADOR.ListarCarpetaPermisos);
+        this.router.get('/lista-horarios/:nom_carpeta', DOCUMENTOS_CONTROLADOR.ListarCarpetaHorarios);
 
-        this.router.get('/', DOCUMENTOS_CONTROLADOR.ListarDocumentos);
-        this.router.get('/:id', TokenValidation, DOCUMENTOS_CONTROLADOR.ObtenerUnDocumento);
-        this.router.post('/', TokenValidation, DOCUMENTOS_CONTROLADOR.CrearDocumento);
-        this.router.put('/editar/:id', TokenValidation, DOCUMENTOS_CONTROLADOR.EditarDocumento);
-        this.router.get('/documentos/:docs', DOCUMENTOS_CONTROLADOR.ObtenerDocumento);
-        this.router.delete('/eliminar/:id', TokenValidation, DOCUMENTOS_CONTROLADOR.EliminarRegistros);
+        this.router.get('/documentacion/:nom_carpeta', DOCUMENTOS_CONTROLADOR.ListarCarpetaDocumentos);
+        this.router.post('/registrar/:doc_nombre', TokenValidation, multipartMiddleware, DOCUMENTOS_CONTROLADOR.CrearDocumento);
+        this.router.delete('/eliminar/:id/:documento', TokenValidation, DOCUMENTOS_CONTROLADOR.EliminarRegistros);
+
     }
+
 }
 
 const DOCUMENTOS_RUTAS = new DoumentosRutas();

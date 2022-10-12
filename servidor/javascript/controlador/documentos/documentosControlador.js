@@ -12,100 +12,93 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DOCUMENTOS_CONTROLADOR = void 0;
-const database_1 = __importDefault(require("../../database"));
+exports.DOCUMENTOS_CONTROLADOR = exports.carpeta = void 0;
 const listarArchivos_1 = require("../../libs/listarArchivos");
+const database_1 = __importDefault(require("../../database"));
+const fs_1 = __importDefault(require("fs"));
 class DocumentosControlador {
+    // METODO PARA MOSTRAR LISTA DE CARPETAS DEL SERVIDOR
     Carpetas(req, res) {
         let carpetas = [
             { nombre: 'Contratos', filename: 'contratos' },
-            { nombre: 'Respaldos Horarios', filename: 'docRespaldosHorarios' },
-            { nombre: 'Respaldos Permisos', filename: 'docRespaldosPermisos' },
+            { nombre: 'Respaldos Horarios', filename: 'horarios' },
+            { nombre: 'Respaldos Permisos', filename: 'permisos' },
             { nombre: 'Documentacion', filename: 'documentacion' }
         ];
         res.status(200).jsonp(carpetas);
     }
-    listarArchivosCarpeta(req, res) {
+    ListarArchivosCarpeta(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
             res.status(200).jsonp(yield (0, listarArchivos_1.listaCarpetas)(nombre));
         });
     }
+    // METODO PARA LISTAR ARCHIVOS DE LA CARPETA CONTRATOS
+    ListarCarpetaContratos(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let nombre = req.params.nom_carpeta;
+            console.log('ver contratos.. ', yield (0, listarArchivos_1.ListarContratos)(nombre));
+            res.status(200).jsonp(yield (0, listarArchivos_1.ListarContratos)(nombre));
+        });
+    }
+    // METODO PARA LISTAR ARCHIVOS DE LA CARPETA PERMISOS
+    ListarCarpetaPermisos(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let nombre = req.params.nom_carpeta;
+            console.log('ver permisos.. ', yield (0, listarArchivos_1.ListarPermisos)(nombre));
+            res.status(200).jsonp(yield (0, listarArchivos_1.ListarPermisos)(nombre));
+        });
+    }
+    // METODO PARA LISTAR ARCHIVOS DE LA CARPETA HORARIOS
+    ListarCarpetaHorarios(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let nombre = req.params.nom_carpeta;
+            console.log('ver horarios.. ', yield (0, listarArchivos_1.ListarHorarios)(nombre));
+            res.status(200).jsonp(yield (0, listarArchivos_1.ListarHorarios)(nombre));
+        });
+    }
+    // METODO PARA DESCARGAR ARCHIVOS
     DownLoadFile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
             let filename = req.params.filename;
-            console.log(nombre, '==========', filename);
             const path = (0, listarArchivos_1.DescargarArchivo)(nombre, filename);
-            console.log(path);
             res.status(200).sendFile(path);
         });
     }
-    EliminarDocumento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let nombre = req.params.nom_carpeta;
-            let filename = req.params.filename;
-            console.log(nombre, '==========', filename);
-            const path = (0, listarArchivos_1.EliminarArchivo)(nombre, filename);
-            console.log(path);
-            res.jsonp({ message: 'Documento eliminado' });
-        });
-    }
-    ListarDocumentos(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const DOCUMENTOS = yield database_1.default.query('SELECT * FROM documentacion ORDER BY id');
-            if (DOCUMENTOS.rowCount > 0) {
-                return res.jsonp(DOCUMENTOS.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    ObtenerUnDocumento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const UN_DOCUMENTO = yield database_1.default.query('SELECT * FROM documentacion WHERE id = $1', [id]);
-            if (UN_DOCUMENTO.rowCount > 0) {
-                return res.jsonp(UN_DOCUMENTO.rows);
-            }
-            else {
-                res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
+    /** **************************************************************************************** **
+     ** **                MANEJO DE DOCUMENTOS BASE DE DATOS Y SERVIDOR                       ** **
+     ** **************************************************************************************** **/
+    // METODO PARA REGISTRAR UN DOCUMENTO
     CrearDocumento(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { doc_nombre } = req.body;
-            yield database_1.default.query('INSERT INTO documentacion (doc_nombre) VALUES ($1)', [doc_nombre]);
-            const ultimo = yield database_1.default.query('SELECT MAX(id) AS id FROM documentacion');
-            res.jsonp({ message: 'Documento cargado', id: ultimo.rows[0].id });
+            let list = req.files;
+            let documento = list.uploads[0].path.split("\\")[1];
+            console.log('ver path ... ', list.uploads[0].path);
+            let { doc_nombre } = req.params;
+            yield database_1.default.query(`
+            INSERT INTO documentacion (documento, doc_nombre) VALUES ($1, $2)
+            `, [documento, doc_nombre]);
+            res.jsonp({ message: 'Documento cargado' });
         });
     }
-    EditarDocumento(req, res) {
+    // METODO PARA LISTAR DOCUMENTOS 
+    ListarCarpetaDocumentos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { doc_nombre } = req.body;
-            yield database_1.default.query('UPDATE documentacion SET doc_nombre = $1 WHERE id = $2', [doc_nombre, id]);
-            res.jsonp({ message: 'Documento actualizado' });
+            let nombre = req.params.nom_carpeta;
+            res.status(200).jsonp(yield (0, listarArchivos_1.ListarDocumentos)(nombre));
         });
     }
-    ObtenerDocumento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const docs = req.params.docs;
-            let filePath = `servidor\\documentacion\\${docs}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
-    GuardarDocumentos(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            res.jsonp({ message: 'Documento Guardado' });
-        });
-    }
+    // METODO PARA ELIMINAR REGISTROS DE DOCUMENTACION
     EliminarRegistros(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield database_1.default.query('DELETE FROM documentacion WHERE id = $1', [id]);
+            let { id, documento } = req.params;
+            yield database_1.default.query(`
+            DELETE FROM documentacion WHERE id = $1
+            `, [id]);
+            let filePath = `servidor\\documentacion\\${documento}`;
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs_1.default.unlinkSync(direccionCompleta);
             res.jsonp({ message: 'Registro eliminado' });
         });
     }

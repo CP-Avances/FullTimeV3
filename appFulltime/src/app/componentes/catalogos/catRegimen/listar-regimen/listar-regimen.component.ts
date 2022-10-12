@@ -76,7 +76,7 @@ export class ListarRegimenComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -156,7 +156,8 @@ export class ListarRegimenComponent implements OnInit {
 
   // VENTANA PARA REGISTRAR DATOS DE UN NUEVO RÉGIMEN LABORAL
   AbrirVentanaRegistrarRegimen(): void {
-    this.vistaRegistrarDatos.open(RegimenComponent, { width: '900px' }).disableClose = true;
+    this.vistaRegistrarDatos.open(RegimenComponent,
+      { width: '1200px'}).disableClose = true;
   }
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 

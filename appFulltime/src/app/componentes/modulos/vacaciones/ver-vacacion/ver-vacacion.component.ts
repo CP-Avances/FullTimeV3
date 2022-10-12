@@ -17,6 +17,7 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 import { EditarEstadoVacacionAutoriacionComponent } from 'src/app/componentes/autorizaciones/editar-estado-vacacion-autoriacion/editar-estado-vacacion-autoriacion.component';
 import { VacacionAutorizacionesComponent } from 'src/app/componentes/autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-ver-vacacion',
@@ -48,6 +49,7 @@ export class VerVacacionComponent implements OnInit {
     public restGeneral: DatosGeneralesService, // SERVICIO DE DATOS GENERALES DE EMPLEADO
     public restEmpre: EmpresaService, // SERVICIO DE DATOS DE EMPRESA
     public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
+    public validar: ValidacionesService,
     public restE: EmpleadoService, // SERVICIO DE DATOS DE EMPLEADO
     private router: Router, // VARIABLE DE MANEJO DE RUTAS
     private restA: AutorizacionService, // SERVICIO DE DATOS DE AUTORIZACIÓN
@@ -59,10 +61,6 @@ export class VerVacacionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    var f = moment();
-    var fecha = f.format('YYYY-MM-DD')
-    this.fechaActual = moment.weekdays(moment(fecha).day()).charAt(0).toUpperCase() +
-      moment.weekdays(moment(fecha).day()).slice(1) + ' ' + f.format('DD-MM-YYYY');
     this.ObtenerLogo();
     this.ObtenerColores();
     this.BuscarParametro();
@@ -77,26 +75,16 @@ export class VerVacacionComponent implements OnInit {
 
   // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
+    var f = moment();
+    this.fechaActual = f.format('YYYY-MM-DD');
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
       res => {
         this.formato_fecha = res[0].descripcion;
-        this.BuscarHora(this.formato_fecha)
+        this.BuscarDatos(this.formato_fecha);
       },
       vacio => {
-        this.BuscarHora(this.formato_fecha)
-      });
-  }
-
-  BuscarHora(fecha: string) {
-    // id_tipo_parametro Formato hora = 26
-    this.parametro.ListarDetalleParametros(26).subscribe(
-      res => {
-        this.formato_hora = res[0].descripcion;
-        this.BuscarDatos(fecha, this.formato_hora);
-      },
-      vacio => {
-        this.BuscarDatos(fecha, this.formato_hora);
+        this.BuscarDatos(this.formato_fecha);
       });
   }
 
@@ -107,7 +95,7 @@ export class VerVacacionComponent implements OnInit {
   cont: number;
 
   // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
-  BuscarDatos(f_fecha: string, f_hora: string) {
+  BuscarDatos(formato_fecha: string) {
     this.vacacion = [];
 
     // BÚSQUEDA DE DATOS DE VACACIONES
@@ -115,20 +103,11 @@ export class VerVacacionComponent implements OnInit {
       this.vacacion = res;
       console.log('ver data ... ', this.vacacion)
       this.vacacion.forEach(v => {
-        // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
-        v.fec_inicio = moment.weekdays(moment(v.fec_inicio).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(v.fec_inicio).day()).slice(1) +
-          ' ' + moment(v.fec_inicio).format(f_fecha);
-
-        v.fec_final = moment.weekdays(moment(v.fec_final).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(v.fec_final).day()).slice(1) +
-          ' ' + moment(v.fec_final).format(f_fecha);
-
-        v.fec_ingreso = moment.weekdays(moment(v.fec_ingreso).day()).charAt(0).toUpperCase() +
-          moment.weekdays(moment(v.fec_ingreso).day()).slice(1) +
-          ' ' + moment(v.fec_ingreso).format(f_fecha);
+        // TRATAMIENTO DE FECHAS Y HORAS 
+        v.fec_ingreso_ = this.validar.FormatearFecha(v.fec_ingreso, formato_fecha, this.validar.dia_completo);
+        v.fec_inicio_ = this.validar.FormatearFecha(v.fec_inicio, formato_fecha, this.validar.dia_completo);
+        v.fec_final_ = this.validar.FormatearFecha(v.fec_final, formato_fecha, this.validar.dia_completo);
       })
-
       this.ObtenerAutorizacion(this.vacacion[0].id);
     });
 
@@ -189,7 +168,7 @@ export class VerVacacionComponent implements OnInit {
   // MÉTODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
-    this.restE.getOneEmpleadoRest(idemploy).subscribe(data => {
+    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleado = data;
     })
   }
@@ -335,6 +314,11 @@ export class VerVacacionComponent implements OnInit {
   }
 
   SeleccionarMetodo() {
+    let fecha = this.validar.FormatearFecha(this.fechaActual, this.formato_fecha, this.validar.dia_completo);
+    let fec_ingreso_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_ingreso.split('T')[0], this.formato_fecha, this.validar.dia_completo);
+    let fec_inicio_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_inicio.split('T')[0], this.formato_fecha, this.validar.dia_completo);
+    let fec_final_ = this.validar.FormatearFecha(this.datoSolicitud[0].fec_final.split('T')[0], this.formato_fecha, this.validar.dia_completo);
+
     return {
       table: {
         widths: ['*'],
@@ -342,7 +326,7 @@ export class VerVacacionComponent implements OnInit {
           [{ text: 'INFORMACIÓN GENERAL', style: 'tableHeader' }],
           [{
             columns: [
-              { text: [{ text: 'FECHA: ' + this.fechaActual, style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA: ' + fecha, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
               { text: [{ text: 'CIUDAD: ' + this.datoSolicitud[0].nom_ciudad, style: 'itemsTableD' }] }
             ]
@@ -366,14 +350,14 @@ export class VerVacacionComponent implements OnInit {
             columns: [
               { text: [{ text: 'OBSERVACIÓN: ' + this.datoSolicitud[0].descripcion, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
-              { text: [{ text: 'FECHA DE INICIO: ' + this.datoSolicitud[0].fec_inicio.split('T')[0], style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA DE INICIO: ' + fec_inicio_, style: 'itemsTableD' }] },
             ]
           }],
           [{
             columns: [
-              { text: [{ text: 'FECHA INGRESO: ' + this.datoSolicitud[0].fec_ingreso.split('T')[0], style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA INGRESO: ' + fec_ingreso_, style: 'itemsTableD' }] },
               { text: [{ text: '', style: 'itemsTableD' }] },
-              { text: [{ text: 'FECHA DE FINALIZACIÓN: ' + this.datoSolicitud[0].fec_final.split('T')[0], style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA DE FINALIZACIÓN: ' + fec_final_, style: 'itemsTableD' }] },
             ]
           }],
           [{

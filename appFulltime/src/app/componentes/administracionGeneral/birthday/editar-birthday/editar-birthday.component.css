@@ -1,12 +1,26 @@
-.btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+    margin: 5px 10px 5px 10px;
+}
 
-mat-label { font-size: 14px; } 
+mat-label {
+    font-size: 14px;
+}
 
-mat-form-field {width: 100%; padding: 10px 10px 0px 10px;}
+mat-form-field {
+    width: 100%;
+    padding: 10px 10px 0px 10px;
+}
 
-textarea {height: 75px;}
+textarea {
+    height: 75px;
+}
 
-#nombreCertific { font-size: 13px; display: inline-block;}
+#imagen {
+    font-size: 13px;
+    display: inline-block;
+}
 
 [type="file"] {
     height: 0;
@@ -14,7 +28,7 @@ textarea {height: 75px;}
     width: 0;
 }
 
-[type="file"] + label {
+[type="file"]+label {
     background: #f15d22;
     border: none;
     border-radius: 5px;
@@ -33,12 +47,12 @@ textarea {height: 75px;}
     vertical-align: middle;
 }
 
-[type="file"] + label.btn-2 {
-    background-color: #93a3c7;
+[type="file"]+label.btn-2 {
+    background-color: rgb(150, 243, 141);
     overflow: hidden;
 }
 
-[type="file"] + label.btn-2::before {
+[type="file"]+label.btn-2::before {
     color: #fff;
     content: "\f382";
     font-family: "Font Awesome 5 Pro";
@@ -53,10 +67,10 @@ textarea {height: 75px;}
     transition: all 0.3s;
 }
 
-[type="file"] + label.btn-2:hover {
+[type="file"]+label.btn-2:hover {
     background-color: rgb(0, 76, 255)
 }
 
-[type="file"] + label.btn-2:hover::before {
+[type="file"]+label.btn-2:hover::before {
     right: 80%
 }

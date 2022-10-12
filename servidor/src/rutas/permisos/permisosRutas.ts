@@ -5,7 +5,7 @@ import PERMISOS_CONTROLADOR from '../../controlador/permisos/permisosControlador
 const multipart = require('connect-multiparty');
 
 const multipartMiddleware = multipart({
-    uploadDir: './docRespaldosPermisos',
+    uploadDir: './permisos',
 });
 
 class PermisosRutas {
@@ -22,7 +22,7 @@ class PermisosRutas {
         this.router.get('/:id', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerUnPermiso);
         this.router.get('/permiso/editar/:id', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEditar);
 
-        this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
+
         this.router.get('/numPermiso/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerNumPermiso);
         this.router.get('/permisoContrato/:id_empl_contrato', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoContrato);
         this.router.get('/datosSolicitud/:id_emple_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerDatosSolicitud);
@@ -38,7 +38,7 @@ class PermisosRutas {
         // CREAR PERMISO
         this.router.post('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.CrearPermisos);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO
-        this.router.put('/:id/documento', [TokenValidation, ModuloPermisosValidation, multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
+        this.router.put('/:id/documento/:documento', [TokenValidation, ModuloPermisosValidation, multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
         // ACTUALIZAR PERMISO
         this.router.put('/:id/permiso-solicitado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EditarPermiso);
         // ELIMINAR PERMISO
@@ -49,6 +49,11 @@ class PermisosRutas {
         this.router.get('/un-permiso/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarUnPermisoInfo);
         // BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
         this.router.get('/permiso-usuario/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEmpleado);
+        // BUSQUEDA DE RESPALDOS D EPERMISOS
+        this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
+        // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
+        this.router.delete('/eliminar-movil/:documento', PERMISOS_CONTROLADOR.EliminarPermisoMovil);
+
 
         /** ************************************************************************************************* **
          ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** ** 
@@ -58,7 +63,8 @@ class PermisosRutas {
         this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EnviarCorreoWeb);
         // ENVIAR CORREO MEDIANTE APLICACION MOVIL
         this.router.post('/mail-noti-permiso-movil/:id_empresa', PERMISOS_CONTROLADOR.EnviarCorreoPermisoMovil);
-
+        // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO APLICACION MOVIL
+        this.router.put('/:id/documento-movil/:documento', [multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
     }
 }
 

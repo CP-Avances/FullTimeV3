@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { PageEvent } from '@angular/material/paginator';
-
-import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { MatDialog } from '@angular/material/dialog';
+
 import { VacacionAutorizacionesComponent } from 'src/app/componentes/autorizaciones/vacacion-autorizaciones/vacacion-autorizaciones.component';
 import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
+
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 export interface VacacionesElemento {
   apellido: string;
@@ -28,23 +31,24 @@ export interface VacacionesElemento {
   templateUrl: './listar-vacaciones.component.html',
   styleUrls: ['./listar-vacaciones.component.css']
 })
+
 export class ListarVacacionesComponent implements OnInit {
 
-  // Items de paginación de la tabla
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   vacaciones: any = [];
 
-  // Habilitar listas según los datos
+  // HABILITAR LISTAS SEGÚN LOS DATOS
   lista_vacaciones: boolean = false;
   lista_autoriza: boolean = false;
 
-  // Habilitar iconos de autorizacion individual
+  // HABILITAR ICONOS DE AUTORIZACION INDIVIDUAL
   auto_individual: boolean = true;
 
-  // Items de paginación de lista autorizados
+  // ITEMS DE PAGINACIÓN DE LISTA AUTORIZADOS
   tamanio_pagina_auto: number = 5;
   numero_pagina_auto: number = 1;
   pageSizeOptions_auto = [5, 10, 20, 50];
@@ -54,30 +58,61 @@ export class ListarVacacionesComponent implements OnInit {
   constructor(
     private restV: VacacionesService,
     private ventana: MatDialog,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
   ) { }
 
   ngOnInit(): void {
-    this.ObtenerListaVacaciones();
-    this.ObtenerListaVacacionesAutorizadas();
+    this.BuscarParametro();
   }
 
-  ObtenerListaVacaciones() {
+  /** **************************************************************************************** **
+   ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
+   ** **************************************************************************************** **/
+
+  formato_fecha: string = 'DD/MM/YYYY';
+  formato_hora: string = 'HH:mm:ss';
+
+  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  BuscarParametro() {
+    // id_tipo_parametro Formato fecha = 25
+    this.parametro.ListarDetalleParametros(25).subscribe(
+      res => {
+        this.formato_fecha = res[0].descripcion;
+        this.ObtenerListaVacaciones(this.formato_fecha);
+        this.ObtenerListaVacacionesAutorizadas(this.formato_fecha);
+      },
+      vacio => {
+        this.ObtenerListaVacaciones(this.formato_fecha);
+        this.ObtenerListaVacacionesAutorizadas(this.formato_fecha);
+      });
+  }
+
+  ObtenerListaVacaciones(formato_fecha: string) {
     this.restV.ObtenerListaVacaciones().subscribe(res => {
       this.vacaciones = res;
-      for (var i = 0; i <= this.vacaciones.length - 1; i++) {
-        if (this.vacaciones[i].estado === 1) {
-          this.vacaciones[i].estado = 'Pendiente';
+
+      this.vacaciones.forEach(data => {
+
+        if (data.estado === 1) {
+          data.estado = 'Pendiente';
         }
-        else if (this.vacaciones[i].estado === 2) {
-          this.vacaciones[i].estado = 'Pre-autorizado';
+        else if (data.estado === 2) {
+          data.estado = 'Pre-autorizado';
         }
-        else if (this.vacaciones[i].estado === 3) {
-          this.vacaciones[i].estado = 'Autorizado';
+        else if (data.estado === 3) {
+          data.estado = 'Autorizado';
         }
-        else if (this.vacaciones[i].estado === 4) {
-          this.vacaciones[i].estado = 'Negado';
+        else if (data.estado === 4) {
+          data.estado = 'Negado';
         }
-      }
+
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+        data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
+
+      })
+
       if (this.vacaciones.length != 0) {
         this.lista_vacaciones = true;
       } else {
@@ -87,23 +122,31 @@ export class ListarVacacionesComponent implements OnInit {
     });
   }
 
-  ObtenerListaVacacionesAutorizadas() {
+  ObtenerListaVacacionesAutorizadas(formato_fecha: string) {
     this.restV.ObtenerListaVacacionesAutorizadas().subscribe(res => {
       this.vacaciones_autorizadas = res;
-      for (var i = 0; i <= this.vacaciones_autorizadas.length - 1; i++) {
-        if (this.vacaciones_autorizadas[i].estado === 1) {
-          this.vacaciones_autorizadas[i].estado = 'Pendiente';
+
+      this.vacaciones_autorizadas.forEach(data => {
+
+        if (data.estado === 1) {
+          data.estado = 'Pendiente';
         }
-        else if (this.vacaciones_autorizadas[i].estado === 2) {
-          this.vacaciones_autorizadas[i].estado = 'Pre-autorizado';
+        else if (data.estado === 2) {
+          data.estado = 'Pre-autorizado';
         }
-        else if (this.vacaciones_autorizadas[i].estado === 3) {
-          this.vacaciones_autorizadas[i].estado = 'Autorizado';
+        else if (data.estado === 3) {
+          data.estado = 'Autorizado';
         }
-        else if (this.vacaciones_autorizadas[i].estado === 4) {
-          this.vacaciones_autorizadas[i].estado = 'Negado';
+        else if (data.estado === 4) {
+          data.estado = 'Negado';
         }
-      }
+
+        data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
+        data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
+        data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
+
+      })
+
       if (this.vacaciones_autorizadas.length != 0) {
         this.lista_autoriza = true;
       } else {
@@ -113,28 +156,28 @@ export class ListarVacacionesComponent implements OnInit {
     });
   }
 
-  // Evento paginación lista vacaciones
+  // EVENTO PAGINACIÓN LISTA VACACIONES
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
   selectionUno = new SelectionModel<VacacionesElemento>(true, []);
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS.
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
     const numRows = this.vacaciones.length;
     return numSelected === numRows;
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
       this.vacaciones.forEach(row => this.selectionUno.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
   checkboxLabel(row?: VacacionesElemento): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
@@ -167,13 +210,12 @@ export class ListarVacacionesComponent implements OnInit {
     this.AbrirAutorizaciones(EmpleadosSeleccionados, 'multiple');
   }
 
-  // Autorización de vacaciones
+  // AUTORIZACIÓN DE VACACIONES
   AbrirAutorizaciones(datos_vacacion, forma: string) {
     this.ventana.open(VacacionAutorizacionesComponent,
-      { width: '600px', data: { datosVacacion: datos_vacacion, carga: forma } }).afterClosed().subscribe(items => {
-        //window.location.reload();
-        this.ObtenerListaVacaciones();
-        this.ObtenerListaVacacionesAutorizadas();
+      { width: '600px', data: { datosVacacion: datos_vacacion, carga: forma } })
+      .afterClosed().subscribe(items => {
+        this.BuscarParametro();
         this.auto_individual = true;
         this.selectionUno.clear();
       });
@@ -198,8 +240,7 @@ export class ListarVacacionesComponent implements OnInit {
             id_contrato: this.vacaciones_lista[0].id_contrato
           }
         }).afterClosed().subscribe(items => {
-          this.ObtenerListaVacaciones();
-          this.ObtenerListaVacacionesAutorizadas();
+          this.BuscarParametro();
         });
     });
   }

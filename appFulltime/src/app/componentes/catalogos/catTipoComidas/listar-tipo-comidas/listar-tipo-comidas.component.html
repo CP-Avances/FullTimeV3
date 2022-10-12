@@ -56,8 +56,8 @@
                         *ngFor="let comida of tipoComidas | filtrosNombres: filtroNombre | tipo: filtroTipo | paginate:tamanio_pagina:numero_pagina">
                         <td id="centrar">{{comida.tipo}}</td>
                         <td id="centrar">{{comida.nombre}}</td>
-                        <td id="centrar">{{comida.hora_inicio}}</td>
-                        <td id="centrar">{{comida.hora_fin}}</td>
+                        <td id="centrar">{{comida.horaInicio}}</td>
+                        <td id="centrar">{{comida.horaFin}}</td>
                         <td class="d-flex justify-content-center align-self-center">
                             <i matSuffix matTooltipPosition="right" matTooltip="Ver datos generales de este registro."
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/verMenu/', comida.id]">

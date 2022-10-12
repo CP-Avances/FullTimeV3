@@ -1,6 +1,6 @@
 // LIBRERIAS
-import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
 import { SelectionModel } from '@angular/cdk/collections';

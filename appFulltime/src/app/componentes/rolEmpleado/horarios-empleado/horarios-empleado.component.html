@@ -7,7 +7,7 @@
             <mat-card class="example-card mat-elevation-z9" id="carta1">
                 <div class="d-flex flex-wrap justify-content-around" style="margin-right: 5%;">
                     <form method="post" enctype="multipart/form-data">
-                        <input (change)="fileChangeHorario($event)" type="file" [formControl]="archivoHorarioForm"
+                        <input (change)="FileChangeHorario($event)" type="file" [formControl]="archivoHorarioForm"
                             id="file"
                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                         <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
@@ -51,10 +51,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let h of horariosEmpleadoTotales | paginate:tamanio_pagina:numero_pagina">
+                    <tr *ngFor="let h of horariosEmpleado | paginate:tamanio_pagina:numero_pagina">
                         <td>{{h.nom_horario}}</td>
-                        <td>{{h.fec_inicio.split("T")[0]}}</td>
-                        <td>{{h.fec_final.split("T")[0]}}</td>
+                        <td>{{h.fec_inicio_.split("T")[0]}}</td>
+                        <td>{{h.fec_final_.split("T")[0]}}</td>
                         <td *ngIf="h.lunes == true">Libre</td>
                         <td *ngIf="h.lunes == false">Normal</td>
                         <td *ngIf="h.martes == true">Libre</td>
@@ -84,7 +84,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="horariosEmpleadoTotales.length" [pageSize]="tamanio_pagina"
+        <mat-paginator id="pagina" [length]="horariosEmpleado.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>

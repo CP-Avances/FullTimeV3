@@ -5,8 +5,6 @@ import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
-import { NotiAutorizacionesService } from 'src/app/servicios/catalogos/catNotiAutorizaciones/noti-autorizaciones.service';
-import { NotificacionesService } from 'src/app/servicios/catalogos/catNotificaciones/notificaciones.service';
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
