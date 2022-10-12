@@ -7,10 +7,11 @@ import * as moment from 'moment';
 
 
 import { SettingsComponent } from "src/app/componentes/administracionGeneral/preferecias/settings/settings.component";
+
 import { LoginService } from 'src/app/servicios/login/login.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-button-notificacion',
@@ -28,9 +29,9 @@ export class ButtonNotificacionComponent implements OnInit {
 
   constructor(
     public loginService: LoginService,
+    public parametro: ParametrosService,
     public ventana: MatDialog,
     public validar: ValidacionesService,
-    public parametro: ParametrosService,
     private realTime: RealTimeService,
     private toaster: ToastrService,
     private socket: Socket,

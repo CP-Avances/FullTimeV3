@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { environment } from 'src/environments/environment';
+
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['../main-nav.component.css']
 })
+
 export class NavbarComponent implements OnInit {
 
   UserEmail: string = '';

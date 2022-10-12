@@ -3,7 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR MENSAJE DE CUMPLEAÑOS</span>
 </div>
-<form [formGroup]="birthdayForm">
+<form [formGroup]="formulario">
     <div class="container">
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
@@ -13,8 +13,7 @@
             <mat-form-field>
                 <mat-label>Asunto</mat-label>
                 <input matInput [formControl]="tituloF" required>
-                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                    matTooltip="Escriba el titulo del mensaje de cumpleaños">
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Indicar asunto de mensaje.">
                     help_outline</mat-icon>
             </mat-form-field>
             <mat-form-field>
@@ -29,7 +28,7 @@
                 <textarea matInput #message maxlength="256" placeholder="Ingrese mensaje de felicitación de cumpleaños."
                     [formControl]="mensajeF" required></textarea>
                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                    matTooltip="Ingrese mensaje personalizado de cumpleaños">
+                    matTooltip="Ingrese mensaje personalizado de cumpleaños.">
                     help_outline</mat-icon>
                 <mat-hint align="start"><strong>Solo puede ingresar hasta 255 caracteres</strong></mat-hint>
                 <mat-hint align="end">{{message.value.length}} / 255</mat-hint>
@@ -42,15 +41,15 @@
                     </form>
                 </div>
                 <div class="align-self-center" style="margin: 5px 5px 5px 5px; width: 200px;">
-                    <input type="text" id="imagen" placeholder="Ningún archivo seleccionado"
-                        class="form-control" [formControl]="imagenF">
+                    <input type="text" id="imagen" placeholder="Ningún archivo seleccionado." class="form-control"
+                        [formControl]="imagenF">
                 </div>
             </div>
         </div>
     </div>
 </form>
 <div class="d-flex flex-wrap justify-content-center">
-    <button class="btn btn-sm" type="submit" [disabled]="!birthdayForm.valid"
-        (click)="ModificarMensajeBirthday(birthdayForm.value)">Guardar</button>
+    <button class="btn btn-sm" type="submit" [disabled]="!formulario.valid"
+        (click)="ModificarMensajeBirthday(formulario.value)">Guardar</button>
     <button mat-button class="btn btn-sm" type="submit" (click)="CerrarVentana()">Salir</button>
 </div>

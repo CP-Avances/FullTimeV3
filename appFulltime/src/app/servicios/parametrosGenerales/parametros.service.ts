@@ -11,6 +11,7 @@ export class ParametrosService {
     private http: HttpClient
   ) { }
 
+  // BUSCAR LISTA DE PARAMETROS
   ListarParametros() {
     return this.http.get<any>(`${environment.url}/parametrizacion`);
   }

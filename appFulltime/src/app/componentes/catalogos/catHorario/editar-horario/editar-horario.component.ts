@@ -34,13 +34,15 @@ export class EditarHorarioComponent implements OnInit {
   seleccion = new FormControl('');
   detalleF = new FormControl('');
   nombre = new FormControl('', [Validators.required, Validators.minLength(2)]);
+  codigoF = new FormControl('', [Validators.required]);
   tipoF = new FormControl('');
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
-  public nuevoHorarioForm = new FormGroup({
+  public formulario = new FormGroup({
     horarioHoraTrabajoForm: this.horaTrabajo,
     horarioMinAlmuerzoForm: this.minAlmuerzo,
-    horarioNombreForm: this.nombre,
+    nombreForm: this.nombre,
+    codigoForm: this.codigoF,
     documentoForm: this.documentoF,
     detalleForm: this.detalleF,
     tipoForm: this.tipoF,
@@ -72,11 +74,12 @@ export class EditarHorarioComponent implements OnInit {
 
   // MOSTRAR DATOS EN FORMULARIO
   ImprimirDatos() {
-    this.nuevoHorarioForm.patchValue({
+    this.formulario.patchValue({
       horarioHoraTrabajoForm: moment(this.data.horario.hora_trabajo, 'HH:mm:ss').format('HH:mm'),
       horarioMinAlmuerzoForm: this.data.horario.min_almuerzo,
-      horarioNombreForm: this.data.horario.nombre,
+      nombreForm: this.data.horario.nombre,
       detalleForm: this.data.horario.detalle,
+      codigoForm: this.data.horario.codigo,
       tipoForm: this.data.horario.nocturno,
     });
 
@@ -103,7 +106,8 @@ export class EditarHorarioComponent implements OnInit {
       hora_trabajo: form.horarioHoraTrabajoForm,
       nocturno: form.tipoForm,
       detalle: form.detalleForm,
-      nombre: form.horarioNombreForm,
+      nombre: form.nombreForm,
+      codigo: form.codigoForm
     };
 
     if (dataHorario.detalle === false) {
@@ -117,20 +121,32 @@ export class EditarHorarioComponent implements OnInit {
       dataHorario.min_almuerzo = 0;
     }
 
-    if (form.horarioNombreForm === this.data.horario.nombre) {
+    // SI EL NOMBRE Y CODIGO DE HORARIO SON IGUALES NO VERIFICA DUPLICADOS
+    if (form.nombreForm === this.data.horario.nombre && form.codigoForm === this.data.horario.codigo) {
       this.VerificarInformacion(dataHorario, form);
     }
     else {
-      this.rest.BuscarHorarioNombre(form.horarioNombreForm).subscribe(response => {
-        this.toastr.info('Nombre de horario ya se encuentra registrado.', 'Verificar Datos.', {
-          timeOut: 6000,
-        });
-        this.habilitarprogress = false;
-      }, error => {
-        this.VerificarInformacion(dataHorario, form);
-      });
+      this.VerificarDuplicidad(form, dataHorario);
     }
   }
+
+  // VERIFICAR DUPLICIDAD DE NOMBRES Y CODIGOS
+  VerificarDuplicidad(form: any, horario: any) {
+    let data = {
+      id: parseInt(this.data.horario.id),
+      nombre: form.nombreForm,
+      codigo: form.codigoForm
+    }
+    this.rest.BuscarHorarioNombre_(data).subscribe(response => {
+      this.toastr.info('Nombre de horario ya se encuentra registrado.', 'Verificar Datos.', {
+        timeOut: 6000,
+      });
+      this.habilitarprogress = false;
+    }, error => {
+      this.VerificarInformacion(horario, form);
+    });
+  }
+
 
   // VERIFICACION DE OPCIONES SELECCIONADOS PARA ACTUALIZACION DE ARCHIVOS
   VerificarInformacion(datos: any, form: any) {
@@ -248,7 +264,7 @@ export class EditarHorarioComponent implements OnInit {
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
       if (this.archivoSubido[0].size <= 2e+6) {
-        this.nuevoHorarioForm.patchValue({ documentoForm: name });
+        this.formulario.patchValue({ documentoForm: name });
         this.HabilitarBtn = true
       }
       else {
@@ -273,7 +289,7 @@ export class EditarHorarioComponent implements OnInit {
 
   // LIMPIAR CAMPO DE NOMBRE DE ARCHIVO
   LimpiarNombreArchivo() {
-    this.nuevoHorarioForm.patchValue({
+    this.formulario.patchValue({
       documentoForm: '',
     });
   }
@@ -394,7 +410,7 @@ export class EditarHorarioComponent implements OnInit {
 
   // MÉTODO PARA LIMPIAR CAMPOS DE FORMULARIO
   LimpiarCampos() {
-    this.nuevoHorarioForm.reset();
+    this.formulario.reset();
   }
 
   // METODO PARA CERRAR VENTANA

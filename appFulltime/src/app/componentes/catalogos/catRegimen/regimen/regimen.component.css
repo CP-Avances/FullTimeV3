@@ -5,8 +5,8 @@
 }
 
 mat-form-field {
-    width: 250px;
-    padding: 10px 10px 0px 10px;
+    width: 260px;
+    padding: 5px 5px 0px 5px;
 }
 
 .button {
@@ -17,25 +17,22 @@ label {
     font-size: small;
 }
 
-#diasIncre {
-    font-size: 12px;
+#letras {
+    font-size: 14px;
 }
 
-#anioAnti {
-    font-size: 12px;
-}
 
-#maxD {
+#letras_ {
     font-size: 13px;
 }
 
-#anio {
-    font-size: 14px;
+#letra_ {
+    font-size: 12px;
 }
 
 .scrollbar {
     float: left;
-    height: 360px;
+    height: 450px;
     width: 100%;
     background: #fff;
     overflow-y: scroll;
@@ -48,6 +45,10 @@ label {
     background-color: #F5F5F5;
 }
 
-#seleccionadoR {
-    font-size: 14px;
+#check {
+    width: 210px;
+    padding: 15px 20px 15px 20x;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    margin-right: 28px;
 }

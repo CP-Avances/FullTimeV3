@@ -3,7 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRAR MENSAJE DE CUMPLEAÑOS</span>
 </div>
-<form [formGroup]="birthdayForm">
+<form [formGroup]="formulario">
     <div class="container">
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
@@ -50,7 +50,7 @@
     </div>
 </form>
 <div class="d-flex flex-wrap justify-content-center">
-    <button class="btn btn-sm" type="submit" [disabled]="!birthdayForm.valid"
-        (click)="InsertarMensajeBirthday(birthdayForm.value)">Guardar</button>
+    <button class="btn btn-sm" type="submit" [disabled]="!formulario.valid"
+        (click)="InsertarMensajeBirthday(formulario.value)">Guardar</button>
     <button mat-button class="btn btn-sm" type="submit" (click)="cerrarVentana()">Salir</button>
 </div>

@@ -1,7 +1,7 @@
 <div style="text-align: center;" *ngIf='contrasena'>
     <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
     <span>Confirmar su contraseña</span>
-    <form [formGroup]="seguridadForm">
+    <form [formGroup]="formulario">
         <div class="nota">
             <span>NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
                 Confirmar Contraseña.</span>
@@ -13,15 +13,15 @@
                 formControlName="aPass" required>
             <button mat-icon-button matSuffix (click)="hide1 = !hide1" [attr.aria-label]="'Hide password'"
                 [attr.aria-pressed]="hide1">
-                <mat-icon id="i-cursor" matSuffix  matTooltipPosition="right"
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ocultar o mostrar la contraseña ingresada.">
                     {{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
         </mat-form-field>
         <br>
         <div style="text-align: center;">
-            <button type="submit" class="btn btn_b" (click)="CompararContrasenia(seguridadForm.value)"
-                [disabled]="!seguridadForm.valid">Confirmar Contraseña</button>
+            <button type="submit" class="btn btn_b" (click)="CompararContrasenia(formulario.value)"
+                [disabled]="!formulario.valid">Confirmar Contraseña</button>
         </div>
         <br>
         <div style="text-align: center;">
@@ -41,7 +41,7 @@
             <mat-label>Ingresar Frase</mat-label>
             <textarea matInput #message maxlength="100" placeholder="Ingrese su frase de seguridad"
                 formControlName="aFrase" required></textarea>
-            <mat-icon id="i-cursor"  matSuffix matTooltipPosition="right"
+            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                 matTooltip="Para asegurar que es usted dueño de esta cuenta ingrese su frase de seguridad.">
                 help_outline</mat-icon>
             <mat-hint align="start"><strong>Ingresar hasta 100 caracteres</strong></mat-hint>

@@ -1,7 +1,7 @@
 <div style="text-align: center;">
     <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
     <span>Modificar su frase</span>
-    <form [formGroup]="fraseForm">
+    <form [formGroup]="formulario">
         <div class="nota">
             <span>NOTA: Ingresar una frase que pueda recordar. Esta frase la usará para realizar cambios importantes
                 dentro del sistema.</span>
@@ -26,8 +26,8 @@
                 seguridad?</button>
         </div>
         <div style="text-align: center;">
-            <button type="submit" class="btn btn_b" (click)="CompararFrase(fraseForm.value)"
-                [disabled]="!fraseForm.valid">Guardar Frase</button>
+            <button type="submit" class="btn btn_b" (click)="CompararFrase(formulario.value)"
+                [disabled]="!formulario.valid">Guardar Frase</button>
         </div>
         <br>
         <div style="text-align: center;">

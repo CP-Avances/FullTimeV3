@@ -3,7 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         CONFIGURACIÓN CORREO</span>
 </div>
-<form [formGroup]="ConfiguracionCorreoForm">
+<form [formGroup]="formulario">
     <div class="container" style="text-align: center">
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
@@ -60,7 +60,7 @@
 </form>
 <div class="d-flex flex-wrap justify-content-center">
     <input type="submit" class="btn btn-sm button" [disabled]="btnDisableGuardar" value="Guardar"
-        (click)="GuardarConfiguracion(ConfiguracionCorreoForm.value)">
+        (click)="GuardarConfiguracion(formulario.value)">
     <input type="submit" class="btn btn-sm button" (click)="ventana.close({actualizar: false})" value="Salir">
 </div>
 

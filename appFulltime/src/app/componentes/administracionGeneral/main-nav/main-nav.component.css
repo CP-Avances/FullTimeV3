@@ -78,8 +78,8 @@ mat-expansion-panel-header {
 }
 
 .mat-tree-node {
-  margin-top: -17px;
   margin-bottom: -17px;
+  margin-top: -17px;
 }
 
 .header-expand {
@@ -93,13 +93,13 @@ mat-expansion-panel-header {
 }
 
 .item-menu {
-  color: rgb(189, 189, 189);
   font-size: 17px;
+  color: rgb(189, 189, 189);
 }
 
 .sidenav {
-  width: 250px;
   background: rgb(255, 255, 255);
+  width: 250px;
 }
 
 a.mat-list-item.texcol:active {
@@ -113,9 +113,9 @@ a.mat-list-item.texcol:active {
 }
 
 .texcol {
-  color: aliceblue;
-  font-size: 14px;
   text-align: left;
+  font-size: 14px;
+  color: aliceblue;
 }
 
 #icono-menu {
@@ -130,15 +130,15 @@ a.mat-list-item.texcol:active {
 }
 
 .uno {
-  background: white;
   margin-bottom: 15px;
+  background: white;
   text-align: center;
 }
 
 .mostrar-noti {
+  text-decoration: none;
   padding-top: 5px;
   color: #000;
-  text-decoration: none;
 }
 
 .menu-button {
@@ -152,8 +152,8 @@ a.mat-list-item.texcol:active {
 }
 
 .sidenav-container {
-  height: 100%;
   background-color: rgb(255, 255, 255);
+  height: 100%;
 }
 
 .mat-toolbar.mat-toolbar-multiple-rows {
@@ -162,41 +162,41 @@ a.mat-list-item.texcol:active {
 
 .btn:focus,
 .btn-sm:focus .btn-block:focus {
-  outline: none;
   box-shadow: none;
+  outline: none;
 }
 
 #logo {
-  width: 52%;
+  margin-bottom: 10px;
   background: white;
   margin-top: 10px;
-  margin-bottom: 10px;
+  width: 52%;
 }
 
 .name-uno {
+  font-size: 15px;
   margin: 10px 0px 0px 10px;
   color: rgb(40, 40, 40);
-  font-size: 15px;
 }
 
 .iniciales {
-  color: white;
+  margin-bottom: 10px;
   font-weight: bold;
   font-size: 15px;
-  margin-bottom: 10px;
+  color: white;
 }
 
 .example-tree ul,
 .example-tree li {
-  margin-top: 0;
-  margin-bottom: 0;
   list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
 #botones {
   background-color: rgb(5, 162, 253);
-  color: white;
   margin: 10px 10px 10px 10px;
+  color: white;
 }
 
 .mat-expansion-panel-header.mat-expanded.selec10:hover {
@@ -205,20 +205,20 @@ a.mat-list-item.texcol:active {
 
 .mostrar-noti:hover {
   background-color: rgb(255, 255, 255);
-  color: rgb(31, 31, 31);
   text-decoration: none;
+  color: rgb(31, 31, 31);
 }
 
 .mensaje-alerta {
   background-color: rgb(110, 1, 1);
-  margin: 15px;
   border-radius: 25px;
   text-align: center;
+  margin: 15px;
 }
 
 a.mat-menu-item.noti_menu:hover {
-  color: rgba(17, 113, 192, 0.952);
   background: rgba(236, 236, 236, 0.643);
+  color: rgba(17, 113, 192, 0.952);
 }
 
 .mat-expansion-panel-header.mat-expanded.selec10:focus {
@@ -227,35 +227,35 @@ a.mat-menu-item.noti_menu:hover {
 }
 
 #avatar {
+  background-color: rgb(126, 126, 126);
   border-radius: 100%;
+  margin-left: 10px;
   height: 35px;
   width: 35px;
-  background-color: rgb(126, 126, 126);
-  margin-left: 10px;
 }
 
 .material-tree-node {
-  background: transparent;
-  margin-left: 20px;
   border-left: 3px solid rgb(5, 162, 253);
+  margin-left: 20px;
+  background: transparent;
   width: 100%;
 }
 
 .mat-card-avatar {
-  height: 40px;
-  width: 40px;
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
   margin-top: auto;
+  height: 40px;
+  width: 40px;
 }
 
 .submenu {
+  transform-origin: top;
+  padding-left: 30px;
   overflow-y: hidden;
   transition: transform 300ms ease;
   transform: scaleY(0);
-  transform-origin: top;
-  padding-left: 30px;
 }
 
 .degradado {
@@ -264,11 +264,11 @@ a.mat-menu-item.noti_menu:hover {
 }
 
 .active {
-  color: rgb(255, 255, 255);
-  margin-left: -30px;
   border-radius: 25px;
-  width: 100%;
+  margin-left: -30px;
   background: rgba(226, 226, 226, 0.739);
-  outline: none;
   box-shadow: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  width: 100%;
 }

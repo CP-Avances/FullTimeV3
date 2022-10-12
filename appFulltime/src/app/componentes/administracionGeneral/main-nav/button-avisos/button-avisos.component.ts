@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import * as moment from 'moment';
-import { LoginService } from 'src/app/servicios/login/login.service';
 import { Socket } from 'ngx-socket-io';
 import { Router } from '@angular/router';
-import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
+import * as moment from 'moment';
+
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
+import { LoginService } from 'src/app/servicios/login/login.service';
 
 @Component({
   selector: 'app-button-avisos',
   templateUrl: './button-avisos.component.html',
   styleUrls: ['../main-nav.component.css']
 })
+
 export class ButtonAvisosComponent implements OnInit {
 
   estado: boolean = true;

@@ -1,14 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
-
-interface opcionesRegimen {
-  valor: string;
-  nombre: string
-}
 
 @Component({
   selector: 'app-regimen',
@@ -19,163 +14,71 @@ interface opcionesRegimen {
 export class RegimenComponent implements OnInit {
 
   HabilitarDescrip: boolean = true;
-  estilo: any;
 
-  // Control de campos y validaciones del formulario
-  descripcionF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}")]);
-  diaAnioVacacionF = new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]);
-  diaIncrAntiguedadF = new FormControl('', [Validators.required]);
-  anioAntiguedadF = new FormControl('', [Validators.required]);
-  diaMesVacacionF = new FormControl('', [Validators.required]);
-  maxDiasAcumulacionF = new FormControl('', [Validators.required]);
-  diaLibreAnioVacacionF = new FormControl('');
-  regimenF = new FormControl('');
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
+  nombreF = new FormControl('');
   mesesF = new FormControl('', [Validators.required]);
+  totalMesF = new FormControl('', [Validators.required]);
+  totalPeriodoF = new FormControl('', [Validators.required]);
+  diasAcumulacionF = new FormControl('', [Validators.required]);
+  aniosAntiguedadF = new FormControl('', [Validators.required]);
+  diasAdicionalesF = new FormControl('', [Validators.required]);
+  diasLaborablesF = new FormControl('', [Validators.required]);
+  diasLibresF = new FormControl('', [Validators.required]);
+  diasCalendarioF = new FormControl('', [Validators.required]);
+  diasMesLaborableF = new FormControl('', [Validators.required]);
+  diasMesCalendarioF = new FormControl('', [Validators.required]);
 
-  // Asignación de validaciones a inputs del formulario
-  public RegimenForm = new FormGroup({
-    diaMesVacacionForm: this.diaMesVacacionF,
-    descripcionForm: this.descripcionF,
-    diaAnioVacacionForm: this.diaAnioVacacionF,
-    diaIncrAntiguedadForm: this.diaIncrAntiguedadF,
-    anioAntiguedadForm: this.anioAntiguedadF,
-    maxDiasAcumulacionForm: this.maxDiasAcumulacionF,
-    diaLibreAnioVacacionForm: this.diaLibreAnioVacacionF,
-    regimenForm: this.regimenF,
-    mesesForm: this.mesesF
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
+    nombreForm: this.nombreF,
+    mesesForm: this.mesesF,
+    totalMesForm: this.totalMesF,
+    totalPeriodoForm: this.totalPeriodoF,
+    diasAcumulacionForm: this.diasAcumulacionF,
+    aniosAntiguedadForm: this.aniosAntiguedadF,
+    diasAdicionalesForm: this.diasAdicionalesF,
+    diasLaborablesForm: this.diasLaborablesF,
+    diasLibresForm: this.diasLibresF,
+    diasCalendarioForm: this.diasCalendarioF,
+    diasMesLaborableForm: this.diasMesLaborableF,
+    diasMesCalendarioForm: this.diasMesCalendarioF,
   });
-
-  // Arreglo de opcionesRegimen existentes
-  regimen: opcionesRegimen[] = [
-    { valor: 'Seleccionar', nombre: 'Seleccionar' },
-    { valor: 'CODIGO DE TRABAJO', nombre: 'CODIGO DE TRABAJO' },
-    { valor: 'LOSEP', nombre: 'LOSEP' },
-    { valor: 'LOES', nombre: 'LOES' },
-    { valor: 'OTRO', nombre: 'OTRO' },
-  ];
-  seleccionarRegimen: string = this.regimen[0].valor;
 
   constructor(
     private rest: RegimenService,
     private toastr: ToastrService,
-    public ventana: MatDialogRef<RegimenComponent>,
+    public router: Router,
   ) { }
 
   ngOnInit(): void {
   }
 
-  ActivarDescativarNombre(form) {
-    var nombreRegimen = form.regimenForm;
-    if (nombreRegimen === 'OTRO') {
-      this.LimpiarDiasMeses();
-      this.IngresarDatosOtro();
-      this.estilo = { 'visibility': 'visible' }; this.HabilitarDescrip = false;
-      this.toastr.info('Ingresar nombre del nuevo Régimen Laboral', 'Etiqueta Régimen Laboral Activa', {
-        timeOut: 6000,
-      })
-    }
-    else if (nombreRegimen === 'CODIGO DE TRABAJO') {
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
-      this.LimpiarDiasMeses();
-      this.IngresarDatosCodigoTrabajo();
-    }
-    else if (nombreRegimen === 'LOSEP') {
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
-      this.LimpiarDiasMeses();
-      this.IngresarDatosLosep();
-    }
-    else if (nombreRegimen === 'LOES') {
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
-      this.LimpiarDiasMeses();
-      this.IngresarDatosLoes();
-    }
-    else {
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
-      this.IngresarDatosOtro();
-      this.LimpiarDiasMeses();
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
-        timeOut: 6000,
-      })
-    }
-  }
-
-  IngresarDatosCodigoTrabajo() {
-    this.RegimenForm.patchValue({
-      diaAnioVacacionForm: 11,
-      diaLibreAnioVacacionForm: 4,
-      anioAntiguedadForm: 5,
-      diaIncrAntiguedadForm: 1,
-    });
-  }
-
-  IngresarDatosLosep() {
-    this.RegimenForm.patchValue({
-      diaAnioVacacionForm: 22,
-      diaLibreAnioVacacionForm: 8,
-      anioAntiguedadForm: 5,
-      diaIncrAntiguedadForm: 0,
-    });
-  }
-
-  IngresarDatosLoes() {
-    this.RegimenForm.patchValue({
-      diaAnioVacacionForm: 11,
-      diaLibreAnioVacacionForm: 4,
-      anioAntiguedadForm: 5,
-      diaIncrAntiguedadForm: 0,
-    });
-  }
-
-  IngresarDatosOtro() {
-    this.RegimenForm.patchValue({
-      diaAnioVacacionForm: '',
-      diaLibreAnioVacacionForm: '',
-      anioAntiguedadForm: '',
-      diaIncrAntiguedadForm: '',
-    });
-  }
-
-  InsertarRegimen(form) {
-    var nombreRegimen = form.regimenForm;
-    var escribirRegimen = form.descripcionForm;
+  InsertarRegimen(form: any) {
     let datosRegimen = {
-      descripcion: escribirRegimen,
-      dia_anio_vacacion: form.diaAnioVacacionForm,
-      dia_incr_antiguedad: form.diaIncrAntiguedadForm,
-      anio_antiguedad: form.anioAntiguedadForm,
-      dia_mes_vacacion: form.diaMesVacacionForm,
-      max_dia_acumulacion: form.maxDiasAcumulacionForm,
-      dia_libr_anio_vacacion: form.diaLibreAnioVacacionForm,
-      meses_periodo: form.mesesForm
+      descripcion: form.nombreForm,
+      meses_periodo: form.mesesForm,
+      dias_per_vacacion_laboral: form.diasLaborablesForm,
+      dias_per_vacacion_calendario: form.diasCalendarioForm,
+      dias_mes_vacacion_laboral: form.diasMesLaborableForm,
+      dias_mes_vacacion_calendario: form.diasMesCalendarioForm,
+      dias_libre_vacacion: form.diasLibresForm,
+      anio_antiguedad: form.aniosAntiguedadForm,
+      dia_incr_antiguedad: form.diasAdicionalesForm,
+      max_dia_acumulacion: form.diasAcumulacionForm,
+      dias_totales_mes: form.totalPeriodoForm,
+      dias_totales_anio: form.totalMesForm,
     };
-    if (nombreRegimen === 'OTRO') {
-      if (escribirRegimen === '') {
-        this.toastr.info('Ingresar nombre del nuevo Régimen Laboral', 'Campo Obligatorio', {
-          timeOut: 6000,
-        });
-      }
-      else {
-        datosRegimen.descripcion = escribirRegimen;
-        this.CambiarValores(datosRegimen);
-        this.VerificarValoresMenores(datosRegimen);
-      }
-    }
-    else if (nombreRegimen === 'Seleccionar') {
-      this.toastr.info('Seleccionar nombre del nuevo Régimen Laboral', 'Campo Obligatorio', {
-        timeOut: 6000,
-      });
-    }
-    else {
-      datosRegimen.descripcion = nombreRegimen;
-      this.CambiarValores(datosRegimen);
-      this.VerificarValoresMenores(datosRegimen);
-    }
+
+    this.VerificarValoresMenores(datosRegimen);
+
+
   }
 
-  CambiarValores(datos) {
-    if (datos.dia_libr_anio_vacacion === '') {
-      datos.dia_libr_anio_vacacion = 0;
-    }
+  ImprimirValores() {
+    this.formulario.patchValue({
+
+    })
   }
 
   VerificarValoresMenores(datos) {
@@ -209,25 +112,21 @@ export class RegimenComponent implements OnInit {
     }
   }
 
-  CalcularDiasMeses(form) {
-    if ((<HTMLInputElement>document.getElementById('activo')).checked) {
-      var diasAnio = form.diaAnioVacacionForm;
-      if (diasAnio === '') {
-        this.toastr.info('No ha ingresado días por año', '', {
-          timeOut: 6000,
-        });
-        (<HTMLInputElement>document.getElementById('activo')).checked = false;
-      }
-      else {
-        var diasMes = (parseInt(diasAnio) / 12).toFixed(6);
-        this.RegimenForm.patchValue({
-          diaMesVacacionForm: diasMes,
-        });
-      }
+  CalcularDiasMeses(form: any) {
+    var diasAnio = form.diaAnioVacacionForm;
+    if (diasAnio === '') {
+      this.toastr.info('No ha ingresado días por año', '', {
+        timeOut: 6000,
+      });
+      (<HTMLInputElement>document.getElementById('activo')).checked = false;
     }
     else {
-      this.LimpiarMeses();
+      var diasMes = (parseInt(diasAnio) / 12).toFixed(6);
+      this.formulario.patchValue({
+        diaMesVacacionForm: diasMes,
+      });
     }
+
   }
 
   FuncionInsertarDatos(datos) {
@@ -250,7 +149,29 @@ export class RegimenComponent implements OnInit {
     });
   }
 
-  IngresarSoloNumeros(evt) {
+
+  LimpiarCampos() {
+    this.formulario.reset();
+  }
+
+
+
+  LimpiarDiasMeses() {
+    this.formulario.patchValue({
+      diaMesVacacionForm: '',
+      descripcionForm: '',
+    });
+  }
+
+  LimpiarMeses() {
+    this.formulario.patchValue({
+      diaMesVacacionForm: '',
+    });
+  }
+
+
+  // METODO PARA VALIDAR INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
     if (window.event) {
       var keynum = evt.keyCode;
     }
@@ -258,7 +179,7 @@ export class RegimenComponent implements OnInit {
       keynum = evt.which;
     }
     // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
+    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6 || keynum == 46) {
       return true;
     }
     else {
@@ -269,87 +190,11 @@ export class RegimenComponent implements OnInit {
     }
   }
 
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-    let especiales = [8, 37, 39, 46, 6];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
-  }
-
-  ObtenerMensajeErrorNombreRequerido() {
-    if (this.descripcionF.hasError('pattern')) {
-      return 'Ingresar un nombre válido';
-    }
-  }
-
-  ObtenerMensajeErrorCamposNumericosRequeridos() {
-    if (this.diaAnioVacacionF.hasError('required')) {
-      return 'Campo obligatorio ingrese un valor';
-    }
-  }
-
-  ObtenerMensajeErrorDiasAcumulablesRequerido() {
-    if (this.maxDiasAcumulacionF.hasError('required')) {
-      return 'Campo obligatorio ingrese un valor';
-    }
-  }
-
-  ObtenerMensajeErrorAnioAntiguedadRequerido() {
-    if (this.anioAntiguedadF.hasError('required')) {
-      return 'Campo obligatorio ingrese un valor';
-    }
-  }
-
-  ObtenerMensajeErrorIncreAntiguedadRequerido() {
-    if (this.diaIncrAntiguedadF.hasError('required')) {
-      return 'Campo obligatorio ingrese un valor';
-    }
-  }
-
-  ObtenerMensajeErrorMeses() {
-    if (this.mesesF.hasError('required')) {
-      return 'Campo obligatorio ingrese un valor';
-    }
-  }
-
-  LimpiarCampos() {
-    this.RegimenForm.reset();
-    (<HTMLInputElement>document.getElementById('activo')).checked = false;
-  }
-
-  CerrarVentanaRegistroRegimen() {
-    this.LimpiarCampos();
-    this.ventana.close();
-  }
-
-  LimpiarDiasMeses() {
-    this.RegimenForm.patchValue({
-      diaMesVacacionForm: '',
-      descripcionForm: '',
-    });
-    (<HTMLInputElement>document.getElementById('activo')).checked = false;
-  }
-
-  LimpiarMeses() {
-    this.RegimenForm.patchValue({
-      diaMesVacacionForm: '',
-    });
-    (<HTMLInputElement>document.getElementById('activo')).checked = false;
+  // CERRAR VENTANA DE REGISTRO
+  CerrarVentana() {
+    //this.LimpiarCampos();
+    //this.ventana.close();
+    this.router.navigate(['/listarRegimen']);
   }
 
 }

@@ -18,10 +18,8 @@ export class HorarioService {
   }
 
   // BUSCAR HORARIO POR EL NOMBRE
-  BuscarHorarioNombre(nombre: string) {
-    const params = new HttpParams()
-      .set('nombre', nombre)
-    return this.http.get(`${environment.url}/horario/buscar-horario/nombre`, { params });
+  BuscarHorarioNombre(datos: any) {
+    return this.http.post(`${environment.url}/horario/buscar-horario/nombre`, datos);
   }
 
   // CARGAR ARCHIVO DE RESPALDO
@@ -44,19 +42,25 @@ export class HorarioService {
     return this.http.put(`${environment.url}/horario/eliminar_horario/servidor`, datos)
   }
 
-
-
-
-
-
-
-
-
-
-  // Catálogo de Horarios
-  getHorariosRest() {
+  // BUSCAR LISTA DE CATALOGO DE HORARIOS
+  BuscarListaHorarios() {
     return this.http.get(`${environment.url}/horario`);
   }
+
+  // BUSCAR HORARIOS SIN CONSIDERAR UN HORARIO EN ESPECIFICO
+  BuscarHorarioNombre_(datos: any) {
+    return this.http.post<any>(`${environment.url}/horario/buscar_horario/edicion`, datos);
+  }
+
+
+
+
+
+
+
+
+
+
 
   getOneHorarioRest(id: number) {
     return this.http.get(`${environment.url}/horario/${id}`);
@@ -86,12 +90,7 @@ export class HorarioService {
 
 
 
-  VerificarDuplicadosEdicion(id: number, nombre: string) {
-    const params = new HttpParams()
-      .set('id', id.toString())
-      .set('nombre', nombre)
-    return this.http.get<any>(`${environment.url}/horario/verificarDuplicados/edicion`, { params });
-  }
+
 
   // Verificar datos de la plantilla de catálogo horario y cargar al sistema
   VerificarDatosHorario(formData) {

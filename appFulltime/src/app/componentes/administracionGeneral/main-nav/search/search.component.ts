@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { startWith, map } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
   templateUrl: './search.component.html',
   styleUrls: ['../main-nav.component.css']
 })
+
 export class SearchComponent implements OnInit {
 
   filteredOptions: Observable<string[]>;

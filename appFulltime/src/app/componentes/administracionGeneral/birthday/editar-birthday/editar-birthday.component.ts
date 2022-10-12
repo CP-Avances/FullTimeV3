@@ -19,7 +19,7 @@ export class EditarBirthdayComponent implements OnInit {
   tituloF = new FormControl('', [Validators.required]);
   linkF = new FormControl('');
 
-  public birthdayForm = new FormGroup({
+  public formulario = new FormGroup({
     mensajeForm: this.mensajeF,
     imagenForm: this.imagenF,
     tituloForm: this.tituloF,
@@ -27,6 +27,7 @@ export class EditarBirthdayComponent implements OnInit {
   })
 
   id_empresa: number = parseInt(localStorage.getItem("empresa"));
+
   constructor(
     private restB: BirthdayService,
     private toastr: ToastrService,
@@ -41,7 +42,7 @@ export class EditarBirthdayComponent implements OnInit {
 
   // MOSTRAR DATOS EN FORMULARIO
   ImprimirDatos() {
-    this.birthdayForm.patchValue({
+    this.formulario.patchValue({
       mensajeForm: this.data.mensaje,
       tituloForm: this.data.titulo,
       linkForm: this.data.url
@@ -75,7 +76,7 @@ export class EditarBirthdayComponent implements OnInit {
 
   // LIMPIAR CAMPO DE FORMATO ARCHIVO
   LimpiarNombreArchivo() {
-    this.birthdayForm.patchValue({
+    this.formulario.patchValue({
       imagenForm: '',
     });
   }
@@ -88,7 +89,7 @@ export class EditarBirthdayComponent implements OnInit {
   nameFile: string;
   archivoSubido: Array<File>;
 
-  fileChange(element) {
+  fileChange(element: any) {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
@@ -99,7 +100,7 @@ export class EditarBirthdayComponent implements OnInit {
       console.log(itemName.toLowerCase());
       if (itemExtencion == 'png' || itemExtencion == 'jpg' ||
         itemExtencion == 'jpeg' || itemExtencion == 'gif') {
-        this.birthdayForm.patchValue({ imagenForm: name });
+        this.formulario.patchValue({ imagenForm: name });
       }
       else {
         this.toastr.warning('Formatos aceptados .png, .jpg, .gif y .jpeg.', 'Error formato del archivo.', {
@@ -138,7 +139,7 @@ export class EditarBirthdayComponent implements OnInit {
       })
     }
     else {
-      this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB', {
+      this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
         timeOut: 6000,
       });
     }

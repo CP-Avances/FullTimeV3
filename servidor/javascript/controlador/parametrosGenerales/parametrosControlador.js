@@ -20,7 +20,7 @@ class ParametrosControlador {
     // MÉTODO PARA LISTAR PARÁMETROS GENERALES
     ListarParametros(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const PARAMETRO = yield database_1.default.query('SELECT * FROM tipo_parametro ORDER BY descripcion ASC');
+            const PARAMETRO = yield database_1.default.query('SELECT * FROM tipo_parametro ORDER BY id DESC');
             if (PARAMETRO.rowCount > 0) {
                 return res.jsonp(PARAMETRO.rows);
             }
@@ -29,7 +29,7 @@ class ParametrosControlador {
             }
         });
     }
-    // MÉTODO PARA LISTAR UN PARÁMETRO GENERALE
+    // MÉTODO PARA LISTAR UN PARÁMETRO GENERALES
     ListarUnParametro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;

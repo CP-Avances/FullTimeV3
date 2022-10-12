@@ -11,7 +11,7 @@
     <span class="nota">Desea subir un archivo (opcional) </span>
     <mat-slide-toggle [(ngModel)]="isChecked"></mat-slide-toggle>
     <br>
-    <form [formGroup]="nuevoHorarioForm">
+    <form [formGroup]="formulario">
         <div class="row">
             <div class="col-md">
                 <div class="d-flex flex-wrap justify-content-around">
@@ -22,6 +22,13 @@
                             matTooltip="Ingresar un nombre de horario.">
                             help_outline</mat-icon>
                         <mat-error *ngIf="nombre.invalid">Ingresar un nombre válido</mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Código de Horario</mat-label>
+                        <input matInput placeholder="Ej: Contabilidad" [formControl]="codigoF" required>
+                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            matTooltip="Ingresar un código de horario.">
+                            help_outline</mat-icon>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Minutos de alimentación</mat-label>
@@ -104,8 +111,8 @@
         </div>
     </form>
     <div class="d-flex flex-wrap justify-content-between">
-        <input type="submit" class="btn btn-sm" [disabled]="!nuevoHorarioForm.valid"
-            (click)="ModificarHorario(nuevoHorarioForm.value)" value="Guardar">
+        <input type="submit" class="btn btn-sm" [disabled]="!formulario.valid"
+            (click)="ModificarHorario(formulario.value)" value="Guardar">
         <input type="submit" class="btn btn-sm" (click)="ventana.close()" value="Salir">
     </div>
 </div>

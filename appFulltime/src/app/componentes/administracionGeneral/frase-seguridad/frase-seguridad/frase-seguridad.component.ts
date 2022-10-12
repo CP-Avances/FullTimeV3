@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
@@ -12,12 +12,13 @@ import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
   templateUrl: './frase-seguridad.component.html',
   styleUrls: ['./frase-seguridad.component.css']
 })
+
 export class FraseSeguridadComponent implements OnInit {
 
   usuario: string;
   ActualFrase = new FormControl('', Validators.maxLength(100));
 
-  public fraseForm = new FormGroup({
+  public formulario = new FormGroup({
     aFrase: this.ActualFrase
   });
 
@@ -25,8 +26,8 @@ export class FraseSeguridadComponent implements OnInit {
     private restUser: UsuarioService,
     private toastr: ToastrService,
     public router: Router,
+    public ventana: MatDialogRef<FraseSeguridadComponent>,
     public location: Location,
-    public dialogRef: MatDialogRef<FraseSeguridadComponent>,
   ) {
     this.usuario = localStorage.getItem('empleado');
   }
@@ -34,7 +35,7 @@ export class FraseSeguridadComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  IngresarFrase(form) {
+  IngresarFrase(form: any) {
     let data = {
       frase: form.aFrase,
       id_empleado: parseInt(this.usuario)
@@ -49,7 +50,7 @@ export class FraseSeguridadComponent implements OnInit {
   }
 
   CerrarRegistro() {
-    this.dialogRef.close(false);
+    this.ventana.close(false);
   }
 
 }

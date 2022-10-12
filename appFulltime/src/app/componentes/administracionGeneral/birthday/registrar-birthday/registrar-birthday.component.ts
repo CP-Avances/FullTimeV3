@@ -19,7 +19,7 @@ export class RegistrarBirthdayComponent implements OnInit {
   tituloF = new FormControl('', [Validators.required]);
   linkF = new FormControl('');
 
-  public birthdayForm = new FormGroup({
+  public formulario = new FormGroup({
     imagenForm: this.imagenF,
     mensajeForm: this.mensajeF,
     tituloForm: this.tituloF,
@@ -59,7 +59,7 @@ export class RegistrarBirthdayComponent implements OnInit {
 
   // LIMPIAR CAMPO DE NOMBRE DE ARCHIVO
   LimpiarNombreArchivo() {
-    this.birthdayForm.patchValue({
+    this.formulario.patchValue({
       imagenForm: '',
     });
   }
@@ -84,7 +84,7 @@ export class RegistrarBirthdayComponent implements OnInit {
       if (this.archivoSubido[0].size <= 2e+6) {
         if (itemExtencion == 'png' || itemExtencion == 'jpg' ||
           itemExtencion == 'jpeg' || itemExtencion == 'gif') {
-          this.birthdayForm.patchValue({ imagenForm: name });
+          this.formulario.patchValue({ imagenForm: name });
         }
         else {
           this.toastr.warning('Formatos aceptados .png, .jpg, .gif y .jpeg.', 'Error formato del archivo.', {

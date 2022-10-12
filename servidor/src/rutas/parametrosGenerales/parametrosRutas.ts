@@ -11,7 +11,9 @@ class ParametrosRutas {
     }
 
     configuracion(): void {
+        // BUSCAR LISTA DE DETALLES
         this.router.get('/', TokenValidation, PARAMETROS_CONTROLADOR.ListarParametros);
+        
         this.router.get('/:id', TokenValidation, PARAMETROS_CONTROLADOR.VerDetalleParametro);
         this.router.get('/ver-parametro/:id', TokenValidation, PARAMETROS_CONTROLADOR.ListarUnParametro);
         this.router.post('/detalle', TokenValidation, PARAMETROS_CONTROLADOR.IngresarDetalleParametro);

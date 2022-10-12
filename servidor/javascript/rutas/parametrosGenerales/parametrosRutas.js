@@ -12,6 +12,7 @@ class ParametrosRutas {
         this.configuracion();
     }
     configuracion() {
+        // BUSCAR LISTA DE DETALLES
         this.router.get('/', verificarToken_1.TokenValidation, parametrosControlador_1.default.ListarParametros);
         this.router.get('/:id', verificarToken_1.TokenValidation, parametrosControlador_1.default.VerDetalleParametro);
         this.router.get('/ver-parametro/:id', verificarToken_1.TokenValidation, parametrosControlador_1.default.ListarUnParametro);

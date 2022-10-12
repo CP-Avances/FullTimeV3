@@ -125,7 +125,7 @@ export class PrincipalHorarioComponent implements OnInit {
   // MÉTODO PARA OBTENER HORARIOS
   ObtenerHorarios() {
     this.horarios = [];
-    this.rest.getHorariosRest().subscribe(datos => {
+    this.rest.BuscarListaHorarios().subscribe(datos => {
       this.horarios = datos;
     })
   }

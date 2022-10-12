@@ -39,15 +39,17 @@ export class VerBirthdayComponent implements OnInit {
   }
 
   AbrirRegistrarMensaje() {
-    this.ventana.open(RegistrarBirthdayComponent, { width: '500px' }).afterClosed().subscribe(items => {
-      this.ObtenerMensajeCumple();
-    })
+    this.ventana.open(RegistrarBirthdayComponent, { width: '500px' })
+      .afterClosed().subscribe(items => {
+        this.ObtenerMensajeCumple();
+      })
   }
 
   EditarMensaje(dataSelect: any) {
-    this.ventana.open(EditarBirthdayComponent, { width: '500px', data: dataSelect }).afterClosed().subscribe(items => {
-      this.ObtenerMensajeCumple();
-    })
+    this.ventana.open(EditarBirthdayComponent, { width: '500px', data: dataSelect })
+      .afterClosed().subscribe(items => {
+        this.ObtenerMensajeCumple();
+      })
   }
 
 

@@ -32,15 +32,17 @@ export class RegistroHorarioComponent implements OnInit {
   documentoF = new FormControl('');
   detalleF = new FormControl('');
   nombre = new FormControl('', [Validators.required, Validators.minLength(2)]);
+  codigoF = new FormControl('', [Validators.required]);
   tipoF = new FormControl('');
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
-  public nuevoHorarioForm = new FormGroup({
+  public formulario = new FormGroup({
     horarioHoraTrabajoForm: this.horaTrabajo,
     horarioMinAlmuerzoForm: this.minAlmuerzo,
-    horarioNombreForm: this.nombre,
+    nombreForm: this.nombre,
     documentoForm: this.documentoF,
     detalleForm: this.detalleF,
+    codigoForm: this.codigoF,
     tipoForm: this.tipoF,
   });
 
@@ -74,7 +76,8 @@ export class RegistroHorarioComponent implements OnInit {
       hora_trabajo: form.horarioHoraTrabajoForm,
       nocturno: form.tipoForm,
       detalle: form.detalleForm,
-      nombre: form.horarioNombreForm,
+      nombre: form.nombreForm,
+      codigo: form.codigoForm,
     };
 
     if (dataHorario.detalle === false) {
@@ -88,14 +91,24 @@ export class RegistroHorarioComponent implements OnInit {
       dataHorario.min_almuerzo = 0;
     }
 
-    this.rest.BuscarHorarioNombre(form.horarioNombreForm).subscribe(response => {
-      this.toastr.info('El nombre de horario ya existe.', 'Verificar Datos.', {
+    this.VerificarDuplicidad(form, dataHorario);
+
+  }
+
+  // VERIFICAR DUPLICIDAD DE NOMBRES Y CODIGOS
+  VerificarDuplicidad(form: any, horario: any) {
+    let data = {
+      nombre: form.nombreForm,
+      codigo: form.codigoForm
+    }
+    this.rest.BuscarHorarioNombre(data).subscribe(response => {
+      this.toastr.info('Nombre o código de horario ya existe.', 'Verificar Datos.', {
         timeOut: 6000,
       });
       this.habilitarprogress = false;
 
     }, error => {
-      this.GuardarDatos(dataHorario, form);
+      this.GuardarDatos(horario, form);
     });
   }
 
@@ -143,7 +156,7 @@ export class RegistroHorarioComponent implements OnInit {
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
       if (this.archivoSubido[0].size <= 2e+6) {
-        this.nuevoHorarioForm.patchValue({ documentoForm: name });
+        this.formulario.patchValue({ documentoForm: name });
         this.HabilitarBtn = true;
       }
       else {
@@ -170,7 +183,7 @@ export class RegistroHorarioComponent implements OnInit {
 
   // METODO PARA LIMPIAR CAMPO NOMBRE DE ARCHIVO
   LimpiarNombreArchivo() {
-    this.nuevoHorarioForm.patchValue({
+    this.formulario.patchValue({
       documentoForm: '',
     });
   }
@@ -219,7 +232,7 @@ export class RegistroHorarioComponent implements OnInit {
 
   // MÉTODO PARA LIMPIAR FORMULARIOS
   LimpiarCampos() {
-    this.nuevoHorarioForm.reset();
+    this.formulario.reset();
     this.habilitarprogress = false;
   }
 

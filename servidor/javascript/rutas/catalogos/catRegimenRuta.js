@@ -14,9 +14,11 @@ class RegimenRuta {
     configuracion() {
         // LISTAR REGISTROS DE REGIMEN LABORAL
         this.router.get('/', verificarToken_1.TokenValidation, catRegimenControlador_1.default.ListarRegimen);
-        this.router.get('/:id', verificarToken_1.TokenValidation, catRegimenControlador_1.default.ListarUnRegimen);
+        // REGISTRAR REGIMEN LABORAL
         this.router.post('/', verificarToken_1.TokenValidation, catRegimenControlador_1.default.CrearRegimen);
+        // ACTUALIZAR REGISTRO DE REGIMEN LABORAL
         this.router.put('/', verificarToken_1.TokenValidation, catRegimenControlador_1.default.ActualizarRegimen);
+        this.router.get('/:id', verificarToken_1.TokenValidation, catRegimenControlador_1.default.ListarUnRegimen);
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, catRegimenControlador_1.default.EliminarRegistros);
         this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catRegimenControlador_1.default.FileXML);
         this.router.get('/download/:nameXML', catRegimenControlador_1.default.downloadXML);

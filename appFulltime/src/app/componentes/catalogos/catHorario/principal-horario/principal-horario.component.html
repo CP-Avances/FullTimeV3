@@ -69,6 +69,7 @@
             <table class="table table-hover table-sm ">
                 <thead class="thead-light">
                     <tr style="text-align: center;">
+                        <th scope="col">Código</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Minutos de alimentación</th>
                         <th scope="col">Horas de trabajo</th>
@@ -97,6 +98,7 @@
                     </tr>
                     <tr
                         *ngFor="let horario of horarios | filtrosNombres: filtroNombreHorario | paginate:tamanio_pagina:numero_pagina">
+                        <td>{{horario.codigo}}</td>
                         <td>{{horario.nombre}}</td>
                         <td>{{horario.min_almuerzo}}</td>
                         <td>{{horario.hora_trabajo}}</td>

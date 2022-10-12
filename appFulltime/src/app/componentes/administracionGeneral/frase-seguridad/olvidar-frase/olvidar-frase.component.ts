@@ -19,7 +19,7 @@ export class OlvidarFraseComponent implements OnInit {
   cadena: string;
   correo = new FormControl('', [Validators.required, Validators.email]);
 
-  public olvidarFrase = new FormGroup({
+  public formulario = new FormGroup({
     usuarioF: this.correo,
   });
 

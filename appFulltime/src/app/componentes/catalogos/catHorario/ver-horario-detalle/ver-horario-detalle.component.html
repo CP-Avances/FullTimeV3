@@ -12,8 +12,22 @@
                             <label>{{h.nombre}}</label>
                         </div>
                         <div class="espacio d-flex justify-content-start">
+                            <label id="datosF">Código:</label>
+                            <label>{{h.codigo}}</label>
+                        </div>
+                        <div class="espacio d-flex justify-content-start">
                             <label id="datosF">Horas de Trabajo:</label>
                             <label>{{h.hora_trabajo}}</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="espacio d-flex justify-content-start">
+                            <label id="datosF">Minutos Alimentación:</label>
+                            <label>{{h.min_almuerzo}} min.</label>
+                        </div>
+                        <div class="espacio d-flex justify-content-start">
+                            <label id="datosF">Horario Nocturno:</label>
+                            <label>{{h.nocturno.toString() | i18nSelect: booleanMap}}</label>
                         </div>
                         <div *ngIf="h.doc_nombre != null && h.doc_nombre != ''"
                             class="espacio d-flex justify-content-start">
@@ -26,16 +40,6 @@
                                     <p>{{h.doc_nombre}}</p>
                                 </a>
                             </label>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="espacio d-flex justify-content-start">
-                            <label id="datosF">Minutos Alimentación:</label>
-                            <label>{{h.min_almuerzo}} min.</label>
-                        </div>
-                        <div class="espacio d-flex justify-content-start">
-                            <label id="datosF">Horario Nocturno:</label>
-                            <label>{{h.nocturno.toString() | i18nSelect: booleanMap}}</label>
                         </div>
                     </div>
                 </div>

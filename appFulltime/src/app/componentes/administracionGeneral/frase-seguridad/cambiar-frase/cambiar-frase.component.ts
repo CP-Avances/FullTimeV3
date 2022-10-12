@@ -1,8 +1,8 @@
 // IMPORTACIÓN DE LIBRERIAS
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialogRef } from '@angular/material/dialog';
 
 // IMPORTACIÓN DE SERVICIOS
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
@@ -26,17 +26,17 @@ export class CambiarFraseComponent implements OnInit {
   NuevaFrase = new FormControl('', Validators.maxLength(100));
 
   // CAMPOS DEL FORMULARIO EN UN GRUPO
-  public fraseForm = new FormGroup({
+  public formulario = new FormGroup({
     nFrase: this.NuevaFrase,
     aFrase: this.ActualFrase
   });
 
   constructor(
-    public dialogRef: MatDialogRef<CambiarFraseComponent>,
+    public loginService: LoginService,
+    public ventana: MatDialogRef<CambiarFraseComponent>,
+    public router: Router,
     private restUser: UsuarioService,
     private toastr: ToastrService,
-    public loginService: LoginService,
-    public router: Router,
   ) {
     this.usuario = localStorage.getItem('empleado');
   }
@@ -62,11 +62,11 @@ export class CambiarFraseComponent implements OnInit {
 
   // MÉTODO PARA CERRAR REGISTRO
   CerrarRegistro() {
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
   // MÉTODO PARA GUARDAR NUEVA FRASE
-  IngresarFrase(form) {
+  IngresarFrase(form: any) {
     let data = {
       frase: form.nFrase,
       id_empleado: parseInt(this.usuario)
@@ -81,7 +81,7 @@ export class CambiarFraseComponent implements OnInit {
 
   RecuperarFrase() {
     this.loginService.logout();
-    this.dialogRef.close();
+    this.ventana.close();
     this.router.navigate(['/frase-olvidar']);
   }
 

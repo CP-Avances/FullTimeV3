@@ -156,7 +156,8 @@ export class ListarRegimenComponent implements OnInit {
 
   // VENTANA PARA REGISTRAR DATOS DE UN NUEVO RÉGIMEN LABORAL
   AbrirVentanaRegistrarRegimen(): void {
-    this.vistaRegistrarDatos.open(RegimenComponent, { width: '900px' }).disableClose = true;
+    this.vistaRegistrarDatos.open(RegimenComponent,
+      { width: '1200px'}).disableClose = true;
   }
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 

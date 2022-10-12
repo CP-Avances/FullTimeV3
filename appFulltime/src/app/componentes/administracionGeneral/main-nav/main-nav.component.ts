@@ -1,32 +1,32 @@
-import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
-
-import { LoginService } from 'src/app/servicios/login/login.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-
-import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-
-import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
-import { FraseSeguridadComponent } from 'src/app/componentes/administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
-import { FuncionesService } from 'src/app/servicios/funciones/funciones.service';
-import { MainNavService } from './main-nav.service';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { NestedTreeControl } from '@angular/cdk/tree';
+import { map, shareReplay } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { Location } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
-import { MenuNode } from 'src/app/model/menu.model';
+
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
+import { FuncionesService } from 'src/app/servicios/funciones/funciones.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+import { MainNavService } from './main-nav.service';
+import { LoginService } from 'src/app/servicios/login/login.service';
+
+import { FraseSeguridadComponent } from 'src/app/componentes/administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
+
+import { MenuNode } from 'src/app/model/menu.model';
 
 @Component({
   selector: 'app-main-nav',
   templateUrl: './main-nav.component.html',
   styleUrls: ['./main-nav.component.css']
 })
+
 export class MainNavComponent implements OnInit {
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 800px)')

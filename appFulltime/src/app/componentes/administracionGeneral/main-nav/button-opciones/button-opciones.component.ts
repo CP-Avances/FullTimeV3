@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { SettingsComponent } from "src/app/componentes/administracionGeneral/preferecias/settings/settings.component";
-import { AccionesTimbresComponent } from 'src/app/componentes/administracionGeneral/preferecias/acciones-timbres/acciones-timbres.component';
+
 import { LoginService } from 'src/app/servicios/login/login.service';
+
+import { AccionesTimbresComponent } from 'src/app/componentes/administracionGeneral/preferecias/acciones-timbres/acciones-timbres.component';
+import { SettingsComponent } from "src/app/componentes/administracionGeneral/preferecias/settings/settings.component";
 import { AyudaComponent } from '../../preferecias/ayuda/ayuda.component';
 
 @Component({
@@ -10,10 +12,11 @@ import { AyudaComponent } from '../../preferecias/ayuda/ayuda.component';
   templateUrl: './button-opciones.component.html',
   styleUrls: ['../main-nav.component.css']
 })
+
 export class ButtonOpcionesComponent implements OnInit {
 
   constructor(
-    public vistaFlotante: MatDialog,
+    public ventana: MatDialog,
     public loginService: LoginService,
   ) { }
 
@@ -22,16 +25,16 @@ export class ButtonOpcionesComponent implements OnInit {
 
   AbrirSettings() {
     const id_empleado = parseInt(localStorage.getItem('empleado'));
-    this.vistaFlotante.open(SettingsComponent, { width: '350px', data: { id_empleado } });
+    this.ventana.open(SettingsComponent, { width: '350px', data: { id_empleado } });
   }
 
   AbrirAccionesTimbres() {
     const id_empresa = parseInt(localStorage.getItem('empresa'));
-    this.vistaFlotante.open(AccionesTimbresComponent, { width: '350px', data: { id_empresa } });
+    this.ventana.open(AccionesTimbresComponent, { width: '350px', data: { id_empresa } });
   }
 
   AbrirVentanaAyuda() {
-    this.vistaFlotante.open(AyudaComponent, { width: '500px' })
+    this.ventana.open(AyudaComponent, { width: '500px' })
   }
 
 }

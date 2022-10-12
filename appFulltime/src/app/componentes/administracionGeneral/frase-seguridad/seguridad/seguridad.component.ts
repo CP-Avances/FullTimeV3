@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { Md5 } from 'ts-md5';
 
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
@@ -18,7 +18,7 @@ import { LoginService } from 'src/app/servicios/login/login.service';
 
 export class SeguridadComponent implements OnInit {
 
-  // ver página según configuración
+  // VER PÁGINA SEGÚN CONFIGURACIÓN
   contrasena: boolean = false;
   frase: boolean = false;
 
@@ -33,7 +33,7 @@ export class SeguridadComponent implements OnInit {
 
   ActualFrase = new FormControl('', Validators.maxLength(100));
 
-  public seguridadForm = new FormGroup({
+  public formulario = new FormGroup({
     aPass: this.ActualContrasena
   });
 
