@@ -17,6 +17,20 @@
         <div class="col-md">
             <div class="d-flex flex-wrap justify-content-around">
                 <mat-form-field>
+                    <mat-label>Seleccionar país</mat-label>
+                    <input type="text" placeholder="Ingresar nombre" aria-label="Number" matInput
+                        [formControl]="nombrePaisF" [matAutocomplete]="auto" required>
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let option of filtro | async" [value]="option.nombre"
+                            (click)="ObtenerRegimen(ContratoForm.value)">
+                            {{option.nombre}}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                        matTooltip="Seleccionar uno de los paises de la lista.">
+                        help_outline</mat-icon>
+                </mat-form-field>
+                <mat-form-field>
                     <mat-label>Régimen Laboral</mat-label>
                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Seleccionar Régimen Laboral con el cual va a prestar sus servicios el empleado">

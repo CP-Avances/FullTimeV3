@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 
-import { EditarRegimenComponent } from 'src/app/componentes/catalogos/catRegimen/editar-regimen/editar-regimen.component';
 import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service'
 
 @Component({
@@ -10,14 +9,16 @@ import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.s
   templateUrl: './ver-regimen.component.html',
   styleUrls: ['./ver-regimen.component.css']
 })
+
 export class VerRegimenComponent implements OnInit {
 
   idRegimen: string;
-  datosRegimen: any = [];
+  regimen: any = [];
+
   constructor(
-    public router: Router,
-    public vistaRegistrarDatos: MatDialog,
+    public pais: ProvinciaService,
     public rest: RegimenService,
+    public router: Router,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -25,23 +26,78 @@ export class VerRegimenComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.CargarDatosRegimen();
+    this.ObtenerPaises();
   }
 
   CargarDatosRegimen() {
-    this.datosRegimen = [];
+    this.regimen = [];
     this.rest.ConsultarUnRegimen(parseInt(this.idRegimen)).subscribe(datos => {
-      this.datosRegimen = datos;
+      this.regimen = datos;
+      this.regimen.descripcion = this.regimen.descripcion.toUpperCase();
+      // OBTENER NOMBRE DEL PAIS REGISTRADO
+      this.paises.forEach(obj => {
+        if (obj.id === this.regimen.id_pais) {
+          this.regimen.pais = obj.nombre;
+        }
+      });
+
+      this.VerTiempoLimite();
+
+      this.ObtenerPeriodos();
+
+      this.ObtenerAntiguedad();
     })
   }
 
-  /* Ventana para editar datos de régimen seleccionado */
-  EditarDatosRegimen(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarRegimenComponent, { width: '900px', data: { datosRegimen: datosSeleccionados, actualizar: false } })
-      .afterClosed().subscribe(item => {
-        this.CargarDatosRegimen();
-      });
+  // BUSQUEDA DE LISTA DE PAISES
+  paises: any = [];
+  ObtenerPaises() {
+    this.paises = [];
+    this.pais.BuscarPais('AMERICA').subscribe(datos => {
+      this.paises = datos;
+      this.CargarDatosRegimen();
+    })
+  }
+
+  // METODO PARA VER TIEMPO LIMITE DE SERVICIOS
+  VerTiempoLimite() {
+    this.regimen.tiempo = false;
+    if (this.regimen.trabajo_minimo_mes != 0) {
+      this.regimen.tiempo = this.regimen.trabajo_minimo_mes + ' meses';
+    }
+
+    if (this.regimen.trabajo_minimo_horas != 0) {
+      this.regimen.tiempo = this.regimen.trabajo_minimo_horas + ' horas';
+    }
+  }
+
+  // OBTENER DATOS DE PERIODO DE VACACIONES
+  periodo: any = [];
+  ver_periodo: boolean = false;
+  ObtenerPeriodos() {
+    this.periodo = [];
+    this.rest.ConsultarUnPeriodo(parseInt(this.idRegimen)).subscribe(dato => {
+      this.periodo = dato;
+      this.ver_periodo = true;
+    })
+  }
+
+  // OBTENER DATOS DE ANTIGUEDAD DE VACACIONES
+  antiguedad: any = [];
+  ver_antiguedad_variable: boolean = false;
+  ver_antiguedad_fija: boolean = false;
+  ObtenerAntiguedad() {
+
+    if (this.regimen.antiguedad_fija === true) {
+      this.ver_antiguedad_fija = true;
+    }
+    else {
+      this.antiguedad = [];
+      this.rest.ConsultarAntiguedad(parseInt(this.idRegimen)).subscribe(dato => {
+        this.antiguedad = dato;
+        this.ver_antiguedad_variable = true;
+      })
+    }
   }
 
 }

@@ -1,9 +1,12 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
+import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 import * as moment from 'moment';
 
+import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
 
@@ -24,12 +27,16 @@ export class RegistroContratoComponent implements OnInit {
   regimenLaboral: any = [];
   empleados: any = [];
 
+  // BUSQUEDA DE PAISES AL INGRESAR INFORMACION
+  filtro: Observable<string[]>;
+
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   controlVacacionesF = new FormControl('', Validators.required);
   controlAsistenciaF = new FormControl('', Validators.required);
   fechaIngresoF = new FormControl('', Validators.required);
   fechaSalidaF = new FormControl('');
   archivoForm = new FormControl('');
+  nombrePaisF = new FormControl('');
   idRegimenF = new FormControl('', Validators.required);
   documentoF = new FormControl('');
   contratoF = new FormControl('', Validators.minLength(3));
@@ -41,6 +48,7 @@ export class RegistroContratoComponent implements OnInit {
     controlAsistenciaForm: this.controlAsistenciaF,
     fechaIngresoForm: this.fechaIngresoF,
     fechaSalidaForm: this.fechaSalidaF,
+    nombrePaisForm: this.nombrePaisF,
     idRegimenForm: this.idRegimenF,
     documentoForm: this.documentoF,
     contratoForm: this.contratoF,
@@ -52,22 +60,51 @@ export class RegistroContratoComponent implements OnInit {
     private restR: RegimenService,
     private toastr: ToastrService,
     public ventana: MatDialogRef<RegistroContratoComponent>,
+    public pais: ProvinciaService,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any
   ) { }
 
   ngOnInit(): void {
+    this.ObtenerPaises();
     this.ObtenerEmpleados();
     this.ObtenerTipoContratos();
-    this.regimenLaboral = this.ObtenerRegimen();
     this.tipoContrato[this.tipoContrato.length] = { descripcion: "OTRO" };
   }
 
-  ObtenerRegimen() {
+  // APLICAR FILTROS DE BUSQUEDA DE PAISES
+  private _filter(value: string): string[] {
+    if (value != null) {
+      const filterValue = value.toLowerCase();
+      return this.paises.filter(pais => pais.nombre.toLowerCase().includes(filterValue));
+    }
+  }
+
+  // BUSQUEDA DE LISTA DE PAISES
+  paises: any = [];
+  ObtenerPaises() {
+    this.paises = [];
+    this.pais.BuscarPais('AMERICA').subscribe(datos => {
+      this.paises = datos;
+      this.filtro = this.nombrePaisF.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filter(value))
+        );
+    })
+  }
+
+  // BUSQUEDA DE REGIMEN LABORAL
+  ObtenerRegimen(form: any) {
+    var pais = form.nombrePaisForm;
     this.regimenLaboral = [];
-    this.restR.ConsultarRegimen().subscribe(datos => {
+    this.restR.ConsultarRegimenPais(pais).subscribe(datos => {
       this.regimenLaboral = datos;
-      this.regimenLaboral[this.regimenLaboral.length] = { nombre: "Seleccionar Régimen" };
-      this.seleccionarRegimen = this.regimenLaboral[this.regimenLaboral.length - 1].nombre;
+      console.log('ver regimen ', this.regimenLaboral)
+    }, error => {
+      this.toastr.info('Pais seleccionado no tiene registros de Régimen Laboral.', '', {
+        timeOut: 6000,
+      });
+      this.nombrePaisF.reset();
     })
   }
 

@@ -77,6 +77,9 @@
                 <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
                     <mat-radio-group aria-label="Select an option" [(ngModel)]="seleccion">
                         <div class="d-flex flex-wrap justify-content-around">
+                            <mat-radio-button value="horas" (change)="SelecionarCarga($event)">
+                                Horas
+                            </mat-radio-button>
                             <mat-radio-button value="diaria" (change)="SelecionarCarga($event)">
                                 Diaria
                             </mat-radio-button>
@@ -103,44 +106,6 @@
                             </mat-radio-button>
                             <mat-radio-button value="global" (change)="SelecionarDescarga($event)">
                                 Global
-                            </mat-radio-button>
-                        </div>
-                    </mat-radio-group>
-                </div>
-            </div>
-            <!-- CONTENIDO HABILITAR CONSIDERACION DE FERIADOS DENTRO DE SOLICITUDES -->
-            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="feriados">
-                <div class="nota">
-                    <span>NOTA: Habilitar o deshabilitar consideración de feriados en solicitudes con cargo a
-                        vacaciones.</span>
-                </div>
-                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
-                    <mat-radio-group aria-label="Select an option" [(ngModel)]="opcion_feriados">
-                        <div class="d-flex flex-wrap justify-content-around">
-                            <mat-radio-button value="habilitar" (change)="ConsiderarFeriados($event)">
-                                Habilitar
-                            </mat-radio-button>
-                            <mat-radio-button value="deshabilitar" (change)="ConsiderarFeriados($event)">
-                                Deshabilitar
-                            </mat-radio-button>
-                        </div>
-                    </mat-radio-group>
-                </div>
-            </div>
-            <!-- CONTENIDO HABILITAR CONSIDERACION DE FECHAS DE RECUPERACION DENTRO DE SOLICITUDES -->
-            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="recuperables">
-                <div class="nota">
-                    <span>NOTA: Habilitar o deshabilitar consideración de fechas de recuperación en solicitudes con
-                        cargo a vacaciones.</span>
-                </div>
-                <div class="d-flex flex-wrap justify-content-around" style="padding-top: 10px;">
-                    <mat-radio-group aria-label="Select an option" [(ngModel)]="opcion_recuperar">
-                        <div class="d-flex flex-wrap justify-content-around">
-                            <mat-radio-button value="habilitar" (change)="ConsiderarRecuperacion($event)">
-                                Habilitar
-                            </mat-radio-button>
-                            <mat-radio-button value="deshabilitar" (change)="ConsiderarRecuperacion($event)">
-                                Deshabilitar
                             </mat-radio-button>
                         </div>
                     </mat-radio-group>

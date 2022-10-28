@@ -12,10 +12,10 @@ class ProvinciaRutas {
         this.configuracion();
     }
     configuracion() {
+        this.router.get('/pais/:continente', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ListarPaises);
         this.router.get('/', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ListarProvincia);
         this.router.get('/paises', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ListarTodoPais);
         this.router.get('/continentes', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ListarContinentes);
-        this.router.get('/pais/:continente', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ListarPaises);
         this.router.get('/nombreProvincia/:nombre', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ObtenerIdProvincia);
         this.router.get('/:id_pais', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ObtenerUnaProvincia);
         this.router.get('/buscar/:id', verificarToken_1.TokenValidation, catProvinciaControlador_1.default.ObtenerProvincia);

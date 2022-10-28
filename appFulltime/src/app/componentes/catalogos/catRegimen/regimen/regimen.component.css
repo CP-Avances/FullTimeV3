@@ -4,9 +4,52 @@
     color: white;
 }
 
+p {
+    font-size: x-small;
+}
+
+#validar {
+    text-align: center;
+    position: relative;
+    top: 15px;
+    left: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+#correcto {
+    text-align: center;
+    position: relative;
+    top: 15px;
+    left: 10px;
+    cursor: pointer;
+    color: darkgreen;
+}
+
 mat-form-field {
-    width: 260px;
-    padding: 5px 5px 0px 5px;
+    width: 280px;
+    padding: 10px 10px 0px 10px;
+}
+
+
+/** ESTILO TAMAÑO DE mat-form-field */
+#periodo {
+    width: 145px;
+    padding: 0px 20px 0px 10px;
+}
+
+#campos {
+    width: 130px;
+    padding: 0px 20px 0px 10px;
+}
+
+#campos_antiguedad {
+    width: 120px;
+    padding: 0px 20px 0px 10px;
+}
+
+button {
+    margin: 5px 10px 5px 10px;
 }
 
 .button {
@@ -17,33 +60,24 @@ label {
     font-size: small;
 }
 
-#letras {
+/** ESTILOS TAMAÑO DE LETRA **/
+#letras_1 {
+    font-size: 11px;
+}
+
+#letras_2 {
+    font-size: 12px;
+}
+
+#letras_3 {
+    font-size: 13px;
+}
+
+#letras_4 {
     font-size: 14px;
 }
 
 
-#letras_ {
-    font-size: 13px;
-}
-
-#letra_ {
-    font-size: 12px;
-}
-
-.scrollbar {
-    float: left;
-    height: 450px;
-    width: 100%;
-    background: #fff;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    margin-bottom: 25px;
-}
-
-.scrollbar-primary::-webkit-scrollbar {
-    width: 10px;
-    background-color: #F5F5F5;
-}
 
 #check {
     width: 210px;
@@ -51,4 +85,57 @@ label {
     margin-bottom: 10px;
     margin-top: 20px;
     margin-right: 28px;
+    font-size: 14px;
+}
+
+.check {
+    width: 210px;
+    padding: 15px 20px 15px 20x;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    margin-right: 28px;
+    font-size: 14px;
+}
+
+#check_ {
+    width: 210px;
+    padding: 15px 20px 5px 20x;
+    margin-top: 20px;
+    margin-right: 28px;
+    font-size: 14px;
+}
+
+.mat-radio-button~.mat-radio-button {
+    margin-left: 50px;
+}
+
+mat-radio-group {
+    padding: 20px 20px 20px 20x;
+    margin-bottom: 10px;
+}
+
+
+
+.subtitulo {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+}
+
+#icono {
+    color: rgba(8, 10, 124, 0.828);
+}
+
+#error {
+    font-size: x-small;
+    color: red;
+}
+
+#error_ {
+    font-size: xx-small;
+    color: red;
+}
+
+hr {
+    background-color: rgb(243, 239, 239);
 }

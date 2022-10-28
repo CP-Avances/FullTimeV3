@@ -176,6 +176,8 @@ export class EmpleadoService {
     return this.http.get<any>(`${environment.url}/contratoEmpleado`);
   }
 
+
+  
   /** **************************************************************************************** **
    ** **  SERVICIOS PARA SER USADOS PARA REGISTRAR MODALIDAD DE TRABAJO O TIPO DE CONTRATOS ** **
    ** **************************************************************************************** **/

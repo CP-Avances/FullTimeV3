@@ -3,7 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRA PROVINCIA - DEPARTAMENTO - ESTADO</span>
 </div>
-<form [formGroup]="NuevaProvinciasForm">
+<form [formGroup]="formulario">
     <div class="container">
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
@@ -16,7 +16,7 @@
                     help_outline</mat-icon>
                 <mat-select [formControl]="nombreContinenteF" [(ngModel)]="seleccionarContinente" required>
                     <mat-option *ngFor="let c of continentes" [value]="c.continente"
-                        (click)="FiltrarPaises(NuevaProvinciasForm.value)">
+                        (click)="FiltrarPaises(formulario.value)">
                         {{c.continente}}
                     </mat-option>
                 </mat-select>
@@ -46,7 +46,7 @@
     </div>
 </form>
 <div class="d-flex flex-wrap justify-content-center">
-    <input type="submit" class="btn btn-sm button" (click)="InsertarProvincia(NuevaProvinciasForm.value)"
-        [disabled]="!NuevaProvinciasForm.valid" value="Guardar">
-    <input type="submit" class="btn btn-sm button" (click)="CerrarVentanaRegistroProvincia()" value="Salir">
+    <input type="submit" class="btn btn-sm button" (click)="InsertarProvincia(formulario.value)"
+        [disabled]="!formulario.valid" value="Guardar">
+    <input type="submit" class="btn btn-sm button" (click)="CerrarVentana()" value="Salir">
 </div>

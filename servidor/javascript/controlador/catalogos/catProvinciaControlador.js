@@ -15,6 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PROVINCIA_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 class ProvinciaControlador {
+    // LISTA DE PAISES DE ACUERDO AL CONTINENTE
+    ListarPaises(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { continente } = req.params;
+            const CONTINENTE = yield database_1.default.query(`
+      SELECT * FROM cg_paises WHERE continente = $1 ORDER BY nombre ASC
+      `, [continente]);
+            if (CONTINENTE.rowCount > 0) {
+                return res.jsonp(CONTINENTE.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            }
+        });
+    }
     ListarProvincia(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const PROVINCIA = yield database_1.default.query('SELECT *FROM VistaNombrePais ORDER BY pais, nombre ASC');
@@ -29,18 +44,6 @@ class ProvinciaControlador {
     ListarContinentes(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const CONTINENTE = yield database_1.default.query('SELECT continente FROM cg_paises GROUP BY continente ORDER BY continente ASC');
-            if (CONTINENTE.rowCount > 0) {
-                return res.jsonp(CONTINENTE.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    ListarPaises(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { continente } = req.params;
-            const CONTINENTE = yield database_1.default.query('SELECT * FROM cg_paises WHERE continente = $1 ORDER BY nombre ASC', [continente]);
             if (CONTINENTE.rowCount > 0) {
                 return res.jsonp(CONTINENTE.rows);
             }

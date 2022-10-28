@@ -154,6 +154,7 @@ import { RealtimeNotificacionComponent } from './componentes/notificaciones/real
 import { RealtimeAvisosComponent } from './componentes/notificaciones/realtime-avisos/realtime-avisos.component';
 import { HorasPlanificadasEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/horas-planificadas-empleado/horas-planificadas-empleado.component';
 import { ComidasSolicitadasEmpleadoComponent } from './componentes/rolEmpleado/comidas-empleado/comidas-solicitadas-empleado/comidas-solicitadas-empleado.component';
+import { EditarRegimenComponent } from './componentes/catalogos/catRegimen/editar-regimen/editar-regimen.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -164,7 +165,12 @@ const routes: Routes = [
   { path: 'empleado', component: ListaEmpleadosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'titulos', component: ListarTitulosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+
+  // RUTAS REGIMEN LABORAL
   { path: 'regimenLaboral', component: RegimenComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'regimen/laboral/:id', component: EditarRegimenComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'verRegimen/:id', component: VerRegimenComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+
   { path: 'tipoComidas', component: TipoComidasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'verMenu/:id', component: VistaMenuComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'relojes', component: RelojesComponent, canActivate: [AuthGuard], data: { roles: 1 } },
@@ -208,7 +214,6 @@ const routes: Routes = [
   { path: 'verHorario/:id', component: VerHorarioDetalleComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'verDetalles/:id/:id_empleado', component: VerDetallePlanHorariosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'verDispositivos/:id', component: VerDipositivoComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-  { path: 'verRegimen/:id', component: VerRegimenComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'vistaPermiso/:id', component: VerTipoPermisoComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'listaHorasExtras', component: ListaHorasExtrasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'verHoraExtra/:id', component: VerHorasExtrasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
@@ -305,7 +310,7 @@ const routes: Routes = [
   { path: 'vacacionesEmpleado', component: VacacionesEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } },
   { path: 'solicitarPermiso', component: SolicitarPermisosEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } },
   { path: 'verDocumentacion', component: VerDocumentacionComponent, canActivate: [AuthGuard], data: { roles: 2 } },
-  { path: 'horaExtraEmpleado', component: HoraExtraEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } }, 
+  { path: 'horaExtraEmpleado', component: HoraExtraEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } },
   { path: 'horasPlanEmpleado', component: HorasPlanificadasEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } },
   { path: 'comidasPlanEmpleado', component: PlanificacionComidasEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } },
   { path: 'comidasEmpleado', component: ComidasSolicitadasEmpleadoComponent, canActivate: [AuthGuard], data: { roles: 2 } },

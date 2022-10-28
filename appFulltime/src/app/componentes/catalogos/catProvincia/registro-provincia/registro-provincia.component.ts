@@ -1,16 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { startWith, map } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
-
-interface opcionesPais {
-  valor: string;
-  nombre: string
-}
 
 @Component({
   selector: 'app-registro-provincia',
@@ -20,28 +15,29 @@ interface opcionesPais {
 
 export class RegistroProvinciaComponent implements OnInit {
 
-  continentes: any = [];
-  seleccionarContinente;
   paises: any = [];
-  seleccionarPaises;
+  continentes: any = [];
+  seleccionarPaises: any;
+  seleccionarContinente: any;
 
-  // Control de campos y validaciones del formulario
-  nombreContinenteF = new FormControl('');
-  nombrePaisF = new FormControl('', [Validators.required]);
-  nombreProvinciaF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
   filteredOptions: Observable<string[]>;
 
-  // Asignación de validaciones a inputs del formulario
-  public NuevaProvinciasForm = new FormGroup({
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
+  nombreContinenteF = new FormControl('');
+  nombreProvinciaF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
+  nombrePaisF = new FormControl('', [Validators.required]);
+
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     nombreContinenteForm: this.nombreContinenteF,
-    nombrePaisForm: this.nombrePaisF,
     nombreProvinciaForm: this.nombreProvinciaF,
+    nombrePaisForm: this.nombrePaisF,
   });
 
   constructor(
     private rest: ProvinciaService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegistroProvinciaComponent>,
+    public ventana: MatDialogRef<RegistroProvinciaComponent>,
   ) { }
 
   ngOnInit(): void {
@@ -60,6 +56,7 @@ export class RegistroProvinciaComponent implements OnInit {
     }
   }
 
+  // CONSULTAR LISTA DE CONTINENTES
   ObtenerContinentes() {
     this.continentes = [];
     this.rest.BuscarContinente().subscribe(datos => {
@@ -69,7 +66,8 @@ export class RegistroProvinciaComponent implements OnInit {
     })
   }
 
-  ObtenerPaises(continente) {
+  // CONSULTAR LISTA DE PAISES DE ACUERDO AL CONTINENTE
+  ObtenerPaises(continente: any) {
     this.paises = [];
     this.rest.BuscarPais(continente).subscribe(datos => {
       this.paises = datos;
@@ -78,10 +76,11 @@ export class RegistroProvinciaComponent implements OnInit {
     })
   }
 
-  FiltrarPaises(form) {
+  // METODO PARA REALIZAR BUSQUEDAS POR FILTROS
+  FiltrarPaises(form: any) {
     var nombreContinente = form.nombreContinenteForm;
     if (nombreContinente === 'Seleccionar' || nombreContinente === '') {
-      this.toastr.info('No ha seleccionado ninguna opción','', {
+      this.toastr.info('No ha seleccionado ninguna opción', '', {
         timeOut: 6000,
       })
       this.paises = [];
@@ -92,18 +91,12 @@ export class RegistroProvinciaComponent implements OnInit {
     }
   }
 
-  ObtenerMensajeProvinciaRequerido() {
-    if (this.nombreProvinciaF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-    return this.nombreProvinciaF.hasError('pattern') ? 'Ingrese un nombre válido' : '';
-  }
-
+  // METODO PARA GUARDAR EL REGISTRO DE PROVINCIA
   provincias: any = [];
   contador: number = 0;
-  InsertarProvincia(form) {
+  InsertarProvincia(form: any) {
     this.provincias = [];
-    let idPais;
+    let idPais: any;
     this.paises.forEach(obj => {
       if (obj.nombre === form.nombrePaisForm) {
         idPais = obj.id
@@ -115,7 +108,7 @@ export class RegistroProvinciaComponent implements OnInit {
     };
 
     if (dataProvincia.id_pais === 'Seleccionar') {
-      this.toastr.info('Seleccionar un país','', {
+      this.toastr.info('Seleccionar un país', '', {
         timeOut: 6000,
       })
     }
@@ -148,18 +141,13 @@ export class RegistroProvinciaComponent implements OnInit {
     }
   }
 
-  LimpiarCampos() {
-    this.NuevaProvinciasForm.reset();
-    this.ObtenerContinentes();
-    this.paises = [];
-  }
-
-  IngresarSoloLetras(e) {
+  // METODO DE VALIDACION DE INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -176,8 +164,25 @@ export class RegistroProvinciaComponent implements OnInit {
     }
   }
 
-  CerrarVentanaRegistroProvincia() {
-    this.LimpiarCampos();
-    this.dialogRef.close();
+  // MENSAJE DE ERROR 
+  ObtenerMensajeProvinciaRequerido() {
+    if (this.nombreProvinciaF.hasError('required')) {
+      return 'Campo Obligatorio';
+    }
+    return this.nombreProvinciaF.hasError('pattern') ? 'Ingrese un nombre válido' : '';
   }
+
+  // METODO PARA LIMPIAR CAMPOS DEL FORMULARIO
+  LimpiarCampos() {
+    this.formulario.reset();
+    this.ObtenerContinentes();
+    this.paises = [];
+  }
+
+  // METODO PARA CERRAR FORMULARIO DE REGISTRO
+  CerrarVentana() {
+    this.LimpiarCampos();
+    this.ventana.close();
+  }
+
 }

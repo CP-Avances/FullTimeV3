@@ -37,8 +37,6 @@ export class VerParametroComponent implements OnInit {
   formato_hora: boolean = false;
   carga: boolean = false;
   kardex: boolean = false;
-  feriados: boolean = false;
-  recuperables: boolean = false;
   laboral_calendario: boolean = false;
 
   ingreso: number = 0;
@@ -46,8 +44,8 @@ export class VerParametroComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
     public parametro: ParametrosService,
-    public router: Router,
     public ventana: MatDialog,
+    public router: Router,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -76,14 +74,6 @@ export class VerParametroComponent implements OnInit {
     if (this.idParametro === '28') {
       this.formato = false;
       this.kardex = true;
-    }
-    if (this.idParametro === '29') {
-      this.formato = false;
-      this.feriados = true;
-    }
-    if (this.idParametro === '30') {
-      this.formato = false;
-      this.recuperables = true;
     }
     if (this.idParametro === '31') {
       this.formato = false;
@@ -114,7 +104,6 @@ export class VerParametroComponent implements OnInit {
       if (this.ingreso === 0) {
         this.seleccion = this.datosDetalle[0].descripcion;
         this.opcion_kardex = this.datosDetalle[0].descripcion;
-        this.opcion_feriados = this.datosDetalle[0].descripcion;
         this.opcion_laboral = this.datosDetalle[0].descripcion;
       }
     })
@@ -223,30 +212,6 @@ export class VerParametroComponent implements OnInit {
   }
 
   /** ******************************************************************************************* **
-   ** **           CONSIDERAR FERIADOS DENTRO DE SOLICITUDES CON CARGO A VACACIONES            ** ** 
-   ** ******************************************************************************************* **/
-
-  opcion_feriados: any;
-  ConsiderarFeriados(event: MatRadioChange) {
-    this.opcion_feriados = event.value;
-    console.log('seleccion ... ', this.opcion_feriados)
-    this.RegistrarValores(this.opcion_feriados);
-  }
-
-
-  /** ******************************************************************************************* **
-   ** **    CONSIDERAR FECHAS DE RECUPERACION DENTRO DE SOLICITUDES CON CARGO A VACACIONES     ** ** 
-   ** ******************************************************************************************* **/
-
-  opcion_recuperar: any;
-  ConsiderarRecuperacion(event: MatRadioChange) {
-    this.opcion_recuperar = event.value;
-    console.log('seleccion ... ', this.opcion_recuperar)
-    this.RegistrarValores(this.opcion_recuperar);
-  }
-
-
-  /** ******************************************************************************************* **
    ** **           REGISTRAR O EDITAR DETALLE DE PARAMETRO LABORAL - CALENDARIO                ** ** 
    ** ******************************************************************************************* **/
 
@@ -312,8 +277,6 @@ export class VerParametroComponent implements OnInit {
   LimpiarSeleccion() {
     this.seleccion = '';
     this.opcion_kardex = '';
-    this.opcion_feriados = '';
-    this.opcion_recuperar = '';
     this.opcion_laboral = '';
   }
 

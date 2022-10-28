@@ -24,7 +24,7 @@ mat-radio-group {
 }
 
 #respaldo {
-    font-size: 14px;
+    font-size: 13px;
     display: inline-block;
 }
 
@@ -58,7 +58,7 @@ mat-radio-group {
 }
 
 [type="file"]+label.btn-2 {
-    background-color: #93a3c7;
+    background-color: rgb(150, 243, 141);
     overflow: hidden;
 }
 
@@ -66,7 +66,7 @@ mat-radio-group {
     color: #fff;
     content: "\f382";
     font-family: "Font Awesome 5 Pro";
-    font-size: 90%;
+    font-size: 100%;
     height: 100%;
     right: 130%;
     line-height: 3.3;

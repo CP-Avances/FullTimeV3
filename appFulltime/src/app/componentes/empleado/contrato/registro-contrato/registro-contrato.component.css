@@ -10,7 +10,7 @@ mat-form-field {padding: 10px 10px 0px 10px;}
 
 #letras { font-size: 14px; }
 
-#respaldo { font-size: 14px; display: inline-block;}
+#respaldo { font-size: 13px; display: inline-block;}
 
 [type="file"] {
     height: 0;

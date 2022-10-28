@@ -1,21 +1,19 @@
 // IMPORTACIÓN DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import pdfMake from 'pdfmake/build/pdfmake';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR COMPONENTES
-import { EditarRegimenComponent } from 'src/app/componentes/catalogos/catRegimen/editar-regimen/editar-regimen.component';
-import { RegimenComponent } from 'src/app/componentes/catalogos/catRegimen/regimen/regimen.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 // IMPORTAR SERVICIOS
@@ -59,11 +57,11 @@ export class ListarRegimenComponent implements OnInit {
 
   constructor(
     private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
-    public vistaRegistrarDatos: MatDialog, // VARIABLE MANEJO DE VENTANAS
-    private restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     private toastr: ToastrService, // VARIABLE DE USO DE MENSAJES DE NOTIFICACIONES
+    private restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     private rest: RegimenService, // SERVICIO DE DATOS DE REGIMEN
     public router: Router, // VARIABLE DE NAVEGACIÓN DE PÁGINAS CON URL
+    public ventana: MatDialog, // VARIABLE MANEJO DE VENTANAS
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -109,6 +107,7 @@ export class ListarRegimenComponent implements OnInit {
     array.sort(compare);
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
     this.BuscarRegimenForm.setValue({
       descripcionForm: '',
@@ -116,49 +115,9 @@ export class ListarRegimenComponent implements OnInit {
     this.ObtenerRegimen();
   }
 
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
-  }
-
-  ObtenerMensajeNombreValido() {
-    if (this.descripcionF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
   /*************************************************************************************
    *           VENTANAS PARA REGISTRAR Y EDITAR DATOS DE UN RÉGIMEN LABORAL
    ***********************************************************************************/
-
-  // VENTANA PARA EDITAR DATOS DEL RÉGIMEN LABORAL SELECCIONADO 
-  AbrirVentanaEditar(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarRegimenComponent, { width: '900px', data: { datosRegimen: datosSeleccionados, actualizar: true } }).disableClose = true;
-  }
-
-  // VENTANA PARA REGISTRAR DATOS DE UN NUEVO RÉGIMEN LABORAL
-  AbrirVentanaRegistrarRegimen(): void {
-    this.vistaRegistrarDatos.open(RegimenComponent,
-      { width: '1200px'}).disableClose = true;
-  }
 
   // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_regimen: number) {
@@ -172,7 +131,7 @@ export class ListarRegimenComponent implements OnInit {
 
   // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
