@@ -48,6 +48,11 @@ mat-form-field {
     padding: 0px 20px 0px 10px;
 }
 
+#campos_antiguedad_hasta {
+    width: 140px;
+    padding: 0px 20px 0px 10px;
+}
+
 button {
     margin: 5px 10px 5px 10px;
 }

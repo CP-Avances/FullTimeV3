@@ -821,6 +821,8 @@ export class RegimenComponent implements OnInit {
       this.antiguo_uno = false;
       this.validar_antiguo = false;
 
+      this.hasta_uno = false;
+
       this.antiguedadF.reset();
       this.LimpiarFormAntiguedad(this.desde_unoF, this.hasta_unoF, this.vacaciones_unoF, ' ');
     }
@@ -828,12 +830,14 @@ export class RegimenComponent implements OnInit {
       this.delete_antiguo_uno = true;
       this.antiguo_dos = false;
       this.validar_antiguo = true;
+      this.hasta_dos = false;
       this.LimpiarFormAntiguedad(this.desde_dosF, this.hasta_dosF, this.vacaciones_dosF, ' ');
     }
     if (opcion === 3) {
       this.delete_antiguo_dos = true;
       this.antiguo_tres = false;
       this.validar_antiguo = true;
+      this.hasta_tres = false;
       this.LimpiarFormAntiguedad(this.desde_tresF, this.hasta_tresF, this.vacaciones_tresF, ' ');
     }
     if (opcion === 4) {
@@ -841,6 +845,7 @@ export class RegimenComponent implements OnInit {
       this.antiguo_cuatro = false;
       this.variable = true;
       this.validar_antiguo = true;
+      this.hasta_cuatro = false;
       this.LimpiarFormAntiguedad(this.desde_cuatroF, this.hasta_cuatroF, this.vacaciones_cuatroF, ' ');
     }
   }
@@ -851,6 +856,10 @@ export class RegimenComponent implements OnInit {
     this.antiguo_dos = false;
     this.antiguo_tres = false;
     this.antiguo_cuatro = false;
+    this.hasta_uno = false;
+    this.hasta_dos = false;
+    this.hasta_tres = false;
+    this.hasta_cuatro = false;
     this.LimpiarFormAntiguedad(this.desde_unoF, this.hasta_unoF, this.vacaciones_unoF, ' ');
     this.LimpiarFormAntiguedad(this.desde_dosF, this.hasta_dosF, this.vacaciones_dosF, ' ');
     this.LimpiarFormAntiguedad(this.desde_tresF, this.hasta_tresF, this.vacaciones_tresF, ' ');
@@ -871,14 +880,38 @@ export class RegimenComponent implements OnInit {
   hasta_cuatro: boolean = false;
 
   // VALIDACIONES DE REGISTROS DE ANTIGUEDAD
-  ValidarRegistrosAntiguedad(desde: any, hasta: any, vacaciones: any, mensaje: boolean) {
+  ValidarRegistrosAntiguedad(desde: any, hasta: any, vacaciones: any, alerta: any) {
+
+    console.log('ver antiguedad .. ', desde, '  h ', hasta, ' vaca ', vacaciones, ' aler ', alerta);
     if (desde != '' && hasta != '' && vacaciones != '') {
       if (parseFloat(hasta) > parseFloat(desde)) {
-        mensaje = false;
+        if (alerta === 1) {
+          this.hasta_uno = false;
+        }
+        if (alerta === 2) {
+          this.hasta_dos = false;
+        }
+        if (alerta === 3) {
+          this.hasta_tres = false;
+        }
+        if (alerta === 4) {
+          this.hasta_cuatro = false;
+        }
         return true; // ------ Si cumple las condiciones retorna true
       }
       else {
-        mensaje = true; // --------------------- Mensajes de error activos (true)
+        if (alerta === 1) {
+          this.hasta_uno = true; // --------------------- Mensajes de error activos (true)
+        }
+        if (alerta === 2) {
+          this.hasta_dos = true;
+        }
+        if (alerta === 3) {
+          this.hasta_tres = true;
+        }
+        if (alerta === 4) {
+          this.hasta_cuatro = true;
+        }
       }
     }
     else {
@@ -895,10 +928,10 @@ export class RegimenComponent implements OnInit {
 
   // VERIFICAR QUE LOS REGISTROS DE ANTIGUEDAD CUMPLAN CON LAS CONDICIONES
   VerificarAntiguedad(form3: any) {
-    var uno = this.ValidarRegistrosAntiguedad(form3.desde_unoForm, form3.hasta_unoForm, form3.vacaciones_unoForm, this.hasta_uno);
-    var dos = this.ValidarRegistrosAntiguedad(form3.desde_dosForm, form3.hasta_dosForm, form3.vacaciones_dosForm, this.hasta_dos);
-    var tres = this.ValidarRegistrosAntiguedad(form3.desde_tresForm, form3.hasta_tresForm, form3.vacaciones_tresForm, this.hasta_tres);
-    var cuatro = this.ValidarRegistrosAntiguedad(form3.desde_cuatroForm, form3.hasta_cuatroForm, form3.vacaciones_cuatroForm, this.hasta_cuatro);
+    var uno = this.ValidarRegistrosAntiguedad(form3.desde_unoForm, form3.hasta_unoForm, form3.vacaciones_unoForm, 1);
+    var dos = this.ValidarRegistrosAntiguedad(form3.desde_dosForm, form3.hasta_dosForm, form3.vacaciones_dosForm, 2);
+    var tres = this.ValidarRegistrosAntiguedad(form3.desde_tresForm, form3.hasta_tresForm, form3.vacaciones_tresForm, 3);
+    var cuatro = this.ValidarRegistrosAntiguedad(form3.desde_cuatroForm, form3.hasta_cuatroForm, form3.vacaciones_cuatroForm, 4);
 
     if (this.antiguo_uno === true && this.antiguo_dos === false &&
       this.antiguo_tres === false && this.antiguo_cuatro === false) {

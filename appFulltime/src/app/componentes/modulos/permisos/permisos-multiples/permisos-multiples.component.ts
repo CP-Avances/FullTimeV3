@@ -739,6 +739,7 @@ export class PermisosMultiplesComponent implements OnInit {
     this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
 
       this.arrayNivelesDepa = response;
+      console.log('response 1.. ', response)
 
       this.arrayNivelesDepa.forEach(obj => {
 
@@ -775,6 +776,8 @@ export class PermisosMultiplesComponent implements OnInit {
     this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
 
       this.arrayNivelesDepa = response;
+      
+      console.log('response 2.. ', response)
 
       this.arrayNivelesDepa.forEach(obj => {
 
