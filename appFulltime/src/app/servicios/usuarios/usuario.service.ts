@@ -12,6 +12,54 @@ export class UsuarioService {
     private http: HttpClient,
   ) { }
 
+  // REGISTRAR USUARIO
+  RegistrarUsuario(data: any) {
+    return this.http.post(`${environment.url}/usuarios`, data)
+      .pipe(
+        catchError(data)
+      );
+  }
+
+  // METODO DE BUSQUEDA DE DATOS DE USUARIO
+  BuscarDatosUser(id: number) {
+    return this.http.get(`${environment.url}/usuarios/datos/${id}`);
+  }
+
+  // METODO PARA ACTUALIZAR REGISTRO DE USUARIO
+  ActualizarDatos(data: any) {
+    return this.http.put(`${environment.url}/usuarios/actualizarDatos`, data).pipe(
+      catchError(data));
+  }
+
+  // METODO PARA REGISTRAR ACCESOS AL SISTEMA
+  CrearAccesosSistema(data: any) {
+    return this.http.post(`${environment.url}/usuarios/acceso`, data);
+  }
+
+  // METODO PARA CAMBIAR PASSWORD
+  ActualizarPassword(data: any) {
+    return this.http.put(`${environment.url}/usuarios`, data);
+  }
+
+  // ADMINISTRACION MODULO DE ALIMENTACION
+  RegistrarAdminComida(data: any) {
+    return this.http.put(`${environment.url}/usuarios/admin/comida`, data);
+  }
+
+  // METODO PARA REGISTRAR FRASE DE SEGURIDAD
+  ActualizarFrase(data: any) {
+    return this.http.put(`${environment.url}/usuarios/frase`, data);
+  }
+
+
+
+
+
+
+
+
+
+
   // catalogo de usuarios
 
   getUsuariosRest() {
@@ -34,38 +82,17 @@ export class UsuarioService {
     return this.http.get(`${environment.url}/usuarios/busqueda/${usuario}`);
   }
 
-  postUsuarioRest(data: any) {
-    return this.http.post(`${environment.url}/usuarios`, data)
-      .pipe(
-        catchError(data)
-      );
-  }
 
-  BuscarDatosUser(id: number) {
-    return this.http.get(`${environment.url}/usuarios/datos/${id}`);
-  }
 
-  ActualizarPassword(data: any) {
-    return this.http.put(`${environment.url}/usuarios`, data);
-  }
 
-  ActualizarDatos(data: any) {
-    return this.http.put(`${environment.url}/usuarios/actualizarDatos`, data).pipe(
-      catchError(data));
-  }
 
-  crearAccesosSistema(data: any) {
-    return this.http.post(`${environment.url}/usuarios/acceso`, data);
-  }
 
-  ActualizarFrase(data: any) {
-    return this.http.put(`${environment.url}/usuarios/frase`, data);
-  }
 
-  /** ADMINISTRACIÓN MÓDULO DE ALIMENTACIÓN */
-  RegistrarAdminComida(data: any) {
-    return this.http.put(`${environment.url}/usuarios/admin/comida`, data);
-  }
+
+
+
+
+
 
   RecuperarFraseSeguridad(data: any) {
     return this.http.post(`${environment.url}/usuarios/frase/olvido-frase`, data)

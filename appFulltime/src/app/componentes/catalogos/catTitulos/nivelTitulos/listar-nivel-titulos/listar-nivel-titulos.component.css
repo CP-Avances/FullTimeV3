@@ -1,15 +1,33 @@
-.btn { background-color: rgb(80,87,97); color: white; }
+p {
+    font-size: x-small;
+}
 
-p { font-size: x-small; }
+button {
+    margin: 5px 10px 5px 10px;
+}
 
-td { padding-top: 10px; text-align: center; } 
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-.fas { color:green; cursor: pointer; }
+.fas {
+    color: green;
+    cursor: pointer;
+}
 
-.far { color:red; cursor: pointer; margin-left: 20px;}
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-button {margin: 5px 10px 5px 10px;}
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
-table { width: 100%; font-size: 14px;}
-
-
+.far {
+    color: red;
+    cursor: pointer;
+    margin-left: 20px;
+}

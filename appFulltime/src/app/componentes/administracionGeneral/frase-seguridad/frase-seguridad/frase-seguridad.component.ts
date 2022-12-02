@@ -35,14 +35,14 @@ export class FraseSeguridadComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  // METODO PARA REGISTRAR FRASE DE SEGURIDAD
   IngresarFrase(form: any) {
     let data = {
       frase: form.aFrase,
       id_empleado: parseInt(this.usuario)
     }
-    console.log('data', data)
     this.restUser.ActualizarFrase(data).subscribe(data => {
-      this.toastr.success('Frase ingresada éxitosamente', '', {
+      this.toastr.success('Registro guardado.', '', {
         timeOut: 6000,
       });
     });

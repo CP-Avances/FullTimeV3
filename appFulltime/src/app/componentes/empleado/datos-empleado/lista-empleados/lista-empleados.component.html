@@ -6,25 +6,28 @@
             </div>
             <mat-card class="example-card mat-elevation-z8">
                 <div class="d-flex flex-wrap justify-content-around">
-                    <button style="margin-bottom: 10px;" class="btn btn-sm" [routerLink]="['/registrarEmpleado']">Crear
-                        nuevo usuario
+                    <button style="margin-bottom: 10px;" class="btn btn-sm" [routerLink]="['/registrarEmpleado']">
+                        Crear usuario
                     </button>
                 </div>
                 <div class="d-flex flex-wrap justify-content-around">
                     <button style="margin-bottom: 10px;" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Mostrar lista
+                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
+                        Mostrar lista
                     </button>
                 </div>
                 <div class="d-flex flex-wrap justify-content-around">
                     <button *ngIf="lista_inactivos" (click)="ListarInactivos()" class="btn btn-primary"
                         style="margin-bottom: 20px;" matSuffix matTooltipPosition="right"
-                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">LISTAR USUARIOS
-                        INACTIVOS</button>
+                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">
+                        LISTAR USUARIOS INACTIVOS
+                    </button>
                     <button *ngIf="lista_activos" (click)="ListarActivos()" class="btn btn-primary"
                         style="margin-bottom: 20px;" matSuffix matTooltipPosition="right"
-                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">LISTAR USUARIOS
-                        ACTIVOS</button>
+                        matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">
+                        LISTAR USUARIOS ACTIVOS
+                    </button>
                 </div>
             </mat-card>
         </div>
@@ -37,7 +40,9 @@
                     <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                        matTooltip="Dar click para selecionar plantilla y cargar registros.">Subir plantilla</label>
+                        matTooltip="Dar click para selecionar plantilla y cargar registros.">
+                        Subir plantilla
+                    </label>
                 </form>
                 <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
                     matTooltip="Dar click para ver o descargar el documento." href="{{link}}">
@@ -49,19 +54,26 @@
         </div>
     </div>
 </div>
+
 <!-- LISTA DE EMPLEADOS QUE HAN SIDO INACTIVADOS O QUE YA NO FORMAN PARTE DE LA EMPRESA -->
 <div *ngIf="Hab_Deshabilitados" class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <mat-icon class="flex-shrink-1 bd-highlight" (click)="HabilitarSeleccionDesactivados()" matSuffix
                 matTooltipPosition="right" matTooltip="Selección múltiple para habilitar empleados." id="SelectCheck">
-                library_add_check</mat-icon>
-            <button *ngIf="btnCheckDeshabilitado" class="btn btn-outline-light" style="float: left; margin-left: 10px;"
-                (click)="Deshabilitar(2)">Habilitar</button>
-            <button *ngIf="btnCheckDeshabilitado" class="btn btn-outline-light" style="float: left; margin-left: 10px;"
-                (click)="Deshabilitar(3)">Reincorporar</button>
+                library_add_check
+            </mat-icon>
+            <button *ngIf="btnCheckDeshabilitado" class="btn btn-primary btn-outline-light"
+                style="float: left; margin-left: 10px;" (click)="Deshabilitar(2)">
+                Habilitar
+            </button>
+            <button *ngIf="btnCheckDeshabilitado" class="btn btn-info btn-outline-light"
+                style="float: left; margin-left: 10px;" (click)="Deshabilitar(3)">
+                Reincorporar
+            </button>
             <span class="w-100 bd-highlight">
-                LISTA DE USUARIOS INACTIVOS</span>
+                LISTA DE USUARIOS INACTIVOS
+            </span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -122,17 +134,22 @@
         </div>
     </div>
 </div>
+
 <!-- LISTA DE EMPLEADOS QUE FORMAN PARTE DE LA EMPRESA -->
 <div *ngIf="tabla_activos" class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <mat-icon class="flex-shrink-1 bd-highlight" (click)="HabilitarSeleccion()" matSuffix
                 matTooltipPosition="right" matTooltip="Selección múltiple para inhabilitar empleados." id="SelectCheck">
-                library_add_check</mat-icon>
-            <button *ngIf="btnCheckHabilitar" class="btn btn-primary" style="float: left; margin-left: 10px;"
-                (click)="Deshabilitar(1)">Confirmar</button>
+                library_add_check
+            </mat-icon>
+            <button *ngIf="btnCheckHabilitar" class="btn btn-primary btn-outline-light"
+                style="float: left; margin-left: 10px;" (click)="Deshabilitar(1)">
+                Confirmar
+            </button>
             <span class="w-100 bd-highlight">
-                LISTA DE USUARIOS ACTIVOS</span>
+                LISTA DE USUARIOS ACTIVOS
+            </span>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -187,7 +204,8 @@
                         <td>
                             <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
                                 matTooltip="Búsqueda de empleado de acuerdo a cada columna de la tabla.">
-                                help_outline</mat-icon>
+                                help_outline
+                            </mat-icon>
                         </td>
                     </tr>
                     <tr

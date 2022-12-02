@@ -61,7 +61,7 @@ export class TipoComidasComponent implements OnInit {
     });
   }
 
-  /** MÉTODO PARA BUSCAR LOS MENÚS REGISTRADOS EN EL SERVICIO SELECCIONADO */
+  /** METODO PARA BUSCAR LOS MENÚS REGISTRADOS EN EL SERVICIO SELECCIONADO */
   tipoComidas: any = [];
   duplicidad: number = 0;
   InsertarTipoComida(form) {

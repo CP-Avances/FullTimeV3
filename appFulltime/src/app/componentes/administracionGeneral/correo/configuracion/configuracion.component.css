@@ -8,17 +8,17 @@
 }
 
 #datosF {
+    padding-right: 5px;
     font-weight: bold;
     font-size: 15px;
-    padding-right: 5px;
 }
 
 #logo {
-    color: rgb(255, 255, 255);
     font-size: 50px;
     position: relative;
-    top: 10px;
     cursor: pointer;
+    color: rgb(255, 255, 255);
+    top: 10px;
 }
 
 .btn-contenedor {

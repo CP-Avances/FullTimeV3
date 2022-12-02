@@ -1,66 +1,109 @@
 import { Request, Response } from 'express';
-const builder = require('xmlbuilder');
-import pool from '../../database';
+import { QueryResult } from 'pg';
 import moment from 'moment';
 import excel from 'xlsx';
+import pool from '../../database';
 import fs from 'fs';
+const builder = require('xmlbuilder');
 
 class FeriadosControlador {
 
-    // CONSULTA DE LISTA DE FERIADOS ORDENADOS POR SU DESCRIPCIÓN
+    // CONSULTA DE LISTA DE FERIADOS ORDENADOS POR SU DESCRIPCION
     public async ListarFeriados(req: Request, res: Response) {
-        const FERIADOS = await pool.query('SELECT * FROM cg_feriados ORDER BY descripcion ASC');
+        const FERIADOS = await pool.query(
+            `
+            SELECT * FROM cg_feriados ORDER BY descripcion ASC
+            `
+        );
         if (FERIADOS.rowCount > 0) {
             return res.jsonp(FERIADOS.rows)
         }
         else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
         }
     }
 
-    // CONSULTA DE FERIDOS EXCEPTO EL REGISTRO QUE SE VA A ACTUALIZAR
-    public async ListarFeriadosActualiza(req: Request, res: Response) {
+    // METODO PARA ELIMINAR UN REGISTRO DE FERIADOS
+    public async EliminarFeriado(req: Request, res: Response): Promise<any> {
         const id = req.params.id;
-        const FERIADOS = await pool.query('SELECT * FROM cg_feriados WHERE NOT id = $1', [id]);
-        if (FERIADOS.rowCount > 0) {
-            return res.jsonp(FERIADOS.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
+        await pool.query(
+            `
+            DELETE FROM cg_feriados WHERE id = $1
+            `
+            , [id]);
+        res.jsonp({ text: 'Registro eliminado.' });
     }
 
-    // OBTENER ÚLTIMO REGISTRO DE LISTA DE FERIADOS
-    public async ObtenerUltimoId(req: Request, res: Response) {
-        const FERIADOS = await pool.query('SELECT MAX(id) FROM cg_feriados');
-        if (FERIADOS.rowCount > 0) {
-            return res.jsonp(FERIADOS.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
+    // METODO PARA CREAR ARCHIVO EN FORMATO XML
+    public async FileXML(req: Request, res: Response): Promise<any> {
+        var xml = builder.create('root').ele(req.body).end({ pretty: true });
+        let filename = "Feriados-" + req.body.userName + '-' + req.body.userId + '-' +
+            new Date().getTime() + '.xml';
+        fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+        });
+        res.jsonp({ text: 'XML creado', name: filename });
     }
 
-    // MÉTODO PARA ACTUALIZAR UN FERIADO
-    public async ActualizarFeriado(req: Request, res: Response) {
+    // METODO PARA DESCARGAR ARCHIVO XML DE FERIADOS
+    public async downloadXML(req: Request, res: Response): Promise<any> {
+        const name = req.params.nameXML;
+        let filePath = `servidor\\xmlDownload\\${name}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+    }
+
+    // METODO PARA CREAR REGISTRO DE FERIADO
+    public async CrearFeriados(req: Request, res: Response): Promise<Response> {
         try {
-            const { fecha, descripcion, fec_recuperacion, id } = req.body;
-            await pool.query('UPDATE cg_feriados SET fecha = $1, descripcion = $2, fec_recuperacion = $3 ' +
-                'WHERE id = $4', [fecha, descripcion, fec_recuperacion, id]);
-            res.jsonp({ message: 'Feriado actualizado exitosamente' });
+            const { fecha, descripcion, fec_recuperacion } = req.body;
+
+            const response: QueryResult = await pool.query(
+                `
+                INSERT INTO cg_feriados (fecha, descripcion, fec_recuperacion) 
+                VALUES ($1, $2, $3) RETURNING *
+                `
+                , [fecha, descripcion, fec_recuperacion]);
+
+            const [feriado] = response.rows;
+
+            if (feriado) {
+                return res.status(200).jsonp(feriado)
+            }
+            else {
+                return res.status(404).jsonp({ message: 'error' })
+            }
         }
         catch (error) {
             return res.jsonp({ message: 'error' });
         }
     }
 
-    // MÉTODO PARA CREAR REGISTRO DE FERIADO
-    public async CrearFeriados(req: Request, res: Response) {
+    // CONSULTA DE FERIDOS EXCEPTO EL REGISTRO QUE SE VA A ACTUALIZAR
+    public async ListarFeriadosActualiza(req: Request, res: Response) {
+        const id = req.params.id;
+        const FERIADOS = await pool.query(
+            `
+            SELECT * FROM cg_feriados WHERE NOT id = $1
+            `
+            , [id]);
+        if (FERIADOS.rowCount > 0) {
+            return res.jsonp(FERIADOS.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+    // METODO PARA ACTUALIZAR UN FERIADO
+    public async ActualizarFeriado(req: Request, res: Response) {
         try {
-            const { fecha, descripcion, fec_recuperacion } = req.body;
-            await pool.query('INSERT INTO cg_feriados (fecha, descripcion, fec_recuperacion) ' +
-                'VALUES ($1, $2, $3)', [fecha, descripcion, fec_recuperacion]);
-            res.jsonp({ message: 'Feriado guardado' });
+            const { fecha, descripcion, fec_recuperacion, id } = req.body;
+            await pool.query(
+                `
+                UPDATE cg_feriados SET fecha = $1, descripcion = $2, fec_recuperacion = $3
+                WHERE id = $4
+                `
+                , [fecha, descripcion, fec_recuperacion, id]);
+            res.jsonp({ message: 'Registro actualizado.' });
         }
         catch (error) {
             return res.jsonp({ message: 'error' });
@@ -70,14 +113,47 @@ class FeriadosControlador {
     // CONSULTA DE DATOS DE UN REGISTRO DE FERIADO
     public async ObtenerUnFeriado(req: Request, res: Response): Promise<any> {
         const { id } = req.params;
-        const FERIADO = await pool.query('SELECT * FROM cg_feriados WHERE id = $1', [id]);
+        const FERIADO = await pool.query(
+            `
+            SELECT * FROM cg_feriados WHERE id = $1
+            `
+            , [id]);
         if (FERIADO.rowCount > 0) {
             return res.jsonp(FERIADO.rows)
         }
-        res.status(404).jsonp({ text: 'Registros no encontrados' });
+        res.status(404).jsonp({ text: 'Registros no encontrados.' });
     }
 
-    // MÉTODO PARA REVISAR LOS DATOS DE LA PLANTILLA DENTRO DEL SISTEMA - MENSAJES DE CADA ERROR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // METODO PARA REVISAR LOS DATOS DE LA PLANTILLA DENTRO DEL SISTEMA - MENSAJES DE CADA ERROR
     public async RevisarDatos(req: Request, res: Response): Promise<void> {
         let list: any = req.files;
         let cadena = list.uploads[0].path;
@@ -367,32 +443,9 @@ class FeriadosControlador {
         fs.unlinkSync(filePath);
     }
 
-    // MÉTODO PARA CREAR ARCHIVO EN FORMATO XML
-    public async FileXML(req: Request, res: Response): Promise<any> {
-        var xml = builder.create('root').ele(req.body).end({ pretty: true });
-        let filename = "Feriados-" + req.body.userName + '-' + req.body.userId + '-' +
-            new Date().getTime() + '.xml';
-        fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-            if (err) {
-                return console.log(err);
-            }
-        });
-        res.jsonp({ text: 'XML creado', name: filename });
-    }
 
-    // MÉTODO PARA DESCARGAR ARCHIVO XML DE FERIADOS
-    public async downloadXML(req: Request, res: Response): Promise<any> {
-        const name = req.params.nameXML;
-        let filePath = `servidor\\xmlDownload\\${name}`
-        res.sendFile(__dirname.split("servidor")[0] + filePath);
-    }
 
-    // MÉTODO PARA ELIMINAR UN REGISTRO DE FERIADOS
-    public async EliminarFeriado(req: Request, res: Response): Promise<any> {
-        const id = req.params.id;
-        await pool.query('DELETE FROM cg_feriados WHERE id = $1', [id]);
-        res.jsonp({ text: 'registro eliminado' });
-    }
+
 }
 
 const FERIADOS_CONTROLADOR = new FeriadosControlador();

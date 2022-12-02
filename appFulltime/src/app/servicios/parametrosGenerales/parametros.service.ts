@@ -16,39 +16,62 @@ export class ParametrosService {
     return this.http.get<any>(`${environment.url}/parametrizacion`);
   }
 
-  ListarDetalleParametros(id: number) {
-    return this.http.get<any>(`${environment.url}/parametrizacion/${id}`);
-  }
-
-  ListarUnParametro(id: number) {
-    return this.http.get<any>(`${environment.url}/parametrizacion/ver-parametro/${id}`);
-  }
-
-  IngresarTipoParametro(data: any) {
-    return this.http.post(`${environment.url}/parametrizacion/tipo`, data);
-  }
-
-  IngresarDetalleParametro(data: any) {
-    return this.http.post(`${environment.url}/parametrizacion/detalle`, data);
-  }
-
-  EliminarDetalleParametro(id: number) {
-    return this.http.delete<any>(`${environment.url}/parametrizacion/eliminar-detalle/${id}`);
-  }
-
+  // ELIMINAR REGISTRO DE PARAMETRO
   EliminarTipoParametro(id: number) {
     return this.http.delete<any>(`${environment.url}/parametrizacion/eliminar-tipo/${id}`);
   }
 
-  ActualizarDetalleParametro(datos: any) {
-    return this.http.put(`${environment.url}/parametrizacion/actual-detalle`, datos);
-  }
-
+  // ACTUALIZAR REGISTRO PARAMETRO
   ActualizarTipoParametro(datos: any) {
     return this.http.put(`${environment.url}/parametrizacion/actual-tipo`, datos);
   }
 
-  DownloadXMLRest(data: any) {
+  // METODO PARA BUSCAR DATOS DE UN PARAMETRO
+  ListarUnParametro(id: number) {
+    return this.http.get<any>(`${environment.url}/parametrizacion/ver-parametro/${id}`);
+  }
+
+  // METODO PARA LISTAR DETALLES DE PARAMETRO
+  ListarDetalleParametros(id: number) {
+    return this.http.get<any>(`${environment.url}/parametrizacion/${id}`);
+  }
+
+  // METODO PARA ELIMINAR DETALLE DE PARAMETRO
+  EliminarDetalleParametro(id: number) {
+    return this.http.delete<any>(`${environment.url}/parametrizacion/eliminar-detalle/${id}`);
+  }
+
+  // METODO PARA REGISTRAR DETALLE DE PARAMETRO
+  IngresarDetalleParametro(data: any) {
+    return this.http.post(`${environment.url}/parametrizacion/detalle`, data);
+  }
+
+  // METODO PARA ACTUALIZAR DETALLE DE PARAMETRO
+  ActualizarDetalleParametro(datos: any) {
+    return this.http.put(`${environment.url}/parametrizacion/actual-detalle`, datos);
+  }
+
+  // REGISTRAR PARAMETRO
+  IngresarTipoParametro(data: any) {
+    return this.http.post(`${environment.url}/parametrizacion/tipo`, data);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  CrearXML(data: any) {
     return this.http.post(`${environment.url}/parametrizacion/xmlDownload`, data);
   }
 

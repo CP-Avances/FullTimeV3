@@ -6,15 +6,73 @@ const builder = require('xmlbuilder');
 
 class RelojesControlador {
 
+    // METODO PARA BUSCAR DISPOSITIVOS
     public async ListarRelojes(req: Request, res: Response) {
-        const RELOJES = await pool.query('SELECT * FROM NombreDispositivos');
+        const RELOJES = await pool.query(
+            `
+            SELECT cr.id, cr.nombre, cr.ip, cr.puerto, cr.contrasenia, cr.marca, cr.modelo, cr.serie,
+                cr.id_fabricacion, cr.fabricante, cr.mac, cr.tien_funciones, cr.id_sucursal, 
+                cr.id_departamento, cr.numero_accion, cd.nombre AS nomdepar, s.nombre AS nomsucursal, 
+                e.nombre AS nomempresa, c.descripcion AS nomciudad
+            FROM cg_relojes cr, cg_departamentos cd, sucursales s, ciudades c, cg_empresa e
+            WHERE cr.id_departamento = cd.id AND cd.id_sucursal = cr.id_sucursal AND 
+                cr.id_sucursal = s.id AND s.id_empresa = e.id AND s.id_ciudad = c.id;
+            `
+        );
         if (RELOJES.rowCount > 0) {
             return res.jsonp(RELOJES.rows)
         }
         else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
         }
     }
+
+    // METODO PARA ELIMINAR REGISTROS
+    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+        const id = req.params.id;
+        await pool.query(
+            `
+            DELETE FROM cg_relojes WHERE id = $1
+            `
+            , [id]);
+        res.jsonp({ message: 'Registro eliminado.' });
+    }
+
+    // METODO PARA CREAR ARCHIVO XML
+    public async FileXML(req: Request, res: Response): Promise<any> {
+        var xml = builder.create('root').ele(req.body).end({ pretty: true });
+        let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+        fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+        });
+        res.jsonp({ text: 'XML creado', name: filename });
+    }
+
+    // METODO PARA DESCARGAR ARCHIVO XML
+    public async downloadXML(req: Request, res: Response): Promise<any> {
+        const name = req.params.nameXML;
+        let filePath = `servidor\\xmlDownload\\${name}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public async ListarUnReloj(req: Request, res: Response): Promise<any> {
         const { id } = req.params;
@@ -256,30 +314,8 @@ class RelojesControlador {
         fs.unlinkSync(filePath);
     }
 
-    public async FileXML(req: Request, res: Response): Promise<any> {
-        var xml = builder.create('root').ele(req.body).end({ pretty: true });
-        console.log(req.body.userName);
-        let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-        fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-            if (err) {
-                return console.log(err);
-            }
-            console.log("Archivo guardado");
-        });
-        res.jsonp({ text: 'XML creado', name: filename });
-    }
 
-    public async downloadXML(req: Request, res: Response): Promise<any> {
-        const name = req.params.nameXML;
-        let filePath = `servidor\\xmlDownload\\${name}`
-        res.sendFile(__dirname.split("servidor")[0] + filePath);
-    }
 
-    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        await pool.query('DELETE FROM cg_relojes WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
-    }
 
 }
 

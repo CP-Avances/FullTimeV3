@@ -1,5 +1,5 @@
 
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { ITableEmpleados, IReporteTimbresIncompletos } from 'src/app/model/reportes.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -11,7 +11,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
 
-// IMPORTACIÓN DE SERVICIOS
+// IMPORTACION DE SERVICIOS
 import { ReportesAsistenciasService } from 'src/app/servicios/reportes/reportes-asistencias.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
@@ -25,11 +25,11 @@ import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 
 export class TimbreIncompletoComponent implements OnInit, OnDestroy {
 
-  // MÉTODO PARA VERIFICACIÓN DE INGRESO DE FECHAS
+  // METODO PARA VERIFICACIÓN DE INGRESO DE FECHAS
   get rangoFechas() { return this.reporteService.rangoFechas };
-  // VARIABLE QUE INDICA NÚMERO DE OPCIONES DE BÚSQUEDA
+  // VARIABLE QUE INDICA NÚMERO DE OPCIONES DE BUSQUEDA
   get opcion() { return this.reporteService.opcion };
-  // MÉTODO QUE INDICA OPCIONES DE BÚSQUEDA SELECCIONADOS
+  // METODO QUE INDICA OPCIONES DE BUSQUEDA SELECCIONADOS
   get bool() { return this.reporteService.criteriosBusqueda };
 
   // VARIABLES DE ALMACENAMIENTO DE DATOS
@@ -42,7 +42,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
   // VARIABLE DE ALMACENAMIENTO DE DATOS PARA PDF
   data_pdf: any = [];
 
-  // VARIABLES DE SELECCIÓN DE DATOS DE BÚSQUEDA
+  // VARIABLES DE SELECCIÓN DE DATOS DE BUSQUEDA
   selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
   selectionDep = new SelectionModel<ITableEmpleados>(true, []);
   selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
@@ -251,7 +251,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -382,13 +382,13 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
         }
 
         obj1.empleado.forEach((obj2: any) => {
-          // MÉTODO PARA CONTAR NÚMERO DE REGISTROS DE TIMBRES INCOMPLETOS
+          // METODO PARA CONTAR NÚMERO DE REGISTROS DE TIMBRES INCOMPLETOS
           let total = [];
           obj2.timbres.forEach(t => {
             total = total.concat(t.timbres_hora);
             return total.length;
           })
-          // MÉTODO PARA MOSTRAR GÉNERO DE LA PERSONA
+          // METODO PARA MOSTRAR GÉNERO DE LA PERSONA
           let genero = '';
           (obj2.genero === 1) ? genero = 'M' : genero = 'F';
           // LA CABECERA QUE GENERA EL PDF POR EMPLEADOS
@@ -428,7 +428,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
             }
           });
 
-          // MÉTODO PARA TOMAR SOLO TIMBRES INCOMPLETOS DEL EMPLEADO
+          // METODO PARA TOMAR SOLO TIMBRES INCOMPLETOS DEL EMPLEADO
           let datos: number = 0;
           let timbre_i = [];
           let arr_reg = obj2.timbres.map(t => {
@@ -492,7 +492,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel(tipo: string): void {
     switch (tipo) {
@@ -617,7 +617,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO PARA MANEJO DE PIE DE PÁGINA
+  // METODO PARA MANEJO DE PIE DE PÁGINA
   ManejarPagina(e: PageEvent) {
     if (this.bool.bool_suc === true) {
       this.tamanio_pagina_suc = e.pageSize;
@@ -631,7 +631,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
     }
   }
 
-  // MÉTODOS DE VALIDACIONES DE INGRESO DE LETRAS Y NÚMEROS
+  // METODOS DE VALIDACIONES DE INGRESO DE LETRAS Y NÚMEROS
   IngresarSoloLetras(e) {
     return this.validacionService.IngresarSoloLetras(e)
   }

@@ -12,32 +12,29 @@ export class VacunacionService {
 
   ) { }
 
-  // SERVICIO REGISTROS DE VACUNACIÓN
-  CrearRegistroVacunacion(data: any) {
-    return this.http.post<any>(`${environment.url}/vacunas`, data);
-  }
-
+  // METODO PARA BUSCAR REGISTROS DE VACUNA DE UN EMPLEADO
   ObtenerVacunaEmpleado(id_empleado: number) {
     return this.http.get(`${environment.url}/vacunas/${id_empleado}`);
   }
 
-  ActualizarRegistroVacuna(id: number, data: any) {
-    return this.http.put(`${environment.url}/vacunas/${id}`, data);
+  // LISTAR TIPO DE VACUNAS
+  ListarTiposVacuna() {
+    return this.http.get(`${environment.url}/vacunas/lista/tipo_vacuna`);
   }
 
-  EliminarRegistroVacuna(id: number, documento: string) {
-    return this.http.delete(`${environment.url}/vacunas/eliminar/${id}/${documento}`);
+  // SERVICIO REGISTROS DE VACUNACIÓN
+  RegistrarVacunacion(data: any) {
+    return this.http.post<any>(`${environment.url}/vacunas`, data);
   }
 
-  SubirDocumento(formData, id: number, nombre: string) {
+  // METODO PARA SUBIR UN DOCUMENTO
+  SubirDocumento(formData: any, id: number, nombre: string) {
     return this.http.put(`${environment.url}/vacunas/${id}/documento/${nombre}`, formData)
   }
 
-
-  
-  // ELIMINAR CARNET DE VACUNA
-  EliminarArchivo(datos: any) {
-    return this.http.put(`${environment.url}/vacunas/eliminar_carnet/base_servidor`, datos)
+  // METODO PARA ACTUALIZAR REGISTRO
+  ActualizarVacunacion(id: number, data: any) {
+    return this.http.put(`${environment.url}/vacunas/${id}`, data);
   }
 
   // ELIMINAR CARNET DE VACUNA DEL SERVIDOR
@@ -45,15 +42,20 @@ export class VacunacionService {
     return this.http.put(`${environment.url}/vacunas/eliminar_carnet/servidor`, datos)
   }
 
+  // ELIMINAR CARNET DE VACUNA
+  EliminarArchivo(datos: any) {
+    return this.http.put(`${environment.url}/vacunas/eliminar_carnet/base_servidor`, datos)
+  }
 
+  // METODO PARA ELIMINAR REGISTRO VACUNA EMPLEADO
+  EliminarRegistroVacuna(id: number, documento: string) {
+    return this.http.delete(`${environment.url}/vacunas/eliminar/${id}/${documento}`);
+  }
 
-
-  // SERVICIOS DE REGISTROS DE TIPO DE VACUNACIÓN
+  // METODO DE REGISTROS DE TIPO DE VACUNACION
   CrearTipoVacuna(data: any) {
     return this.http.post<any>(`${environment.url}/vacunas/tipo_vacuna`, data);
   }
 
-  ListarTiposVacuna() {
-    return this.http.get(`${environment.url}/vacunas/lista/tipo_vacuna`);
-  }
+
 }

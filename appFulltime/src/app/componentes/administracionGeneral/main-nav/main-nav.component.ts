@@ -4,13 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { map, shareReplay } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Location } from '@angular/common';
-import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 
-import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
 import { FuncionesService } from 'src/app/servicios/funciones/funciones.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
@@ -35,30 +34,30 @@ export class MainNavComponent implements OnInit {
       shareReplay()
     );
 
-  id_empleado_logueado: number;
-
+  // CONTROL DE MENU
   treeControl = new NestedTreeControl<MenuNode>(node => node.children);
   dataSource = new MatTreeNestedDataSource<MenuNode>();
 
+  // VARIABLES DE ALMACENAMIENTO
   idEmpresa: number;
   datosEmpresa: any = [];
-  mensaje: boolean = false;
+  id_empleado_logueado: number;
 
+  // VERIFICAR LICENCIA
   fec_caducidad_licencia: Date;
 
   constructor(
-    private breakpointObserver: BreakpointObserver,
-    public location: Location,
-    public restUsuario: UsuarioService,
-    public loginService: LoginService,
-    public restEmpresa: EmpresaService,
     public restF: FuncionesService,
+    public inicio: LoginService,
     public ventana: MatDialog,
+    public location: Location,
+    public restEmpresa: EmpresaService,
+    public restUsuario: UsuarioService,
+    private route: ActivatedRoute,
     private router: Router,
     private toaster: ToastrService,
-    private plantillaPDF: PlantillaReportesService,
-    private route: ActivatedRoute,
-    private mainService: MainNavService
+    private funciones: MainNavService,
+    private breakpointObserver: BreakpointObserver,
   ) { }
 
   hasChild = (_: number, node: MenuNode) => !!node.children && node.children.length > 0;
@@ -67,20 +66,22 @@ export class MainNavComponent implements OnInit {
   isShowing = false;
   barraInicial = false;
 
+  // EVENTOS DE SELECCION DE MENU
   mouseenter() {
     if (!this.isExpanded) {
       this.isShowing = true;
     }
   }
 
+  // EVENTOS DE SELECCION DE MEN
   mouseleave() {
     if (!this.isExpanded) {
       this.isShowing = false;
     }
   }
 
+  // METODO PARA MOSTRAR DATOS DE LICENCIA DEL SISTEMA
   showMessageLicencia: Boolean = false;
-
   FuncionLicencia() {
     const licencia = localStorage.getItem('fec_caducidad_licencia');
     if (licencia !== null) {
@@ -101,57 +102,37 @@ export class MainNavComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    // ES IMPORTANTE EL ORDEN EN EL Q SE INVOCAN LAS FUNCIONES.
-    if (this.loginService.loggedIn()) {
+    // ES IMPORTANTE EL ORDEN EN EL QUE SE INVOCAN LAS FUNCIONES
+    if (this.inicio.loggedIn()) {
       this.idEmpresa = parseInt(localStorage.getItem('empresa'))
-
-      this.FuncionLicencia()
-
-      this.mainService.LogicaFunciones()
-      this.plantillaPDF.ShowColoresLogo(localStorage.getItem('empresa'))
+      this.FuncionLicencia();
+      this.funciones.LogicaFunciones();
       this.breakpointObserver.observe('(max-width: 800px)').subscribe((result: BreakpointState) => {
         this.barraInicial = result.matches;
       });
       this.LlamarDatos();
     }
-
   }
 
-  get color_p(): string { return this.plantillaPDF.color_Primary }
-  get color_s(): string { return this.plantillaPDF.color_Secundary }
-  get logo(): string { return this.plantillaPDF.logoBase64 }
-
+  // METODO PARA MOSTRAR METODOS
   LlamarDatos() {
     this.id_empleado_logueado = parseInt(localStorage.getItem('empleado'));
-    if (this.logo === 'undefined' || this.color_p === 'undefined' || this.color_s === 'undefined') {
-      this.toaster.error('Falta agregar estilo o logotipo de la empresa para imprimir PDFs', 'Error configuración', { timeOut: 10000 })
-        .onTap.subscribe(obj => {
-          this.IrInfoEmpresa()
-        })
-      this.mensaje = true;
-    } else {
-      this.mensaje = false;
-      this.SeleccionMenu();
-    }
+    this.SeleccionMenu();
     this.ConfigurarSeguridad();
   }
 
-  IrInfoEmpresa() {
-    this.router.navigate(['/vistaEmpresa', this.idEmpresa], { relativeTo: this.route, skipLocationChange: false })
-  }
-
+  // METODO PARA VALIDAR FRASE DE SEGURIDAD
   ConfigurarSeguridad() {
-
     this.restEmpresa.ConsultarDatosEmpresa(this.idEmpresa).subscribe(datos => {
       this.datosEmpresa = datos;
       if (this.datosEmpresa[0].seg_frase === true) {
         this.restUsuario.BuscarDatosUser(this.id_empleado_logueado).subscribe(data => {
           if (data[0].id_rol === 1) {
             if (data[0].frase === null || data[0].frase === '') {
-              this.toaster.info('Debe registrar su frase de seguridad.', 'Configuración doble seguridad', { timeOut: 10000 })
+              this.toaster.info('Debe registrar su frase de seguridad.',
+                'Configuración doble seguridad.', { timeOut: 10000 })
                 .onTap.subscribe(obj => {
-                  this.RegistrarFrase()
+                  this.RegistrarFrase();
                 })
             }
           }
@@ -160,102 +141,94 @@ export class MainNavComponent implements OnInit {
     });
   }
 
+  // METODO PARA REGISTRAR FRASE DE SEGURIDAD
   RegistrarFrase() {
     this.ventana.open(FraseSeguridadComponent,
       { width: '350px', data: this.id_empleado_logueado }).disableClose = true;
   }
 
+  // METODO DE NAVEGACION SEGUN ROL DE ACCESO
   irHome() {
-    if (this.loginService.getRol() === 1) {
+    if (this.inicio.getRol() === 1) {
       this.router.navigate(['/home'], { relativeTo: this.route, skipLocationChange: false });
     } else {
       this.router.navigate(['/estadisticas'], { relativeTo: this.route, skipLocationChange: false });
     }
   }
 
+  // CONTROL DE FUNCIONES DEL SISTEMA
+  get HabilitarGeolocalizacion(): boolean { return this.funciones.geolocalizacion; }
+  get HabilitarAlimentacion(): boolean { return this.funciones.alimentacion; }
+  get HabilitarVacaciones(): boolean { return this.funciones.vacaciones; }
+  get HabilitarHoraExtra(): boolean { return this.funciones.horasExtras; }
+  get HabilitarPermisos(): boolean { return this.funciones.permisos; }
+  get HabilitarReportes(): boolean { return this.funciones.reportes; }
+  get HabilitarAccion(): boolean { return this.funciones.accionesPersonal; }
+  get HabilitarMovil(): boolean { return this.funciones.app_movil; }
 
-  get HabilitarAccion(): boolean { return this.mainService.accionesPersonal; }
-  get HabilitarHoraExtra(): boolean { return this.mainService.horasExtras; }
-  get HabilitarAlimentacion(): boolean { return this.mainService.alimentacion; }
-  get HabilitarPermisos(): boolean { return this.mainService.permisos; }
-  get HabilitarReportes(): boolean { return this.mainService.reportes; }
-
-  /**
-   * MENU PRINCIPAL
-  */
-
+  // CONTROL DE MENU PRINCIPAL
   nombreSelect: string = '';
-  manejarEstadoActivo(name) {
+  manejarEstadoActivo(name: any) {
     this.nombreSelect = name;
   }
 
+  // METODO DE SELECCION DE MENU
   SeleccionMenu() {
-
     const name_emp = localStorage.getItem('name_empresa');
-    const tipo_empresa = localStorage.getItem('tipo_empresa');
-
-    if (name_emp !== null && tipo_empresa !== null) {
-
-      this.MetodoSubSelectMenu(name_emp, tipo_empresa)
-
+    if (name_emp !== null) {
+      this.MetodoSubSelectMenu(name_emp)
     } else {
       this.restEmpresa.ConsultarEmpresas().subscribe(res => {
-        console.log('Empresa: ', res);
         localStorage.setItem('name_empresa', res[0].nombre);
-        localStorage.setItem('tipo_empresa', res[0].tipo_empresa);
-        this.MetodoSubSelectMenu(res[0].nombre, res[0].tipo_empresa)
-
+        this.MetodoSubSelectMenu(res[0].nombre)
       })
-
     }
-
   }
 
-  MetodoSubSelectMenu(nombre: string, tipo_empresa: string) {
-    if (tipo_empresa === 'Pública') {
-      this.mainService.setAccionesPersonal(true);
-    }
-    else {
-      this.mainService.setAccionesPersonal(false);
-    }
-    if (this.loginService.getRolMenu() === true) {
+  // METODO DE LLMANADO DE MENU
+  MetodoSubSelectMenu(nombre: string) {
+    if (this.inicio.getRolMenu() === true) {
       this.dataSource.data = this.MenuAdministracion(nombre) as MenuNode[];
     } else {
       this.dataSource.data = this.MenuEmpleado() as MenuNode[];
     }
   }
 
+  // MENU PERFIL ADMINISTRADOR
   MenuAdministracion(nombre: string) {
     return [
       {
         name: 'Configuración',
         accion: true,
         estado: true,
+        color: true,
         icono: 'settings',
         children: [
           {
             name: 'Parametrización',
             accion: true,
             estado: true,
+            color: true,
             icono: 'widgets',
             children: [
-              { name: nombre, url: '/vistaEmpresa/' + localStorage.getItem('empresa') },
-              { name: 'Parámetros', url: '/parametros' },
-              { name: 'Correo', url: '/configurarCorreo/' + localStorage.getItem('empresa') },
-              { name: 'Roles', url: '/roles' },
-              { name: 'Régimen Laboral', url: '/listarRegimen' },
+              { name: nombre, url: '/vistaEmpresa/' + localStorage.getItem('empresa'), color: true },
+              { name: 'Parámetros', url: '/parametros', color: true },
+              { name: 'Correo', url: '/configurarCorreo/' + localStorage.getItem('empresa'), color: true },
+              { name: 'Roles', url: '/roles', color: true },
+              { name: 'Régimen Laboral', url: '/listarRegimen', color: true },
             ]
           },
           {
             name: 'Localización',
             accion: true,
             estado: true,
+            color: true,
             icono: 'location_on',
             children: [
-              { name: 'Provincia', url: '/provincia' },
-              { name: 'Ciudad', url: '/listarCiudades' },
-              { name: 'Establecimiento', url: '/sucursales' },
-              { name: 'Departamento', url: '/departamento' },
+              { name: 'Provincia', url: '/provincia', color: true },
+              { name: 'Ciudad', url: '/listarCiudades', color: true },
+              { name: 'Establecimiento', url: '/sucursales', color: true },
+              { name: 'Departamento', url: '/departamento', color: true },
             ]
           },
         ]
@@ -264,105 +237,178 @@ export class MainNavComponent implements OnInit {
         name: 'Usuarios',
         accion: true,
         estado: true,
+        color: true,
         icono: 'account_circle',
         children: [
-          { name: 'Configurar Código', url: '/codigo' },
-          { name: 'Nivel de Educación', url: '/nivelTitulos' },
-          { name: 'Título Profesional', url: '/titulos' },
-          { name: 'Empleados', url: '/empleado' },
+          { name: 'Configurar Código', url: '/codigo', color: true },
+          { name: 'Nivel de Educación', url: '/nivelTitulos', color: true },
+          { name: 'Título Profesional', url: '/titulos', color: true },
+          { name: 'Empleados', url: '/empleado', color: true },
         ]
       },
       {
         name: 'Planificación',
         accion: true,
         estado: true,
+        color: true,
         icono: 'assignment',
         children: [
-          { name: 'Feriados', url: '/listarFeriados' },
-          { name: 'Horarios', url: '/horario' },
-          { name: 'Planificación RangoFecha', url: '/horariosMultiples' },
-          { name: 'Planificación Múltiple', url: '/planificacion' },
+          { name: 'Feriados', url: '/listarFeriados', color: true },
+          { name: 'Horarios', url: '/horario', color: true },
+          { name: 'Planificación RangoFecha', url: '/horariosMultiples', color: true },
+          // { name: 'Planificación Múltiple', url: '/planificacion', color: true },
         ]
       },
       {
         name: 'Módulos',
         accion: true,
         estado: true,
+        color: true,
         icono: 'games',
         children: [
           {
             name: 'Permisos',
             accion: this.HabilitarPermisos,
-            estado: true,
+            estado: this.HabilitarPermisos,
+            color: true,
             icono: 'insert_emoticon',
             children: [
-              { name: 'Configurar Permisos', url: '/verTipoPermiso' },
-              { name: 'Permisos Múltiples', url: '/permisosMultiples' },
-              { name: 'Aprobación Múltiple', url: '/permisos-solicitados' },
+              { name: 'Configurar Permisos', url: '/verTipoPermiso', color: true },
+              { name: 'Permisos Múltiples', url: '/permisosMultiples', color: true },
+              { name: 'Aprobación Múltiple', url: '/permisos-solicitados', color: true },
+            ]
+          },
+          {
+            name: 'Permisos',
+            accion: !this.HabilitarPermisos,
+            estado: !this.HabilitarPermisos,
+            color: false,
+            activo: this.HabilitarPermisos,
+            icono: 'insert_emoticon',
+            url: '/verTipoPermiso'
+          },
+          {
+            name: 'Vacaciones',
+            accion: this.HabilitarVacaciones,
+            estado: this.HabilitarVacaciones,
+            icono: 'flight',
+            color: true,
+            children: [
+              { name: 'Aprobación Múltiple', url: '/vacaciones-solicitados', color: true },
             ]
           },
           {
             name: 'Vacaciones',
-            accion: this.HabilitarPermisos,
-            estado: true,
+            accion: !this.HabilitarVacaciones,
+            estado: !this.HabilitarVacaciones,
+            activo: this.HabilitarVacaciones,
             icono: 'flight',
-            children: [
-              { name: 'Aprobación Múltiple', url: '/vacaciones-solicitados' },
-            ]
+            color: false,
+            url: '/vacaciones-solicitados'
           },
           {
             name: 'Horas Extras',
             accion: this.HabilitarHoraExtra,
-            estado: true,
+            estado: this.HabilitarHoraExtra,
+            color: true,
             icono: 'schedule',
             children: [
-              { name: 'Configurar HoraExtra', url: '/listaHorasExtras' },
-              { name: 'Planificar Hora Extra', url: '/planificaHoraExtra' },
-              { name: 'Listar Planificación', url: '/listadoPlanificaciones' },
-              { name: 'Aprobación Múltiple', url: '/horas-extras-solicitadas' },
+              { name: 'Configurar HoraExtra', url: '/listaHorasExtras', color: true },
+              { name: 'Planificar Hora Extra', url: '/planificaHoraExtra', color: true },
+              { name: 'Listar Planificación', url: '/listadoPlanificaciones', color: true },
+              { name: 'Aprobación Múltiple', url: '/horas-extras-solicitadas', color: true },
             ]
+          },
+          {
+            name: 'Horas Extras',
+            accion: !this.HabilitarHoraExtra,
+            estado: !this.HabilitarHoraExtra,
+            activo: this.HabilitarHoraExtra,
+            icono: 'schedule',
+            color: false,
+            url: '/listaHorasExtras'
           },
           {
             name: 'Alimentación',
             accion: this.HabilitarAlimentacion,
-            estado: true,
+            estado: this.HabilitarAlimentacion,
             icono: 'local_dining',
+            color: true,
             children: [
-              { name: 'Configurar Servicio', url: '/listarTipoComidas' },
-              { name: 'Planificar Servicio', url: '/alimentacion' },
-              { name: 'Listar Planificación', url: '/listaPlanComida' },
-              { name: 'Aprobación Múltiple', url: '/listaSolicitaComida' },
+              { name: 'Configurar Servicio', url: '/listarTipoComidas', color: true },
+              { name: 'Planificar Servicio', url: '/alimentacion', color: true },
+              { name: 'Listar Planificación', url: '/listaPlanComida', color: true },
+              { name: 'Aprobación Múltiple', url: '/listaSolicitaComida', color: true },
             ]
+          },
+          {
+            name: 'Alimentación',
+            accion: !this.HabilitarAlimentacion,
+            estado: !this.HabilitarAlimentacion,
+            activo: this.HabilitarAlimentacion,
+            icono: 'local_dining',
+            color: false,
+            url: '/listarTipoComidas'
           },
           {
             name: 'Acción Personal',
             accion: this.HabilitarAccion,
-            estado: true,
+            estado: this.HabilitarAccion,
             icono: 'how_to_reg',
+            color: true,
             children: [
-              { name: 'Procesos', url: '/proceso' },
-              { name: 'Tipo Acción Personal', url: '/acciones-personal' },
-              { name: 'Pedido Acción Personal', url: '/pedidoAccion' },
-              { name: 'Listar Pedidos', url: '/listaPedidos' },
+              { name: 'Procesos', url: '/proceso', color: true },
+              { name: 'Tipo Acción Personal', url: '/acciones-personal', color: true },
+              { name: 'Pedido Acción Personal', url: '/pedidoAccion', color: true },
+              { name: 'Listar Pedidos', url: '/listaPedidos', color: true },
+            ]
+          },
+          {
+            name: 'Acción Personal',
+            accion: !this.HabilitarAccion,
+            estado: !this.HabilitarAccion,
+            activo: this.HabilitarAccion,
+            icono: 'how_to_reg',
+            color: false,
+            url: '/proceso'
+          },
+          {
+            name: 'Geolocalización',
+            accion: this.HabilitarGeolocalizacion,
+            estado: this.HabilitarGeolocalizacion,
+            icono: 'my_location',
+            color: true,
+            children: [
+              { name: 'Registrar Geolocalización', url: '/coordenadas', color: true },
             ]
           },
           {
             name: 'Geolocalización',
-            accion: this.HabilitarAccion,
-            estado: true,
+            accion: !this.HabilitarGeolocalizacion,
+            estado: !this.HabilitarGeolocalizacion,
+            activo: this.HabilitarGeolocalizacion,
             icono: 'my_location',
+            color: false,
+            url: '/coordenadas'
+          },
+          {
+            name: 'Aplicación Móvil',
+            accion: this.HabilitarMovil,
+            estado: this.HabilitarMovil,
+            icono: 'phone_android',
+            color: true,
             children: [
-              { name: 'Registrar Geolocalización', url: '/coordenadas' },
+              { name: 'Reloj Virtual', url: '/app-movil', color: true },
             ]
           },
           {
             name: 'Aplicación Móvil',
-            accion: this.HabilitarAccion,
-            estado: true,
+            accion: !this.HabilitarMovil,
+            estado: !this.HabilitarMovil,
+            activo: this.HabilitarMovil,
             icono: 'phone_android',
-            children: [
-              { name: 'Reloj Virtual', url: '/app-movil' },
-            ]
+            color: false,
+            url: '/app-movil'
           },
         ]
       },
@@ -371,11 +417,12 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         icono: 'fingerprint',
+        color: true,
         children: [
-          { name: 'Dispositivos', url: '/listarRelojes' },
-          { name: 'Timbre Teletrabajo', url: '/timbres-personal' },
-          { name: 'Timbres Múltiples', url: '/timbres-multiples' },
-          { name: 'Administrar Timbres', url: '/timbres-admin' },
+          { name: 'Dispositivos', url: '/listarRelojes', color: true },
+          { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: true },
+          { name: 'Timbres Múltiples', url: '/timbres-multiples', color: true },
+          { name: 'Administrar Timbres', url: '/timbres-admin', color: true },
         ]
       },
       {
@@ -383,35 +430,37 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         icono: 'notifications',
+        color: true,
         children: [
-          { name: 'Documentos', url: '/archivos' },
-          { name: 'Cumpleaños', url: '/cumpleanios' },
-          { name: 'Comunicados', url: '/comunicados' },
+          { name: 'Documentos', url: '/archivos', color: true },
+          { name: 'Cumpleaños', url: '/cumpleanios', color: true },
+          { name: 'Comunicados', url: '/comunicados', color: true },
         ]
       },
       {
-        //{ name: 'Reportes', url: '/listaReportes' },
         name: 'Reportes',
         accion: this.HabilitarReportes,
         estado: true,
         icono: 'description',
+        color: true,
         children: [
           {
             name: 'Generales',
             accion: this.HabilitarReportes,
             estado: true,
             icono: 'grid_view',
+            color: true,
             children: [
-              { name: 'Kardex', url: '/reporteKardex' },
-              { name: 'Timbres', url: '/reporteTimbres' },
-              { name: 'Atrasos', url: '/reporteAtrasos' },
-              { name: 'Permisos', url: '/reportePermisos' },
-              { name: 'Empleados', url: '/reporteEmpleados' },
-              { name: 'Entradas Salidas', url: '/reporteEntradaSalida' },
-              { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos' },
-              { name: 'Solicitudes Horas Extras', url: '/horas/extras' },
-              { name: 'Horas Extras Autorizaciones', url: '/reporteHorasExtras' },
-              { name: 'Asistencia Detalle Consolidado', url: '/reporteAsistenciaConsolidado' },
+              { name: 'Kardex', url: '/reporteKardex', color: true },
+              { name: 'Timbres', url: '/reporteTimbres', color: true },
+              { name: 'Atrasos', url: '/reporteAtrasos', color: true },
+              { name: 'Permisos', url: '/reportePermisos', color: true },
+              { name: 'Empleados', url: '/reporteEmpleados', color: true },
+              { name: 'Entradas Salidas', url: '/reporteEntradaSalida', color: true },
+              { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos', color: true },
+              { name: 'Solicitudes Horas Extras', url: '/horas/extras', color: true },
+              { name: 'Horas Extras Autorizaciones', url: '/reporteHorasExtras', color: true },
+              { name: 'Asistencia Detalle Consolidado', url: '/reporteAsistenciaConsolidado', color: true },
             ]
           },
           {
@@ -419,19 +468,20 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarReportes,
             estado: true,
             icono: 'watch_later',
+            color: true,
             children: [
-              { name: 'Faltas', url: '/reporte-faltas' },
-              //{ name: 'Atrasos', url: '/reporte-atrasos-multiples' },
-              { name: 'Timbres', url: '/reporte-timbres-multiples' },
-              { name: 'Timbre Teletrabajo', url: '/reporte-timbre-sistema' },
-              { name: 'Timbre Reloj Virtual', url: '/reporte-timbre-reloj-virtual' },
-              { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto' },
-              { name: 'Puntualidad', url: '/reporte-puntualidad' },
-              //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja' },
-              { name: 'Empleados Vacunados', url: '/lista-vacunados' },
-              //{ name: 'Timbre Incompleto', url: '/reporte-timbre-incompleto' },
-              //{ name: 'Salidas Anticipadas', url: '/salidas-anticipadas' },
-              { name: 'Vacaciones Solicitadas', url: '/solicitud-vacacion' },
+              { name: 'Faltas', url: '/reporte-faltas', color: true },
+              //{ name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
+              { name: 'Timbres', url: '/reporte-timbres-multiples', color: true },
+              { name: 'Timbre Teletrabajo', url: '/reporte-timbre-sistema', color: true },
+              { name: 'Timbre Reloj Virtual', url: '/reporte-timbre-reloj-virtual', color: true },
+              { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto', color: true },
+              { name: 'Puntualidad', url: '/reporte-puntualidad', color: true },
+              //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja', color: true },
+              { name: 'Empleados Vacunados', url: '/lista-vacunados', color: true },
+              //{ name: 'Timbre Incompleto', url: '/reporte-timbre-incompleto', color: true },
+              //{ name: 'Salidas Anticipadas', url: '/salidas-anticipadas', color: true },
+              { name: 'Vacaciones Solicitadas', url: '/solicitud-vacacion', color: true },
             ]
           },
           {
@@ -439,14 +489,15 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarReportes,
             estado: true,
             icono: 'leaderboard',
+            color: true,
             children: [
-              { name: 'Atrasos', url: '/macro/retrasos' },
-              { name: 'Timbres', url: '/macro/marcaciones' },
-              { name: 'Asistencia', url: '/macro/asistencia' },
-              { name: 'Inasistencia', url: '/macro/inasistencia' },
-              { name: 'Horas Extras', url: '/macro/hora-extra' },
-              { name: 'Salidas antes', url: '/macro/tiempo-jornada-vs-hora-ext' },
-              { name: 'Jornada vs Horas extras', url: '/macro/jornada-vs-hora-extra' },
+              { name: 'Atrasos', url: '/macro/retrasos', color: true },
+              { name: 'Timbres', url: '/macro/marcaciones', color: true },
+              { name: 'Asistencia', url: '/macro/asistencia', color: true },
+              { name: 'Inasistencia', url: '/macro/inasistencia', color: true },
+              { name: 'Horas Extras', url: '/macro/hora-extra', color: true },
+              { name: 'Salidas antes', url: '/macro/tiempo-jornada-vs-hora-ext', color: true },
+              { name: 'Jornada vs Horas extras', url: '/macro/jornada-vs-hora-extra', color: true },
             ]
           },
           {
@@ -454,10 +505,11 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarReportes,
             estado: true,
             icono: 'restaurant',
+            color: true,
             children: [
-              { name: 'Tickets Consumidos', url: '/alimentosGeneral' },
-              { name: 'Detalle Tickets Consumidos', url: '/alimentosDetallado' },
-              { name: 'Servicios Invitados', url: '/alimentosInvitados' },
+              { name: 'Tickets Consumidos', url: '/alimentosGeneral', color: true },
+              { name: 'Detalle Tickets Consumidos', url: '/alimentosDetallado', color: true },
+              { name: 'Servicios Invitados', url: '/alimentosInvitados', color: true },
             ]
           },
           {
@@ -465,9 +517,10 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarReportes,
             estado: true,
             icono: 'notifications_active',
+            color: true,
             children: [
-              { name: 'Todos', url: '/listaAllNotificaciones' },
-              { name: 'Usuarios', url: '/listaNotifacionUsuario' },
+              { name: 'Todos', url: '/listaAllNotificaciones', color: true },
+              { name: 'Usuarios', url: '/listaNotifacionUsuario', color: true },
             ]
           },
           {
@@ -475,8 +528,9 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarReportes,
             estado: true,
             icono: 'gavel',
+            color: true,
             children: [
-              { name: 'Auditoria', url: '/auditoria' },
+              { name: 'Auditoria', url: '/auditoria', color: true },
             ]
           },
         ]
@@ -484,6 +538,7 @@ export class MainNavComponent implements OnInit {
     ];
   }
 
+  // SELECCION MENU DE EMPLEADO
   MenuEmpleado() {
     return [
       {
@@ -491,6 +546,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         icono: 'account_circle',
+        color: true,
         children: [
           { name: 'Datos Generales', url: '/datosEmpleado' },
           { name: 'Contrato de Trabajo', url: '/cargoEmpleado' },
@@ -500,6 +556,7 @@ export class MainNavComponent implements OnInit {
         name: 'Asistencia',
         accion: true,
         estado: true,
+        color: true,
         icono: 'mobile_friendly',
         children: [
           { name: 'Planificación RangoFecha', url: '/horariosEmpleado' },
@@ -510,54 +567,105 @@ export class MainNavComponent implements OnInit {
         name: 'Módulos',
         accion: true,
         estado: true,
+        color: true,
         icono: 'games',
         children: [
           {
             name: 'Permisos',
             accion: this.HabilitarPermisos,
-            estado: true,
+            estado: this.HabilitarPermisos,
+            color: true,
             icono: 'transfer_within_a_station',
             children: [
-              { name: 'Solicitar Permiso', url: '/solicitarPermiso' },
+              { name: 'Solicitar Permiso', url: '/solicitarPermiso', color: true },
+            ]
+          },
+          {
+            name: 'Permisos',
+            accion: !this.HabilitarPermisos,
+            estado: !this.HabilitarPermisos,
+            activo: this.HabilitarPermisos,
+            color: false,
+            icono: 'transfer_within_a_station',
+            url: '/solicitarPermiso'
+          },
+          {
+            name: 'Vacaciones',
+            accion: this.HabilitarVacaciones,
+            estado: this.HabilitarVacaciones,
+            color: true,
+            icono: 'flight',
+            children: [
+              { name: 'Solicitar Vacaciones', url: '/vacacionesEmpleado', color: true },
             ]
           },
           {
             name: 'Vacaciones',
-            accion: true,
-            estado: true,
+            accion: !this.HabilitarVacaciones,
+            estado: !this.HabilitarVacaciones,
+            activo: this.HabilitarVacaciones,
+            color: false,
             icono: 'flight',
-            children: [
-              { name: 'Solicitar Vacaciones', url: '/vacacionesEmpleado' },
-            ]
+            url: '/vacacionesEmpleado'
           },
           {
             name: 'Horas Extras',
             accion: this.HabilitarHoraExtra,
-            estado: true,
+            estado: this.HabilitarHoraExtra,
+            color: true,
             icono: 'hourglass_full',
             children: [
-              { name: 'Solicitar Hora Extra', url: '/horaExtraEmpleado' },
-              { name: 'Planificación HorasExtras', url: '/horasPlanEmpleado' },
+              { name: 'Solicitar Hora Extra', url: '/horaExtraEmpleado', color: true },
+              { name: 'Planificación HorasExtras', url: '/horasPlanEmpleado', color: true },
             ]
+          },
+          {
+            name: 'Horas Extras',
+            accion: !this.HabilitarHoraExtra,
+            estado: !this.HabilitarHoraExtra,
+            activo: this.HabilitarHoraExtra,
+            color: false,
+            icono: 'hourglass_full',
+            url: '/horaExtraEmpleado'
           },
           {
             name: 'Alimentación',
             accion: this.HabilitarAlimentacion,
-            estado: true,
+            estado: this.HabilitarAlimentacion,
+            color: true,
             icono: 'restaurant',
             children: [
-              { name: 'Solicitar Servicio', url: '/comidasEmpleado' },
-              { name: 'Planificación Alimentación', url: '/comidasPlanEmpleado' },
+              { name: 'Solicitar Servicio', url: '/comidasEmpleado', color: true },
+              { name: 'Planificación Alimentación', url: '/comidasPlanEmpleado', color: true },
             ]
+          },
+          {
+            name: 'Alimentación',
+            accion: !this.HabilitarAlimentacion,
+            estado: !this.HabilitarAlimentacion,
+            activo: this.HabilitarAlimentacion,
+            color: false,
+            icono: 'restaurant',
+            url: '/comidasEmpleado'
           },
           {
             name: 'Acción Personal',
             accion: this.HabilitarAccion,
-            estado: true,
+            estado: this.HabilitarAccion,
+            color: true,
             icono: 'how_to_reg',
             children: [
-              { name: 'Procesos', url: '/procesosEmpleado' },
+              { name: 'Procesos', url: '/procesosEmpleado', color: true },
             ]
+          },
+          {
+            name: 'Acción Personal',
+            accion: !this.HabilitarAccion,
+            estado: !this.HabilitarAccion,
+            activo: this.HabilitarAccion,
+            color: false,
+            icono: 'how_to_reg',
+            url: '/procesosEmpleado'
           },
         ]
       },
@@ -565,18 +673,20 @@ export class MainNavComponent implements OnInit {
         name: 'Timbres',
         accion: true,
         estado: true,
+        color: true,
         icono: 'fingerprint',
         children: [
-          { name: 'Timbre Teletrabajo', url: '/timbres-personal' },
+          { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: true },
         ]
       },
       {
         name: 'Autorización',
         accion: true,
         estado: true,
+        color: true,
         icono: 'lock_open',
         children: [
-          { name: 'Autoridad', url: '/autorizaEmpleado' },
+          { name: 'Autoridad', url: '/autorizaEmpleado', color: true },
         ]
       },
       {
@@ -584,23 +694,22 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         icono: 'info',
+        color: true,
         children: [
-          { name: 'Autoridades', url: '/informacion' },
-          { name: 'Documentos', url: '/verDocumentacion' },
+          { name: 'Autoridades', url: '/informacion', color: true },
+          { name: 'Documentos', url: '/verDocumentacion', color: true },
         ]
       },
       {
         name: 'Notificaciones',
         accion: true,
-        //estado: this.loginService.getEstado(),
         estado: true,
+        color: true,
         icono: 'notifications',
         children: [
-          { name: 'Lista notificaciones', url: '/lista-notificaciones' },
+          { name: 'Lista notificaciones', url: '/lista-notificaciones', color: true },
         ]
       },
     ]
   }
-
 }
-

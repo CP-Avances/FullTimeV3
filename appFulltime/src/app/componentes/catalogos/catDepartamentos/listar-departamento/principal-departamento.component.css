@@ -1,13 +1,28 @@
-.button { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
+p {
+    font-size: x-small;
+}
 
-p { font-size: x-small; }
+tr {
+    text-align: center;
+}
 
-.fas { color:green; cursor: pointer; }
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-tr { text-align: center; }
+.fas {
+    color: green;
+    cursor: pointer;
+}
 
-td { padding-top: 10px; text-align: center; }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-table {width: 100%;}
-
-
+.button {
+    background-color: rgb(80, 87, 97);
+    color: white;
+    margin: 5px 10px 5px 10px;
+}

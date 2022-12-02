@@ -141,7 +141,7 @@ class RegimenControlador {
             yield database_1.default.query(`
             DELETE FROM cg_regimenes WHERE id = $1
             `, [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     /** ** ************************************************************************************************ **
@@ -202,7 +202,7 @@ class RegimenControlador {
             yield database_1.default.query(`
                 DELETE FROM dividir_vacaciones WHERE id = $1
                 `, [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     /** ** ********************************************************************************************** **
@@ -263,23 +263,21 @@ class RegimenControlador {
             yield database_1.default.query(`
             DELETE FROM antiguedad WHERE id = $1
             `, [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
+    // METODO PARA CREAR ARCHIVO XML
     FileXML(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var xml = builder.create('root').ele(req.body).end({ pretty: true });
             console.log(req.body.userName);
             let filename = "RegimenLaboral-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
             fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log("Archivo guardado");
             });
             res.jsonp({ text: 'XML creado', name: filename });
         });
     }
+    // METODO PARA DESCARGAR XML
     downloadXML(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const name = req.params.nameXML;

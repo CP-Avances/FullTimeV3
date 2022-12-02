@@ -230,7 +230,7 @@ class PlanHoraExtraControlador {
         DELETE FROM plan_hora_extra WHERE id = $1
         `
       , [id]);
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
   // ELIMINAR PLANIFICACION DE UN USUARIO ESPECIFICO
@@ -243,7 +243,7 @@ class PlanHoraExtraControlador {
         `
       , [id, id_empleado]);
 
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
   // BUSQUEDA DE PLANIFICACIONES POR ID DE USUARIO
@@ -271,7 +271,7 @@ class PlanHoraExtraControlador {
    ** *             ENVIO DE CORREOS ELECTRONICOS DE PLANIFICACIÓN DE HORAS EXTRAS                  **
    ** ********************************************************************************************* **/
 
-  // MÉTODO ENVIO CORREO DESDE APLICACIÓN WEB CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
+  // METODO ENVIO CORREO DESDE APLICACIÓN WEB CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
   public async EnviarCorreoPlanificacion(req: Request, res: Response): Promise<void> {
     var tiempo = fechaHora();
     var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);

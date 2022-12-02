@@ -16,14 +16,13 @@
                                 <div *ngIf="imagen_default_c; else cabeceraCorreo"
                                     class="d-flex flex-wrap justify-content-center">
                                     <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset=""
-                                        width="50%" height="50%">
+                                        width="30%" height="30%">
                                 </div>
                                 <ng-template #cabeceraCorreo>
                                     <div class="d-flex flex-wrap justify-content-center">
                                         <img src="{{cabecera}}" alt="logo de empresa" srcset="" width="75%"
                                             height="75%">
                                     </div>
-
                                 </ng-template>
                                 <br>
                                 <a style="padding-top: 10px;" (click)="EditarLogo('header')" matSuffix
@@ -43,7 +42,7 @@
                                 <div *ngIf="imagen_default_p; else pieCorreo"
                                     class="d-flex flex-wrap justify-content-center">
                                     <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset=""
-                                        width="50%" height="50%">
+                                        width="30%" height="30%">
                                 </div>
                                 <ng-template #pieCorreo>
                                     <div class="d-flex flex-wrap justify-content-center">
@@ -67,15 +66,15 @@
                             <label id="datosF">CONFIGURACIÓN CORREOS</label>
                         </div>
                         <div class="d-flex flex-wrap justify-content-start">
-                            <label id="datosF">Correo Principal:</label>
+                            <label id="datosF">Correo principal:</label>
                             <label>{{e.correo}}</label>
                         </div>
                         <div class="d-flex flex-wrap justify-content-start">
-                            <label id="datosF">Servidor Correo:</label>
+                            <label id="datosF">Servidor de correo:</label>
                             <label>{{e.servidor}}</label>
                         </div>
                         <div class="d-flex flex-wrap justify-content-start">
-                            <label id="datosF">Puerto de Salida:</label>
+                            <label id="datosF">Puerto de salida:</label>
                             <label>{{e.puerto}}</label>
                         </div>
                         <div class="d-flex justify-content-around text-center">

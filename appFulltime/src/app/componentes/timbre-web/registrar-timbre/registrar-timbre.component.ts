@@ -39,7 +39,7 @@ export class RegistrarTimbreComponent implements OnInit {
   latitud: number;
   longitud: number;
 
-  // MÉTODO DE CONTROL DE MEMORIA
+  // METODO DE CONTROL DE MEMORIA
   private options = {
     enableHighAccuracy: false,
     maximumAge: 30000,
@@ -69,7 +69,7 @@ export class RegistrarTimbreComponent implements OnInit {
     this.VerificarFunciones();
   }
 
-  // MÉTODO PARA ACTIVAR Y DESACTIVAR BOTONES
+  // METODO PARA ACTIVAR Y DESACTIVAR BOTONES
   ActivarBotones(ob: MatCheckboxChange) {
     if (ob.checked === true) {
       this.boton_abierto = true;
@@ -81,7 +81,7 @@ export class RegistrarTimbreComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA GUARDAR DATOS DEL TIMBRE SEGUN LA OPCIÓN INGRESADA
+  // METODO PARA GUARDAR DATOS DEL TIMBRE SEGUN LA OPCIÓN INGRESADA
   AlmacenarDatos(opcion: number) {
     console.log(opcion);
     switch (opcion) {
@@ -119,7 +119,7 @@ export class RegistrarTimbreComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA TOMAR CORDENAS DE UBICACIÓN
+  // METODO PARA TOMAR CORDENAS DE UBICACIÓN
   Geolocalizar() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -148,7 +148,7 @@ export class RegistrarTimbreComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA TOMAR DATOS DEL TIMBRE
+  // METODO PARA TOMAR DATOS DEL TIMBRE
   insertarTimbre(form1) {
     if (this.boton_abierto === true) {
       if (form1.observacionForm != '' && form1.observacionForm != undefined) {
@@ -165,7 +165,7 @@ export class RegistrarTimbreComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA TOMAR DATOS DE MARCACIÓN
+  // METODO PARA TOMAR DATOS DE MARCACIÓN
   RegistrarDatosTimbre(form1, ubicacion) {
     let dataTimbre = {
       fec_hora_timbre: this.f.toLocaleString(),
@@ -180,7 +180,7 @@ export class RegistrarTimbreComponent implements OnInit {
     this.ventana.close(dataTimbre)
   }
 
-  // MÉTODO PARA OBTENER RANGO DE PERÍMETRO
+  // METODO PARA OBTENER RANGO DE PERÍMETRO
   rango: any;
   BuscarParametro() {
     // id_tipo_parametro PARA RANGO DE UBICACIÓN = 22
@@ -202,7 +202,7 @@ export class RegistrarTimbreComponent implements OnInit {
 
   contar: number = 0;
   sin_ubicacion: number = 0;
-  // MÉTODO QUE VERIFICAR SI EL TIMBRE FUE REALIZADO EN UN PERíMETRO DEFINIDO
+  // METODO QUE VERIFICAR SI EL TIMBRE FUE REALIZADO EN UN PERíMETRO DEFINIDO
   CompararCoordenadas(informacion: any, form: any, descripcion: any, data: any) {
 
     this.restP.ObtenerCoordenadas(informacion).subscribe(
@@ -235,7 +235,7 @@ export class RegistrarTimbreComponent implements OnInit {
     })
   }
 
-  // MÉTODO QUE PERMITE VALIDACIONES DE UBICACIÓN
+  // METODO QUE PERMITE VALIDACIONES DE UBICACIÓN
   BuscarUbicacion(latitud: any, longitud: any, rango: any, form: any) {
     var datosUbicacion: any = [];
     this.contar = 0;

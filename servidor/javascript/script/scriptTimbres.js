@@ -116,7 +116,7 @@ function DiasByEstado(horario) {
     return respuesta.filter(ele => { return ele.estado === false; });
 }
 /**
- * Método para devolver la fecha y el estado de cada uno de los dias de ese horario
+ * METODO para devolver la fecha y el estado de cada uno de los dias de ese horario
  * @param fechaIterada Fecha asignada por el ciclo for
  * @param horario es el ultimo horario del empleado.
  */

@@ -57,7 +57,7 @@ export class TimbreWebComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -82,13 +82,13 @@ export class TimbreWebComponent implements OnInit {
       });
   }
 
-  // MÉTODO DE MANEJO DE PÁGINAS DE LA TABLA
+  // METODO DE MANEJO DE PÁGINAS DE LA TABLA
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE TIMBRES
+  // METODO PARA MOSTRAR DATOS DE TIMBRES
   ObtenerListaTimbres(formato_fecha: string, formato_hora: string) {
     this.restTimbres.ObtenerTimbres().subscribe(res => {
       this.dataSource = new MatTableDataSource(res.timbres);
@@ -106,7 +106,7 @@ export class TimbreWebComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA REGISTRAR TIMBRES
+  // METODO PARA REGISTRAR TIMBRES
   AbrirRegistrarTimbre() {
     this.ventana.open(RegistrarTimbreComponent, { width: '500px' }).afterClosed().subscribe(data => {
       //console.log('ver datos de timbres --------------------------', data)
@@ -114,7 +114,7 @@ export class TimbreWebComponent implements OnInit {
       if (data !== undefined) {
         if (!data.close) {
           this.restTimbres.PostTimbreWeb(data).subscribe(res => {
-            // MÉTODO PARA AUDITAR TIMBRES
+            // METODO PARA AUDITAR TIMBRES
             data.id_empleado = this.idEmpleado;
             this.validar.Auditar('app-web', 'timbres', '', data, 'INSERT');
             this.BuscarParametro();
@@ -127,14 +127,14 @@ export class TimbreWebComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA REALIZAR FILTROS DE BÚSQUEDA
+  // METODO PARA REALIZAR FILTROS DE BUSQUEDA
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.filtroFechaTimbre = filterValue.trim().toLowerCase();
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  // MÉTODO PARA ABRIR PÁGINA GOOGLE MAPAS
+  // METODO PARA ABRIR PÁGINA GOOGLE MAPAS
   abrirMapa(latitud, longitud) {
     if (!latitud || !longitud) return this.toastr.warning('Timbre seleccionado no posee registro de coordenadas de ubicación.')
     const rutaMapa = "https://www.google.com/maps/search/+" + latitud + "+" + longitud;

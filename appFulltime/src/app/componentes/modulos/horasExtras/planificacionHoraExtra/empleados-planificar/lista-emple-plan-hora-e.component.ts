@@ -21,6 +21,7 @@ import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-ge
 
 import { ITableEmpleados } from 'src/app/model/reportes.model';
 import { PlanHoraExtraComponent } from '../plan-hora-extra/plan-hora-extra.component';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 @Component({
   selector: 'app-lista-emple-plan-hora-e',
@@ -61,6 +62,8 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
 
   public check: checkOptions[];
 
+  get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
+
   constructor(
     public restD: DatosGeneralesService,
     public restR: ReportesService,
@@ -69,11 +72,23 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
     public validar: ValidacionesService,
     private toastr: ToastrService,
     public informacion: DatosGeneralesService,
+    private funciones: MainNavService
   ) { }
 
   ngOnInit(): void {
-    this.check = this.restR.checkOptions(3);
-    this.BuscarInformacion();
+    if (this.habilitarHorasE === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Horas Extras. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.check = this.restR.checkOptions(3);
+      this.BuscarInformacion();
+    }
   }
 
   ngOnDestroy() {
@@ -129,7 +144,7 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE BUSQUEDA
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
   opcion: number;
   activar_boton: boolean = false;
   activar_seleccion: boolean = true;
@@ -176,7 +191,7 @@ export class ListaEmplePlanHoraEComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA FILTRAR DATOS DE BÚSQUEDA
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
   Filtrar(e, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;

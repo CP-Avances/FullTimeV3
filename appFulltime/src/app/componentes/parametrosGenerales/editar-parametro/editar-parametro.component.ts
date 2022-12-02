@@ -3,11 +3,10 @@ import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 // SECCIÓN SERVICIOS
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-parametro',
@@ -18,10 +17,10 @@ import { Router } from '@angular/router';
 export class EditarParametroComponent implements OnInit {
 
   // CONTROL DE LOS CAMPOS DEL FORMULARIO
-  descripcion = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
+  descripcion = new FormControl('', Validators.required);
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
-  public ParametrosForm = new FormGroup({
+  public formulario = new FormGroup({
     descripcionForm: this.descripcion,
   });
 
@@ -29,7 +28,6 @@ export class EditarParametroComponent implements OnInit {
     private rest: ParametrosService,
     private toastr: ToastrService,
     public router: Router,
-    public validar: ValidacionesService,
     public ventana: MatDialogRef<EditarParametroComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
@@ -38,14 +36,14 @@ export class EditarParametroComponent implements OnInit {
     this.MostrarInformacion();
   }
 
-  // MÉTODO PARA MOSTRAR INFORMACIÓN
+  // METODO PARA MOSTRAR INFORMACIÓN
   MostrarInformacion() {
-    this.ParametrosForm.patchValue({
+    this.formulario.patchValue({
       descripcionForm: this.data.parametros.descripcion
     })
   }
 
-  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  // METODO PARA REGISTRAR NUEVO PARÁMETRO
   GuardarDatos(form: any) {
     let datos = {
       id: this.data.parametros.id,
@@ -66,22 +64,9 @@ export class EditarParametroComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA CERRAR VENTANA
+  // METODO PARA CERRAR VENTANA
   CerrarVentana() {
     this.ventana.close();
-  }
-
-  // MÉTODO PARA VALIDAR INGRESO SOLO LETRAS
-  IngresarSoloLetras(e) {
-    this.validar.IngresarSoloLetras(e);
-  }
-
-  // MÉTODO PARA VALIDAR INGRESO DE DESCRIPCIÓN
-  ObtenerErrorNombre() {
-    if (this.descripcion.hasError('required')) {
-      return 'Campo obligatorio.';
-    }
-    return this.descripcion.hasError('pattern') ? 'Ingresar una descripción válida.' : '';
   }
 
 }

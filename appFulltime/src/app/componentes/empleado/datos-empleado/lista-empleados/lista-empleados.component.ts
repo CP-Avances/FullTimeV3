@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { Validators, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -36,30 +36,30 @@ export class ListaEmpleadosComponent implements OnInit {
   empleado: any = [];
 
   // CAMPOS DEL FORMULARIO
-  codigo = new FormControl('');
   apellido = new FormControl('', [Validators.minLength(2)]);
+  codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
 
-  // VARIABLES USADAS EN BÚSQUEDA DE FILTRO DE DATOS
+  // VARIABLES USADAS EN BUSQUEDA DE FILTRO DE DATOS
   filtroCodigo: number;
   filtroApellido: '';
   filtroCedula: '';
   filtroNombre: '';
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA
+  // ITEMS DE PAGINACION DE LA TABLA
   pageSizeOptions = [5, 10, 20, 50];
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA DESHABILITADOS
+  // ITEMS DE PAGINACION DE LA TABLA DESHABILITADOS
   pageSizeOptionsDes = [5, 10, 20, 50];
   tamanio_paginaDes: number = 5;
   numero_paginaDes: number = 1;
 
-  idEmpleado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESIÓN
+  idEmpleado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESION
 
-  // VARAIBLES DE SELECCIÓN DE DATOS DE UNA TABLA
+  // VARAIBLES DE SELECCION DE DATOS DE UNA TABLA
   selectionUno = new SelectionModel<EmpleadoElemento>(true, []);
   selectionDos = new SelectionModel<EmpleadoElemento>(true, []);
 
@@ -87,21 +87,21 @@ export class ListaEmpleadosComponent implements OnInit {
     this.ObtenerLogo();
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
     const numRows = this.empleado.length;
     return numSelected === numRows;
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
       this.empleado.forEach(row => this.selectionUno.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabel(row?: EmpleadoElemento): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
@@ -109,7 +109,7 @@ export class ListaEmpleadosComponent implements OnInit {
     return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO PARA DESACTIVAR O ACTIVAR CHECK LIST DE EMPLEADOS ACTIVOS
+  // METODO PARA DESACTIVAR O ACTIVAR CHECK LIST DE EMPLEADOS ACTIVOS
   btnCheckHabilitar: boolean = false;
   HabilitarSeleccion() {
     if (this.btnCheckHabilitar === false) {
@@ -119,6 +119,7 @@ export class ListaEmpleadosComponent implements OnInit {
     }
   }
 
+  // METODO PARA MOSTRAR LISTA DE USUARIOS INACTIVOS
   desactivados: any = [];
   ListarInactivos() {
     this.tabla_activos = false;
@@ -127,7 +128,7 @@ export class ListaEmpleadosComponent implements OnInit {
     this.Hab_Deshabilitados = true;
   }
 
-
+  // METODO PARA MOSTRAR LISTA DE USUARIOS ACTIVOS
   ListarActivos() {
     this.tabla_activos = true;
     this.lista_activos = false;
@@ -135,7 +136,7 @@ export class ListaEmpleadosComponent implements OnInit {
     this.Hab_Deshabilitados = false;
   }
 
-  // MÉTODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE TABLA EMPLEADOS DESACTIVADOS
+  // METODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE TABLA EMPLEADOS DESACTIVADOS
   Hab_Deshabilitados: boolean = false;
   btnCheckDeshabilitado: boolean = false;
   HabilitarSeleccionDesactivados() {
@@ -146,21 +147,21 @@ export class ListaEmpleadosComponent implements OnInit {
     }
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS.
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS.
   isAllSelectedDos() {
     const numSelected = this.selectionDos.selected.length;
     const numRows = this.desactivados.length;
     return numSelected === numRows;
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleDos() {
     this.isAllSelectedDos() ?
       this.selectionDos.clear() :
       this.desactivados.forEach(row => this.selectionDos.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelDos(row?: EmpleadoElemento): string {
     if (!row) {
       return `${this.isAllSelectedDos() ? 'select' : 'deselect'} all`;
@@ -168,8 +169,9 @@ export class ListaEmpleadosComponent implements OnInit {
     return `${this.selectionDos.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
+  // METODO PARA DESHABILITAR USUARIOS
   Deshabilitar(opcion: number) {
-    let EmpleadosSeleccionados
+    let EmpleadosSeleccionados: any;
     if (opcion === 1) {
       EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
         return {
@@ -177,14 +179,7 @@ export class ListaEmpleadosComponent implements OnInit {
           empleado: obj.nombre + ' ' + obj.apellido
         }
       })
-    } else if (opcion === 2) {
-      EmpleadosSeleccionados = this.selectionDos.selected.map(obj => {
-        return {
-          id: obj.id,
-          empleado: obj.nombre + ' ' + obj.apellido
-        }
-      })
-    } else if (opcion === 3) {
+    } else if (opcion === 2 || opcion === 3) {
       EmpleadosSeleccionados = this.selectionDos.selected.map(obj => {
         return {
           id: obj.id,
@@ -192,19 +187,32 @@ export class ListaEmpleadosComponent implements OnInit {
         }
       })
     }
-    this.ventana.open(ConfirmarDesactivadosComponent, { width: '500px', data: { opcion: opcion, lista: EmpleadosSeleccionados } }).afterClosed().subscribe(item => {
-      if (item === true) {
-        this.GetEmpleados();
-        this.btnCheckHabilitar = false;
-        this.btnCheckDeshabilitado = false;
-        this.selectionUno.clear();
-        this.selectionDos.clear();
-        EmpleadosSeleccionados = [];
-      };
-    });
+
+    // VERIFICAR QUE EXISTAN USUARIOS SELECCIONADOS
+    if (EmpleadosSeleccionados.length != 0) {
+      this.ventana.open(ConfirmarDesactivadosComponent, {
+        width: '500px',
+        data: { opcion: opcion, lista: EmpleadosSeleccionados }
+      })
+        .afterClosed().subscribe(item => {
+          if (item === true) {
+            this.GetEmpleados();
+            this.btnCheckHabilitar = false;
+            this.btnCheckDeshabilitado = false;
+            this.selectionUno.clear();
+            this.selectionDos.clear();
+            EmpleadosSeleccionados = [];
+          };
+        });
+    }
+    else {
+      this.toastr.info('No ha seleccionado usuarios.', '', {
+        timeOut: 6000,
+      })
+    }
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleadoD = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -212,6 +220,7 @@ export class ListaEmpleadosComponent implements OnInit {
     })
   }
 
+  // METODO PARA OBTENER LOGO DE EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -219,7 +228,7 @@ export class ListaEmpleadosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -231,22 +240,25 @@ export class ListaEmpleadosComponent implements OnInit {
     });
   }
 
+  // METODO PARA MANEJAR PAGINACION
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1;
     this.tamanio_pagina = e.pageSize;
   }
 
+  // METODO PARA MANEJAR PAGINACION INACTIVOS
   ManejarPaginaDes(e: PageEvent) {
     this.numero_paginaDes = e.pageIndex + 1;
     this.tamanio_paginaDes = e.pageSize;
   }
 
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
     // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
+    // ES LA VALIDACION DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -263,7 +275,8 @@ export class ListaEmpleadosComponent implements OnInit {
     }
   }
 
-  IngresarSoloNumeros(evt) {
+  //  METODO PARA VALIDAR INGRESO DE NUMEROSO
+  IngresarSoloNumeros(evt: any) {
     if (window.event) {
       var keynum = evt.keyCode;
     }
@@ -282,12 +295,12 @@ export class ListaEmpleadosComponent implements OnInit {
     }
   }
 
+  // METODO PARA LISTAR USUARIOS
   GetEmpleados() {
     this.empleado = [];
-    this.rest.getEmpleadosRest().subscribe(data => {
+    this.rest.ListarEmpleadosActivos().subscribe(data => {
       this.empleado = data;
       this.OrdenarDatos(this.empleado);
-      console.log('datos empleado', this.empleado);
     })
     this.desactivados = [];
     this.rest.ListaEmpleadosDesactivados().subscribe(res => {
@@ -295,7 +308,7 @@ export class ListaEmpleadosComponent implements OnInit {
     });
   }
 
-  // ORDENAR LOS DATOS SEGÚN EL  CODIGO
+  // ORDENAR LOS DATOS SEGUN EL  CODIGO
   OrdenarDatos(array: any) {
     function compare(a: any, b: any) {
       if (parseInt(a.codigo) < parseInt(b.codigo)) {
@@ -309,6 +322,7 @@ export class ListaEmpleadosComponent implements OnInit {
     array.sort(compare);
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
     this.codigo.reset();
     this.cedula.reset();
@@ -316,20 +330,22 @@ export class ListaEmpleadosComponent implements OnInit {
     this.apellido.reset();
   }
 
+  // METODO PARA LISTAR NACIONALIDADES
   ObtenerNacionalidades() {
-    this.rest.getListaNacionalidades().subscribe(res => {
+    this.rest.BuscarNacionalidades().subscribe(res => {
       this.nacionalidades = res;
     });
   }
 
-  /** *************************************************************************
-   *                    Metodos y variables para subir plantilla              * 
-   ** *************************************************************************/
+
+  /** ************************************************************************* **
+   ** **               METODOS Y VARIABLES PARA SUBIR PLANTILLA              ** **
+   ** ************************************************************************* **/
 
   nameFile: string;
   archivoSubido: Array<File>;
   archivoForm = new FormControl('', Validators.required);
-  FileChange(element) {
+  FileChange(element: any) {
     this.archivoSubido = element.target.files;
     this.nameFile = this.archivoSubido[0].name;
     let arrayItems = this.nameFile.split(".");
@@ -478,9 +494,10 @@ export class ListaEmpleadosComponent implements OnInit {
     });
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS PDF
-   * ****************************************************************************************************/
+
+  /** ************************************************************************************************* **
+   ** **                             PARA LA EXPORTACION DE ARCHIVOS PDF                             ** **
+   ** ************************************************************************************************* **/
 
   GenerarPdf(action = 'open', numero: any) {
     const documentDefinition = this.GetDocumentDefinicion(numero);
@@ -606,9 +623,9 @@ export class ListaEmpleadosComponent implements OnInit {
     };
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                            PARA LA EXPORTACION DE ARCHIVOS EXCEL                            ** **
+   ** ************************************************************************************************* **/
 
   ExportToExcel(numero: any) {
     if (numero === 1) {
@@ -640,7 +657,7 @@ export class ListaEmpleadosComponent implements OnInit {
         NACIONALIDAD: nacionalidad,
       }
     }));
-    // MÉTODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
     const header = Object.keys(arreglo[0]); // NOMBRE DE CABECERAS DE COLUMNAS
     var wscols = [];
     for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
@@ -652,9 +669,9 @@ export class ListaEmpleadosComponent implements OnInit {
     xlsx.writeFile(wb, "EmpleadoEXCEL" + new Date().getTime() + '.xlsx');
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                              PARA LA EXPORTACION DE ARCHIVOS XML                            ** **
+   ** ************************************************************************************************* **/
   urlxml: string;
   data: any = [];
   ExportToXML(numero: any) {
@@ -696,7 +713,7 @@ export class ListaEmpleadosComponent implements OnInit {
       }
       arregloEmpleado.push(objeto)
     });
-    this.rest.DownloadXMLRest(arregloEmpleado).subscribe(res => {
+    this.rest.CrearXML(arregloEmpleado).subscribe(res => {
       console.log(arregloEmpleado)
       this.data = res;
       this.urlxml = `${environment.url}/empleado/download/` + this.data.name;
@@ -704,9 +721,9 @@ export class ListaEmpleadosComponent implements OnInit {
     });
   }
 
-  /****************************************************************************************************** 
-   *                                           MÉTODO PARA EXPORTAR A CSV 
-   ******************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                 METODO PARA EXPORTAR A CSV                                   ** **
+   ** ************************************************************************************************** **/
 
   ExportToCVS(numero: any) {
     if (numero === 1) {

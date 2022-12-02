@@ -1409,14 +1409,10 @@ export class EditarRegimenComponent implements OnInit {
         vacacion_dias_laboral_mes: form3.diasMesLaborableForm,
         calendario_dias: form3.dias_CalendarioForm,
         laboral_dias: form3.dias_LaborableForm,
-
       };
 
       this.ValidarInformacion(form1, form2, form3, regimen);
-
       this.FuncionInsertarDatos(regimen, form2, form3);
-
-      console.log('ver datos ingresados ... ', regimen)
     }
 
   }

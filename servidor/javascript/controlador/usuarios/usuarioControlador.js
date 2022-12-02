@@ -17,6 +17,85 @@ const settingsMail_1 = require("../../libs/settingsMail");
 const database_1 = __importDefault(require("../../database"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class UsuarioControlador {
+    // CREAR REGISTRO DE USUARIOS
+    CrearUsuario(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { usuario, contrasena, estado, id_rol, id_empleado, app_habilita } = req.body;
+                yield database_1.default.query(`
+        INSERT INTO usuarios (usuario, contrasena, estado, id_rol, id_empleado, app_habilita) 
+        VALUES ($1, $2, $3, $4, $5, $6)
+        `, [usuario, contrasena, estado, id_rol, id_empleado, app_habilita]);
+                res.jsonp({ message: 'Usuario Guardado' });
+            }
+            catch (error) {
+                return res.jsonp({ message: 'error' });
+            }
+        });
+    }
+    // METODO DE BUSQUEDA DE DATOS DE USUARIO
+    ObtenerDatosUsuario(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado } = req.params;
+            const UN_USUARIO = yield database_1.default.query(`
+      SELECT * FROM usuarios WHERE id_empleado = $1
+      `, [id_empleado]);
+            if (UN_USUARIO.rowCount > 0) {
+                return res.jsonp(UN_USUARIO.rows);
+            }
+            else {
+                res.status(404).jsonp({ text: 'No se ha encontrado el usuario' });
+            }
+        });
+    }
+    // METODO PARA ACTUALIZAR DATOS DE USUARIO
+    ActualizarUsuario(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { usuario, contrasena, id_rol, id_empleado } = req.body;
+                yield database_1.default.query(`
+        UPDATE usuarios SET usuario = $1, contrasena = $2, id_rol = $3 WHERE id_empleado = $4
+        `, [usuario, contrasena, id_rol, id_empleado]);
+                res.jsonp({ message: 'Registro actualizado.' });
+            }
+            catch (error) {
+                return res.jsonp({ message: 'error' });
+            }
+        });
+    }
+    // METODO PARA ACTUALIZAR CONTRASEÑA
+    CambiarPasswordUsuario(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { contrasena, id_empleado } = req.body;
+            yield database_1.default.query(`
+      UPDATE usuarios SET contrasena = $1 WHERE id_empleado = $2
+      `, [contrasena, id_empleado]);
+            res.jsonp({ message: 'Registro actualizado.' });
+        });
+    }
+    // ADMINISTRACION DEL MODULO DE ALIMENTACION
+    RegistrarAdminComida(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { admin_comida, id_empleado } = req.body;
+            yield database_1.default.query(`
+      UPDATE usuarios SET admin_comida = $1 WHERE id_empleado = $2
+      `, [admin_comida, id_empleado]);
+            res.jsonp({ message: 'Registro guardado.' });
+        });
+    }
+    /** ************************************************************************************* **
+     ** **                METODO FRASE DE SEGURIDAD ADMINISTRADOR                          ** **
+     ** ************************************************************************************* **/
+    // METODO PARA GUARDAR FRASE DE SEGURIDAD
+    ActualizarFrase(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { frase, id_empleado } = req.body;
+            yield database_1.default.query(`
+      UPDATE usuarios SET frase = $1 WHERE id_empleado = $2
+      `, [frase, id_empleado]);
+            res.jsonp({ message: 'Registro guardado.' });
+        });
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const USUARIOS = yield database_1.default.query('SELECT * FROM usuarios');
@@ -79,18 +158,6 @@ class UsuarioControlador {
             }
         });
     }
-    ObtenerDatosUsuario(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado } = req.params;
-            const UN_USUARIO = yield database_1.default.query('SELECT * FROM usuarios WHERE id_empleado = $1', [id_empleado]);
-            if (UN_USUARIO.rowCount > 0) {
-                return res.jsonp(UN_USUARIO.rows);
-            }
-            else {
-                res.status(404).jsonp({ text: 'No se ha encontrado el usuario' });
-            }
-        });
-    }
     ListarUsuriosNoEnrolados(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const USUARIOS = yield database_1.default.query('SELECT u.id, u.usuario, ce.id_usuario FROM usuarios AS u LEFT JOIN cg_enrolados AS ce ON u.id = ce.id_usuario WHERE ce.id_usuario IS null');
@@ -100,64 +167,6 @@ class UsuarioControlador {
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
             }
-        });
-    }
-    CambiarPasswordUsuario(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { contrasena, id_empleado } = req.body;
-            const UN_USUARIO = yield database_1.default.query('UPDATE usuarios SET contrasena = $1 WHERE id_empleado = $2', [contrasena, id_empleado]);
-            res.jsonp({ message: 'Registro actualizado exitosamente' });
-        });
-    }
-    // public async getIdByUsuario(req: Request, res: Response): Promise<any>{
-    //   const  {id_empleado} = req.params;
-    //   const unUsuario = await pool.query('SELECT * FROM usuarios WHERE id_empleado = $1', [id_empleado]);
-    //   if (unUsuario.rowCount > 0) {
-    //     return res.jsonp(unUsuario.rows);
-    //   }
-    //   res.status(404).jsonp({ text: 'No se ha encontrado el usuario' });
-    // }
-    create(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { usuario, contrasena, estado, id_rol, id_empleado, app_habilita } = req.body;
-                yield database_1.default.query('INSERT INTO usuarios ( usuario, contrasena, estado, id_rol, id_empleado, app_habilita ) VALUES ($1, $2, $3, $4, $5, $6)', [usuario, contrasena, estado, id_rol, id_empleado, app_habilita]);
-                res.jsonp({ message: 'Usuario Guardado' });
-            }
-            catch (error) {
-                return res.jsonp({ message: 'error' });
-            }
-        });
-    }
-    ActualizarUsuario(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { usuario, contrasena, id_rol, id_empleado } = req.body;
-                yield database_1.default.query('UPDATE usuarios SET usuario = $1, contrasena = $2, id_rol = $3 WHERE id_empleado = $4', [usuario, contrasena, id_rol, id_empleado]);
-                res.jsonp({ message: 'Usuario Actualizado' });
-            }
-            catch (error) {
-                return res.jsonp({ message: 'error' });
-            }
-        });
-    }
-    // ADMINISTRACIÓN DEL MÓDULO DE ALIMENTACIÓN
-    RegistrarAdminComida(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { admin_comida, id_empleado } = req.body;
-            yield database_1.default.query('UPDATE usuarios SET admin_comida = $1 WHERE id_empleado = $2', [admin_comida, id_empleado]);
-            res.jsonp({ message: 'Registro exitoso' });
-        });
-    }
-    /** ************************************************************************************** *
-     **                MÉTODO FRASE DE SEGURIDAD ADMINISTRADOR                                 *
-     ** ************************************************************************************** */
-    // MÉTODO PARA GUARDAR FRASE DE SEGURIDAD
-    ActualizarFrase(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { frase, id_empleado } = req.body;
-            yield database_1.default.query('UPDATE usuarios SET frase = $1 WHERE id_empleado = $2', [frase, id_empleado]);
-            res.jsonp({ message: 'Frase exitosa' });
         });
     }
     RestablecerFrase(req, res) {

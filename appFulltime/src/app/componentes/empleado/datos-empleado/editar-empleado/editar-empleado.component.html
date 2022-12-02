@@ -18,74 +18,76 @@
                     para continuar.</span>
             </div>
             <form [formGroup]="primeroFormGroup">
-                <div class="d-flex flex-wrap justify-content-around">
-                    <mat-form-field>
-                        <mat-label>Nombres</mat-label>
-                        <input matInput placeholder="Ej: Kevin Alexander" type="text" formControlName="nombreForm"
-                            (keypress)="IngresarSoloLetras($event)" required>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Es obligatorio ingresar los dos nombres del nuevo empleado">
-                            help_outline</mat-icon>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Apellidos</mat-label>
-                        <input matInput placeholder="Ej: Curay Lasluisa" type="text" formControlName="apellidoForm"
-                            (keypress)="IngresarSoloLetras($event)" required>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Es obligatorio ingresar los dos apellidos del nuevo empleado">
-                            help_outline
-                        </mat-icon>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Código</mat-label>
-                        <input matInput type="text" formControlName="codigoForm" [readonly]="escritura">
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Ingrese un Código de identificacion, este campo es alternativo.">
-                            help_outline
-                        </mat-icon>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>CI o Pasaporte</mat-label>
-                        <input matInput type="text" placeholder="1788300293" maxlength="10" formControlName="cedulaForm"
-                            oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                            (keypress)="IngresarSoloNumeros($event)" required>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Ingresar la cédula de identidad o pasaporte del nuevo empleado">
-                            help_outline</mat-icon>
-                    </mat-form-field>
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Fecha de nacimiento</mat-label>
-                        <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa" formControlName="fechaForm"
-                            required>
-                        <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" matTooltipPosition="right"
-                            matTooltip="Seleccione la fecha de nacimiento dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
-                        </mat-datepicker-toggle>
-                        <mat-datepicker touchUi #picker></mat-datepicker>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Correo Electrónico</mat-label>
-                        <input matInput type="text" placeholder="ejemplo@mail.com" formControlName="emailForm" required>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Ingrese un correo electrónico valido">
-                            mail_outline</mat-icon>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Correo Alternativo</mat-label>
-                        <input matInput type="text" placeholder="ejemplo2@mail.com"
-                            formControlName="correoAlternativoForm">
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Ingrese un correo electrónico alternativo valido">
-                            alternate_email
-                        </mat-icon>
-                    </mat-form-field>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-form-field>
+                                <mat-label>Nombres</mat-label>
+                                <input matInput placeholder="Ej: Kevin Alexander" type="text"
+                                    formControlName="nombreForm" (keypress)="IngresarSoloLetras($event)" required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Es obligatorio ingresar los dos nombres del nuevo empleado">
+                                    help_outline</mat-icon>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Apellidos</mat-label>
+                                <input matInput placeholder="Ej: Curay Lasluisa" type="text"
+                                    formControlName="apellidoForm" (keypress)="IngresarSoloLetras($event)" required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Es obligatorio ingresar los dos apellidos del nuevo empleado">
+                                    help_outline
+                                </mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-form-field>
+                                <mat-label>Código</mat-label>
+                                <input matInput type="text" formControlName="codigoForm" [readonly]="escritura"
+                                    required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Ingrese un Código de identificacion, este campo es alternativo.">
+                                    help_outline
+                                </mat-icon>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CI o Pasaporte</mat-label>
+                                <input matInput type="text" placeholder="1788300293" maxlength="10"
+                                    formControlName="cedulaForm"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    (keypress)="IngresarSoloNumeros($event)" required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Ingresar la cédula de identidad o pasaporte del nuevo empleado">
+                                    help_outline</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Fecha de nacimiento</mat-label>
+                                <input matInput [matDatepicker]="picker" placeholder="dd/mm/aaaa"
+                                    formControlName="fechaForm" required>
+                                <mat-datepicker-toggle matSuffix [for]="picker" id="i-cursor" matTooltipPosition="right"
+                                    matTooltip="Seleccione la fecha de nacimiento dando click en el icono de calendario o puede escribir la fecha con el formato  día/mes/año. Ejemplo: 12/04/1993">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker touchUi #picker></mat-datepicker>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Correo Electrónico</mat-label>
+                                <input matInput type="text" placeholder="ejemplo@mail.com" formControlName="emailForm"
+                                    required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Ingrese un correo electrónico valido">
+                                    mail_outline</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
                 </div>
             </form>
             <div>
-                <button
-                    (click)="actualizarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value)"
-                    type="submit" class="btn btn-sm" [disabled]="!primeroFormGroup.valid">Guardar
-                </button>
-                <button (click)="cancelar()" class="btn btn-sm">Cancelar</button>
+                <button (click)="Cancelar()" class="btn btn-sm">Cancelar</button>
                 <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
             </div>
         </mat-step>
@@ -104,83 +106,91 @@
                     <span>Por favor llenar todos los campos obligatorios (*) del formulario y dar click en
                         Siguiente para continuar.</span>
                 </div>
-                <div class="d-flex flex-wrap justify-content-around">
-                    <mat-form-field>
-                        <mat-label>Domicilio</mat-label>
-                        <input matInput placeholder="Sector, Avenida, Calle" type="text" formControlName="domicilioForm"
-                            required>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Ingrese la dirección de domicilio en donde reside, Av, interseción, numero de casa">
-                            my_location
-                        </mat-icon>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Teléfono</mat-label>
-                        <input matInput placeholder="0984297443" type="text" maxlength="10"
-                            formControlName="telefonoForm"
-                            oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                            (keypress)="IngresarSoloNumeros($event)" required>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Ingresar número telefónico convencional o celular">
-                            phone
-                        </mat-icon>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Estado Civil</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Seleccionar el estado civil del nuevo empleado">
-                            help_outline
-                        </mat-icon>
-                        <mat-select required formControlName="estadoCivilForm">
-                            <mat-option [value]="1">Soltero/a</mat-option>
-                            <mat-option [value]="2">Unión de Hecho</mat-option>
-                            <mat-option [value]="3">Casado/a</mat-option>
-                            <mat-option [value]="4">Divorciado/a</mat-option>
-                            <mat-option [value]="5">Viudo/a</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Género</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Seleccionar el género del nuevo empleado">
-                            help_outline
-                        </mat-icon>
-                        <mat-select required formControlName="generoForm">
-                            <mat-option [value]="1">Masculino</mat-option>
-                            <mat-option [value]="2">Femenino</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-label>Estado</mat-label>
-                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                            matTooltip="Seleccionar el estado del nuevo empleado. Por defecto seleccionar Activo">
-                            help_outline
-                        </mat-icon>
-                        <mat-select required formControlName="estadoForm">
-                            <mat-option [value]="1">Activo</mat-option>
-                            <mat-option [value]="2">Inactivo</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input type="text" placeholder="Nacionalidad" aria-label="Number" matInput
-                            [formControl]="NacionalidadControl" [matAutocomplete]="auto" required>
-                        <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.nombre">
-                                {{option.nombre}}
-                            </mat-option>
-                        </mat-autocomplete>
-                        <mat-icon matSuffix matTooltipPosition="right"
-                            matTooltip="Ingrese la nacionalidad del empleado">help_outline</mat-icon>
-                    </mat-form-field>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-form-field>
+                                <mat-label>Domicilio</mat-label>
+                                <input matInput placeholder="Sector, Avenida, Calle" type="text"
+                                    formControlName="domicilioForm" required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Ingrese la dirección de domicilio en donde reside, Av, interseción, numero de casa">
+                                    my_location
+                                </mat-icon>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Teléfono</mat-label>
+                                <input matInput placeholder="0984297443" type="text" maxlength="10"
+                                    formControlName="telefonoForm"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    (keypress)="IngresarSoloNumeros($event)" required>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Ingresar número telefónico convencional o celular">
+                                    phone
+                                </mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-form-field>
+                                <mat-label>Estado Civil</mat-label>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Seleccionar el estado civil del nuevo empleado">
+                                    help_outline
+                                </mat-icon>
+                                <mat-select required formControlName="estadoCivilForm">
+                                    <mat-option [value]="1">Soltero/a</mat-option>
+                                    <mat-option [value]="2">Unión de Hecho</mat-option>
+                                    <mat-option [value]="3">Casado/a</mat-option>
+                                    <mat-option [value]="4">Divorciado/a</mat-option>
+                                    <mat-option [value]="5">Viudo/a</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Género</mat-label>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Seleccionar el género del nuevo empleado">
+                                    help_outline
+                                </mat-icon>
+                                <mat-select required formControlName="generoForm">
+                                    <mat-option [value]="1">Masculino</mat-option>
+                                    <mat-option [value]="2">Femenino</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <mat-form-field>
+                                <mat-label>Estado</mat-label>
+                                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                                    matTooltip="Seleccionar el estado del nuevo empleado. Por defecto seleccionar Activo">
+                                    help_outline
+                                </mat-icon>
+                                <mat-select required formControlName="estadoForm">
+                                    <mat-option [value]="1">Activo</mat-option>
+                                    <mat-option [value]="2">Inactivo</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input type="text" placeholder="Nacionalidad" aria-label="Number" matInput
+                                    [formControl]="NacionalidadControl" [matAutocomplete]="auto" required>
+                                <mat-autocomplete #auto="matAutocomplete">
+                                    <mat-option *ngFor="let option of filteredOptions | async" [value]="option.nombre">
+                                        {{option.nombre}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <mat-icon matSuffix matTooltipPosition="right"
+                                    matTooltip="Ingrese la nacionalidad del empleado">help_outline</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
                 </div>
             </form>
-            <div>
-                <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                <button
-                    (click)="actualizarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value)"
-                    type="submit" class="btn btn-sm btn btn-sm-primary" [disabled]="!segundoFormGroup.valid">Guardar
-                </button>
-                <button (click)="cancelar()" class="btn btn-sm">Cancelar</button>
+            <div style="text-align: center;">
+                <button matStepperPrevious class="btn btn-sm float-left">Atrás</button>
+                <button (click)="Cancelar()" class="btn btn-sm">Cancelar</button>
                 <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
             </div>
         </mat-step>
@@ -221,13 +231,13 @@
                             account_circle</mat-icon>
                     </mat-form-field>
                 </div>
-                <div>
-                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
+                <div style="text-align: center;">
+                    <button matStepperPrevious class="btn btn-sm float-left">Atrás</button>
                     <button
-                        (click)="actualizarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value);"
+                        (click)="ActualizarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value);"
                         type="submit" class="btn btn-sm" [disabled]="!terceroFormGroup.valid">Guardar
                     </button>
-                    <button (click)="cancelar()" class="btn btn-sm float-right">Cancelar</button>
+                    <button (click)="Cancelar()" class="btn btn-sm float-right">Cancelar</button>
                 </div>
             </form>
         </mat-step>

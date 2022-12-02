@@ -12,13 +12,18 @@ class TituloRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/', verificarToken_1.TokenValidation, catTituloControlador_1.default.list);
+        // METODO PARA LISTAR TITULOS
+        this.router.get('/', verificarToken_1.TokenValidation, catTituloControlador_1.default.ListarTitulos);
+        // METODO PARA ELIMINAR REGISTRO
+        this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, catTituloControlador_1.default.EliminarRegistros);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catTituloControlador_1.default.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', catTituloControlador_1.default.downloadXML);
+        // METODO PARA ACTUALIZAR REGISTRO DE TITULO
+        this.router.put('/', verificarToken_1.TokenValidation, catTituloControlador_1.default.ActualizarTitulo);
         this.router.get('/:id', verificarToken_1.TokenValidation, catTituloControlador_1.default.getOne);
         this.router.post('/', verificarToken_1.TokenValidation, catTituloControlador_1.default.create);
-        this.router.put('/', verificarToken_1.TokenValidation, catTituloControlador_1.default.ActualizarTitulo);
-        this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, catTituloControlador_1.default.EliminarRegistros);
-        this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catTituloControlador_1.default.FileXML);
-        this.router.get('/download/:nameXML', catTituloControlador_1.default.downloadXML);
     }
 }
 const TITULO_RUTAS = new TituloRutas();

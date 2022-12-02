@@ -38,11 +38,11 @@ export class VerEmpleadoPermisoComponent implements OnInit {
 
   HabilitarAutorizacion: boolean = true;
 
-  // VARIABLES DE BÚSQUEDA DE DATOS DE EMPLEADO
+  // VARIABLES DE BUSQUEDA DE DATOS DE EMPLEADO
   empleado: any = [];
   idEmpleado: number;
 
-  // VARIABLES USADAS PARA BÚSQUEDA DE DATOS DE PERMISO
+  // VARIABLES USADAS PARA BUSQUEDA DE DATOS DE PERMISO
   id_permiso: string;
   datoSolicitud: any = [];
 
@@ -79,7 +79,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -110,11 +110,11 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   lectura: number = 1;
   cont: number;
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
+  // METODO DE BUSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
   BuscarDatos(formato_fecha: string, formato_hora: string) {
     this.InfoPermiso = [];
 
-    // BÚSQUEDA DE DATOS DE PERMISO
+    // BUSQUEDA DE DATOS DE PERMISO
     this.restP.obtenerUnPermisoEmpleado(parseInt(this.id_permiso)).subscribe(res => {
       this.InfoPermiso = res;
 
@@ -129,7 +129,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
 
       })
 
-      // BÚSQUEDA DE DATOS DE AUTORIZACIÓN
+      // BUSQUEDA DE DATOS DE AUTORIZACIÓN
       this.ObtenerAutorizacion(this.InfoPermiso[0].id);
 
     }, err => {
@@ -147,7 +147,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     this.restA.getUnaAutorizacionByPermisoRest(id).subscribe(res1 => {
       this.autorizacion = res1;
 
-      // MÉTODO PARA OBTENER EMPLEADOS Y ESTADOS
+      // METODO PARA OBTENER EMPLEADOS Y ESTADOS
       var autorizaciones = this.autorizacion[0].id_documento.split(',');
       autorizaciones.map((obj: string) => {
         this.lectura = this.lectura + 1;
@@ -174,7 +174,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
             estado: estado_auto
           }
           this.empleado_estado = this.empleado_estado.concat(data);
-          // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR MÉTODO DE INFORMACIÓN DE AUTORIZACIÓN
+          // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR METODO DE INFORMACIÓN DE AUTORIZACIÓN
           if (this.lectura === autorizaciones.length) {
             this.VerInformacionAutoriza(this.empleado_estado);
           }
@@ -188,7 +188,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -196,7 +196,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -208,7 +208,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVISÓ LA SOLICITUD 
+  // METODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVISÓ LA SOLICITUD 
   cadena_texto: string = ''; // VARIABLE PARA ALMACENAR TODOS LOS USUARIOS
 
   VerInformacionAutoriza(array: any) {
@@ -226,7 +226,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -234,18 +234,18 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
+  // METODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
   ObtenerSolicitud(id: any) {
     var f = moment();
     this.fechaActual = f.format('YYYY-MM-DD');
     this.datoSolicitud = [];
-    // BÚSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
+    // BUSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
     this.restP.BuscarDatosSolicitud(id).subscribe(data => {
       this.datoSolicitud = data;
-      // BÚSQUEDA DE DATOS DE EMPRESA
+      // BUSQUEDA DE DATOS DE EMPRESA
       this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
         var fecha_inicio = moment(this.datoSolicitud[0].fec_inicio);
-        // MÉTODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
+        // METODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
         console.log(fecha_inicio.diff(this.fechaActual, 'days'), ' dias de diferencia');
 
         console.log('fecha inicio -- ' + fecha_inicio + ' fecha actual ' + this.fechaActual +
@@ -284,7 +284,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   }
 
   /* **************************************************************************************************** * 
-   *                                         MÉTODO PARA EXPORTAR A PDF                                   *
+   *                                         METODO PARA EXPORTAR A PDF                                   *
    * **************************************************************************************************** */
   GenerarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();

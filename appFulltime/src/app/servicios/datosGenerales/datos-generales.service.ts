@@ -12,9 +12,31 @@ export class DatosGeneralesService {
     private http: HttpClient,
   ) { }
 
+  // METODO PARA CONSULTAR DATOS DEL USUARIO
   ObtenerDatosActuales(id_empleado: number) {
     return this.http.get(`${environment.url}/generalidades/datos-actuales/${id_empleado}`);
   }
+
+  // CONSULTA DE INFORMACION GENERAL DEL COLABORADOR
+  ObtenerInformacion() {
+    const estado = 1; // 1 = activo 
+    return this.http.get<any>(`${environment.url}/generalidades/informacion-general/${estado}`);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   BuscarJefes(datos: any) {
     return this.http.post<any>(`${environment.url}/generalidades/buscar-jefes`, datos);
@@ -32,13 +54,6 @@ export class DatosGeneralesService {
   ListarInformacionActual() {
     return this.http.get(`${environment.url}/generalidades/info_actual`);
   }
-
-  // CONSULTA DE INFORMACIÓN GENERAL DEL COLABORADOR
-  ObtenerInformacion() {
-    const estado = 1; // 1 = activo 
-    return this.http.get<any>(`${environment.url}/generalidades/informacion-general/${estado}`);
-  }
-
 
   /** INICIO CONSULTAS PARA FILTRAR INFORMACIÓN */
   VerDatosSucursal(id_sucursal: number) {

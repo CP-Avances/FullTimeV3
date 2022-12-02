@@ -226,7 +226,7 @@ class PlanHoraExtraControlador {
             yield database_1.default.query(`
         DELETE FROM plan_hora_extra WHERE id = $1
         `, [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     // ELIMINAR PLANIFICACION DE UN USUARIO ESPECIFICO
@@ -237,7 +237,7 @@ class PlanHoraExtraControlador {
             yield database_1.default.query(`
         DELETE FROM plan_hora_extra_empleado WHERE id_plan_hora = $1 AND id_empl_realiza = $2
         `, [id, id_empleado]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     // BUSQUEDA DE PLANIFICACIONES POR ID DE USUARIO
@@ -263,7 +263,7 @@ class PlanHoraExtraControlador {
     /** ********************************************************************************************* **
      ** *             ENVIO DE CORREOS ELECTRONICOS DE PLANIFICACIÓN DE HORAS EXTRAS                  **
      ** ********************************************************************************************* **/
-    // MÉTODO ENVIO CORREO DESDE APLICACIÓN WEB CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
+    // METODO ENVIO CORREO DESDE APLICACIÓN WEB CREACIÓN DE PLANIFICACIÓN DE HORAS EXTRAS
     EnviarCorreoPlanificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();

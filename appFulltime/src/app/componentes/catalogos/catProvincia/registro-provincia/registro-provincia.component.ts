@@ -17,8 +17,6 @@ export class RegistroProvinciaComponent implements OnInit {
 
   paises: any = [];
   continentes: any = [];
-  seleccionarPaises: any;
-  seleccionarContinente: any;
 
   filteredOptions: Observable<string[]>;
 
@@ -41,14 +39,11 @@ export class RegistroProvinciaComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.BuscarProvincias();
     this.continentes = this.ObtenerContinentes();
-    this.filteredOptions = this.nombrePaisF.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
   }
 
+  // METODO PARA FILTRAR DATOS 
   private _filter(value: string): string[] {
     if (value != null) {
       const filterValue = value.toLowerCase();
@@ -61,8 +56,6 @@ export class RegistroProvinciaComponent implements OnInit {
     this.continentes = [];
     this.rest.BuscarContinente().subscribe(datos => {
       this.continentes = datos;
-      this.continentes[this.continentes.length] = { continente: "Seleccionar" };
-      this.seleccionarContinente = this.continentes[this.continentes.length - 1].continente;
     })
   }
 
@@ -71,74 +64,84 @@ export class RegistroProvinciaComponent implements OnInit {
     this.paises = [];
     this.rest.BuscarPais(continente).subscribe(datos => {
       this.paises = datos;
-      this.paises[this.paises.length] = { nombre: "Seleccionar" };
-      this.seleccionarPaises = this.paises[this.paises.length - 1].nombre;
+      this.filteredOptions = this.nombrePaisF.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filter(value))
+        );
     })
   }
 
   // METODO PARA REALIZAR BUSQUEDAS POR FILTROS
   FiltrarPaises(form: any) {
     var nombreContinente = form.nombreContinenteForm;
-    if (nombreContinente === 'Seleccionar' || nombreContinente === '') {
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
-        timeOut: 6000,
-      })
-      this.paises = [];
-      this.seleccionarPaises = '';
-    }
-    else {
-      this.seleccionarPaises = this.ObtenerPaises(nombreContinente);
-    }
+    this.ObtenerPaises(nombreContinente);
+  }
+
+  // METODO PARA BUSCAR PROVINCIAS
+  BuscarProvincias() {
+    this.provincias = [];
+    this.rest.BuscarProvincias().subscribe(response => {
+      this.provincias = response;
+    })
   }
 
   // METODO PARA GUARDAR EL REGISTRO DE PROVINCIA
   provincias: any = [];
   contador: number = 0;
   InsertarProvincia(form: any) {
-    this.provincias = [];
-    let idPais: any;
+    let idPais = 0;
+    // VALIDACION PAIS
     this.paises.forEach(obj => {
-      if (obj.nombre === form.nombrePaisForm) {
+      if (obj.nombre.toUpperCase() === form.nombrePaisForm.toUpperCase()) {
         idPais = obj.id
       }
     });
-    let dataProvincia = {
-      nombre: form.nombreProvinciaForm,
-      id_pais: idPais,
-    };
-
-    if (dataProvincia.id_pais === 'Seleccionar') {
-      this.toastr.info('Seleccionar un país', '', {
+    if (idPais === 0) {
+      this.toastr.error('Verificar selección de país', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
-      })
+      });
     }
     else {
-      this.rest.getProvinciasRest().subscribe(response => {
-        this.provincias = response;
+      let provincia = {
+        nombre: form.nombreProvinciaForm,
+        id_pais: idPais,
+      }
+      // VALIDAR SI EXISTE REGISTRO DE PROVINCIA
+      if (this.provincias.length != 0) {
+        this.contador = 0;
         this.provincias.forEach(obj => {
           if (obj.nombre.toUpperCase() === form.nombreProvinciaForm.toUpperCase()) {
             this.contador = this.contador + 1;
           }
         })
         if (this.contador === 0) {
-          this.rest.postProvinciaRest(dataProvincia).subscribe(response => {
-            this.toastr.success('Registro guardado', 'Provincia - Departamento - Estado', {
-              timeOut: 6000,
-            });
-            this.LimpiarCampos();
-          }, error => {
-            this.toastr.error('Operación Fallida', 'Provincia no pudo ser registrada', {
-              timeOut: 6000,
-            });
-          });
+          this.GuardarProvincia(provincia);
         }
         else {
-          this.toastr.error('La provincia ya se encuentra registrada.', 'Nombre Duplicado', {
+          this.toastr.error('Provincia ya se encuentra registrada.', 'Ups!!! algo salio mal.', {
             timeOut: 6000,
           });
         }
-      })
+      }
+      else {
+        this.GuardarProvincia(provincia);
+      }
     }
+  }
+
+  // METODO PARA REGISTRAR PROVINCIA EN BASE DE DATOS
+  GuardarProvincia(provincia: any) {
+    this.rest.RegistrarProvincia(provincia).subscribe(response => {
+      this.toastr.success('Registro guardado exitosamente.', '', {
+        timeOut: 6000,
+      });
+      this.LimpiarCampos();
+    }, error => {
+      this.toastr.error('Operación Fallida', 'Ups!!! algo salio mal.', {
+        timeOut: 6000,
+      });
+    });
   }
 
   // METODO DE VALIDACION DE INGRESO DE LETRAS
@@ -162,14 +165,6 @@ export class RegistroProvinciaComponent implements OnInit {
       })
       return false;
     }
-  }
-
-  // MENSAJE DE ERROR 
-  ObtenerMensajeProvinciaRequerido() {
-    if (this.nombreProvinciaF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-    return this.nombreProvinciaF.hasError('pattern') ? 'Ingrese un nombre válido' : '';
   }
 
   // METODO PARA LIMPIAR CAMPOS DEL FORMULARIO

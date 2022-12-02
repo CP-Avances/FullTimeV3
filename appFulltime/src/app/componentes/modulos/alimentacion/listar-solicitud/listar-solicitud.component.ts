@@ -13,6 +13,7 @@ import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.s
 import { EditarSolicitudComidaComponent } from '../editar-solicitud-comida/editar-solicitud-comida.component';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE AUTORIZACIÓN
 export interface SolicitudElemento {
@@ -67,16 +68,30 @@ export class ListarSolicitudComponent implements OnInit {
   tamanio_pagina_expirada: number = 5;
   numero_pagina_expirada: number = 1;
 
+  get habilitarComida(): boolean { return this.funciones.alimentacion; }
+
   constructor(
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
     public parametro: ParametrosService,
     public validar: ValidacionesService,
     public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
     private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
+    private funciones: MainNavService,
   ) { }
 
   ngOnInit(): void {
-    this.BuscarParametro();
+    if (this.habilitarComida === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Alimentación. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.BuscarParametro();
+    }
   }
 
   /** **************************************************************************************** **
@@ -86,7 +101,7 @@ export class ListarSolicitudComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -130,16 +145,16 @@ export class ListarSolicitudComponent implements OnInit {
   }
 
   /** ********************************************************************************************* */
-  /**                MÉTODOS USADOS PARA MANEJO DE DATOS DE SOLICITUDES PENDIENTES                  */
+  /**                METODOS USADOS PARA MANEJO DE DATOS DE SOLICITUDES PENDIENTES                  */
   /** ********************************************************************************************* */
 
-  // MÉTODO PARA MOSTRAR UN DETERMINADO NÚMERO DE FILAS EN LA TABLA DE SOLICITUDES PENDIENTES
+  // METODO PARA MOSTRAR UN DETERMINADO NÚMERO DE FILAS EN LA TABLA DE SOLICITUDES PENDIENTES
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1;
     this.tamanio_pagina = e.pageSize;
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
+  // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
   ObtenerSolicitudes(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaNegado().subscribe(res => {
       this.solicitudes = res;
@@ -172,7 +187,7 @@ export class ListarSolicitudComponent implements OnInit {
     return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO PARA HABILITAR O DESHABILITAR EL BOTÓN AUTORIZAR MULTIPLE Y BOTÓN AUTORIZAR INDIVIDUAL RESPECTIVAMENTE
+  // METODO PARA HABILITAR O DESHABILITAR EL BOTÓN AUTORIZAR MULTIPLE Y BOTÓN AUTORIZAR INDIVIDUAL RESPECTIVAMENTE
   btnCheckHabilitar: boolean = false;
   HabilitarSeleccion() {
     if (this.btnCheckHabilitar === false) {
@@ -184,7 +199,7 @@ export class ListarSolicitudComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LEER TODOS LOS DATOS SELECCIONADOS
+  // METODO PARA LEER TODOS LOS DATOS SELECCIONADOS
   AutorizarSolicitudMultiple() {
     let EmpleadosSeleccionados;
     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
@@ -202,7 +217,7 @@ export class ListarSolicitudComponent implements OnInit {
     this.AbrirAutorizaciones(EmpleadosSeleccionados, 'multiple');
   }
 
-  // MÉTODO PARA ABRIR VENTA DE AUTORIZACIÓN DE SOLICITUDES CON TODOS LOS DATOS SELECCIONADOS
+  // METODO PARA ABRIR VENTA DE AUTORIZACIÓN DE SOLICITUDES CON TODOS LOS DATOS SELECCIONADOS
   AbrirAutorizaciones(datos_solicitud, forma: string) {
     this.ventana.open(AutorizaSolicitudComponent,
       { width: '600px', data: { datosMultiple: datos_solicitud, carga: forma } })
@@ -215,7 +230,7 @@ export class ListarSolicitudComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA ABRIR VENTANA DE EDICIÓN DE SOLICITUD
+  // METODO PARA ABRIR VENTANA DE EDICIÓN DE SOLICITUD
   VentanaEditarPlanComida(datoSeleccionado: any) {
     this.ventana.open(EditarSolicitudComidaComponent, {
       width: '600px',
@@ -227,16 +242,16 @@ export class ListarSolicitudComponent implements OnInit {
   }
 
   /** ********************************************************************************************* */
-  /**      MÉTODOS USADOS PARA MANEJO DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS                 */
+  /**      METODOS USADOS PARA MANEJO DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS                 */
   /** ********************************************************************************************* */
 
-  // MÉTODO PARA MOSTRAR FILAS DETERMINADAS EN TABLA DE SOLICITUDES AUTORIZADAS O NEGADAS
+  // METODO PARA MOSTRAR FILAS DETERMINADAS EN TABLA DE SOLICITUDES AUTORIZADAS O NEGADAS
   ManejarPaginaAutorizados(e: PageEvent) {
     this.numero_pagina_autorizado = e.pageIndex + 1;
     this.tamanio_pagina_autorizado = e.pageSize;
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
+  // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
   solicitudesAutorizados: any = []; // VARIABLE PARA GUARDAR DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
   ObtenerSolicitudesAutorizados(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaAprobado().subscribe(res => {
@@ -283,7 +298,7 @@ export class ListarSolicitudComponent implements OnInit {
     return `${this.selectionUnoEstado.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO PARA HABILITAR O DESHABILITAR EL ÍCONO DE AUTORIZACIÓN INDIVIDUAL SOLICITUDES APROBADAS O NEGADAS
+  // METODO PARA HABILITAR O DESHABILITAR EL ÍCONO DE AUTORIZACIÓN INDIVIDUAL SOLICITUDES APROBADAS O NEGADAS
   btnCheckHabilitar_Estado: boolean = false; // VARIABLE PARA MOSTRAR U OCULTAR BOTÓN DE AUTORIZACIÓN MÚLTIPLE
   auto_individual_estado: boolean = true; // VARIABLE PARA MOSTRAR U OCULTAR BOTÓN DE AUTORIZACIÓN INDIVIDUAL
   HabilitarSeleccionEstado() {
@@ -296,7 +311,7 @@ export class ListarSolicitudComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LEER LOS DATOS TOMADOS DE LA LISTA DE SOLICITUDES AUTORIZADAS O NEGADAS
+  // METODO PARA LEER LOS DATOS TOMADOS DE LA LISTA DE SOLICITUDES AUTORIZADAS O NEGADAS
   AutorizarSolicitudMultipleEstado() {
     let EmpleadosSeleccionados;
     EmpleadosSeleccionados = this.selectionUnoEstado.selected.map(obj => {
@@ -315,16 +330,16 @@ export class ListarSolicitudComponent implements OnInit {
   }
 
   /** ********************************************************************************************* */
-  /**                MÉTODOS USADOS PARA MANEJO DE DATOS DE SOLICITUDES EXPIRADAS                   */
+  /**                METODOS USADOS PARA MANEJO DE DATOS DE SOLICITUDES EXPIRADAS                   */
   /** ********************************************************************************************* */
 
-  // MÉTODO PARA MOSTRAR FILAS DETERMINADAS EN LA TABLA DE SOLICITUDES EXPIRADAS
+  // METODO PARA MOSTRAR FILAS DETERMINADAS EN LA TABLA DE SOLICITUDES EXPIRADAS
   ManejarPaginaExpiradas(e: PageEvent) {
     this.numero_pagina_expirada = e.pageIndex + 1;
     this.tamanio_pagina_expirada = e.pageSize;
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES EXPIRADAS
+  // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES EXPIRADAS
   solicitudesExpiradas: any = []; // VARIABLE PARA ALMACENAR DATOS DE SOLIICTUDES EXPIRADAS
   ObtenerSolicitudesExpiradas(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaExpirada().subscribe(res => {

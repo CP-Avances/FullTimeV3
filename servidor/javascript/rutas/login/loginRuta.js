@@ -11,8 +11,11 @@ class LoginRuta {
         this.configuracion();
     }
     configuracion() {
+        // VALIDAR CREDENCIALES DE ACCESO AL SISTEMA
         this.router.post('/', loginControlador_1.default.ValidarCredenciales);
-        this.router.post('/recuperar-contrasenia/', loginControlador_1.default.RestablecerContrasenia);
+        // METODO PARA ENVIAR CORREO PARA CAMBIAR CONTRASEÑA
+        this.router.post('/recuperar-contrasenia/', loginControlador_1.default.EnviarCorreoContrasena);
+        // METODO PARA CAMBIAR CONTRASEÑA
         this.router.post('/cambiar-contrasenia/', loginControlador_1.default.CambiarContrasenia);
         this.router.post('/auditar', loginControlador_1.default.Auditar);
     }

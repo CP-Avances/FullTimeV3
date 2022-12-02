@@ -225,7 +225,7 @@ class DetallePlanHorarioControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             yield database_1.default.query('DELETE FROM plan_hora_detalles WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     ObtenerRegistrosFecha(req, res) {

@@ -6,8 +6,8 @@
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
-                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarReloj()"
-                        value="Crear nuevo dispositivo">
+                    <input type="submit" class="btn btn-sm" [routerLink]="['/registrarRelojes']"
+                        value="Crear dispositivo">
                     <input type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos."
@@ -24,13 +24,15 @@
                     <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file"
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                        matTooltip="Presionar para seleccionar Plantilla con nombre Dispositivos.">Subir
-                        dispositivos</label>
+                        matTooltip="Presionar para seleccionar Plantilla con nombre Dispositivos.">
+                        Subir dispositivos
+                    </label>
                 </form>
                 <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
                     matTooltip="Dar click para ver o descargar el documento."
                     href="{{hipervinculo}}/plantillaD/documento/Dispositivos.xlsx">
-                    <span class="material-icons">cloud_download</span> Descargar plantilla dispositivos
+                    <span class="material-icons">cloud_download</span>
+                    Descargar plantilla dispositivos
                 </a>
             </mat-card>
         </div>
@@ -94,7 +96,8 @@
                         <td>
                             <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
                                 matTooltip="Búsqueda del dipositivo de acuerdo a las columnas de la tabla.">
-                                help_outline</mat-icon>
+                                help_outline
+                            </mat-icon>
                         </td>
                     </tr>
                     <tr

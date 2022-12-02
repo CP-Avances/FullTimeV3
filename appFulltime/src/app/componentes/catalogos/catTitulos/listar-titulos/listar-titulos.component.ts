@@ -1,27 +1,26 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR COMPONENTES
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarTitulosComponent } from '../editar-titulos/editar-titulos.component'
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { TitulosComponent } from '../titulos/titulos.component'
 
 // IMPORTAR SERVICIOS
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulos.service';
 import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
 
 @Component({
@@ -36,7 +35,7 @@ export class ListarTitulosComponent implements OnInit {
   verTitulos: any = [];
   empleado: any = [];
 
-  // VARIABLES USADAS PARA FILTROS DE BÚSQUEDA
+  // VARIABLES USADAS PARA FILTROS DE BUSQUEDA
   filtradoNombre = '';
   filtradoNivel = '';
 
@@ -47,7 +46,7 @@ export class ListarTitulosComponent implements OnInit {
   nivelF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
 
   // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public BuscarTitulosForm = new FormGroup({
+  public formulario = new FormGroup({
     nombreForm: this.nombreF,
     nivelForm: this.nivelF,
   });
@@ -57,20 +56,19 @@ export class ListarTitulosComponent implements OnInit {
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
 
-  // MÉTODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
   get s_color(): string { return this.plantillaPDF.color_Secundary }
   get p_color(): string { return this.plantillaPDF.color_Primary }
   get frase(): string { return this.plantillaPDF.marca_Agua }
   get logo(): string { return this.plantillaPDF.logoBase64 }
 
   constructor(
-    private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
-    public vistaRegistrarDatos: MatDialog, // VARIABLE QUE MANEJA EVENTOS CON VENTANAS
-    public restN: NivelTitulosService, // SERVICIO DATOS NIVEL DE TÍTULO
-    public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
-    private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
-    public rest: TituloService, // SERVICIO DATOS DE TITULOS
+    public ventana: MatDialog, // VARIABLE QUE MANEJA EVENTOS CON VENTANAS
     public router: Router, // VARIABLE USADA PARA MANEJO DE PÁGINAS CON URL
+    public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    public rest: TituloService, // SERVICIO DATOS DE TITULOS
+    private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
+    private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
   ) { }
 
   ngOnInit(): void {
@@ -79,13 +77,13 @@ export class ListarTitulosComponent implements OnInit {
     this.ObtenerTitulos();
   }
 
-  // EVENTO PARA MOSTRAR NÚMERO DE FILAS DETERMINADAS EN LA TABLA
+  // EVENTO PARA MOSTRAR NUMERO DE FILAS DETERMINADAS EN LA TABLA
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1;
     this.tamanio_pagina = e.pageSize;
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -93,13 +91,14 @@ export class ListarTitulosComponent implements OnInit {
     })
   }
 
+  // METODO PARA LISTAR TITULOS
   ObtenerTitulos() {
-    this.rest.getTituloRest().subscribe(data => {
+    this.rest.ListarTitulos().subscribe(data => {
       this.verTitulos = data;
     });
   }
 
-  // ORDENAR LOS DATOS SEGÚN EL ID 
+  // ORDENAR LOS DATOS SEGUN EL ID 
   OrdenarDatos(array: any) {
     function compare(a: any, b: any) {
       if (a.id < b.id) {
@@ -113,33 +112,25 @@ export class ListarTitulosComponent implements OnInit {
     array.sort(compare);
   }
 
+  // METODO PARA REGISTRAR TITULO
   AbrirVentanaRegistrarTitulo(): void {
-    this.vistaRegistrarDatos.open(TitulosComponent, { width: '400px' }).afterClosed().subscribe(items => {
-      this.ObtenerTitulos();
-    });
+    this.ventana.open(TitulosComponent, { width: '400px' })
+      .afterClosed().subscribe(items => {
+        this.ObtenerTitulos();
+      });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.BuscarTitulosForm.setValue({
+    this.formulario.setValue({
       nombreForm: '',
       nivelForm: ''
     });
     this.ObtenerTitulos();
   }
 
-  ObtenerMensajeErrorNombre() {
-    if (this.nombreF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
-  ObtenerMensajeErrorNivel() {
-    if (this.nivelF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
     // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
@@ -161,25 +152,27 @@ export class ListarTitulosComponent implements OnInit {
     }
   }
 
+  // METODO PARA EDITAR TITULO
   AbrirVentanaEditarTitulo(datosSeleccionados: any): void {
-    this.vistaRegistrarDatos.open(EditarTitulosComponent, { width: '400px', data: datosSeleccionados }).afterClosed().subscribe(items => {
-      this.ObtenerTitulos();
-    });
+    this.ventana.open(EditarTitulosComponent, { width: '400px', data: datosSeleccionados })
+      .afterClosed().subscribe(items => {
+        this.ObtenerTitulos();
+      });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_titulo: number) {
     this.rest.EliminarRegistro(id_titulo).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerTitulos();
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -190,9 +183,9 @@ export class ListarTitulosComponent implements OnInit {
   }
 
 
-  /* ****************************************************************************************************
-  *                               PARA LA EXPORTACIÓN DE ARCHIVOS PDF
-  * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                              PARA LA EXPORTACION DE ARCHIVOS PDF                            ** **
+   ** ************************************************************************************************* **/
 
   GenerarPdf(action = 'open') {
     this.OrdenarDatos(this.verTitulos);
@@ -281,9 +274,9 @@ export class ListarTitulosComponent implements OnInit {
     };
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                            PARA LA EXPORTACION DE ARCHIVOS EXCEL                            ** **
+   ** ************************************************************************************************* **/
 
   ExportToExcel() {
     this.OrdenarDatos(this.verTitulos);
@@ -294,7 +287,7 @@ export class ListarTitulosComponent implements OnInit {
         NIVEL: obj.nivel
       }
     }));
-    // MÉTODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
     const header = Object.keys(this.verTitulos[0]); // NOMBRE DE CABECERAS DE COLUMNAS
     var wscols = [];
     for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
@@ -307,9 +300,9 @@ export class ListarTitulosComponent implements OnInit {
     this.ObtenerTitulos();
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                             PARA LA EXPORTACION DE ARCHIVOS XML                             ** **
+   ** ************************************************************************************************* **/
   urlxml: string;
   data: any = [];
   ExportToXML() {
@@ -326,7 +319,7 @@ export class ListarTitulosComponent implements OnInit {
       }
       arregloTitulos.push(objeto)
     });
-    this.rest.DownloadXMLRest(arregloTitulos).subscribe(res => {
+    this.rest.CrearXML(arregloTitulos).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/titulo/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
@@ -334,9 +327,9 @@ export class ListarTitulosComponent implements OnInit {
     this.ObtenerTitulos();
   }
 
-  /* ***************************************************************************************************** 
-   *                                  MÉTODO PARA EXPORTAR A CSV 
-   * *****************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                METODO PARA EXPORTAR A CSV                                    ** **
+   ** ************************************************************************************************** **/
 
   ExportToCVS() {
     this.OrdenarDatos(this.verTitulos);

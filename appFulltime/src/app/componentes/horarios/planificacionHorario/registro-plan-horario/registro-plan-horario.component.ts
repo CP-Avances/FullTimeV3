@@ -45,7 +45,7 @@ export class RegistroPlanHorarioComponent implements OnInit {
   }
 
   empleado: any = [];
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {

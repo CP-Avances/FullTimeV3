@@ -90,10 +90,10 @@ export class DispositivosEnroladosComponent implements OnInit {
       });
   }
 
-  /** Función para eliminar registro seleccionado HORARIO*/
+  /** FUNCION para eliminar registro seleccionado HORARIO*/
   EliminarReloj(id_horario: number) {
     this.restE.EliminarRegistro(id_horario).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.','', {
         timeOut: 6000,
       });
       this.BuscarDatosEnrolado(this.idEnrolado);
@@ -101,7 +101,7 @@ export class DispositivosEnroladosComponent implements OnInit {
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  /** FUNCION para confirmar si se elimina o no un registro */
   ConfirmarDeleteReloj(datos: any) {
     console.log(datos);
     this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()

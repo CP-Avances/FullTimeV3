@@ -102,10 +102,10 @@ class NotificacionTiempoRealControlador {
   }
 
   /** *********************************************************************************************** **
-   **                         MÉTODOS PARA LA TABLA DE CONFIG_NOTI                                    **
+   **                         METODOS PARA LA TABLA DE CONFIG_NOTI                                    **
    ** *********************************************************************************************** **/
 
-  // MÉTODO PARA REGISTRAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+  // METODO PARA REGISTRAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
   public async CrearConfiguracion(req: Request, res: Response): Promise<void> {
     const { id_empleado, vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail,
       hora_extra_noti, comida_mail, comida_noti, comunicado_mail, comunicado_noti } = req.body;
@@ -119,7 +119,7 @@ class NotificacionTiempoRealControlador {
   }
 
 
-  // MÉTODO PARA ACTUALIZAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+  // METODO PARA ACTUALIZAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
   public async ActualizarConfigEmpleado(req: Request, res: Response): Promise<void> {
     const { vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail,
       hora_extra_noti, comida_mail, comida_noti, comunicado_mail, comunicado_noti } = req.body;
@@ -139,7 +139,7 @@ class NotificacionTiempoRealControlador {
    ** **                               CONSULTAS DE NOTIFICACIONES                              ** ** 
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+  // METODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
   public async ObtenerConfigEmpleado(req: Request, res: Response): Promise<any> {
     const id_empleado = req.params.id;
     console.log(id_empleado);
@@ -206,10 +206,10 @@ class NotificacionTiempoRealControlador {
   }
 
   /** ******************************************************************************************** ** 
-   ** **                      MÉTODOS PARA ENVIOS DE COMUNICADOS                                ** ** 
+   ** **                      METODOS PARA ENVIOS DE COMUNICADOS                                ** ** 
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
+  // METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
   public async EnviarCorreoComunicado(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
@@ -322,7 +322,7 @@ class NotificacionTiempoRealControlador {
 
   }
 
-  // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
+  // METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
   public async EnviarCorreoComunicadoMovil(req: Request, res: Response) {
 
     var tiempo = fechaHora();
@@ -405,7 +405,7 @@ class NotificacionTiempoRealControlador {
     }
   }
 
-  // MÉTODO PARA CREAR NOTIFICACIONES
+  // METODO PARA CREAR NOTIFICACIONES
   public async CrearNotificacion(req: Request, res: Response): Promise<Response> {
     try {
       var tiempo = fechaHora();

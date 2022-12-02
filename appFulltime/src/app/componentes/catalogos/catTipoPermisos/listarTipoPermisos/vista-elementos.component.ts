@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { environment } from 'src/environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -20,6 +20,8 @@ import { MetodosComponent } from 'src/app/componentes/administracionGeneral/meto
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 @Component({
   selector: 'app-vista-elementos',
@@ -48,6 +50,8 @@ export class VistaElementosComponent implements OnInit {
     nombreForm: this.nombreF,
   });
 
+  get habilitarPermiso(): boolean { return this.funciones.permisos; }
+
   constructor(
     private rest: TipoPermisosService,
     public restE: EmpleadoService,
@@ -55,18 +59,31 @@ export class VistaElementosComponent implements OnInit {
     public vistaTipoPermiso: MatDialog,
     private toastr: ToastrService,
     private router: Router,
+    private validar: ValidacionesService,
+    private funciones: MainNavService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerTipoPermiso();
-    this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerLogo();
-    this.ObtenerColores();
+    if (this.habilitarPermiso === false) {
+      let mensaje = {
+        access: false,
+        message: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Permisos. \n
+        ¿Te gustaría activarlo? Comunícate con nosotros. \n`,
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.ObtenerEmpleados(this.idEmpleado);
+      this.ObtenerTipoPermiso();
+      this.ObtenerColores();
+      this.ObtenerLogo();
+    }
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -74,7 +91,7 @@ export class VistaElementosComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -82,7 +99,7 @@ export class VistaElementosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -121,18 +138,18 @@ export class VistaElementosComponent implements OnInit {
       });
   }
 
-  /** Función para eliminar registro seleccionado */
+  /** FUNCION para eliminar registro seleccionado */
   Eliminar(id_permiso: number) {
     //console.log("probando id", id_prov)
     this.rest.EliminarRegistro(id_permiso).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerTipoPermiso();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  /** FUNCION para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     this.vistaTipoPermiso.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -145,7 +162,7 @@ export class VistaElementosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
- *                                         MÉTODO PARA EXPORTAR A PDF
+ *                                         METODO PARA EXPORTAR A PDF
  ******************************************************************************************************/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -171,7 +188,7 @@ export class VistaElementosComponent implements OnInit {
 
       // Pie de página
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
-   var f = moment();
+        var f = moment();
         fecha = f.format('YYYY-MM-DD');
         hora = f.format('HH:mm:ss');
         return {
@@ -269,7 +286,7 @@ export class VistaElementosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipoPermiso);
@@ -279,7 +296,7 @@ export class VistaElementosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {
@@ -326,7 +343,7 @@ export class VistaElementosComponent implements OnInit {
       arregloTipoPermisos.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloTipoPermisos).subscribe(res => {
+    this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/departamento/download/` + this.data.name;

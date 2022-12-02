@@ -17,15 +17,52 @@ const xlsx_1 = __importDefault(require("xlsx"));
 const fs_1 = __importDefault(require("fs"));
 const builder = require('xmlbuilder');
 class RelojesControlador {
+    // METODO PARA BUSCAR DISPOSITIVOS
     ListarRelojes(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const RELOJES = yield database_1.default.query('SELECT * FROM NombreDispositivos');
+            const RELOJES = yield database_1.default.query(`
+            SELECT cr.id, cr.nombre, cr.ip, cr.puerto, cr.contrasenia, cr.marca, cr.modelo, cr.serie,
+                cr.id_fabricacion, cr.fabricante, cr.mac, cr.tien_funciones, cr.id_sucursal, 
+                cr.id_departamento, cr.numero_accion, cd.nombre AS nomdepar, s.nombre AS nomsucursal, 
+                e.nombre AS nomempresa, c.descripcion AS nomciudad
+            FROM cg_relojes cr, cg_departamentos cd, sucursales s, ciudades c, cg_empresa e
+            WHERE cr.id_departamento = cd.id AND cd.id_sucursal = cr.id_sucursal AND 
+                cr.id_sucursal = s.id AND s.id_empresa = e.id AND s.id_ciudad = c.id;
+            `);
             if (RELOJES.rowCount > 0) {
                 return res.jsonp(RELOJES.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
+        });
+    }
+    // METODO PARA ELIMINAR REGISTROS
+    EliminarRegistros(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            yield database_1.default.query(`
+            DELETE FROM cg_relojes WHERE id = $1
+            `, [id]);
+            res.jsonp({ message: 'Registro eliminado.' });
+        });
+    }
+    // METODO PARA CREAR ARCHIVO XML
+    FileXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+            });
+            res.jsonp({ text: 'XML creado', name: filename });
+        });
+    }
+    // METODO PARA DESCARGAR ARCHIVO XML
+    downloadXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.nameXML;
+            let filePath = `servidor\\xmlDownload\\${name}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
     ListarUnReloj(req, res) {
@@ -251,34 +288,6 @@ class RelojesControlador {
                 }
             }
             fs_1.default.unlinkSync(filePath);
-        });
-    }
-    FileXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var xml = builder.create('root').ele(req.body).end({ pretty: true });
-            console.log(req.body.userName);
-            let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log("Archivo guardado");
-            });
-            res.jsonp({ text: 'XML creado', name: filename });
-        });
-    }
-    downloadXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownload\\${name}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
-    EliminarRegistros(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield database_1.default.query('DELETE FROM cg_relojes WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
         });
     }
 }

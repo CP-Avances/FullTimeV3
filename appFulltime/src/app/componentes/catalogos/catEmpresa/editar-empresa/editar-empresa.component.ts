@@ -1,14 +1,15 @@
 // IMPORTAR LIBRERIAS
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { Component, OnInit } from '@angular/core';
+import { MatRadioChange } from '@angular/material/radio';
 import { ToastrService } from 'ngx-toastr';
 import { ThemePalette } from '@angular/material/core';
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
 
 // IMPORTAR SERVICIOS
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 @Component({
   selector: 'app-editar-empresa',
@@ -19,50 +20,27 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 export class EditarEmpresaComponent implements OnInit {
 
   // VARIABLES USADAS PARA VER U OCULTAR OPCIONES
-  valor = '';
-  selec1 = false;
-  selec2 = false;
-  selec3 = false;
-  selec4 = false;
-  selec5 = false;
-  selec6 = false;
-  selec7 = false;
-  selec8 = false;
-  selec9 = false;
-  selec10 = false;
+  valor = 'Representante';
+
+  // CONTROL DE FORMULARIOS
+  isLinear = true;
+  primerFormulario: FormGroup;
+  segundoFormulario: FormGroup;
 
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
-  representanteF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
-  direccionF = new FormControl('', [Validators.required, Validators.minLength(6)]);
-  nombreF = new FormControl('', [Validators.required, Validators.minLength(4)]);
-  correoF = new FormControl('', [Validators.required, Validators.email]);
-  establecimientoF = new FormControl('', Validators.required);
-  telefonoF = new FormControl('', Validators.required);
-  otroF = new FormControl('', Validators.minLength(3));
-  otroE = new FormControl('', Validators.minLength(3));
-  tipoF = new FormControl('', Validators.required);
-  rucF = new FormControl('', Validators.required);
+  establecimientoF = new FormControl('');
+  representanteF = new FormControl('', [Validators.required]);
   dias_cambioF = new FormControl('');
+  direccionF = new FormControl('', [Validators.required, Validators.minLength(4)]);
+  telefonoF = new FormControl('', Validators.required);
   cambiosF = new FormControl('');
   numeroF = new FormControl('');
-
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public RegistroEmpresaForm = new FormGroup({
-    establecimientoForm: this.establecimientoF,
-    representanteForm: this.representanteF,
-    dias_cambioForm: this.dias_cambioF,
-    direccionForm: this.direccionF,
-    telefonoForm: this.telefonoF,
-    cambiosForm: this.cambiosF,
-    nombreForm: this.nombreF,
-    numeroForm: this.numeroF,
-    correoForm: this.correoF,
-    otroEForm: this.otroE,
-    tipoForm: this.tipoF,
-    otroForm: this.otroF,
-    rucForm: this.rucF,
-  });
-
+  nombreF = new FormControl('', [Validators.required, Validators.minLength(2)]);
+  correoF = new FormControl('', [Validators.required, Validators.email]);
+  otroF = new FormControl('');
+  otroE = new FormControl('');
+  tipoF = new FormControl('');
+  rucF = new FormControl('', Validators.required);
 
   // VARIABLES PROGRESS SPINNER
   color: ThemePalette = 'primary';
@@ -70,313 +48,257 @@ export class EditarEmpresaComponent implements OnInit {
   mode: ProgressSpinnerMode = 'indeterminate';
   value = 10;
 
+  idEmpresa: string;
   constructor(
     private rest: EmpresaService,
     private toastr: ToastrService,
+    private router: Router,
+    private formulario: FormBuilder,
     public validar: ValidacionesService,
-    public ventana: MatDialogRef<EditarEmpresaComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    var cadena = this.router.url;
+    var aux = cadena.split("/");
+    this.idEmpresa = aux[2];
+
+  }
 
   // VARIABLES USADAS PARA MOSTRAR U OCULTAR OPCIONES
-  HabilitarRepre: boolean = true;
-  estiloRepre: any;
-  HabilitarOtroE: boolean = true;
-  estiloOtroE: any;
-  habilitarDias: boolean = true;
-  estiloDias: any;
-  HabilitarOtro: boolean = true;
-  estiloOtro: any;
+  HabilitarOtroE: boolean = false;
+  habilitarDias: boolean = false;
+  HabilitarOtro: boolean = false;
 
   ngOnInit(): void {
-    console.log('data', this.data)
-    this.ImprimirDatos();
+    this.CargarDatosEmpresa();
+    this.ValidarFormulario();
   }
 
-  ObtenerMensajeErrorNombreRequerido() {
-    if (this.nombreF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-  }
+  // VALIDACIONES DE FORMULARIO
+  ValidarFormulario() {
+    this.primerFormulario = this.formulario.group({
+      direccionForm: this.direccionF,
+      telefonoForm: this.telefonoF,
+      nombreForm: this.nombreF,
+      correoForm: this.correoF,
+      numeroForm: this.numeroF,
+      rucForm: this.rucF,
+    });
+    this.segundoFormulario = this.formulario.group({
+      representanteForm: this.representanteF,
+      dias_cambioForm: this.dias_cambioF,
+      otroEForm: this.otroE,
+      otroForm: this.otroF,
 
-  ObtenerMensajeErrorDireccionRequerido() {
-    if (this.direccionF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-  }
-
-  ObtenerMensajeErrorRucRequerido() {
-    if (this.rucF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-  }
-
-  ObtenerMensajeErrorTelefonoRequerido() {
-    if (this.telefonoF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-  }
-
-  ObtenerMensajeErrorCorreoRequerido() {
-    if (this.correoF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-  }
-
-  ObtenerMensajeErrorRepre() {
-    if (this.representanteF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-    return this.representanteF.hasError('pattern') ? 'Ingrese un nombre válido' : '';
-  }
-
-  ImprimirDatos() {
-    if (this.data.tipo_empresa === 'Pública') {
-      this.selec1 = true;
-      this.CambiarNombrePublica();
-    }
-    else if (this.data.tipo_empresa === 'Privada') {
-      this.selec2 = true;
-      this.CambiarNombrePrivada();
-    }
-    else if (this.data.tipo_empresa === 'ONG') {
-      this.selec3 = true;
-      this.CambiarNombreOng();
-    }
-    else if (this.data.tipo_empresa === 'Persona Natural') {
-      this.selec4 = true;
-      this.CambiarNombreNatural();
-    }
-    else {
-      this.selec5 = true;
-      this.estiloOtro = { 'visibility': 'visible' }; this.HabilitarOtro = false;
-      this.estiloRepre = { 'visibility': 'visible' }; this.HabilitarRepre = false;
-      this.valor = 'Representante Legal';
-      this.RegistroEmpresaForm.patchValue({
-        otroForm: this.data.tipo_empresa
-      })
-    }
-    if (this.data.establecimiento === 'Sucursales') {
-      this.selec6 = true;
-      this.CambiarSucursalesAgencias();
-    }
-    else if (this.data.establecimiento === 'Agencias') {
-      this.selec7 = true;
-      this.CambiarSucursalesAgencias();
-    }
-    else {
-      this.selec8 = true;
-      this.estiloOtroE = { 'visibility': 'visible' }; this.HabilitarOtroE = false;
-      this.RegistroEmpresaForm.patchValue({
-        otroEForm: this.data.establecimiento
-      })
-    }
-    if (this.data.cambios === true) {
-      this.selec9 = true
-      this.estiloDias = { 'visibility': 'visible' }; this.habilitarDias = false;
-      this.RegistroEmpresaForm.patchValue({
-        dias_cambioForm: this.data.dias_cambio
-      })
-    }
-    else {
-      this.selec10 = true;
-      this.RealizarCambiosNo();
-    }
-    this.RegistroEmpresaForm.patchValue({
-      establecimientoForm: this.data.establecimiento,
-      representanteForm: this.data.representante,
-      correoForm: this.data.correo_empresa,
-      direccionForm: this.data.direccion,
-      numeroForm: this.data.num_partida,
-      telefonoForm: this.data.telefono,
-      tipoForm: this.data.tipo_empresa,
-      cambiosForm: this.data.cambios,
-      nombreForm: this.data.nombre,
-      rucForm: this.data.ruc,
-    })
-  }
-
-  IngresarSoloNumeros(evt) {
-    this.validar.IngresarSoloNumeros(evt);
-  }
-
-  LimpiarCampos() {
-    this.RegistroEmpresaForm.reset();
-  }
-
-  InsertarEmpresa(form) {
-    this.habilitarprogress === true;
-    let datosEmpresa = {
-      establecimiento: form.establecimientoForm,
-      representante: form.representanteForm,
-      dias_cambio: form.dias_cambioForm,
-      correo_empresa: form.correoForm,
-      direccion: form.direccionForm,
-      num_partida: form.numeroForm,
-      telefono: form.telefonoForm,
-      tipo_empresa: form.tipoForm,
-      cambios: form.cambiosForm,
-      nombre: form.nombreForm,
-      ruc: form.rucForm,
-      id: this.data.id,
-    };
-    this.VerificarCambios(form, datosEmpresa);
-  }
-
-  GuardarDatos(datos) {
-    this.rest.ActualizarEmpresa(datos).subscribe(response => {
-      this.habilitarprogress === false;
-      this.CerrarVentanaRegistroEmpresa();
-      this.toastr.success('Operación Exitosa', 'Datos de Empresa actualizados', {
-        timeOut: 6000,
-      })
-    }, error => {
+      establecimientoForm: this.establecimientoF,
+      tipoForm: this.tipoF,
+      cambiosForm: this.cambiosF
     });
   }
 
-  VerificarOtroTipo(form, datos) {
-    if (form.tipoForm === 'Otro') {
-      if (form.otroForm != '') {
-        datos.tipo_empresa = form.otroForm;
-        this.VerificarEstablecimiento(form, datos);
-      }
-      else {
-        this.toastr.info('Ingrese el nombre del tipo de empresa.', '', {
-          timeOut: 6000,
-        })
-      }
+  // CARGAR DATOS DE EMPRESA
+  data: any = [];
+  CargarDatosEmpresa() {
+    this.data = [];
+    this.rest.ConsultarDatosEmpresa(parseInt(this.idEmpresa)).subscribe(datos => {
+      this.data = datos[0];
+      console.log('datos ', this.data)
+      this.ImprimirDatos();
+    });
+  }
+
+  // CARGARA DATOS DE EMPRESA EN FORMULARIO
+  ImprimirDatos() {
+
+    // PRIMER FORMULARIO
+    this.nombreF.setValue(this.data.nombre);
+    this.rucF.setValue(this.data.ruc);
+    this.numeroF.setValue(this.data.num_partida);
+    this.telefonoF.setValue(this.data.telefono);
+    this.direccionF.setValue(this.data.direccion);
+    this.correoF.setValue(this.data.correo_empresa);
+
+    // SEGUNDO FORMULARIO
+    this.representanteF.setValue(this.data.representante);
+
+    if (this.data.tipo_empresa === 'Publica' ||
+      this.data.tipo_empresa === 'Privada' ||
+      this.data.tipo_empresa === 'ONG' ||
+      this.data.tipo_empresa === 'Persona Natural') {
+      this.tipoF.setValue(this.data.tipo_empresa);
     }
     else {
-      this.VerificarEstablecimiento(form, datos);
+      this.HabilitarOtro = true;
+      this.valor = 'Representante legal';
+      this.tipoF.setValue('Otro');
+      this.otroF.setValue(this.data.tipo_empresa);
     }
-  }
 
-  VerificarCambios(form, datos) {
-    if (form.cambiosForm === "true" || form.cambiosForm === true) {
-      if (form.dias_cambioForm != '') {
-        this.VerificarOtroTipo(form, datos);
-      }
-      else {
-        this.toastr.info('Ingrese el número de días para realizar cambios antes de la fecha de cumplimiento de una autorización de solicitud de permisos, vacaciones u horas extras.', '', {
-          timeOut: 6000,
-        })
-      }
+    if (this.data.establecimiento === 'Sucursales' ||
+      this.data.establecimiento === 'Agencias') {
+      this.establecimientoF.setValue(this.data.establecimiento);
     }
     else {
-      datos.dias_cambio = 0;
-      this.VerificarOtroTipo(form, datos);
+      this.HabilitarOtroE = true;
+      this.establecimientoF.setValue('Otros');
+      this.otroE.setValue(this.data.establecimiento);
     }
-  }
 
-  VerificarEstablecimiento(form, datos) {
-    if (form.establecimientoForm === 'Otro') {
-      if (form.otroEForm != '') {
-        datos.establecimiento = form.otroEForm;
-        this.GuardarDatos(datos);
-      }
-      else {
-        this.toastr.info('Ingrese el nombre del establecimiento.', '', {
-          timeOut: 6000,
-        })
-      }
+    if (this.data.cambios === true) {
+      this.habilitarDias = true;;
+      this.cambiosF.setValue('true');
+      this.dias_cambioF.setValue(this.data.dias_cambio);
     }
     else {
-      this.GuardarDatos(datos);
+      this.cambiosF.setValue('false');
     }
   }
 
-  CambiarNombrePublica() {
-    this.estiloOtro = { 'visibility': 'hidden' }; this.HabilitarOtro = true;
-    this.estiloRepre = { 'visibility': 'visible' }; this.HabilitarRepre = false;
-    this.valor = 'Máxima Autoridad'
-    this.RegistroEmpresaForm.patchValue({
-      otroForm: ''
-    })
+  // GUARDAR DATOS DE EMPRESA
+  InsertarEmpresa(form1: any, form2: any) {
+
+    // VALIDAR INGRESO DE DATOS OBLIGATORIOS
+    var verificar_tipo = 0;
+    var verificar_establecimiento = 0;
+    var verificar_dias = 0;
+
+    this.habilitarprogress === true;
+    let empresa = {
+
+      id: this.data.id,
+      ruc: form1.rucForm,
+      nombre: form1.nombreForm,
+      telefono: form1.telefonoForm,
+      direccion: form1.direccionForm,
+      num_partida: form1.numeroForm,
+      correo_empresa: form1.correoForm,
+
+      establecimiento: form2.establecimientoForm,
+      representante: form2.representanteForm,
+      tipo_empresa: form2.tipoForm,
+      dias_cambio: form2.dias_cambioForm,
+      cambios: true,
+    };
+
+    if (form2.tipoForm === 'Otro') {
+      empresa.tipo_empresa = form2.otroForm;
+      if (empresa.tipo_empresa === '' || empresa.tipo_empresa === null) {
+        verificar_tipo = 1;
+      }
+    }
+
+    if (form2.establecimientoForm === 'Otros') {
+      empresa.establecimiento = form2.otroEForm;
+      if (empresa.establecimiento === '' || empresa.establecimiento === null) {
+        verificar_establecimiento = 1;
+      }
+    }
+
+    if (form2.cambiosForm === 'false') {
+      empresa.cambios = false;
+      empresa.dias_cambio = 0;
+    }
+    else {
+      if (empresa.dias_cambio === '' || empresa.dias_cambio === null) {
+        verificar_dias = 1;
+      }
+    }
+
+    if (verificar_dias === 0 && verificar_establecimiento === 0 && verificar_tipo === 0) {
+      this.GuardarDatos(empresa);
+    }
+    else {
+      this.toastr.warning('Ingresar toda la información requerida.', '', {
+        timeOut: 4000,
+      })
+    }
   }
 
-  CambiarNombrePrivada() {
-    this.estiloOtro = { 'visibility': 'hidden' }; this.HabilitarOtro = true;
-    this.estiloRepre = { 'visibility': 'visible' }; this.HabilitarRepre = false;
-    this.valor = 'Representante Legal'
-    this.RegistroEmpresaForm.patchValue({
-      otroForm: ''
-    })
+  // GUARDAR DATOS DE EMPRESA
+  GuardarDatos(datos: any) {
+    this.rest.ActualizarEmpresa(datos).subscribe(response => {
+      this.habilitarprogress === false;
+      this.Salir();
+      this.toastr.success('Operación Exitosa.', 'Datos de Empresa actualizados.', {
+        timeOut: 6000,
+      })
+    });
   }
 
-  CambiarNombreOng() {
-    this.estiloOtro = { 'visibility': 'hidden' }; this.HabilitarOtro = true;
-    this.estiloRepre = { 'visibility': 'visible' }; this.HabilitarRepre = false;
-    this.valor = 'Representante Legal'
-    this.RegistroEmpresaForm.patchValue({
-      otroForm: ''
-    })
+  // METODO PARA SELECCION TIPO DE EMPRESA, ESTABLECIMIENTOS Y RESTRICCIONES
+  SeleccionarTipo(event: MatRadioChange) {
+    var opcion = event.value;
+
+    // TIPO DE EMPRESA
+    if (opcion === 'Persona Natural' || opcion === 'Privada' || opcion === 'ONG') {
+      this.HabilitarOtro = false;
+      this.valor = 'Representante legal';
+      this.otroF.setValue('');
+    }
+    else if (opcion === 'Publica') {
+      this.HabilitarOtro = false;
+      this.valor = 'Máxima autoridad';
+      this.otroF.setValue('');
+    }
+    else if (opcion === 'Otro') {
+      this.HabilitarOtro = true;
+      this.toastr.info('Ingresar nuevo tipo de empresa.', '', {
+        timeOut: 4000,
+      });
+      this.valor = 'Representante legal';
+      this.otroF.setValue('');
+    }
+
+    // ESTABLECIMIENTO
+    else if (opcion === 'Sucursales' || opcion === 'Agencias') {
+      this.HabilitarOtroE = false;
+      this.otroE.setValue('');
+    }
+    else if (opcion === 'Otros') {
+      this.HabilitarOtroE = true;
+      this.toastr.info('Ingresar identificación general de establecimientos.', '', {
+        timeOut: 3000,
+      })
+      this.otroE.setValue('');
+    }
+
+    // AUTORIZACIONES
+    else if (opcion === 'false') {
+      this.habilitarDias = false;
+      this.dias_cambioF.setValue('');
+    }
+    else if (opcion === 'true') {
+      this.dias_cambioF.setValue('');
+      this.habilitarDias = true;
+      this.toastr.info(
+        `Ingresar número de días previos a la fecha de expiración de la solicitud para realizar cambios 
+        en el estado de la aprobación realizada.`, '', {
+        timeOut: 6000,
+      })
+    }
   }
 
-  CambiarNombreNatural() {
-    this.estiloOtro = { 'visibility': 'hidden' }; this.HabilitarOtro = true;
-    this.estiloRepre = { 'visibility': 'visible' }; this.HabilitarRepre = false;
-    this.valor = 'Representante Legal'
-    this.RegistroEmpresaForm.patchValue({
-      otroForm: ''
-    })
+  // METODO PARA CONTROLAR INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    if (window.event) {
+      var keynum = evt.keyCode;
+    }
+    else {
+      keynum = evt.which;
+    }
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
+    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6 || keynum == 46) {
+      return true;
+    }
+    else {
+      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
+        timeOut: 6000,
+      })
+      return false;
+    }
   }
 
-  CambiarNombreOtro() {
-    this.estiloOtro = { 'visibility': 'visible' }; this.HabilitarOtro = false;
-    this.estiloRepre = { 'visibility': 'visible' }; this.HabilitarRepre = false;
-    this.toastr.info('Ingresar el nombre del tipo de empresa', '', {
-      timeOut: 6000,
-    })
-    this.valor = 'Representante Legal';
-    this.RegistroEmpresaForm.patchValue({
-      otroForm: ''
-    })
-  }
-
-  CambiarSucursalesAgencias() {
-    this.estiloOtroE = { 'visibility': 'hidden' }; this.HabilitarOtroE = true;
-    this.RegistroEmpresaForm.patchValue({
-      otroEForm: ''
-    })
-  }
-
-  CambiarEstablecimiento() {
-    this.estiloOtroE = { 'visibility': 'visible' }; this.HabilitarOtroE = false;
-    this.toastr.info('Ingresar el nombre del establecimiento que tiene la empresa.', '', {
-      timeOut: 6000,
-    })
-    this.RegistroEmpresaForm.patchValue({
-      otroEForm: ''
-    })
-  }
-
-  RealizarCambiosNo() {
-    this.estiloDias = { 'visibility': 'hidden' }; this.habilitarDias = true;
-    this.RegistroEmpresaForm.patchValue({
-      dias_cambioForm: ''
-    })
-  }
-
-  RealizarCambiosSi() {
-    this.estiloDias = { 'visibility': 'visible' }; this.habilitarDias = false;
-    this.toastr.info('Ingresar el número de días que tendra para realizar cambios de una autorización antes que se cumpla la fecha de cumpliento de esta.', '', {
-      timeOut: 6000,
-    })
-    this.RegistroEmpresaForm.patchValue({
-      dias_cambioForm: ''
-    })
-  }
-
-  CerrarVentanaRegistroEmpresa() {
-    this.LimpiarCampos();
-    this.ventana.close({ actualizar: true });
-    this.valor = '';
-  }
-
+  // METODO PARA CERRAR VENTANA DE EDICION DE DATOS
   Salir() {
-    this.LimpiarCampos();
-    this.ventana.close({ actualizar: false });
-    this.valor = '';
+    this.router.navigate(['/vistaEmpresa', this.idEmpresa])
   }
 
 }

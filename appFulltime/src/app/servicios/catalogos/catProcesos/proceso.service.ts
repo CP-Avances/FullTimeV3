@@ -37,7 +37,7 @@ export class ProcesoService {
     return this.http.put(`${environment.url}/proceso`, datos);
   }
 
-  DownloadXMLRest(data: any) {
+  CrearXML(data: any) {
     return this.http.post(`${environment.url}/proceso/xmlDownload`, data);
   }
 

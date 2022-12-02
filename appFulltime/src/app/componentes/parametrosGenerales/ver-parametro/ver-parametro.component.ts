@@ -38,6 +38,8 @@ export class VerParametroComponent implements OnInit {
   carga: boolean = false;
   kardex: boolean = false;
   laboral_calendario: boolean = false;
+  limite_correo: boolean = false;
+  ubicacion: boolean = false;
 
   ingreso: number = 0;
 
@@ -59,6 +61,14 @@ export class VerParametroComponent implements OnInit {
   }
 
   ActivarBoton() {
+    if (this.idParametro === '22') {
+      this.formato = true;
+      this.ubicacion = true;
+    }
+    if (this.idParametro === '24') {
+      this.formato = true;
+      this.limite_correo = true;
+    }
     if (this.idParametro === '25') {
       this.formato = false;
       this.formato_fecha = true;
@@ -81,13 +91,13 @@ export class VerParametroComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA MANEJAR PAGINACIÓN DE TABLAS
+  // METODO PARA MANEJAR PAGINACIÓN DE TABLAS
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1
     this.tamanio_pagina = e.pageSize;
   }
 
-  // MÉTODO PARA BUSCAR DATOS TIPO PARÁMETRO
+  // METODO PARA BUSCAR DATOS TIPO PARÁMETRO
   BuscarParametros(id: any) {
     this.parametros = [];
     this.parametro.ListarUnParametro(id).subscribe(data => {
@@ -96,7 +106,7 @@ export class VerParametroComponent implements OnInit {
   }
 
   id_detalle: number;
-  // MÉTODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
+  // METODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
   ListarDetalles(id: any) {
     this.datosDetalle = [];
     this.parametro.ListarDetalleParametros(id).subscribe(datos => {
@@ -109,7 +119,7 @@ export class VerParametroComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA INGRESAR DETALLE DE PARÁMETRO
+  // METODO PARA INGRESAR DETALLE DE PARÁMETRO
   AbrirVentanaDetalles(datos: any): void {
     this.ventana.open(CrearDetalleParametroComponent,
       { width: '400px', data: { parametros: datos, actualizar: true } })
@@ -119,7 +129,7 @@ export class VerParametroComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA EDITAR PARÁMETRO
+  // METODO PARA EDITAR PARÁMETRO
   AbrirVentanaEditar(datos: any): void {
     this.ventana.open(EditarParametroComponent,
       { width: '400px', data: { parametros: datos, actualizar: true } })
@@ -129,20 +139,20 @@ export class VerParametroComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA EDITAR DETALLE DE PARÁMETRO
+  // METODO PARA EDITAR DETALLE DE PARÁMETRO
   AbrirVentanaEditarDetalle(datos: any): void {
     this.ventana.open(EditarDetalleParametroComponent,
-      { width: '600px', data: { parametros: datos } }).
+      { width: '400px', data: { parametros: datos } }).
       afterClosed().subscribe(item => {
         this.BuscarParametros(this.idParametro);
         this.ListarDetalles(this.idParametro);
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarDetalle(id_detalle: number) {
     this.parametro.EliminarDetalleParametro(id_detalle).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.LimpiarSeleccion();
@@ -151,7 +161,7 @@ export class VerParametroComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -237,7 +247,7 @@ export class VerParametroComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  // METODO PARA REGISTRAR NUEVO PARÁMETRO
   CrearDetalle(detalle: string) {
     let datos = {
       id_tipo: this.idParametro,

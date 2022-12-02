@@ -21,7 +21,7 @@ export class EditarContratoComponent implements OnInit {
   idSelectContrato: number;
   idEmpleado: number;
 
-  // DATOS RÉGIMEN
+  // DATOS REGIMEN
   regimenLaboral: any = [];
   seleccionarRegimen: any;
 
@@ -46,7 +46,7 @@ export class EditarContratoComponent implements OnInit {
   seleccion = new FormControl('');
   tipoF = new FormControl('');
 
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
   public ContratoForm = new FormGroup({
     controlVacacionesForm: this.controlVacacionesF,
     controlAsistenciaForm: this.controlAsistenciaF,
@@ -69,7 +69,6 @@ export class EditarContratoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.contrato);
     this.idSelectContrato = this.contrato.id;
     this.idEmpleado = this.contrato.id_empleado;
     this.ObtenerPaises();
@@ -119,6 +118,7 @@ export class EditarContratoComponent implements OnInit {
     })
   }
 
+  // METODO PARA BUSCAR DATOS DE REGIMEN LABORAL
   BuscarRegimen(pais: string) {
     this.regimenLaboral = [];
     this.restRegimen.ConsultarRegimenPais(pais).subscribe(datos_ => {
@@ -143,7 +143,7 @@ export class EditarContratoComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER TIPOS DE CONTRATOS MODALIDAD LABORAL
+  // METODO PARA OBTENER TIPOS DE CONTRATOS MODALIDAD LABORAL
   tipoContrato: any = [];
   ObtenerTipoContratos() {
     this.tipoContrato = [];
@@ -188,7 +188,7 @@ export class EditarContratoComponent implements OnInit {
 
   // METODO PARA MOSTRAR DATOS DEL FORMULARIO
   ImprimirDatos() {
-    const { id_regimen, fec_ingreso, fec_salida, vaca_controla, asis_controla, doc_nombre,
+    const { fec_ingreso, fec_salida, vaca_controla, asis_controla,
       id_tipo_contrato } = this.contrato;
     this.ContratoForm.patchValue({
       controlVacacionesForm: vaca_controla,
@@ -297,11 +297,11 @@ export class EditarContratoComponent implements OnInit {
   // GUARDAR DATOS DE CONTRATO
   GuardarDatos(datos: any) {
     this.rest.ActualizarContratoEmpleado(this.idSelectContrato, datos).subscribe(response => {
-      this.toastr.success('Operación Exitosa', 'Datos de Contrato actualizado', {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
     }, error => {
-      this.toastr.error('Operación Fallida', 'Datos de Contrato no pudieron ser actualizados', {
+      this.toastr.error('Operación Fallida', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       })
     });
@@ -359,7 +359,6 @@ export class EditarContratoComponent implements OnInit {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
       if (this.archivoSubido[0].size <= 2e+6) {
         this.ContratoForm.patchValue({ documentoForm: name });
         this.HabilitarBtn = true;

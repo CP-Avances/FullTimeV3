@@ -6,24 +6,222 @@ import pool from '../../database';
 
 class DepartamentoControlador {
 
-  public async ListarDepartamentos(req: Request, res: Response) {
-    const DEPARTAMENTOS = await pool.query('SELECT * FROM VistaDepartamentoPadre ORDER BY nombre ASC');
-    // const Con_depa_padre = await pool.query('SELECT d.id, d.nombre, d.nivel, nom_d.nombre AS departamento_padre, d.id_sucursal, s.nombre AS nomsucursal, e.id AS id_empresa, e.nombre AS nomempresa FROM cg_departamentos AS d, nombredepartamento AS nom_d, sucursales AS s, cg_empresa AS e WHERE d.depa_padre = nom_d.id AND d.id_sucursal = s.id AND e.id = s.id_empresa ORDER BY nombre ASC');
-    // const Sin_depa_padre = await pool.query('SELECT d.id, d.nombre, d.nivel, d.depa_padre AS departamento_padre, d.id_sucursal, s.nombre AS nomsucursal, e.id AS id_empresa, e.nombre AS nomempresa FROM cg_departamentos AS d, sucursales AS s, cg_empresa AS e WHERE d.id_sucursal = s.id AND e.id = s.id_empresa AND d.depa_padre IS NULL ORDER BY nombre ASC');
+  // REGISTRAR DEPARTAMENTO
+  public async CrearDepartamento(req: Request, res: Response) {
+    try {
+      const { nombre, depa_padre, nivel, id_sucursal } = req.body;
+      await pool.query(
+        `
+        INSERT INTO cg_departamentos (nombre, depa_padre, nivel, id_sucursal ) VALUES ($1, $2, $3, $4)
+        `
+        , [nombre, depa_padre, nivel, id_sucursal]);
 
-    // if (Sin_depa_padre.rowCount > 0) {
-    //   Sin_depa_padre.rows.forEach(obj => {
-    //     Con_depa_padre.rows.push(obj);
-    //   })
-    //   res.jsonp(Con_depa_padre.rows);
-    // }
-    if (DEPARTAMENTOS.rowCount > 0) {
-      res.jsonp(DEPARTAMENTOS.rows);
+      res.jsonp({ message: 'Registro guardado.' });
     }
-    else {
-      return res.status(404).jsonp({ text: 'No se encuentran registros' });
+    catch (error) {
+      return res.jsonp({ message: 'error' });
     }
   }
+
+  // METODO PARA BUSCAR LISTA DE DEPARTAMENTOS POR ID SUCURSAL
+  public async ObtenerDepartamentosSucursal(req: Request, res: Response): Promise<any> {
+    const { id_sucursal } = req.params;
+    const DEPARTAMENTO = await pool.query(
+      `
+      SELECT * FROM cg_departamentos WHERE id_sucursal = $1
+      `
+      , [id_sucursal]);
+    if (DEPARTAMENTO.rowCount > 0) {
+      return res.jsonp(DEPARTAMENTO.rows)
+    }
+    res.status(404).jsonp({ text: 'El departamento no ha sido encontrado' });
+  }
+
+  // METODO PARA BUSCAR LISTA DE DEPARTAMENTOS POR ID SUCURSAL Y EXCLUIR DEPARTAMENTO ACTUALIZADO
+  public async ObtenerDepartamentosSucursal_(req: Request, res: Response): Promise<any> {
+    const { id_sucursal, id } = req.params;
+    const DEPARTAMENTO = await pool.query(
+      `
+        SELECT * FROM cg_departamentos WHERE id_sucursal = $1 AND NOT id = $2
+        `
+      , [id_sucursal, id]);
+    if (DEPARTAMENTO.rowCount > 0) {
+      return res.jsonp(DEPARTAMENTO.rows)
+    }
+    res.status(404).jsonp({ text: 'El departamento no ha sido encontrado' });
+  }
+
+  // ACTUALIZAR REGISTRO DE DEPARTAMENTO
+  public async ActualizarDepartamento(req: Request, res: Response) {
+    try {
+      const { nombre, depa_padre, nivel, id_sucursal } = req.body;
+      const id = req.params.id;
+      console.log(id);
+      await pool.query(
+        `
+        UPDATE cg_departamentos set nombre = $1, depa_padre = $2, nivel = $3 , id_sucursal = $4 
+        WHERE id = $5
+        `
+        , [nombre, depa_padre, nivel, id_sucursal, id]);
+      res.jsonp({ message: 'Registro actualizado.' });
+    }
+    catch (error) {
+      return res.jsonp({ message: 'error' });
+    }
+  }
+
+  // METODO DE BUSQUEDA DE DEPARTAMENTOS
+  public async ListarDepartamentos(req: Request, res: Response) {
+
+    const CON_DEPA_PADRE = await pool.query(
+      `
+      SELECT d.id, d.nombre, d.nivel, nom_d.nombre AS departamento_padre, d.id_sucursal, 
+        s.nombre AS nomsucursal, e.id AS id_empresa, e.nombre AS nomempresa 
+      FROM cg_departamentos AS d, nombredepartamento AS nom_d, sucursales AS s, cg_empresa AS e 
+      WHERE d.depa_padre = nom_d.id AND d.id_sucursal = s.id AND e.id = s.id_empresa 
+      ORDER BY nombre ASC
+      `
+    );
+
+    const SIN_DEPA_PADRE = await pool.query(
+      `
+      SELECT d.id, d.nombre, d.nivel, d.depa_padre AS departamento_padre, d.id_sucursal, 
+        s.nombre AS nomsucursal, e.id AS id_empresa, e.nombre AS nomempresa 
+      FROM cg_departamentos AS d, sucursales AS s, cg_empresa AS e 
+      WHERE d.id_sucursal = s.id AND e.id = s.id_empresa AND d.depa_padre IS NULL 
+      ORDER BY nombre ASC
+      `
+    );
+
+    if (SIN_DEPA_PADRE.rowCount > 0 && CON_DEPA_PADRE.rowCount > 0) {
+      SIN_DEPA_PADRE.rows.forEach(obj => {
+        CON_DEPA_PADRE.rows.push(obj);
+      });
+      return res.jsonp(CON_DEPA_PADRE.rows);
+    }
+
+    else if (SIN_DEPA_PADRE.rowCount > 0) {
+      return res.jsonp(SIN_DEPA_PADRE.rows);
+    }
+
+    else if (CON_DEPA_PADRE.rowCount > 0) {
+      return res.jsonp(CON_DEPA_PADRE.rows);
+    }
+
+    else {
+      return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+    }
+
+  }
+
+  // METODO PARA LISTAR INFORMACION DE DEPARTAMENTOS POR ID DE SUCURSAL
+  public async ListarDepartamentosSucursal(req: Request, res: Response) {
+
+    const id = req.params.id_sucursal;
+
+    const CON_DEPA_PADRE = await pool.query(
+      `
+      SELECT d.id, d.nombre, d.nivel, nom_d.nombre AS departamento_padre, d.id_sucursal, 
+        s.nombre AS nomsucursal, e.id AS id_empresa, e.nombre AS nomempresa 
+      FROM cg_departamentos AS d, nombredepartamento AS nom_d, sucursales AS s, cg_empresa AS e 
+      WHERE d.depa_padre = nom_d.id AND d.id_sucursal = s.id AND e.id = s.id_empresa AND id_sucursal = $1
+      ORDER BY nombre ASC
+      `
+      , [id]
+    );
+
+    const SIN_DEPA_PADRE = await pool.query(
+      `
+      SELECT d.id, d.nombre, d.nivel, d.depa_padre AS departamento_padre, d.id_sucursal, 
+        s.nombre AS nomsucursal, e.id AS id_empresa, e.nombre AS nomempresa 
+      FROM cg_departamentos AS d, sucursales AS s, cg_empresa AS e 
+      WHERE d.id_sucursal = s.id AND e.id = s.id_empresa AND d.depa_padre IS NULL AND id_sucursal = $1
+      ORDER BY nombre ASC
+      `
+      , [id]
+    );
+
+    if (SIN_DEPA_PADRE.rowCount > 0 && CON_DEPA_PADRE.rowCount > 0) {
+      SIN_DEPA_PADRE.rows.forEach(obj => {
+        CON_DEPA_PADRE.rows.push(obj);
+      });
+      return res.jsonp(CON_DEPA_PADRE.rows);
+    }
+
+    else if (SIN_DEPA_PADRE.rowCount > 0) {
+      return res.jsonp(SIN_DEPA_PADRE.rows);
+    }
+
+    else if (CON_DEPA_PADRE.rowCount > 0) {
+      return res.jsonp(CON_DEPA_PADRE.rows);
+    }
+
+    else {
+      return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+    }
+
+  }
+
+  // METODO PARA ELIMINAR REGISTRO
+  public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    await pool.query(
+      `
+      DELETE FROM cg_departamentos WHERE id = $1
+      `
+      , [id]);
+    res.jsonp({ message: 'Registro eliminado.' });
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  public async FileXML(req: Request, res: Response): Promise<any> {
+    var xml = builder.create('root').ele(req.body).end({ pretty: true });
+    let filename = "Departamentos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+    });
+    res.jsonp({ text: 'XML creado', name: filename });
+  }
+
+  // METODO PARA DESCARGAR ARCHIVO XML
+  public async downloadXML(req: Request, res: Response): Promise<any> {
+    const name = req.params.nameXML;
+    let filePath = `servidor\\xmlDownload\\${name}`
+    res.sendFile(__dirname.split("servidor")[0] + filePath);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   public async ListarNombreDepartamentos(req: Request, res: Response) {
     const DEPARTAMENTOS = await pool.query('SELECT * FROM cg_departamentos');
@@ -64,57 +262,12 @@ class DepartamentoControlador {
     res.status(404).jsonp({ text: 'El departamento no ha sido encontrado' });
   }
 
-  public async ObtenerDepartamentosSucursal(req: Request, res: Response): Promise<any> {
-    const { id_sucursal } = req.params;
-    const DEPARTAMENTO = await pool.query('SELECT * FROM cg_departamentos WHERE NOT UPPER(nombre) = \'NINGUNO\' AND id_sucursal = $1', [id_sucursal]);
-    if (DEPARTAMENTO.rowCount > 0) {
-      return res.jsonp(DEPARTAMENTO.rows)
-    }
-    res.status(404).jsonp({ text: 'El departamento no ha sido encontrado' });
-  }
 
-  public async CrearDepartamento(req: Request, res: Response) {
-    try {
-      const { nombre, depa_padre, nivel, id_sucursal } = req.body;
-      await pool.query('INSERT INTO cg_departamentos (nombre, depa_padre, nivel, id_sucursal ) VALUES ($1, $2, $3, $4)', [nombre, depa_padre, nivel, id_sucursal]);
-      res.jsonp({ message: 'El departamento ha sido guardado con éxito' });
-    }
-    catch (error) {
-      return res.jsonp({ message: 'error' });
-    }
-  }
 
-  public async ActualizarDepartamento(req: Request, res: Response) {
-    try {
-      const { nombre, depa_padre, nivel, id_sucursal } = req.body;
-      const id = req.params.id;
-      console.log(id);
-      await pool.query('UPDATE cg_departamentos set nombre = $1, depa_padre = $2, nivel = $3 , id_sucursal = $4 WHERE id = $5', [nombre, depa_padre, nivel, id_sucursal, id]);
-      res.jsonp({ message: 'El departamento ha sido modificado con éxito' });
-    }
-    catch (error) {
-      return res.jsonp({ message: 'error' });
-    }
-  }
 
-  public async FileXML(req: Request, res: Response): Promise<any> {
-    var xml = builder.create('root').ele(req.body).end({ pretty: true });
-    console.log(req.body.userName);
-    let filename = "Departamentos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("Archivo guardado");
-    });
-    res.jsonp({ text: 'XML creado', name: filename });
-  }
 
-  public async downloadXML(req: Request, res: Response): Promise<any> {
-    const name = req.params.nameXML;
-    let filePath = `servidor\\xmlDownload\\${name}`
-    res.sendFile(__dirname.split("servidor")[0] + filePath);
-  }
+
+
 
   public async BuscarDepartamentoPorCargo(req: Request, res: Response) {
     const id = req.params.id_cargo
@@ -128,22 +281,9 @@ class DepartamentoControlador {
     }
   }
 
-  public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    await pool.query('DELETE FROM cg_departamentos WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
-  }
 
-  public async ListarDepartamentosSucursal(req: Request, res: Response) {
-    const id = req.params.id_sucursal;
-    const DEPARTAMENTOS = await pool.query('SELECT * FROM VistaDepartamentoPadre WHERE id_sucursal = $1 ORDER BY nombre ASC', [id]);
-    if (DEPARTAMENTOS.rowCount > 0) {
-      res.jsonp(DEPARTAMENTOS.rows);
-    }
-    else {
-      return res.status(404).jsonp({ text: 'No se encuentran registros' });
-    }
-  }
+
+
 
   public async ListarDepartamentosRegimen(req: Request, res: Response) {
     const id = req.params.id;

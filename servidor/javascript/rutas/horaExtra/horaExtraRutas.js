@@ -27,7 +27,7 @@ class HorasExtrasPedidasRutas {
         this.router.get('/solicitudes/autorizadas', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ListarPedidosHEAutorizadas);
         this.router.get('/listar/solicitudes/empleado/:id_empleado', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ListarPedidosHE_Empleado);
         this.router.get('/solicitudes/autorizadas/empleado/:id_empleado', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ListarPedidosHEAutorizadas_Empleado);
-        // REPORTE CRITERIOS DE BÚSQUEDA MÚLTIPLES
+        // REPORTE CRITERIOS DE BUSQUEDA MÚLTIPLES
         this.router.put('/horas-planificadas/:desde/:hasta', [verificarToken_1.TokenValidation, verificarHoraExtra_1.ModuloHoraExtraValidation], horaExtraControlador_1.default.ReporteVacacionesMultiple);
         /** ************************************************************************************************* **
          ** **                         METODO DE MANEJO DE HORAS EXTRAS                                    ** **

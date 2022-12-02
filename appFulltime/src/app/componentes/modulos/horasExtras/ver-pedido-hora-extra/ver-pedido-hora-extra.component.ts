@@ -30,16 +30,16 @@ import { ParametrosService } from 'src/app/servicios/parametrosGenerales/paramet
 
 export class VerPedidoHoraExtraComponent implements OnInit {
 
-  // VARIABLES DE BÚSQUEDA DE DATOS DE SOLICITUDES DE HORAS EXTRAS
+  // VARIABLES DE BUSQUEDA DE DATOS DE SOLICITUDES DE HORAS EXTRAS
   dataParams: any;
   hora_extra: any = [];
 
-  // BÚSQUEDA DE DATOS QUE SE MUESTRAN EN PDF
+  // BUSQUEDA DE DATOS QUE SE MUESTRAN EN PDF
   fechaActual: any;
   datoSolicitud: any = [];
   habilitarActualizar: boolean = true;
 
-  // VARIABLES DE BÚSQUEDA DE DATOS DE AUTORIZACIONES
+  // VARIABLES DE BUSQUEDA DE DATOS DE AUTORIZACIONES
   autorizacion: any = [];
   HabilitarTiempo: boolean = false;
   HabilitarAutorizacion: boolean = false;
@@ -78,7 +78,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -111,12 +111,12 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   lectura: number = 1;
   cont: number;
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
+  // METODO DE BUSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
   BuscarInfo(formato_fecha: string, formato_hora: string) {
 
     this.hora_extra = [];
 
-    // BÚSQUEDA DE DATOS DE HORAS EXTRAS
+    // BUSQUEDA DE DATOS DE HORAS EXTRAS
     this.restHE.ObtenerUnHoraExtra(this.dataParams.id).subscribe(res => {
       this.hora_extra = res;
       if (this.hora_extra[0].tiempo_autorizado === null) {
@@ -150,11 +150,11 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     this.autorizacion = [];
     this.empleado_estado = [];
     this.lectura = 1;
-    // BÚSQUEDA DE DATOS DE AUTORIZACIÓN
+    // BUSQUEDA DE DATOS DE AUTORIZACIÓN
     this.restA.getUnaAutorizacionByHoraExtraRest(this.dataParams.id).subscribe(res1 => {
       this.autorizacion = res1;
 
-      // MÉTODO PARA OBTENER EMPLEADOS Y ESTADOS
+      // METODO PARA OBTENER EMPLEADOS Y ESTADOS
       var autorizaciones = this.autorizacion[0].id_documento.split(',');
       autorizaciones.map((obj: string) => {
         this.lectura = this.lectura + 1;
@@ -181,7 +181,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
             estado: estado_auto
           }
           this.empleado_estado = this.empleado_estado.concat(data);
-          // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR MÉTODO DE INFORMACIÓN DE AUTORIZACIÓN
+          // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR METODO DE INFORMACIÓN DE AUTORIZACIÓN
           if (this.lectura === autorizaciones.length) {
             this.VerInformacionAutoriza(this.empleado_estado);
           }
@@ -195,7 +195,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -203,7 +203,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -215,7 +215,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVISÓ LA SOLICITUD 
+  // METODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVISÓ LA SOLICITUD 
   cadena_texto: string = ''; // VARIABLE PARA ALMACENAR TODOS LOS USUARIOS
   VerInformacionAutoriza(array: any) {
     array.map(empl => {
@@ -232,7 +232,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -240,17 +240,17 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
+  // METODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
   ObtenerSolicitud(id: any) {
     this.datoSolicitud = [];
-    // BÚSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
+    // BUSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
     this.restHE.BuscarDatosSolicitud(id).subscribe(data => {
       this.datoSolicitud = data;
       console.log('ver data solicitud .. ', this.datoSolicitud[0])
-      // BÚSQUEDA DE DATOS DE EMPRESA
+      // BUSQUEDA DE DATOS DE EMPRESA
       this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
         var fecha_inicio = moment(this.datoSolicitud[0].fec_inicio);
-        // MÉTODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
+        // METODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
         if (res[0].cambios === true) {
           if (res[0].cambios === 0) {
             this.habilitarActualizar = false;
@@ -273,7 +273,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA ABRIR VENTANAS
+  // METODO PARA ABRIR VENTANAS
   AbrirAutorizaciones(datosHoraExtra, nombre) {
     this.ventana.open(HoraExtraAutorizacionesComponent, {
       width: '300px',
@@ -304,7 +304,7 @@ export class VerPedidoHoraExtraComponent implements OnInit {
 
 
   /** ******************************************************************************************************* * 
-   **                                 MÉTODO PARA EXPORTAR A PDF ----HORAS EXTRAS                             *
+   **                                 METODO PARA EXPORTAR A PDF ----HORAS EXTRAS                             *
    ** ******************************************************************************************************* */
   GenerarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();

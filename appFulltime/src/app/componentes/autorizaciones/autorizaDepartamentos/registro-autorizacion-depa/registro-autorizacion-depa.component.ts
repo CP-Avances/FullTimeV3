@@ -16,18 +16,21 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 
 export class RegistroAutorizacionDepaComponent implements OnInit {
 
+  // VARIABLES DE ALMACENAMIENTO
   departamento: any = [];
   sucursales: any = [];
   empresas: any = [];
   empleados: any = [];
   idEmpresa: number;
 
+  // VARIABLES DE FORMULARIO
   nombreEmpleadoF = new FormControl('', [Validators.required]);
   idDepartamento = new FormControl('', [Validators.required]);
   idSucursal = new FormControl('', [Validators.required]);
   autorizarF = new FormControl('', [Validators.required]);
 
-  public autorizarDepaForm = new FormGroup({
+  // AGREGRA FORMULARIO A UN GRUPO
+  public formulario = new FormGroup({
     nombreEmpleadoForm: this.nombreEmpleadoF,
     idSucursalForm: this.idSucursal,
     autorizarForm: this.autorizarF,
@@ -51,27 +54,27 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
     this.BuscarSucursales();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleados = data;
-      console.log(this.empleados)
-      this.autorizarDepaForm.patchValue({
+      this.formulario.patchValue({
         nombreEmpleadoForm: this.empleados[0].nombre + ' ' + this.empleados[0].apellido,
       })
     })
   }
 
+  // METODO PARA BUSCAR SUCURSALES
   BuscarSucursales() {
     this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(this.idEmpresa).subscribe(datos => {
+    this.restSucursales.BuscarSucursalEmpresa(this.idEmpresa).subscribe(datos => {
       this.sucursales = datos;
     });
   }
 
-
-  ObtenerDepartamentos(form) {
+  // METODO PARA LISTAR DEPARTAMENTOS
+  ObtenerDepartamentos(form: any) {
     this.departamento = [];
     let idSucursal = form.idSucursalForm;
     this.restCatDepartamento.BuscarDepartamentoSucursal(idSucursal).subscribe(datos => {
@@ -83,28 +86,29 @@ export class RegistroAutorizacionDepaComponent implements OnInit {
     });
   }
 
-  LimpiarCampos() {
-    this.autorizarDepaForm.reset();
-  }
-
-  InsertarAutorizacion(form) {
-    let autorizarDepar = {
+  // METODO PARA REGISTRAR AUTORIZACION
+  InsertarAutorizacion(form: any) {
+    let autoriza = {
       id_departamento: form.idDeparForm,
       id_empl_cargo: this.datoEmpleado.idCargo,
       id_empleado: this.datoEmpleado.idEmpleado,
       estado: form.autorizarForm,
     }
-    console.log(autorizarDepar);
-    this.restAutoriza.IngresarAutorizaDepartamento(autorizarDepar).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Autoridad registrada', {
+    this.restAutoriza.IngresarAutorizaDepartamento(autoriza).subscribe(res => {
+      this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
         timeOut: 6000,
       });
-      this.LimpiarCampos();
-      this.ObtenerEmpleados(this.datoEmpleado.idEmpleado);
+      this.CerrarVentana();
     });
   }
 
-  CerrarVentanaAutorizar() {
+  // METODO PARA LIMPIAR FORMULARIO
+  LimpiarCampos() {
+    this.formulario.reset();
+  }
+
+  // METODO PARA CERRAR VENTANA DE REGISTRO
+  CerrarVentana() {
     this.LimpiarCampos();
     this.ventana.close();
   }

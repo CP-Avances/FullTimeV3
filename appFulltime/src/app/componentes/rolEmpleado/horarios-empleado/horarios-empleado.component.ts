@@ -78,7 +78,7 @@ export class HorariosEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   empleado: any = [];
   ObtenerEmpleado() {
     this.empleado = [];
@@ -94,7 +94,7 @@ export class HorariosEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -116,7 +116,7 @@ export class HorariosEmpleadoComponent implements OnInit {
    ** **              METODOS PARA MANEJAR HORARIOS FIJOS DEL USUARIO                        ** ** 
    ** ***************************************************************************************** **/
 
-  // MÉTODO PARA MOSTRAR DATOS DE HORARIO 
+  // METODO PARA MOSTRAR DATOS DE HORARIO 
   horariosEmpleado: any = [];
   ObtenerHorariosEmpleado(codigo: number, formato_fecha: string) {
     this.horariosEmpleado = [];
@@ -167,17 +167,17 @@ export class HorariosEmpleadoComponent implements OnInit {
 
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO HORARIO
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO HORARIO
   EliminarHorario(id_horario: number) {
     this.restEmpleHorario.EliminarRegistro(id_horario).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerHorariosEmpleado(this.datoActual.codigo, this.formato_fecha);
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteHorario(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -307,10 +307,10 @@ export class HorariosEmpleadoComponent implements OnInit {
   }
 
   /** ** ***************************************************************************************** **
-   ** ** **                  MÉTODOS PARA MANEJO DE DATOS DE CARGO                              ** **
+   ** ** **                  METODOS PARA MANEJO DE DATOS DE CARGO                              ** **
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
+  // METODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
   cargoEmpleado: any = [];
   ObtenerCargoEmpleado(id_cargo: number, formato_fecha: string) {
     this.cargoEmpleado = [];

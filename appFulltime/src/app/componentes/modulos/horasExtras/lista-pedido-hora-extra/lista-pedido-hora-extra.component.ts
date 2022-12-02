@@ -9,6 +9,7 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 import { HoraExtraAutorizacionesComponent } from 'src/app/componentes/autorizaciones/hora-extra-autorizaciones/hora-extra-autorizaciones.component';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 export interface HoraExtraElemento {
   apellido: string;
@@ -52,17 +53,31 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
   inicioFor = 0;
 
+  get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
+
   constructor(
     private restHE: PedHoraExtraService,
     private ventana: MatDialog,
     private validar: ValidacionesService,
     public parametro: ParametrosService,
+    private funciones: MainNavService
   ) { }
 
   ngOnInit(): void {
-    this.BuscarParametro();
-    this.calcularHoraPaginacion();
-    this.calcularHoraPaginacionObservacion();
+    if (this.habilitarHorasE === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Horas Extras. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.BuscarParametro();
+      this.calcularHoraPaginacion();
+      this.calcularHoraPaginacionObservacion();
+    }
   }
 
   /** **************************************************************************************** **
@@ -72,7 +87,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(

@@ -130,7 +130,7 @@ export class EditarRelojComponent implements OnInit {
    * *****************************************************************************/
   BuscarDatos(id_empresa) {
     this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(id_empresa).subscribe(datos => {
+    this.restSucursales.BuscarSucursalEmpresa(id_empresa).subscribe(datos => {
       this.sucursales = datos;
     }, error => {
     })
@@ -144,7 +144,7 @@ export class EditarRelojComponent implements OnInit {
   FiltrarSucursales() {
     let idEmpre = parseInt(localStorage.getItem('empresa'));
     this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(idEmpre).subscribe(datos => {
+    this.restSucursales.BuscarSucursalEmpresa(idEmpre).subscribe(datos => {
       this.sucursales = datos;
     }, error => {
       this.toastr.info('La Empresa seleccionada no tiene Sucursales registradas', '', {

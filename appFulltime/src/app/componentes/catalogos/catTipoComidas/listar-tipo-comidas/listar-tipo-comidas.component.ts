@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -25,6 +25,7 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 import { TipoComidasService } from 'src/app/servicios/catalogos/catTipoComidas/tipo-comidas.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 @Component({
   selector: 'app-listar-tipo-comidas',
@@ -50,8 +51,8 @@ export class ListarTipoComidasComponent implements OnInit {
   empleado: any = [];
 
   idEmpleado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESIÓN
-  filtroNombre = ''; // VARIABLE DE BÚSQUEDA FILTRO DE DATOS
-  filtroTipo = ''; // VARIABLE DE BÚSQUEDA DE FILTRO DE DATOS TIPO SERVICIO
+  filtroNombre = ''; // VARIABLE DE BUSQUEDA FILTRO DE DATOS
+  filtroTipo = ''; // VARIABLE DE BUSQUEDA DE FILTRO DE DATOS TIPO SERVICIO
 
   // ITEMS DE PAGINACIÓN DE LA TABLA
   pageSizeOptions = [5, 10, 20, 50];
@@ -61,11 +62,13 @@ export class ListarTipoComidasComponent implements OnInit {
   // VARIABLE DE NAVEGACION ENTRE RUTAS
   hipervinculo: string = environment.url
 
-  // MÉTODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
   get s_color(): string { return this.plantillaPDF.color_Secundary }
   get p_color(): string { return this.plantillaPDF.color_Primary }
   get frase(): string { return this.plantillaPDF.marca_Agua }
   get logo(): string { return this.plantillaPDF.logoBase64 }
+
+  get habilitarComida(): boolean { return this.funciones.alimentacion; }
 
   constructor(
     private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
@@ -76,13 +79,25 @@ export class ListarTipoComidasComponent implements OnInit {
     public router: Router, // VARIABLE DE MANEJO DE RUTAS URL
     public validar: ValidacionesService,
     public parametro: ParametrosService,
+    private funciones: MainNavService
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerEmpleados(this.idEmpleado);
-    this.BuscarHora();
+    if (this.habilitarComida === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Alimentación. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.ObtenerEmpleados(this.idEmpleado);
+      this.BuscarHora();
+    }
   }
 
 
@@ -104,7 +119,7 @@ export class ListarTipoComidasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -160,17 +175,17 @@ export class ListarTipoComidasComponent implements OnInit {
     this.BuscarHora();
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_tipo: number) {
     this.rest.EliminarRegistro(id_tipo).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.BuscarHora();
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -184,7 +199,7 @@ export class ListarTipoComidasComponent implements OnInit {
 
 
   /** ********************************************************************************************** **
-   ** **                              MÉTODO PARA EXPORTAR A PDF                                  ** **
+   ** **                              METODO PARA EXPORTAR A PDF                                  ** **
    ** ********************************************************************************************** **/
   GenerarPdf(action = 'open') {
     const documentDefinition = this.GetDocumentDefinicion();
@@ -275,7 +290,7 @@ export class ListarTipoComidasComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   ExportToExcel() {
     const wsc: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipoComidas.map(obj => {
@@ -287,7 +302,7 @@ export class ListarTipoComidasComponent implements OnInit {
         HORA_FINALIZA: obj.hora_fin
       }
     }));
-    // MÉTODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
     const header = Object.keys(this.tipoComidas[0]); // NOMBRE DE CABECERAS DE COLUMNAS
     var wscols = [];
     for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
@@ -300,7 +315,7 @@ export class ListarTipoComidasComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
   ExportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipoComidas);
@@ -329,7 +344,7 @@ export class ListarTipoComidasComponent implements OnInit {
       }
       arregloComidas.push(objeto)
     });
-    this.rest.DownloadXMLRest(arregloComidas).subscribe(res => {
+    this.rest.CrearXML(arregloComidas).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/tipoComidas/download/` + this.data.name;
       window.open(this.urlxml, "_blank");

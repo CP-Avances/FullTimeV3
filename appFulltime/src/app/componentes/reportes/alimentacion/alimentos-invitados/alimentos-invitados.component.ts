@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
@@ -18,7 +18,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // LIBRERÍA PARA GENERAR ARCHIVOS EXCEL
 import * as xlsx from 'xlsx';
 
-// IMPORTACIÓN DE SERVICIOS
+// IMPORTACION DE SERVICIOS
 import { AlimentacionService } from 'src/app/servicios/reportes/alimentacion/alimentacion.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
@@ -74,7 +74,7 @@ export class AlimentosInvitadosComponent implements OnInit {
     this.ObtenerColores();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESIÓN
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -82,7 +82,7 @@ export class AlimentosInvitadosComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -90,7 +90,7 @@ export class AlimentosInvitadosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES DE EMPRESA
+  // METODO PARA OBTENER COLORES DE EMPRESA
   p_color: any;
   s_color: any;
   empresa: any;
@@ -116,7 +116,7 @@ export class AlimentosInvitadosComponent implements OnInit {
       this.inicio = moment(form.inicioForm).format('YYYY-MM-DD');
       this.fin = moment(form.finalForm).format('YYYY-MM-DD');
       this.invitados = [];
-      // BÚSQUEDA DE DATOS DE SERVICIOS DE INVITADOS
+      // BUSQUEDA DE DATOS DE SERVICIOS DE INVITADOS
       this.restA.ObtenerDetallesInvitados(fechas).subscribe(plan => {
         this.invitados = plan;
         this.ImprimirArchivo(archivo, form);
@@ -125,7 +125,7 @@ export class AlimentosInvitadosComponent implements OnInit {
         this.toastr.info('No existen registros en el periodo indicado.', 'Dar click aquí, para obtener reporte, en el que se indica que no existen registros.', {
           timeOut: 10000,
         }).onTap.subscribe(obj => {
-          // LLAMADO A MÉTODO DE IMPRESIÓN DE ARCHIVO SIN REGISTROS
+          // LLAMADO A METODO DE IMPRESIÓN DE ARCHIVO SIN REGISTROS
           this.generarPdf('open');
           this.LimpiarFechas();
         });
@@ -432,7 +432,7 @@ export class AlimentosInvitadosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-     *                                       MÉTODO PARA EXPORTAR A EXCEL
+     *                                       METODO PARA EXPORTAR A EXCEL
      ******************************************************************************************************/
   exportToExcelAlimentacion(form) {
     var j = 0;

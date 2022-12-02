@@ -16,36 +16,6 @@ exports.VACUNAS_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../../database"));
 const fs_1 = __importDefault(require("fs"));
 class VacunasControlador {
-    // CREAR REGISTRO DE VACUNACIÓN
-    CrearRegistro(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado, descripcion, fecha, id_tipo_vacuna } = req.body;
-            const response = yield database_1.default.query(`
-            INSERT INTO empl_vacunas (id_empleado, descripcion, fecha, id_tipo_vacuna) 
-            VALUES ($1, $2, $3, $4) RETURNING *
-            `, [id_empleado, descripcion, fecha, id_tipo_vacuna]);
-            const [vacuna] = response.rows;
-            if (vacuna) {
-                return res.status(200).jsonp(vacuna);
-            }
-            else {
-                return res.status(404).jsonp({ message: 'error' });
-            }
-        });
-    }
-    // REGISTRO DE CERTIFICADO O CARNET DE VACUNACIÓN
-    GuardarDocumento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let list = req.files;
-            let documento = list.uploads[0].path.split("\\")[1];
-            let { nombre } = req.params;
-            let id = req.params.id;
-            yield database_1.default.query(`
-            UPDATE empl_vacunas SET carnet = $2, nom_carnet = $3 WHERE id = $1
-            `, [id, documento, nombre]);
-            res.jsonp({ message: 'Registro guardado.' });
-        });
-    }
     // LISTAR REGISTROS DE VACUNACIÓN DEL EMPLEADO POR SU ID
     ListarUnRegistro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -65,15 +35,11 @@ class VacunasControlador {
             }
         });
     }
-    // LISTAR TODOS LOS REGISTROS DE VACUNACIÓN
-    ListarRegistro(req, res) {
+    // LISTAR REGISTRO TIPO DE VACUNA
+    ListarTipoVacuna(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const VACUNA = yield database_1.default.query(`
-            SELECT ev.id, ev.id_empleado, ev.id_tipo_vacuna, ev.carnet, ev.nom_carnet, ev.fecha, 
-            tv.nombre, ev.descripcion
-            FROM empl_vacunas AS ev, tipo_vacuna AS tv 
-            WHERE ev.id_tipo_vacuna = tv.id
-            ORDER BY ev.id DESC
+            SELECT * FROM tipo_vacuna
             `);
             if (VACUNA.rowCount > 0) {
                 return res.jsonp(VACUNA.rows);
@@ -83,7 +49,37 @@ class VacunasControlador {
             }
         });
     }
-    // ACTUALIZAR REGISTRO DE VACUNACIÓN
+    // CREAR REGISTRO DE VACUNACION
+    CrearRegistro(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado, descripcion, fecha, id_tipo_vacuna } = req.body;
+            const response = yield database_1.default.query(`
+            INSERT INTO empl_vacunas (id_empleado, descripcion, fecha, id_tipo_vacuna) 
+            VALUES ($1, $2, $3, $4) RETURNING *
+            `, [id_empleado, descripcion, fecha, id_tipo_vacuna]);
+            const [vacuna] = response.rows;
+            if (vacuna) {
+                return res.status(200).jsonp(vacuna);
+            }
+            else {
+                return res.status(404).jsonp({ message: 'error' });
+            }
+        });
+    }
+    // REGISTRO DE CERTIFICADO O CARNET DE VACUNACION
+    GuardarDocumento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let list = req.files;
+            let documento = list.uploads[0].path.split("\\")[1];
+            let { nombre } = req.params;
+            let id = req.params.id;
+            yield database_1.default.query(`
+            UPDATE empl_vacunas SET carnet = $2, nom_carnet = $3 WHERE id = $1
+            `, [id, documento, nombre]);
+            res.jsonp({ message: 'Registro guardado.' });
+        });
+    }
+    // ACTUALIZAR REGISTRO DE VACUNACION
     ActualizarRegistro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
@@ -95,19 +91,16 @@ class VacunasControlador {
             res.jsonp({ message: 'Registro actualizado.' });
         });
     }
-    // ELIMINAR REGISTRO DE VACUNACIÓN
-    EliminarRegistro(req, res) {
+    // ELIMINAR DOCUMENTO CARNET DE VACUNACION DEL SERVIDOR
+    EliminarDocumentoServidor(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id, documento } = req.params;
-            yield database_1.default.query(`
-            DELETE FROM empl_vacunas WHERE id = $1
-            `, [id]);
+            let { documento } = req.body;
             if (documento != 'null' && documento != '' && documento != null) {
                 let filePath = `servidor\\carnetVacuna\\${documento}`;
                 let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                 fs_1.default.unlinkSync(direccionCompleta);
             }
-            res.jsonp({ message: 'Registro eliminado.' });
+            res.jsonp({ message: 'Documento Actualizado' });
         });
     }
     // ELIMINAR DOCUMENTO CARNET DE VACUNACION
@@ -125,29 +118,21 @@ class VacunasControlador {
             res.jsonp({ message: 'Documento Actualizado' });
         });
     }
-    // ELIMINAR DOCUMENTO CARNET DE VACUNACION DEL SERVIDOR
-    EliminarDocumentoServidor(req, res) {
+    // ELIMINAR REGISTRO DE VACUNACIÓN
+    EliminarRegistro(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let { documento } = req.body;
+            const { id, documento } = req.params;
+            yield database_1.default.query(`
+            DELETE FROM empl_vacunas WHERE id = $1
+            `, [id]);
             if (documento != 'null' && documento != '' && documento != null) {
                 let filePath = `servidor\\carnetVacuna\\${documento}`;
                 let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                 fs_1.default.unlinkSync(direccionCompleta);
             }
-            res.jsonp({ message: 'Documento Actualizado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
-    // OBTENER CERTIFICADO DE VACUNACIÓN
-    ObtenerDocumento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const docs = req.params.docs;
-            let filePath = `servidor\\carnetVacuna\\${docs}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
-    /** **************************************************************************************** **
-     ** **                       METODOS DE REGISTRO DE TIPO DE VACUNA                        ** **
-     ** **************************************************************************************** **/
     // CREAR REGISTRO DE TIPO DE VACUNA
     CrearTipoVacuna(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -169,10 +154,24 @@ class VacunasControlador {
             }
         });
     }
-    // LISTAR REGISTRO TIPO DE VACUNA
-    ListarTipoVacuna(req, res) {
+    // OBTENER CERTIFICADO DE VACUNACION
+    ObtenerDocumento(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const VACUNA = yield database_1.default.query(`SELECT * FROM tipo_vacuna`);
+            const docs = req.params.docs;
+            let filePath = `servidor\\carnetVacuna\\${docs}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
+    // LISTAR TODOS LOS REGISTROS DE VACUNACIÓN
+    ListarRegistro(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const VACUNA = yield database_1.default.query(`
+            SELECT ev.id, ev.id_empleado, ev.id_tipo_vacuna, ev.carnet, ev.nom_carnet, ev.fecha, 
+            tv.nombre, ev.descripcion
+            FROM empl_vacunas AS ev, tipo_vacuna AS tv 
+            WHERE ev.id_tipo_vacuna = tv.id
+            ORDER BY ev.id DESC
+            `);
             if (VACUNA.rowCount > 0) {
                 return res.jsonp(VACUNA.rows);
             }

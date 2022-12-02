@@ -1,15 +1,15 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { startWith, map } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { RolesService } from 'src/app/servicios/catalogos/catRoles/roles.service';
-import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { LoginService } from 'src/app/servicios/login/login.service';
 
 @Component({
   selector: 'app-editar-empleado',
@@ -24,7 +24,6 @@ export class EditarEmpleadoComponent implements OnInit {
 
   roles: any = [];
   usuario: any = [];
-  hide = true;
 
   isLinear = true;
   primeroFormGroup: FormGroup;
@@ -35,69 +34,31 @@ export class EditarEmpleadoComponent implements OnInit {
   filteredOptions: Observable<string[]>;
   idEmpleado: number;
 
+  empleado_inicia: number;
+
   constructor(
+    private _formBuilder: FormBuilder,
+    private toastr: ToastrService,
     private rest: EmpleadoService,
     private user: UsuarioService,
     private rol: RolesService,
-    private toastr: ToastrService,
-    private _formBuilder: FormBuilder,
-    private validacionService: ValidacionesService,
     public router: Router,
-    public dialogRef: MatDialogRef<EditarEmpleadoComponent>,
+    public ventana: MatDialogRef<EditarEmpleadoComponent>,
+    public loginService: LoginService,
     @Inject(MAT_DIALOG_DATA) public empleado: any
   ) {
     this.idEmpleado = this.empleado.id;
+    this.empleado_inicia = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    console.log(this.empleado);
-    this.obtenerNacionalidades();
-    this.primeroFormGroup = this._formBuilder.group({
-      codigoForm: [''],
-      nombreForm: ['', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")],
-      apellidoForm: ['', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,64}")],
-      cedulaForm: ['', Validators.required],
-      emailForm: ['', Validators.email],
-      correoAlternativoForm: ['', Validators.email],
-      fechaForm: ['', Validators.required],
-    });
-    this.segundoFormGroup = this._formBuilder.group({
-      telefonoForm: ['', Validators.required],
-      domicilioForm: ['', Validators.required],
-      estadoCivilForm: ['', Validators.required],
-      generoForm: ['', Validators.required],
-      estadoForm: ['', Validators.required],
-      nacionalidadForm: this.NacionalidadControl
-    });
-    this.terceroFormGroup = this._formBuilder.group({
-      rolForm: ['', Validators.required],
-      userForm: ['', Validators.required],
-    });
-    
-    this.cargarRoles();
+    this.CargarRoles();
     this.VerificarCodigo();
+    this.VerificarFormulario();
+    this.ObtenerNacionalidades();
   }
 
-  datosCodigo: any = [];
-  escritura = false;
-  VerificarCodigo() {
-    this.datosCodigo = [];
-    this.rest.ObtenerCodigo().subscribe(datos => {
-      this.datosCodigo = datos;
-      if (this.datosCodigo[0].automatico === true) {
-        this.escritura = true;
-      }
-      else {
-        this.escritura = false;
-      }
-    }, error => {
-      this.toastr.info('Primero configurar el código de empleado.','', {
-        timeOut: 6000,
-      });
-      this.router.navigate(['/codigo/']);
-    });
-  }
-
+  // METODO PARA FILTRAR DATOS DE NACIONALIDAD
   private _filter(value: string): string[] {
     if (value != null) {
       const filterValue = value.toLowerCase();
@@ -105,34 +66,117 @@ export class EditarEmpleadoComponent implements OnInit {
     }
   }
 
-  cargarRoles() {
-    this.rol.getRoles().subscribe(data => {
+  // METODO PARA LISTAR ROLES
+  CargarRoles() {
+    this.rol.BuscarRoles().subscribe(data => {
       this.roles = data;
     });
   }
 
-  IngresarSoloLetras(e) {
-    return this.validacionService.IngresarSoloLetras(e);
-  }
-  
-  IngresarSoloNumeros(evt) {
-    return this.validacionService.IngresarSoloNumeros(evt);
+  // METODO PARA VERIFICAR FORMULARIO
+  VerificarFormulario() {
+    this.primeroFormGroup = this._formBuilder.group({
+      apellidoForm: ['', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,64}")],
+      nombreForm: ['', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")],
+      codigoForm: [''],
+      cedulaForm: ['', Validators.required],
+      emailForm: ['', Validators.email],
+      fechaForm: ['', Validators.required],
+    });
+    this.segundoFormGroup = this._formBuilder.group({
+      nacionalidadForm: this.NacionalidadControl,
+      estadoCivilForm: ['', Validators.required],
+      domicilioForm: ['', Validators.required],
+      telefonoForm: ['', Validators.required],
+      generoForm: ['', Validators.required],
+      estadoForm: ['', Validators.required],
+    });
+    this.terceroFormGroup = this._formBuilder.group({
+      userForm: ['', Validators.required],
+      rolForm: ['', Validators.required],
+    });
   }
 
+  // METODO PARA LISTAR NACIONALIDADES
+  ObtenerNacionalidades() {
+    this.rest.BuscarNacionalidades().subscribe(res => {
+      this.nacionalidades = res;
+      this.ObtenerEmpleado();
+      this.filteredOptions = this.NacionalidadControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+    });
+  }
 
-  actualizarEmpleado(form1, form2, form3) {
-    // Busca el id de la nacionalidad elegida en el autocompletado
+  // CARGAR DATOS DE EMPLEADO Y USUARIO
+  ObtenerEmpleado() {
+    const { apellido, cedula, codigo, correo, domicilio, esta_civil, estado, fec_nacimiento, genero,
+      id, id_nacionalidad, nombre, telefono } = this.empleado;
+
+    this.primeroFormGroup.setValue({
+      apellidoForm: apellido,
+      codigoForm: codigo,
+      nombreForm: nombre,
+      cedulaForm: cedula,
+      emailForm: correo,
+      fechaForm: fec_nacimiento,
+    });
+
+    this.segundoFormGroup.setValue({
+      nacionalidadForm: this.nacionalidades.filter(o => { return id_nacionalidad === o.id }).map(o => { return o.nombre }),
+      estadoCivilForm: esta_civil,
+      domicilioForm: domicilio,
+      telefonoForm: telefono,
+      generoForm: genero,
+      estadoForm: estado,
+    });
+
+    // METODO DE BUSQUEDA DE DATOS DE USUARIO
+    this.user.BuscarDatosUser(id).subscribe(res => {
+      this.usuario = [];
+      this.usuario = res;
+      this.terceroFormGroup.patchValue({
+        rolForm: this.usuario[0].id_rol,
+        userForm: this.usuario[0].usuario,
+      });
+    });
+  }
+
+  // METODO PARA VALIDAR INGRESO MANUAL O AUTOMATICO DE CODIGO DE USUARIO
+  datosCodigo: any = [];
+  escritura = false;
+  VerificarCodigo() {
+    this.datosCodigo = [];
+    this.rest.ObtenerCodigo().subscribe(datos => {
+      this.datosCodigo = datos[0];
+      if (this.datosCodigo.automatico === true) {
+        this.escritura = true;
+      }
+      else {
+        this.escritura = false;
+      }
+    }, error => {
+      this.toastr.info('Configurar ingreso de código de usuarios.', '', {
+        timeOut: 6000,
+      });
+      this.router.navigate(['/codigo/']);
+    });
+  }
+
+  // METODO PARA ACTUALIZAR REGISTRO DE EMPLEADO
+  ActualizarEmpleado(form1: any, form2: any, form3: any) {
+    // BUSCA EL ID DE LA NACIONALIDAD ELEGIDA EN EL AUTOCOMPLETADO
     this.nacionalidades.forEach(obj => {
       if (form2.nacionalidadForm == obj.nombre) {
         console.log(obj);
         this.idNacionalidad = obj.id;
       }
     });
-    // Realizar un capital letter a los nombres y apellidos
+    // REALIZAR UN CAPITAL LETTER A LOS NOMBRES
     var NombreCapitalizado: any;
     let nombres = form1.nombreForm.split(' ');
     if (nombres.length > 1) {
-      console.log('tamaño de la cadena', nombres.length);
       let name1 = nombres[0].charAt(0).toUpperCase() + nombres[0].slice(1);
       let name2 = nombres[1].charAt(0).toUpperCase() + nombres[1].slice(1);
       NombreCapitalizado = name1 + ' ' + name2;
@@ -142,6 +186,7 @@ export class EditarEmpleadoComponent implements OnInit {
       var NombreCapitalizado = name1
     }
 
+    // REALIZAR UN CAPITAL LETTER A LOS APELLIDOS
     var ApellidoCapitalizado: any;
     let apellidos = form1.apellidoForm.split(' ');
     if (apellidos.length > 1) {
@@ -153,26 +198,28 @@ export class EditarEmpleadoComponent implements OnInit {
       let lastname1 = apellidos[0].charAt(0).toUpperCase() + apellidos[0].slice(1);
       ApellidoCapitalizado = lastname1
     }
-    let dataEmpleado = {
-      cedula: form1.cedulaForm,
-      apellido: ApellidoCapitalizado,
-      nombre: NombreCapitalizado,
+
+    // CAPTURA DE DATOS DE FORMULARIO
+    let empleado = {
+      id_nacionalidad: this.idNacionalidad,
+      fec_nacimiento: form1.fechaForm,
       esta_civil: form2.estadoCivilForm,
+      domicilio: form2.domicilioForm,
+      apellido: ApellidoCapitalizado,
+      telefono: form2.telefonoForm,
+      cedula: form1.cedulaForm,
+      nombre: NombreCapitalizado,
       genero: form2.generoForm,
       correo: form1.emailForm,
-      fec_nacimiento: form1.fechaForm,
       estado: form2.estadoForm,
-      mail_alernativo: form1.correoAlternativoForm,
-      domicilio: form2.domicilioForm,
-      telefono: form2.telefonoForm,
-      id_nacionalidad: this.idNacionalidad,
       codigo: form1.codigoForm
     };
 
+    // CONTADOR 0 EL REGISTRO SE REALIZA UNA SOL VEZ, CONTADOR 1 SE DIO UN ERROR Y SE REALIZA NUEVAMENTE EL PROCESO
     if (this.contador === 0) {
-      this.rest.putEmpleadoRest(dataEmpleado, this.idEmpleado).subscribe(response => {
+      this.rest.ActualizarEmpleados(empleado, this.idEmpleado).subscribe(response => {
         if (response.message === 'error') {
-          this.toastr.error('El código y cédula del empleado son datos únicos y no deben ser igual al resto de registros.', 'Uno de los datos ingresados es Incorrecto', {
+          this.toastr.error('Código o cédula ya se encuentran registrados.', 'Upss!!! algo slaio mal.', {
             timeOut: 6000,
           });
         }
@@ -186,37 +233,53 @@ export class EditarEmpleadoComponent implements OnInit {
     }
   }
 
-
+  // METODO PARA ACTUALIZAR INFORMACION D EUSUARIO
   contador: number = 0;
-  ActualizarUser(form3, form1) {
+  ActualizarUser(form3: any, form1: any) {
     this.contador = 0;
     let dataUser = {
-      usuario: form3.userForm,
+      id_empleado: this.idEmpleado,
       contrasena: this.usuario[0].contrasena,
+      usuario: form3.userForm,
       id_rol: form3.rolForm,
-      id_empleado: this.idEmpleado
     }
     this.user.ActualizarDatos(dataUser).subscribe(data => {
       if (data.message === 'error') {
-        this.toastr.error('Por favor ingrese otro nombre de usuario', 'Nombre de usuario existente', {
+        this.toastr.error('Nombre de usuario ya se encuentra registrado.', 'Upss!!! algo salio mal.', {
           timeOut: 6000,
         });
         this.contador = 1;
       }
       else {
-        this.toastr.success('Operacion Exitosa', 'Empleado Actualizado', {
+        this.toastr.success('Operacion Exitosa.', 'Empleado Actualizado.', {
           timeOut: 6000,
         });
         this.ActualizarCodigo(form1.codigoForm);
-        this.limpliarCampos();
-        this.dialogRef.close(true)
+        this.Navegar(form3);
         this.contador = 0;
       }
     });
   }
 
-  ActualizarCodigo(codigo) {
-    if (this.datosCodigo[0].automatico === true) {
+  // METODO PARA VALIDAR NAVEGABILIDAD
+  Navegar(form3: any) {
+    if (this.idEmpleado === this.empleado_inicia) {
+      if (form3.userForm != this.usuario[0].usuario || form3.rolForm != this.usuario[0].id_rol) {
+        this.ventana.close(false);
+        this.loginService.logout();
+      }
+      else {
+        this.LimpiarCampos();
+      }
+    }
+    else {
+      this.LimpiarCampos();
+    }
+  }
+
+  // METODO PARA ACTUALIZAR CODIGO DE USUARIO
+  ActualizarCodigo(codigo: any) {
+    if (this.datosCodigo.automatico === true) {
       let dataCodigo = {
         valor: codigo,
         id: 1
@@ -226,59 +289,60 @@ export class EditarEmpleadoComponent implements OnInit {
     }
   }
 
-  limpliarCampos() {
+  // METODO DE VALIDACION DE INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
+    let key = e.keyCode || e.which;
+    let tecla = String.fromCharCode(key).toString();
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
+    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+    // ES LA VALIDACION DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
+    let especiales = [8, 37, 39, 46, 6, 13];
+    let tecla_especial = false
+    for (var i in especiales) {
+      if (key == especiales[i]) {
+        tecla_especial = true;
+        break;
+      }
+    }
+    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
+        timeOut: 6000,
+      })
+      return false;
+    }
+  }
+
+  // METODO DE VALIDACION DE INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    if (window.event) {
+      var keynum = evt.keyCode;
+    }
+    else {
+      keynum = evt.which;
+    }
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMERICO Y QUE TECLAS NO RECIBIRA.
+    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
+      return true;
+    }
+    else {
+      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
+        timeOut: 6000,
+      })
+      return false;
+    }
+  }
+
+  // METODO PARA LIMPIAR FORMULARIO
+  LimpiarCampos() {
     this.primeroFormGroup.reset();
     this.segundoFormGroup.reset();
     this.terceroFormGroup.reset();
+    this.ventana.close(true)
   }
 
-  obtenerNacionalidades() {
-    this.rest.getListaNacionalidades().subscribe(res => {
-      this.nacionalidades = res;
-      this.obtenerEmpleado();
-      this.filteredOptions = this.NacionalidadControl.valueChanges.pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
-    });
-  }
-
-  obtenerEmpleado() {
-
-    const { apellido, cedula, codigo, correo, domicilio, esta_civil, estado, fec_nacimiento, genero, 
-      id, id_nacionalidad, mail_alternativo, nombre, telefono } = this.empleado;
-
-    this.primeroFormGroup.setValue({
-      codigoForm: codigo,
-      nombreForm: nombre,
-      apellidoForm: apellido,
-      cedulaForm: cedula,
-      emailForm: correo,
-      correoAlternativoForm: mail_alternativo,
-      fechaForm: fec_nacimiento,
-    });
-
-    this.segundoFormGroup.setValue({
-      telefonoForm: telefono,
-      domicilioForm: domicilio,
-      estadoCivilForm: esta_civil,
-      generoForm: genero,
-      estadoForm: estado,
-      nacionalidadForm: this.nacionalidades.filter(o => { return id_nacionalidad === o.id}).map(o => { return o.nombre })
-    });
-
-    this.user.BuscarDatosUser(id).subscribe(res => {
-      this.usuario = [];
-      this.usuario = res;
-      this.terceroFormGroup.patchValue({
-        rolForm: this.usuario[0].id_rol,
-        userForm: this.usuario[0].usuario,
-      });
-    });
-  }
-
-  cancelar() { 
-    this.dialogRef.close(false)
+  // METODO PARA CERRAR VENTANA
+  Cancelar() {
+    this.ventana.close(false);
   }
 
 }

@@ -11,9 +11,8 @@ mat-radio-group { width: 250px; padding: 15px 20px 15px 20x; margin-bottom: 10px
 
 .mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
 
-#selec { font-size: 14px; }
+#letras { font-size: 13px; }
 
-#selecD { font-size: 12px; }
 
 .scrollbar {
     float: left;

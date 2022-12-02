@@ -18,6 +18,41 @@ export class EmpleadoService {
     private http: HttpClient
   ) { }
 
+
+  /** ** ********************************************************************************************* **
+   ** ** **                        MANEJO DE CODIGOS DE USUARIOS                                    ** **
+   ** ** ********************************************************************************************* **/
+
+  // METODO PARA BUSCAR CONFIGURACION DE CODIGO DE USUARIO
+  ObtenerCodigo() {
+    return this.http.get(`${environment.url}/empleado/encontrarDato/codigo`);
+  }
+
+  // METODO PRA REGISTRAR CODIGO DE USUARIO
+  CrearCodigo(datos: any) {
+    return this.http.post(`${environment.url}/empleado/crearCodigo`, datos);
+  }
+
+  // METODO DE BUSQUEDA DEL ULTIMO CODIGO REGISTRADO EN EL SISTEMA
+  ObtenerCodigoMAX() {
+    return this.http.get(`${environment.url}/empleado/encontrarDato/codigo/empleado`);
+  }
+
+  // METODO PARA ACTUALIZAR VALOR DE CODIGO
+  ActualizarCodigoTotal(datos: any) {
+    return this.http.put(`${environment.url}/empleado/cambiarValores`, datos);
+  }
+
+  // METODO DE ACTUALIZACION DE CODIGO DE USUARIO
+  ActualizarCodigo(datos: any) {
+    return this.http.put(`${environment.url}/empleado/cambiarCodigo`, datos);
+  }
+
+
+  /** ********************************************************************************************** **
+   ** **                     METODO PARA MANEJAR DATOS DE EMPLEADO                                ** ** 
+   ** ********************************************************************************************** **/
+
   // BUSCAR UN REGISTRO DE USUARIO
   BuscarUnEmpleado(id: number) {
     return this.http.get<any>(`${environment.url}/empleado/${id}`);
@@ -28,76 +63,105 @@ export class EmpleadoService {
     return this.http.get<any>(`${environment.url}/empleado/buscador/empleado`);
   }
 
-
-
-
-
-
-  // Empleados  
-  getEmpleadosRest() {
-    return this.http.get(`${environment.url}/empleado`);
-  }
-
-  // BÚSQUEDA DE EMPLEADOS INGRESANDO NOMBRE Y APELLIDO 
-  BuscarEmpleadoNombre(data: any) {
-    return this.http.post(`${environment.url}/empleado/buscar/informacion`, data);
-  }
-
-
-
-
-
-  postEmpleadoRest(data: any) {
+  // REGISTRAR EMPLEADOS
+  RegistrarEmpleados(data: any) {
     return this.http.post(`${environment.url}/empleado`, data).pipe(
       catchError(data));
   }
 
-  putEmpleadoRest(data: any, id: number) {
+  // ACTUALIZAR EMPLEADOS
+  ActualizarEmpleados(data: any, id: number) {
     return this.http.put(`${environment.url}/empleado/${id}/usuario`, data).pipe(
       catchError(data));
   }
 
-  /** Verificar datos de la plantilla de datos con código generado de forma automática */
-  verificarArchivoExcel_Automatico(formData) {
-    return this.http.post<any>(`${environment.url}/empleado/verificar/automatico/plantillaExcel/`, formData);
+  // SERVICIO PARA OBTENER LISTA DE NACIONALIDADES
+  BuscarNacionalidades() {
+    return this.http.get<any>(`${environment.url}/nacionalidades`)
   }
 
-  verificarArchivoExcel_DatosAutomatico(formData) {
-    return this.http.post<any>(`${environment.url}/empleado/verificar/datos/automatico/plantillaExcel/`, formData);
+  // METODO PARA LISTAR EMPLEADOS ACTIVOS
+  ListarEmpleadosActivos() {
+    return this.http.get(`${environment.url}/empleado`);
   }
 
-  subirArchivoExcel_Automatico(formData) {
-    return this.http.post<any>(`${environment.url}/empleado/cargar_automatico/plantillaExcel/`, formData);
+  // METODO PARA LISTAR EMPLEADOS DESACTIVADOS
+  ListaEmpleadosDesactivados() {
+    return this.http.get<any>(`${environment.url}/empleado/desactivados/empleados`);
   }
 
-  /** Verifcar datos de la plantilla de datos con código generado de forma automática */
-  verificarArchivoExcel_Manual(formData) {
-    return this.http.post<any>(`${environment.url}/empleado/verificar/manual/plantillaExcel/`, formData);
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/empleado/xmlDownload`, data);
   }
 
-  verificarArchivoExcel_DatosManual(formData) {
-    return this.http.post<any>(`${environment.url}/empleado/verificar/datos/manual/plantillaExcel/`, formData);
+  // DESACTIVAR VARIOS EMPLEADOS SELECCIONADOS
+  DesactivarVariosUsuarios(data: any[]) {
+    return this.http.put<any>(`${environment.url}/empleado/desactivar/masivo`, data)
   }
 
-  subirArchivoExcel_Manual(formData) {
-    return this.http.post<any>(`${environment.url}/empleado/cargar_manual/plantillaExcel/`, formData);
+  // ACTIVAR VARIOS EMPLEADOS
+  ActivarVariosUsuarios(data: any[]) {
+    return this.http.put<any>(`${environment.url}/empleado/activar/masivo`, data)
   }
 
-  // Servicio para insertar el empleado con sus respectivos titulos
-  postEmpleadoTitulos(data: any) {
-    return this.http.post(`${environment.url}/empleado/emplTitulos`, data);
+  // METODO PARA REACTIVAR USUARIOS
+  ReActivarVariosUsuarios(data: any[]) {
+    return this.http.put<any>(`${environment.url}/empleado/re-activar/masivo`, data)
   }
 
-  getEmpleadoTituloRest(id: number) {
+  // METODO PARA CARGAR IMAGEN DEL USUARIO
+  SubirImagen(formData: any, idEmpleado: number) {
+    return this.http.put(`${environment.url}/empleado/${idEmpleado}/uploadImage`, formData)
+  }
+
+
+  /** *********************************************************************** **
+   ** **       METODOS PARA MANEJO DE DATOS DE TITULO PROFESIONAL             **
+   ** *********************************************************************** **/
+
+  // METODO PARA BUSCAR TITULO DE EMPLEADO
+  BuscarTituloUsuario(id: number) {
     return this.http.get(`${environment.url}/empleado/emplTitulos/${id}`);
   }
 
-  putEmpleadoTituloRest(id: number, data: any) {
+  // METODO PARA REGISTRAR TITULO PROFESIONAL
+  RegistrarTitulo(data: any) {
+    return this.http.post(`${environment.url}/empleado/emplTitulos`, data);
+  }
+
+  ActualizarTitulo(id: number, data: any) {
     return this.http.put(`${environment.url}/empleado/${id}/titulo`, data);
   }
 
-  deleteEmpleadoTituloRest(id: number) {
+  // METODO DE ELIMINACION DE TITULO DE EMPLEADO
+  EliminarTitulo(id: number) {
     return this.http.delete(`${environment.url}/empleado/eliminar/titulo/${id}`);
+  }
+
+
+  /** *********************************************************************** **
+   ** **         CONTROL DE GEOLOCALIZACION EN EL SISTEMA                     **
+   ** *********************************************************************** **/
+
+  // METODO PARA ACTUALIZAR UBICACION DE DOMICILIO
+  ActualizarDomicilio(id: number, data: any) {
+    return this.http.put<any>(`${environment.url}/empleado/geolocalizacion/${id}`, data)
+  }
+
+
+  /** **************************************************************************************** **
+   ** **                 METODOS MODALIDAD DE TRABAJO O TIPO DE CONTRATOS                   ** **
+   ** **************************************************************************************** **/
+
+  // BUSCAR LISTA MODALIDAD DE TRABAJO
+  BuscarTiposContratos() {
+    return this.http.get<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo`);
+  }
+
+  // REGISTRAR MODALIDAD DE TRABAJO
+  CrearTiposContrato(datos: any) {
+    return this.http.post<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo`, datos);
   }
 
 
@@ -140,21 +204,99 @@ export class EmpleadoService {
     return this.http.get(`${environment.url}/contratoEmpleado/${id}/get`);
   }
 
+  // METODO PARA BUSCAR ID DE CONTRATO ACTUAL
+  BuscarIDContratoActual(id: number) {
+    return this.http.get(`${environment.url}/contratoEmpleado/contratoActual/${id}`);
+  }
 
-  
+  // METODO PARA BUSCAR DATOS DE CONTRATO POR ID
+  BuscarDatosContrato(id: number) {
+    return this.http.get<any>(`${environment.url}/contratoEmpleado/contrato/${id}`);
+  }
+
+  // METODO PARA BUSCAR FECHA DE CONTRATOS
+  BuscarFechaContrato(datos: any) {
+    return this.http.post(`${environment.url}/contratoEmpleado/buscarFecha`, datos);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // BUSQUEDA DE EMPLEADOS INGRESANDO NOMBRE Y APELLIDO 
+  BuscarEmpleadoNombre(data: any) {
+    return this.http.post(`${environment.url}/empleado/buscar/informacion`, data);
+  }
+
+
+
+
+
+
+
+  /** Verificar datos de la plantilla de datos con código generado de forma automática */
+  verificarArchivoExcel_Automatico(formData) {
+    return this.http.post<any>(`${environment.url}/empleado/verificar/automatico/plantillaExcel/`, formData);
+  }
+
+  verificarArchivoExcel_DatosAutomatico(formData) {
+    return this.http.post<any>(`${environment.url}/empleado/verificar/datos/automatico/plantillaExcel/`, formData);
+  }
+
+  subirArchivoExcel_Automatico(formData) {
+    return this.http.post<any>(`${environment.url}/empleado/cargar_automatico/plantillaExcel/`, formData);
+  }
+
+  /** Verifcar datos de la plantilla de datos con código generado de forma automática */
+  verificarArchivoExcel_Manual(formData) {
+    return this.http.post<any>(`${environment.url}/empleado/verificar/manual/plantillaExcel/`, formData);
+  }
+
+  verificarArchivoExcel_DatosManual(formData) {
+    return this.http.post<any>(`${environment.url}/empleado/verificar/datos/manual/plantillaExcel/`, formData);
+  }
+
+  subirArchivoExcel_Manual(formData) {
+    return this.http.post<any>(`${environment.url}/empleado/cargar_manual/plantillaExcel/`, formData);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   BuscarIDContrato(id: number) {
     return this.http.get(`${environment.url}/contratoEmpleado/${id}`);
   }
 
-  BuscarIDContratoActual(id: number) {
-    return this.http.get(`${environment.url}/contratoEmpleado/contratoActual/${id}`);
-  }
 
-  BuscarDatosContrato(id: number) {
-    return this.http.get<any>(`${environment.url}/contratoEmpleado/contrato/${id}`);
-  }
+
 
 
 
@@ -164,9 +306,6 @@ export class EmpleadoService {
     return this.http.put(`${environment.url}/contratoEmpleado/editar/editarDocumento/${id}`, data);
   }
 
-  BuscarFechaContrato(datos: any) {
-    return this.http.post(`${environment.url}/contratoEmpleado/buscarFecha`, datos);
-  }
 
   BuscarFechaIdContrato(datos: any) {
     return this.http.post(`${environment.url}/contratoEmpleado/buscarFecha/contrato`, datos);
@@ -177,20 +316,7 @@ export class EmpleadoService {
   }
 
 
-  
-  /** **************************************************************************************** **
-   ** **  SERVICIOS PARA SER USADOS PARA REGISTRAR MODALIDAD DE TRABAJO O TIPO DE CONTRATOS ** **
-   ** **************************************************************************************** **/
 
-  // REGISTRAR MODALIDAD DE TRABAJO
-  CrearTiposContrato(datos: any) {
-    return this.http.post<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo`, datos);
-  }
-
-  // BUSCAR LISTA MODALIDAD DE TRABAJO
-  BuscarTiposContratos() {
-    return this.http.get<any>(`${environment.url}/contratoEmpleado/modalidad/trabajo`);
-  }
 
 
 
@@ -203,77 +329,65 @@ export class EmpleadoService {
 
 
 
-  // GUARDAR CÓDIGO
-
-  CrearCodigo(datos: any) {
-    return this.http.post(`${environment.url}/empleado/crearCodigo`, datos);
-  }
-
-  ObtenerCodigo() {
-    return this.http.get(`${environment.url}/empleado/encontrarDato/codigo`);
-  }
-
-  ActualizarCodigo(datos: any) {
-    return this.http.put(`${environment.url}/empleado/cambiarCodigo`, datos);
-  }
-
-  ActualizarCodigoTotal(datos: any) {
-    return this.http.put(`${environment.url}/empleado/cambiarValores`, datos);
-  }
-
-  ObtenerCodigoMAX() {
-    return this.http.get(`${environment.url}/empleado/encontrarDato/codigo/empleado`);
-  }
 
 
-  // Servicio para obtener la lista de las nacionalidades
-  getListaNacionalidades() {
-    return this.http.get<any>(`${environment.url}/nacionalidades`)
-  }
 
-  // Servicios para subir las imagenes
-  subirImagen(formData, idEmpleado: number) {
-    return this.http.put(`${environment.url}/empleado/${idEmpleado}/uploadImage`, formData)
-  }
 
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/empleado/xmlDownload`, data);
-  }
-  // verXML(name: string){
-  //   return this.http.get<any>(`${environment.url}/empleado/download/${name}`)
-  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   BuscarDepartamentoEmpleado(datos: any) {
     return this.http.post(`${environment.url}/empleado/buscarDepartamento`, datos);
   }
 
-  // Desactivar varios empleados seleccionados
-  DesactivarVariosUsuarios(data: any[]) {
-    return this.http.put<any>(`${environment.url}/empleado/desactivar/masivo`, data)
-  }
-
-  ActivarVariosUsuarios(data: any[]) {
-    return this.http.put<any>(`${environment.url}/empleado/activar/masivo`, data)
-  }
-
-  ReActivarVariosUsuarios(data: any[]) {
-    return this.http.put<any>(`${environment.url}/empleado/re-activar/masivo`, data)
-  }
-
-  ListaEmpleadosDesactivados() {
-    return this.http.get<any>(`${environment.url}/empleado/desactivados/empleados`);
-  }
 
 
 
 
-  /** *********************************************************************** **
-   ** **         CONTROL DE GEOLOCALIZACIÓN EN EL SISTEMA                     **
-   ** *********************************************************************** **/
 
-  putGeolocalizacion(id: number, data: any) {
-    return this.http.put<any>(`${environment.url}/empleado/geolocalizacion/${id}`, data)
-  }
+
+
+
+
+
+
+
+
+
 
   InsertarUbicacion(id: number, codigo: number, data: any) {
     return this.http.post<any>(`${environment.url}/empleado/geolocalizacion-domicilio/${id}/${codigo}`, data)

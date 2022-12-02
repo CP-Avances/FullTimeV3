@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 import { ToastrService } from 'ngx-toastr';
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
@@ -18,6 +17,11 @@ export class RelojesComponent implements OnInit {
   sucursales: any = [];
   departamento: any = [];
   nomDepartamento: any = [];
+
+  // CONTROL DE FORMULARIOS
+  isLinear = true;
+  primerFormulario: FormGroup;
+  segundoFormulario: FormGroup;
 
   // Activar ingreso de número de acciones
   activarCampo: boolean = false;
@@ -39,41 +43,47 @@ export class RelojesComponent implements OnInit {
   idDepartamentoF = new FormControl('', [Validators.required]);
   numeroF = new FormControl('', [Validators.required]);
 
-  // Asignación de validaciones a inputs del formulario
-  public RelojesForm = new FormGroup({
-    nombreForm: this.nombreF,
-    ipForm: this.ipF,
-    puertoForm: this.puertoF,
-    contraseniaForm: this.contraseniaF,
-    marcaForm: this.marcaF,
-    modeloForm: this.modeloF,
-    serieForm: this.serieF,
-    idFabricacionForm: this.idFabricacionF,
-    fabricanteForm: this.fabricanteF,
-    macForm: this.macF,
-    funcionesForm: this.funcionesF,
-    idSucursalForm: this.idSucursalF,
-    idDepartamentoForm: this.idDepartamentoF,
-    codigoForm: this.codigoF,
-    numeroForm: this.numeroF
-  });
-
   constructor(
     private rest: RelojesService,
     private restCatDepartamento: DepartamentosService,
     private restSucursales: SucursalService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RelojesComponent>,
+    private formulario: FormBuilder,
   ) { }
 
   ngOnInit(): void {
     this.FiltrarSucursales();
+    this.ValidarFormulario();
+  }
+
+
+  // VALIDACIONES DE FORMULARIO
+  ValidarFormulario() {
+    this.primerFormulario = this.formulario.group({
+      nombreForm: this.nombreF,
+      ipForm: this.ipF,
+      puertoForm: this.puertoF,
+      funcionesForm: this.funcionesF,
+      idSucursalForm: this.idSucursalF,
+      idDepartamentoForm: this.idDepartamentoF,
+      codigoForm: this.codigoF,
+      numeroForm: this.numeroF
+    });
+    this.segundoFormulario = this.formulario.group({
+      contraseniaForm: this.contraseniaF,
+      marcaForm: this.marcaF,
+      modeloForm: this.modeloF,
+      serieForm: this.serieF,
+      idFabricacionForm: this.idFabricacionF,
+      fabricanteForm: this.fabricanteF,
+      macForm: this.macF,
+    });
   }
 
   FiltrarSucursales() {
     let idEmpre = parseInt(localStorage.getItem('empresa'));
     this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(idEmpre).subscribe(datos => {
+    this.restSucursales.BuscarSucursalEmpresa(idEmpre).subscribe(datos => {
       this.sucursales = datos;
     }, error => {
       this.toastr.info('No se han encntrado registros de establecimientos', '', {
@@ -111,7 +121,7 @@ export class RelojesComponent implements OnInit {
     });
   }
 
-  InsertarReloj(form) {
+  InsertarReloj(form, form2) {
     let datosReloj = {
       nombre: form.nombreForm,
       ip: form.ipForm,
@@ -219,25 +229,25 @@ export class RelojesComponent implements OnInit {
 
   activarVista() {
     this.activarCampo = true;
-    this.RelojesForm.patchValue({
+    this.primerFormulario.patchValue({
       numeroForm: ''
     })
   }
 
   desactivarVista() {
     this.activarCampo = false;
-    this.RelojesForm.patchValue({
+    this.primerFormulario.patchValue({
       numeroForm: 0
     })
   }
 
   LimpiarCampos() {
-    this.RelojesForm.reset();
+    this.primerFormulario.reset();
+    this.segundoFormulario.reset();
   }
 
-  CerrarVentanaRegistroReloj() {
+  CerrarVentana() {
     this.LimpiarCampos();
-    this.dialogRef.close();
   }
 
 }

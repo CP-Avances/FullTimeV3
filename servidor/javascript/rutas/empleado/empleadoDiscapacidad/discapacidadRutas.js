@@ -12,17 +12,25 @@ class DiscapacidadRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO PARA BUSCAR DATOS DISCAPACIDAD USUARIO
+        this.router.get('/:id_empleado', verificarToken_1.TokenValidation, discapacidadControlador_1.default.BuscarDiscapacidadUsuario);
+        // METODO PARA REGISTRAR DISCAPACIDAD
+        this.router.post('/', verificarToken_1.TokenValidation, discapacidadControlador_1.default.RegistrarDiscapacidad);
+        // METODO PARA ACTUALIZAR DATOS DISCAPACIDAD
+        this.router.put('/:id_empleado', verificarToken_1.TokenValidation, discapacidadControlador_1.default.ActualizarDiscapacidad);
+        // METODO PARA ELIMINAR REGISTRO
+        this.router.delete('/eliminar/:id_empleado', verificarToken_1.TokenValidation, discapacidadControlador_1.default.EliminarDiscapacidad);
+        /** *************************************************************************************** **
+         ** **                METODO PARA MANEJO DE DATOS DE TIPO DISCAPACIDAD                   ** **
+         ** *************************************************************************************** **/
+        // METODO PARA REGISTRAR TIPO DE DISCAPACIDAD
+        this.router.post('/buscarTipo', verificarToken_1.TokenValidation, discapacidadControlador_1.default.RegistrarTipo);
+        // METODO PARA BUSCAR LISTA DE TIPOS DE DISCAPACIDAD
+        this.router.get('/buscarTipo/tipo', verificarToken_1.TokenValidation, discapacidadControlador_1.default.ListarTipo);
         this.router.get('/', verificarToken_1.TokenValidation, discapacidadControlador_1.default.list);
-        this.router.get('/:id_empleado', verificarToken_1.TokenValidation, discapacidadControlador_1.default.getOne);
-        this.router.post('/', verificarToken_1.TokenValidation, discapacidadControlador_1.default.create);
-        this.router.put('/:id_empleado', verificarToken_1.TokenValidation, discapacidadControlador_1.default.update);
-        this.router.delete('/eliminar/:id_empleado', verificarToken_1.TokenValidation, discapacidadControlador_1.default.deleteDiscapacidad);
         // TIPO DISCAPACIDAD
-        this.router.get('/buscarTipo/tipo', verificarToken_1.TokenValidation, discapacidadControlador_1.default.ListarTipoD);
         this.router.get('/buscarTipo/tipo/:id', verificarToken_1.TokenValidation, discapacidadControlador_1.default.ObtenerUnTipoD);
-        this.router.post('/buscarTipo', verificarToken_1.TokenValidation, discapacidadControlador_1.default.CrearTipoD);
         this.router.put('/buscarTipo/:id', verificarToken_1.TokenValidation, discapacidadControlador_1.default.ActualizarTipoD);
-        this.router.get('/buscarTipo/ultimoId', verificarToken_1.TokenValidation, discapacidadControlador_1.default.ObtenerUltimoIdTD);
     }
 }
 const DISCAPACIDAD_RUTAS = new DiscapacidadRutas();

@@ -1,47 +1,47 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { ToastrService } from 'ngx-toastr';
+import { ThemePalette } from '@angular/material/core';
+import { Router } from '@angular/router';
 
 import { CiudadFeriadosService } from 'src/app/servicios/ciudadFeriados/ciudad-feriados.service';
 import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 import { CiudadService } from 'src/app/servicios/ciudad/ciudad.service'
-import { ThemePalette } from '@angular/material/core';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-editar-ciudad',
   templateUrl: './editar-ciudad.component.html',
   styleUrls: ['./editar-ciudad.component.css']
 })
+
 export class EditarCiudadComponent implements OnInit {
 
-  // Datos Ciudad-Feriado
+  // DATOS CIUDAD-FERIADO
   ciudadFeriados: any = [];
   nombreProvincias: any = [];
 
   actualizarPagina: boolean = false;
 
-  // Datos Provincias, Continentes, Países y Ciudades
-  provincias: any = [];
-  continentes: any = [];
-  seleccionarContinente;
-  paises: any = [];
+  // DATOS PROVINCIAS, CONTINENTES, PAÍSES Y CIUDADES
   nombreCiudades: any = [];
+  continentes: any = [];
+  provincias: any = [];
+  paises: any = [];
 
-  // Buscar ID
+  // BUSCAR ID
   idProv: any = [];
   idPais: any = [];
   idContin: any = [];
 
-  // Control de los campos del formulario
+  // CONTROL DE LOS CAMPOS DEL FORMULARIO
+  nombreContinenteF = new FormControl('', Validators.required);
   nombreCiudadF = new FormControl('', [Validators.required]);
   idProvinciaF = new FormControl('', [Validators.required]);
-  nombreContinenteF = new FormControl('', Validators.required);
   nombrePaisF = new FormControl('', Validators.required);
 
-  // Asignar los campos en un formulario en grupo
+  // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
   public asignarCiudadForm = new FormGroup({
     nombreCiudadForm: this.nombreCiudadF,
     idProvinciaForm: this.idProvinciaF,
@@ -50,12 +50,12 @@ export class EditarCiudadComponent implements OnInit {
   });
 
   /**
-   * Variables progress spinner
+   * VARIABLES PROGRESS SPINNER
    */
+  habilitarprogress: boolean = false;
+  value = 10;
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'indeterminate';
-  value = 10;
-  habilitarprogress: boolean = false;
 
   constructor(
     public restCiudad: CiudadService,
@@ -63,211 +63,37 @@ export class EditarCiudadComponent implements OnInit {
     private restP: ProvinciaService,
     private toastr: ToastrService,
     private router: Router,
-    public dialogRef: MatDialogRef<EditarCiudadComponent>,
+    public ventana: MatDialogRef<EditarCiudadComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
-    this.continentes = this.ObtenerContinentes();
+    this.ObtenerContinentes();
     this.CargarDatos();
   }
 
-  ObtenerContinentes() {
-    this.continentes = [];
-    this.restP.BuscarContinente().subscribe(datos => {
-      this.continentes = datos;
-      this.continentes[this.continentes.length] = { continente: "Seleccionar" };
-      this.seleccionarContinente = this.continentes[this.continentes.length - 1].continente;
-    })
-  }
-
-  ObtenerPaises(continente) {
-    this.paises = [];
-    this.restP.BuscarPais(continente).subscribe(datos => {
-      this.paises = datos;
-      this.paises[this.paises.length] = { nombre: "Seleccionar" };
-    })
-  }
-
-  FiltrarPaises(form) {
-    var nombreContinente = form.nombreContinenteForm;
-    if (nombreContinente === 'Seleccionar' || nombreContinente === '') {
-      this.toastr.info('No ha seleccionado ninguna opción','', {
-        timeOut: 6000,
-      })
-      this.limpiarDatosContinente();
-    }
-    else {
-      this.ObtenerPaises(nombreContinente);
-      this.limpiarDatosContinente();
-    }
-  }
-
-  ObtenerProvincias(pais) {
-    this.provincias = [];
-    this.restP.BuscarUnaProvincia(pais).subscribe(datos => {
-      this.provincias = datos;
-      this.provincias[this.provincias.length] = { nombre: "Seleccionar" };
-    }, error => {
-      this.toastr.info('El País seleccionado no tiene Provincias, Departamentos o Estados registrados','', {
-        timeOut: 6000,
-      })
-    })
-  }
-
-  FiltrarProvincias(form) {
-    var nombrePais = form.nombrePaisForm;
-    if (nombrePais === undefined) {
-      this.toastr.info('No ha seleccionado ninguna opción','', {
-        timeOut: 6000,
-      })
-      this.limpiarDatosPais()
-    }
-    else {
-      this.ObtenerProvincias(nombrePais);
-      this.limpiarDatosPais()
-    }
-  }
-
-  ObtenerCiudades(provincia) {
-    this.nombreCiudades = [];
-    this.restF.BuscarCiudadProvincia(provincia).subscribe(datos => {
-      this.nombreCiudades = datos;
-      this.nombreCiudades[this.nombreCiudades.length] = { descripcion: "Seleccionar" };
-    }, error => {
-      this.toastr.info('Provincia, Departamento o Estado no tiene ciudades registradas','', {
-        timeOut: 6000,
-      })
-    })
-  }
-
-  FiltrarCiudades(form) {
-    var nombreProvincia = form.idProvinciaForm;
-    if (nombreProvincia === 'Seleccionar') {
-      this.toastr.info('No ha seleccionado ninguna opción','', {
-        timeOut: 6000,
-      });
-      this.limpiarDatosProvincia();
-    }
-    else {
-      this.ObtenerCiudades(nombreProvincia);
-      this.limpiarDatosProvincia();
-    }
-  }
-
-  SeleccionarCiudad(form) {
-    var nombreCiudad = form.nombreCiudadForm;
-    if (nombreCiudad === undefined) {
-      this.toastr.info('No ha seleccionado ninguna opción','', {
-        timeOut: 6000,
-      })
-    }
-  }
-
-  LimpiarCampos() {
-    this.asignarCiudadForm.reset();
-    this.ObtenerContinentes();
-    this.paises = [];
-    this.provincias = [];
-    this.nombreCiudades = [];
-  }
-
-  limpiarDatosContinente() {
-    this.paises = [];
-    this.provincias = [];
-    this.nombreCiudades = [];
-    this.asignarCiudadForm.patchValue({
-      nombrePaisForm: '',
-      nombreCiudadForm: '',
-      idProvinciaForm: '',
-    })
-  }
-
-  limpiarDatosPais() {
-    this.provincias = [];
-    this.nombreCiudades = [];
-    this.asignarCiudadForm.patchValue({
-      nombreCiudadForm: '',
-      idProvinciaForm: '',
-    })
-  }
-
-  limpiarDatosProvincia() {
-    this.nombreCiudades = [];
-    this.asignarCiudadForm.patchValue({
-      nombreCiudadForm: '',
-    })
-  }
-
-  CerrarVentanaAsignarCiudad() {
-    this.LimpiarCampos();
-    this.dialogRef.close();
-    this.habilitarprogress === false;
-  }
-
-  InsertarFeriadoCiudad(form) {
-    this.habilitarprogress === true;
-    var idFeriado = this.data.idferiado;
-    var nombreCiudad = form.nombreCiudadForm;
-    if (nombreCiudad != 'Seleccionar') {
-      var buscarCiudad = {
-        id_feriado: idFeriado,
-        id_ciudad: nombreCiudad,
-        id: this.data.idciudad_asignada
-      }
-      this.ciudadFeriados = [];
-      this.restF.BuscarIdCiudad(buscarCiudad).subscribe(datos => {
-        this.ciudadFeriados = datos;
-        this.toastr.info('Se le recuerda que esta Ciudad ya fue asignada a este Feriado','', {
-          timeOut: 6000,
-        })
-        this.CargarDatos();
-        this.habilitarprogress === false;
-      }, error => {
-        this.restF.ActualizarDatos(buscarCiudad).subscribe(response => {
-          this.habilitarprogress === false;
-          this.toastr.success('Operación Exitosa', 'Datos Actualizados', {
-            timeOut: 6000,
-          });
-          this.CerrarVentanaAsignarCiudad();
-        }, error => {
-          this.toastr.error('Operación Fallida', 'Ciudad no pudo ser asignada a Feriado', {
-            timeOut: 6000,
-          });
-          this.habilitarprogress === false;
-        });
-        this.habilitarprogress === false;
-      });
-    } else {
-      this.toastr.info('Debe seleccionar una ciudad','', {
-        timeOut: 6000,
-      });
-      this.habilitarprogress === false;
-    }
-  }
-
+  // METODO PARA MOSTRAR DATOS EN FORMULARIO
   CargarDatos() {
-    // Buscar datos de la ciudad
-    this.restCiudad.getUnaCiudadRest(this.data.idciudad).subscribe(datosC => {
+    // BUSCAR DATOS DE LA CIUDAD
+    this.restCiudad.BuscarUnaCiudad(this.data.idciudad).subscribe(datosC => {
       this.idProv = datosC;
-      //Buscar datos de la provincia
+      //BUSCAR DATOS DE LA PROVINCIA
       this.restP.BuscarUnaProvinciaId(this.idProv[0].id_provincia).subscribe(datosP => {
         this.idPais = datosP;
-        // Cargar provincias del pais establecido
+        // CARGAR PROVINCIAS DEL PAIS ESTABLECIDO
         this.ObtenerProvincias(this.idPais[0].id_pais);
-        // Cargar ciudades de la provincia establecida
+        // CARGAR CIUDADES DE LA PROVINCIA ESTABLECIDA
         this.ObtenerCiudades(this.idPais[0].nombre);
-        // Imprimir datos en pantalla
+        // IMPRIMIR DATOS EN PANTALLA
         this.asignarCiudadForm.patchValue({
           idProvinciaForm: this.idPais[0].nombre,
         })
-        // Buscar datos del pais
+        // BUSCAR DATOS DEL PAIS
         this.restP.BuscarPaisId(this.idPais[0].id_pais).subscribe(datosC => {
           this.idContin = datosC;
-          // Cargar datos del pais establecido
+          // CARGAR DATOS DEL PAIS ESTABLECIDO
           this.ObtenerPaises(this.idContin[0].continente);
-          // Mostrar datos en pantalla
-          this.seleccionarContinente = this.idContin[0].continente;
+          // MOSTRAR DATOS EN PANTALLA
           this.asignarCiudadForm.patchValue({
             nombreContinenteForm: this.idContin[0].continente,
             nombrePaisForm: this.idContin[0].id,
@@ -278,5 +104,155 @@ export class EditarCiudadComponent implements OnInit {
     })
   }
 
+  // METODO PARA LISTAR CONTINENTES
+  ObtenerContinentes() {
+    this.continentes = [];
+    this.restP.BuscarContinente().subscribe(datos => {
+      this.continentes = datos;
+    })
+  }
+
+  // METODO PARA BUSCAR PAISES
+  ObtenerPaises(continente: any) {
+    this.paises = [];
+    this.restP.BuscarPais(continente).subscribe(datos => {
+      this.paises = datos;
+    })
+  }
+
+  // METODO PARA MOSTRAR LISTA DE PAISES
+  FiltrarPaises(form: any) {
+    var nombreContinente = form.nombreContinenteForm;
+    this.ObtenerPaises(nombreContinente);
+    this.LimpiarDatosContinente();
+  }
+
+  // METODO PARA BUSCAR PROVINCIAS
+  ObtenerProvincias(pais: any) {
+    this.provincias = [];
+    this.restP.BuscarProvinciaPais(pais).subscribe(datos => {
+      this.provincias = datos;
+    }, error => {
+      this.toastr.info('El País seleccionado no tiene Provincias, Departamentos o Estados registrados.', '', {
+        timeOut: 6000,
+      })
+    })
+  }
+
+  // METODO PARA MOSTRAR LISTA DE PROVINCIAS
+  FiltrarProvincias(form: any) {
+    var nombrePais = form.nombrePaisForm;
+    this.ObtenerProvincias(nombrePais);
+    this.LimpiarDatosPais()
+  }
+
+  // METODO PARA BUSCAR CIUDADES
+  ObtenerCiudades(provincia: any) {
+    this.nombreCiudades = [];
+    this.restF.BuscarCiudadProvincia(provincia).subscribe(datos => {
+      this.nombreCiudades = datos;
+    }, error => {
+      this.toastr.info('Provincia, Departamento o Estado no tiene ciudades registradas.', '', {
+        timeOut: 6000,
+      })
+    })
+  }
+
+  // METODO PARA MOSTRAR LISTA DE CIUDADES
+  FiltrarCiudades(form: any) {
+    var nombreProvincia = form.idProvinciaForm;
+    this.ObtenerCiudades(nombreProvincia);
+    this.LimpiarDatosProvincia();
+  }
+
+  // METODO PARA SELECCIONAR CIUDAD
+  SeleccionarCiudad(form: any) {
+    var nombreCiudad = form.nombreCiudadForm;
+    if (nombreCiudad === undefined) {
+      this.toastr.info('No ha seleccionado una CIUDAD.', '', {
+        timeOut: 6000,
+      })
+    }
+  }
+
+  // METODO PARA LIMPIAR FORMULARIO
+  LimpiarCampos() {
+    this.asignarCiudadForm.reset();
+    this.ObtenerContinentes();
+    this.paises = [];
+    this.provincias = [];
+    this.nombreCiudades = [];
+  }
+
+  // METODO PARA LIMPIAR FORMULARIO CONTINENTE
+  LimpiarDatosContinente() {
+    this.paises = [];
+    this.provincias = [];
+    this.nombreCiudades = [];
+    this.asignarCiudadForm.patchValue({
+      nombreCiudadForm: '',
+      idProvinciaForm: '',
+      nombrePaisForm: '',
+    })
+  }
+
+  // METODO PARA LIMPIAR FORMULARIO PAIS
+  LimpiarDatosPais() {
+    this.provincias = [];
+    this.nombreCiudades = [];
+    this.asignarCiudadForm.patchValue({
+      nombreCiudadForm: '',
+      idProvinciaForm: '',
+    })
+  }
+
+  // METODO PARA LIMPIAR FORMULARIO PROVINCIAS
+  LimpiarDatosProvincia() {
+    this.nombreCiudades = [];
+    this.asignarCiudadForm.patchValue({
+      nombreCiudadForm: '',
+    })
+  }
+
+  // METODO PARA CERRAR VENTANA DE REGISTRO
+  CerrarVentana() {
+    this.LimpiarCampos();
+    this.ventana.close();
+  }
+
+  // METODO PARA ACTUALIZAR REGISTRO
+  InsertarFeriadoCiudad(form: any) {
+    this.habilitarprogress === true;
+    var idFeriado = this.data.idferiado;
+    var nombreCiudad = form.nombreCiudadForm;
+    var ciudad = {
+      id_feriado: idFeriado,
+      id_ciudad: nombreCiudad,
+      id: this.data.idciudad_asignada
+    }
+    this.ciudadFeriados = [];
+    // VALIDAR EXISTENCIA DE REGISTRO
+    this.restF.BuscarIdCiudad(ciudad).subscribe(datos => {
+      this.habilitarprogress === false;
+      this.ciudadFeriados = datos;
+      this.toastr.info('Se le recuerda que esta Ciudad ya fue asignada a este Feriado.', '', {
+        timeOut: 6000,
+      })
+    }, error => {
+      // METODO PARA ACTUALIZAR DATOS
+      this.restF.ActualizarDatos(ciudad).subscribe(response => {
+        this.habilitarprogress === false;
+        this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
+          timeOut: 6000,
+        });
+        this.CerrarVentana();
+      }, error => {
+        this.habilitarprogress === false;
+        this.toastr.error('Operación Fallida.', 'Ups!!! algo salio mal.', {
+          timeOut: 6000,
+        });
+      });
+    });
+  }
 
 }

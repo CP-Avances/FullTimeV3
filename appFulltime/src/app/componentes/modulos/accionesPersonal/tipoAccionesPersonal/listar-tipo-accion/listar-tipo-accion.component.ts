@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { environment } from 'src/environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -22,6 +22,8 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 import { AccionPersonalService } from 'src/app/servicios/accionPersonal/accion-personal.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { CrearTipoaccionComponent } from '../crear-tipoaccion/crear-tipoaccion.component';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 
 @Component({
@@ -49,6 +51,8 @@ export class ListarTipoAccionComponent implements OnInit {
     nombreForm: this.nombreF,
   });
 
+  get habilitarAccion(): boolean { return this.funciones.accionesPersonal; }
+
   constructor(
     private rest: AccionPersonalService,
     public restE: EmpleadoService,
@@ -56,18 +60,31 @@ export class ListarTipoAccionComponent implements OnInit {
     public vistaTipoPermiso: MatDialog,
     private toastr: ToastrService,
     private router: Router,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerTipoAccionesPersonal();
-    this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerLogo();
-    this.ObtenerColores();
+    if (this.habilitarAccion === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Acciones de Personal. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.ObtenerTipoAccionesPersonal();
+      this.ObtenerEmpleados(this.idEmpleado);
+      this.ObtenerLogo();
+      this.ObtenerColores();
+    }
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -75,7 +92,7 @@ export class ListarTipoAccionComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -83,7 +100,7 @@ export class ListarTipoAccionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -130,18 +147,18 @@ export class ListarTipoAccionComponent implements OnInit {
       });
   }
 
-  /** Función para eliminar registro seleccionado */
+  /** FUNCION para eliminar registro seleccionado */
   Eliminar(id_accion: number) {
     //console.log("probando id", id_prov)
     this.rest.EliminarRegistro(id_accion).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerTipoAccionesPersonal();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  /** FUNCION para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     this.vistaTipoPermiso.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -154,7 +171,7 @@ export class ListarTipoAccionComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
- *                                         MÉTODO PARA EXPORTAR A PDF
+ *                                         METODO PARA EXPORTAR A PDF
  ******************************************************************************************************/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -278,7 +295,7 @@ export class ListarTipoAccionComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipo_acciones);
@@ -288,7 +305,7 @@ export class ListarTipoAccionComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {
@@ -334,7 +351,7 @@ export class ListarTipoAccionComponent implements OnInit {
       }
       arregloTipoPermisos.push(objeto)
     });
-    // this.rest.DownloadXMLRest(arregloTipoPermisos).subscribe(res => {
+    // this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
     //   this.data = res;
     //   console.log("prueba data", res)
     //   this.urlxml = `${environment.url}/departamento/download/` + this.data.name;

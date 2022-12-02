@@ -70,7 +70,7 @@ export class ProcesosEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -93,7 +93,7 @@ export class ProcesosEmpleadoComponent implements OnInit {
    ** **                   METODO DE PRSENTACION DE DATOS DE PROCESOS                          ** ** 
    ** ******************************************************************************************* **/
 
-  // MÉTODO PARA MOSTRAR DATOS DE LOS PROCESOS DEL EMPLEADO 
+  // METODO PARA MOSTRAR DATOS DE LOS PROCESOS DEL EMPLEADO 
   empleadoProcesos: any = [];
   ObtenerEmpleadoProcesos(formato_fecha: string) {
     this.empleadoProcesos = [];
@@ -131,17 +131,17 @@ export class ProcesosEmpleadoComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PROCESOS
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PROCESOS
   EliminarProceso(id_plan: number) {
     this.restEmpleadoProcesos.EliminarRegistro(id_plan).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerEmpleadoProcesos(this.formato_fecha);
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteProceso(datos: any) {
     console.log(datos);
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()

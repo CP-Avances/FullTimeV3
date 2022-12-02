@@ -11,6 +11,15 @@ class PlanHorarioRutas {
 
     configuracion(): void {
 
+        // METODO PARA VERIFICAR FECHAS HORARIOS
+        this.router.post('/validarFechas/:codigo', TokenValidation, PLAN_HORARIO_CONTROLADOR.VerificarFechasPlan);
+        // METODO PARA VERIFICAR FECHAS HORARIOS ACTUALIZACION
+        this.router.post('/validarFechas/horarioEmpleado/:id/empleado/:codigo', TokenValidation, PLAN_HORARIO_CONTROLADOR.VerificarFechasPlanEdicion);
+
+
+
+
+
         // BUSQUEDA DE HORARIOS ROTATIVOS POR CODIGO DE USUARIO
         this.router.get('/rotativo/:codigo', TokenValidation, PLAN_HORARIO_CONTROLADOR.BuscarHorarioRotativoCodigo);
 
@@ -21,8 +30,8 @@ class PlanHorarioRutas {
         this.router.put('/', TokenValidation, PLAN_HORARIO_CONTROLADOR.ActualizarPlanHorario);
         this.router.delete('/eliminar/:id', TokenValidation, PLAN_HORARIO_CONTROLADOR.EliminarRegistros);
         this.router.post('/fechas_plan/:id_empleado', TokenValidation, PLAN_HORARIO_CONTROLADOR.ObtenerPlanificacionEmpleadoFechas);
-        this.router.post('/validarFechas/:codigo', TokenValidation, PLAN_HORARIO_CONTROLADOR.VerificarFechasPlan);
-        this.router.post('/validarFechas/horarioEmpleado/:id/empleado/:codigo', TokenValidation, PLAN_HORARIO_CONTROLADOR.VerificarFechasPlanEdicion);
+
+
     }
 }
 

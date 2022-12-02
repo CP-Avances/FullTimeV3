@@ -227,7 +227,7 @@ class PlanComidasControlador {
     res.status(404).jsonp({ text: 'Registro no encontrado' });
   }
 
-  // BÚSQUEDA DE PLANIFICACIONES POR EMPLEADO Y FECHA 
+  // BUSQUEDA DE PLANIFICACIONES POR EMPLEADO Y FECHA 
   public async BuscarPlanComidaEmpleadoFechas(req: Request, res: Response) {
     const { id, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
     const PLAN_COMIDAS = await pool.query('SELECT * FROM plan_comida_empleado WHERE id_empleado = $1 AND ' +
@@ -544,7 +544,7 @@ class PlanComidasControlador {
       DELETE FROM plan_comidas WHERE id = $1
       `
       , [id]);
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
   // ELIMINAR PLANIFICACION DE UN USUARIO ESPECIFICO
@@ -557,7 +557,7 @@ class PlanComidasControlador {
       `
       , [id, id_empleado]);
 
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
   // BUSQUEDA DE PLANIFICCAIONES DE ALIMENTACION POR ID DE PLANIFICACION
@@ -668,7 +668,7 @@ class PlanComidasControlador {
 
 
   /** ******************************************************************************************** **
-   ** *            MÉTODO ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE ALIMENTACIÓN             * **
+   ** *            METODO ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE ALIMENTACIÓN             * **
    ** ******************************************************************************************** **/
 
   // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA SOLICITUD DE COMIDA MEDIANTE APP WEB
@@ -793,7 +793,7 @@ class PlanComidasControlador {
     }
   }
 
-  // MÉTODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
+  // METODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
   public async EnviarCorreoComidasMovil(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();

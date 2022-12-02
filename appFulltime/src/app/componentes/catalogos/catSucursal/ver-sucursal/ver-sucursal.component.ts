@@ -1,36 +1,39 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
-import { EditarSucursalComponent } from 'src/app/componentes/catalogos/catSucursal/editar-sucursal/editar-sucursal.component';
-import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service'
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
+import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service'
+
 import { RegistroDepartamentoComponent } from 'src/app/componentes/catalogos/catDepartamentos/registro-departamento/registro-departamento.component';
 import { EditarDepartamentoComponent } from 'src/app/componentes/catalogos/catDepartamentos/editar-departamento/editar-departamento.component';
+import { EditarSucursalComponent } from 'src/app/componentes/catalogos/catSucursal/editar-sucursal/editar-sucursal.component';
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 @Component({
   selector: 'app-ver-sucursal',
   templateUrl: './ver-sucursal.component.html',
   styleUrls: ['./ver-sucursal.component.css']
 })
+
 export class VerSucursalComponent implements OnInit {
 
   idSucursal: string;
   datosSucursal: any = [];
   datosDepartamentos: any = [];
-  // items de paginación de la tabla
+
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
 
   constructor(
+    public ventana: MatDialog,
     public router: Router,
-    public vistaRegistrarDatos: MatDialog,
-    public rest: SucursalService,
     public restD: DepartamentosService,
+    public rest: SucursalService,
     private toastr: ToastrService,
   ) {
     var cadena = this.router.url;
@@ -43,63 +46,83 @@ export class VerSucursalComponent implements OnInit {
     this.ListaDepartamentos();
   }
 
+  // METODO PARA MANEJAR PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1
   }
 
+  // METODO PARA CARGAR DATOS DE ESTABLECIMIENTO
   CargarDatosSucursal() {
     this.datosSucursal = [];
-    this.rest.getOneSucursalRest(parseInt(this.idSucursal)).subscribe(datos => {
+    this.rest.BuscarUnaSucursal(parseInt(this.idSucursal)).subscribe(datos => {
       this.datosSucursal = datos;
     })
   }
 
+  // METODO PARA LISTAR DEPARTAMENTOS
   ListaDepartamentos() {
     this.datosDepartamentos = []
-    this.restD.BuscarDepaSucursal(parseInt(this.idSucursal)).subscribe(datos => {
+    this.restD.BuscarInformacionDepartamento(parseInt(this.idSucursal)).subscribe(datos => {
       this.datosDepartamentos = datos;
-      console.log(this.datosDepartamentos);
+      this.OrdenarDatos(this.datosDepartamentos);
     })
   }
 
-  /* Ventana para editar datos de dispositivo seleccionado */
+  // ORDENAR LOS DATOS SEGÚN EL ID 
+  OrdenarDatos(array: any) {
+    function compare(a: any, b: any) {
+      if (a.id < b.id) {
+        return -1;
+      }
+      if (a.id > b.id) {
+        return 1;
+      }
+      return 0;
+    }
+    array.sort(compare);
+  }
+
+  // VENTANA PARA EDITAR DATOS DE REGISTRO SELECCIONADO 
   EditarDatosSucursal(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
+    this.ventana.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
       .afterClosed().subscribe(item => {
         this.CargarDatosSucursal();
       });
   }
 
+  // VENTANA PARA EDITAR DATOS DE DEPARTAMENTO 
   AbrirVentanaEditarDepartamento(departamento: any): void {
-    this.vistaRegistrarDatos.open(EditarDepartamentoComponent,
-      { width: '600px', data: departamento }).afterClosed().subscribe(item => {
+    this.ventana.open(EditarDepartamentoComponent,
+      { width: '600px', data: { data: departamento, establecimiento: true } })
+      .afterClosed().subscribe(item => {
         this.ListaDepartamentos();
       });
   }
 
+  // VENTANA PARA REGISTRO DE DEPARTAMENTO 
   AbrirVentanaRegistrarDepartamento(): void {
-    this.vistaRegistrarDatos.open(RegistroDepartamentoComponent, { width: '350px', data: parseInt(this.idSucursal) }).
+    this.ventana.open(RegistroDepartamentoComponent,
+      { width: '350px', data: parseInt(this.idSucursal) }).
       afterClosed().subscribe(item => {
         this.ListaDepartamentos();
       });
   }
 
-  /** Función para eliminar registro seleccionado */
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_dep: number) {
-    //console.log("probando id", id_prov)
     this.rest.EliminarRegistro(id_dep).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ListaDepartamentos();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 
+import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service'
 
 @Component({
@@ -29,6 +29,7 @@ export class VerRegimenComponent implements OnInit {
     this.ObtenerPaises();
   }
 
+  // METODO PARA CONSULTAR DATOS DE REGIMEN
   CargarDatosRegimen() {
     this.regimen = [];
     this.rest.ConsultarUnRegimen(parseInt(this.idRegimen)).subscribe(datos => {
@@ -42,9 +43,7 @@ export class VerRegimenComponent implements OnInit {
       });
 
       this.VerTiempoLimite();
-
       this.ObtenerPeriodos();
-
       this.ObtenerAntiguedad();
     })
   }

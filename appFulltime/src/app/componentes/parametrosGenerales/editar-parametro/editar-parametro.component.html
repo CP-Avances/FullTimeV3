@@ -3,7 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR PARÁMETRO GENERAL</span>
 </div>
-<form [formGroup]="ParametrosForm">
+<form [formGroup]="formulario">
     <div style="text-align: center">
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
@@ -11,17 +11,14 @@
         </div>
         <div class="d-flex flex-wrap justify-content-center">
             <mat-form-field>
-                <mat-label>Descripción General</mat-label>
-                <input matInput [formControl]="descripcion" (keypress)="IngresarSoloLetras($event)" required>
-                <mat-icon matSuffix matTooltipPosition="right" matTooltip="Ingresar nuevo parámetro general.">
-                    help_outline</mat-icon>
-                <mat-error *ngIf="descripcion.invalid">{{ObtenerErrorNombre()}}</mat-error>
+                <mat-label>Descripción general</mat-label>
+                <input matInput [formControl]="descripcion" required>
             </mat-form-field>
         </div>
     </div>
 </form>
 <div class="d-flex flex-wrap justify-content-center">
-    <input type="submit" class="btn btn-sm" [disabled]=" !ParametrosForm.valid"
-        (click)="GuardarDatos(ParametrosForm.value)" value="Guardar">
+    <input type="submit" class="btn btn-sm" [disabled]=" !formulario.valid"
+        (click)="GuardarDatos(formulario.value)" value="Guardar">
     <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Cancelar">
 </div>

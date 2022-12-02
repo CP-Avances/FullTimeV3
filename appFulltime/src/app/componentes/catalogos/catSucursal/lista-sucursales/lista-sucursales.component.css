@@ -1,13 +1,27 @@
-button {margin: 5px 10px 5px 10px;}
+p {
+    font-size: x-small;
+}
 
-.btn { background-color: rgb(80,87,97); color: white; }
+button {
+    margin: 5px 10px 5px 10px;
+}
 
-p { font-size: x-small; }
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-td { padding-top: 10px; text-align: center;  }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-#ver { color: rgb(53, 16, 218); cursor: pointer; }
+#ver {
+    color: rgb(53, 16, 218);
+    cursor: pointer;
+}
 
-table { width: 100%; font-size: 14px; }
-
-
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}

@@ -1,10 +1,8 @@
 // IMPORTAR LIBRERIAS
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
-import { FormControl, FormGroup } from '@angular/forms';
 import { Component, OnInit, Inject } from '@angular/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 // IMPORTAR SERVICIOS
 import { VacunacionService } from 'src/app/servicios/empleado/empleadoVacunas/vacunacion.service';
@@ -15,12 +13,6 @@ import { TipoVacunaComponent } from '../tipo-vacuna/tipo-vacuna.component';
   selector: 'app-crear-vacuna',
   templateUrl: './crear-vacuna.component.html',
   styleUrls: ['./crear-vacuna.component.css'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'es' },
-  ]
 })
 
 export class CrearVacunaComponent implements OnInit {
@@ -52,7 +44,7 @@ export class CrearVacunaComponent implements OnInit {
   fechaF = new FormControl('');
 
   // FORMULARIO DENTRO DE UN GRUPO
-  public vacunaForm = new FormGroup({
+  public formulario = new FormGroup({
     certificadoForm: this.certificadoF,
     archivoForm: this.archivoF,
     vacunaForm: this.vacunaF,
@@ -60,7 +52,7 @@ export class CrearVacunaComponent implements OnInit {
     fechaForm: this.fechaF,
   });
 
-  // MÉTODO PARA CONSULTAR DATOS DE TIPO DE VACUNA
+  // METODO PARA CONSULTAR DATOS DE TIPO DE VACUNA
   ObtenerTipoVacunas() {
     this.tipoVacuna = [];
     this.restVacuna.ListarTiposVacuna().subscribe(data => {
@@ -69,7 +61,7 @@ export class CrearVacunaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA QUITAR ARCHIVO SELECCIONADO
+  // METODO PARA QUITAR ARCHIVO SELECCIONADO
   HabilitarBtn: boolean = false;
   RetirarArchivo() {
     this.archivoSubido = [];
@@ -78,43 +70,44 @@ export class CrearVacunaComponent implements OnInit {
     this.archivoF.patchValue('');
   }
 
-  // MÉTODO PARA SELECCIONAR UN ARCHIVO
+  // METODO PARA SELECCIONAR UN ARCHIVO
   nameFile: string;
   archivoSubido: Array<File>;
-  fileChange(element) {
+  fileChange(element: any) {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
-      this.vacunaForm.patchValue({ certificadoForm: name });
+      this.formulario.patchValue({ certificadoForm: name });
       this.HabilitarBtn = true;
     }
   }
 
-  // MÉTODO PARA LIMPIAR FORMULARIO
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.vacunaForm.reset();
+    this.formulario.reset();
     this.HabilitarBtn = false;
   }
 
-  // MÉTODO PARA CERRAR VENTANA DE REGISTRO
+  // METODO PARA CERRAR VENTANA DE REGISTRO
   CerrarRegistro() {
     this.ventana_.close();
   }
 
-  // MÉTODO PARA LIMPIAR NOMBRE DEL ARCHIVO SELECCIONADO
+  // METODO PARA LIMPIAR NOMBRE DEL ARCHIVO SELECCIONADO
   LimpiarNombreArchivo() {
-    this.vacunaForm.patchValue({
+    this.formulario.patchValue({
       certificadoForm: '',
     });
   }
 
-  // MÉTODO PARA VISUALIZAR CAMPO REGISTRO DE TIPO DE VACUNA
-  AbrirVentana(form) {
+  // METODO PARA VISUALIZAR CAMPO REGISTRO DE TIPO DE VACUNA
+  AbrirVentana(form: any) {
     if (form.vacunaForm === undefined) {
       this.AbrirTipoVacuna();
     }
   }
 
+  // METODO PARA ABRIR VENTANA REGISTRO TIPO VACUNA
   AbrirTipoVacuna() {
     this.ventana.open(TipoVacunaComponent,
       { width: '300px' }).afterClosed().subscribe(item => {
@@ -122,8 +115,8 @@ export class CrearVacunaComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA GUARDAR DATOS DE REGISTRO DE VACUNACIÓN 
-  GuardarDatosCarnet(form) {
+  // METODO PARA GUARDAR DATOS DE REGISTRO DE VACUNACIÓN 
+  GuardarDatosCarnet(form: any) {
     let dataCarnet = {
       id_tipo_vacuna: form.vacunaForm,
       descripcion: form.nombreForm,
@@ -133,7 +126,7 @@ export class CrearVacunaComponent implements OnInit {
     this.GuardarDatosSistema(dataCarnet, form);
   }
 
-  // MÉTODO PARA REGISTRAR DATOS EN EL SISTEMA
+  // METODO PARA REGISTRAR DATOS EN EL SISTEMA
   GuardarDatosSistema(datos: any, form: any) {
     if (form.certificadoForm != '' && form.certificadoForm != null && form.certificadoForm != undefined) {
       this.VerificarArchivo(datos, form);
@@ -145,14 +138,14 @@ export class CrearVacunaComponent implements OnInit {
   }
 
   Registrar_sinCarnet(datos: any) {
-    this.restVacuna.CrearRegistroVacunacion(datos).subscribe(response => {
+    this.restVacuna.RegistrarVacunacion(datos).subscribe(response => {
       this.toastr.success('', 'Registro guardado.', {
         timeOut: 6000,
       });
     });
   }
 
-  // MÉTODO PARA GUARDAR DATOS DE REGISTROS SI EL ARCHIVO CUMPLE CON LOS REQUISITOS
+  // METODO PARA GUARDAR DATOS DE REGISTROS SI EL ARCHIVO CUMPLE CON LOS REQUISITOS
   VerificarArchivo(datos: any, form: any) {
     if (this.archivoSubido[0].size <= 2e+6) {
       this.CargarDocumento(datos, form);
@@ -165,9 +158,9 @@ export class CrearVacunaComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA GUARDAR ARCHIVO SELECCIONADO
+  // METODO PARA GUARDAR ARCHIVO SELECCIONADO
   CargarDocumento(datos: any, form: any) {
-    this.restVacuna.CrearRegistroVacunacion(datos).subscribe(vacuna => {
+    this.restVacuna.RegistrarVacunacion(datos).subscribe(vacuna => {
       let formData = new FormData();
       for (var i = 0; i < this.archivoSubido.length; i++) {
         formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);

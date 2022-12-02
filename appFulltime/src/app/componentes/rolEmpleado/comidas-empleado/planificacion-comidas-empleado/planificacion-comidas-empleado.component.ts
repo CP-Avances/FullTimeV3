@@ -50,7 +50,7 @@ export class PlanificacionComidasEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -81,7 +81,7 @@ export class PlanificacionComidasEmpleadoComponent implements OnInit {
     this.ObtenerPlanComidasEmpleado(formato_fecha, formato_hora);
   }
 
-  // MÉTODO PARA MOSTRAR DETERMINADO NÚMERO DE FILAS DE LA TABLA
+  // METODO PARA MOSTRAR DETERMINADO NÚMERO DE FILAS DE LA TABLA
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1;
     this.tamanio_pagina = e.pageSize;
@@ -91,7 +91,7 @@ export class PlanificacionComidasEmpleadoComponent implements OnInit {
    ** **          METODO DE PRESENTACION DE DATOS DE SERVICIO DE ALIMENTACION              ** **
    ** *************************************************************************************** **/
 
-  // MÉTODO PARA MOSTRAR DATOS DE PLANIFICACIÓN DE ALMUERZOS 
+  // METODO PARA MOSTRAR DATOS DE PLANIFICACIÓN DE ALMUERZOS 
   planComidas: any = [];
   ObtenerPlanComidasEmpleado(formato_fecha: string, formato_hora: string) {
     this.planComidas = [];

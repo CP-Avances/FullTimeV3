@@ -1,17 +1,10 @@
 <div class="container" *ngFor="let s of datosSucursal" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
         <div id="titulo">
-            <span>DATOS GENERALES</span>
+            <span>{{s.nombre.toUpperCase()}}</span>
         </div>
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
-                <div class="row">
-                    <br>
-                    <div class="col">
-                        <label id="datosF" class="col-sm col-form-label text-center">{{s.nombre.toUpperCase()}}</label>
-                    </div>
-                </div>
-                <br>
                 <div class="row">
                     <div class="col-3" id="verticalLine">
                         <label id="datosF" class="col-sm col-form-label">Empresa:</label>
@@ -34,7 +27,7 @@
                 </div>
                 <div style="text-align: center;">
                     <input type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarDepartamento()"
-                        value="Crear nuevo departamento">
+                        value="Crear departamento">
                 </div>
             </div>
             <hr>
@@ -52,19 +45,19 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let d of datosDepartamentos | paginate:tamanio_pagina:numero_pagina">
-                            <td *ngIf="d.nombre != 'Ninguno'">{{d.nomempresa}}</td>
-                            <td *ngIf="d.nombre != 'Ninguno'">{{d.nombre | titlecase}}</td>
-                            <td *ngIf="d.nombre != 'Ninguno'">{{d.nivel}}</td>
-                            <td *ngIf="d.nombre != 'Ninguno'">{{d.departamento_padre | titlecase}}
+                            <td>{{d.nomempresa}}</td>
+                            <td>{{d.nombre | titlecase}}</td>
+                            <td>{{d.nivel}}</td>
+                            <td>{{d.departamento_padre | titlecase}}
                             </td>
-                            <td *ngIf="d.nombre != 'Ninguno'">
+                            <td>
                                 <i id="editarI" (click)="AbrirVentanaEditarDepartamento(d)" matSuffix
                                     matTooltipPosition="right" matTooltip="Modificar datos de este registro"
                                     class="fas fa-edit">
                                     <p>Editar</p>
                                 </i>
                                 <i class="far fa-trash-alt" (click)="ConfirmarDelete(d)"
-                                    style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
+                                    style="color:red; margin-left: 15px;" id="i-cursor" matSuffix
                                     matTooltipPosition="right" matTooltip="Eliminar registro">
                                     <p>Eliminar</p>
                                 </i>

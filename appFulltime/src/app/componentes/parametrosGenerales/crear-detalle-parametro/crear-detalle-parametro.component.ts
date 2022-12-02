@@ -20,7 +20,7 @@ export class CrearDetalleParametroComponent implements OnInit {
   descripcion = new FormControl('', [Validators.required]);
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
-  public ParametrosForm = new FormGroup({
+  public formulario = new FormGroup({
     descripcionForm: this.descripcion,
   });
 
@@ -50,7 +50,7 @@ export class CrearDetalleParametroComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  // METODO PARA REGISTRAR NUEVO PARÁMETRO
   GuardarDatos(form: any) {
     let datos = {
       id_tipo: this.data.parametros.id,
@@ -66,7 +66,7 @@ export class CrearDetalleParametroComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA CERRAR VENTANA
+  // METODO PARA CERRAR VENTANA
   CerrarVentana() {
     this.ventana.close();
   }

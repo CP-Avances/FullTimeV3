@@ -97,7 +97,7 @@ export class PlanHoraExtraComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarFecha() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -250,7 +250,7 @@ export class PlanHoraExtraComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA MOSTRAR MENSAJE PARA SELECCION MULTIPLE
+  // METODO PARA MOSTRAR MENSAJE PARA SELECCION MULTIPLE
   MostrarMensaje(contador: any) {
     this.toastr.success('Se registra planificación a ' + contador + ' colaboradores.', 'Planificación de Horas Extras.', {
       timeOut: 6000,
@@ -314,7 +314,7 @@ export class PlanHoraExtraComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
   NotificarPlanificacion(desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.id_user_loggin,
@@ -330,7 +330,7 @@ export class PlanHoraExtraComponent implements OnInit {
     });
   }
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
@@ -349,7 +349,7 @@ export class PlanHoraExtraComponent implements OnInit {
       fin: h_fin,
     }
 
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
     this.restPE.EnviarCorreoPlanificacion(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {

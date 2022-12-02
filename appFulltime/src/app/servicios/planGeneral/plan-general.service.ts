@@ -11,23 +11,35 @@ export class PlanGeneralService {
     private http: HttpClient,
   ) { }
 
+  // METODO PARA CREAR PLAN GENERAL
   CrearPlanGeneral(datos: any) {
     return this.http.post(`${environment.url}/planificacion_general/`, datos);
   }
 
+  // METODO PARA BUSCAR ID POR FECHAS PLAN GENERAL
+  BuscarFechas(datos: any) {
+    return this.http.post(`${environment.url}/planificacion_general/buscar_fechas`, datos);
+  }
+
+  // METODO PARA ELIMINAR REGISTROS
   EliminarRegistro(id: number,) {
     return this.http.delete(`${environment.url}/planificacion_general/eliminar/${id}`);
   }
 
-  BuscarFechas(datos: any) {
-    return this.http.post(`${environment.url}/planificacion_general/buscar_fechas`, datos);
-  }
+
+
+
+
+
+
+
+
 
   BuscarFecha(datos: any) {
     return this.http.post(`${environment.url}/planificacion_general/buscar_fecha/plan`, datos);
   }
 
-  
+
   // DATO NO USADO
   /*BuscarPlanificacionEmpleado(empleado_id: any, datos: any) {
     return this.http.post(`${environment.url}/planificacion_general/buscar_plan/${empleado_id}`, datos);

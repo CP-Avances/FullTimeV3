@@ -1,4 +1,4 @@
-import { email, enviarMail, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales } from '../../libs/settingsMail';
+import { email, enviarMail, servidor, puerto, Credenciales } from '../../libs/settingsMail';
 import { Request, Response } from 'express';
 import pool from '../../database';
 import jwt from 'jsonwebtoken';
@@ -8,6 +8,106 @@ interface IPayload {
 }
 
 class UsuarioControlador {
+
+  // CREAR REGISTRO DE USUARIOS
+  public async CrearUsuario(req: Request, res: Response) {
+    try {
+      const { usuario, contrasena, estado, id_rol, id_empleado, app_habilita } = req.body;
+      await pool.query(
+        `
+        INSERT INTO usuarios (usuario, contrasena, estado, id_rol, id_empleado, app_habilita) 
+        VALUES ($1, $2, $3, $4, $5, $6)
+        `
+        , [usuario, contrasena, estado, id_rol, id_empleado, app_habilita]);
+
+      res.jsonp({ message: 'Usuario Guardado' });
+    }
+    catch (error) {
+      return res.jsonp({ message: 'error' });
+    }
+  }
+
+  // METODO DE BUSQUEDA DE DATOS DE USUARIO
+  public async ObtenerDatosUsuario(req: Request, res: Response): Promise<any> {
+    const { id_empleado } = req.params;
+    const UN_USUARIO = await pool.query(
+      `
+      SELECT * FROM usuarios WHERE id_empleado = $1
+      `
+      , [id_empleado]);
+    if (UN_USUARIO.rowCount > 0) {
+      return res.jsonp(UN_USUARIO.rows);
+    }
+    else {
+      res.status(404).jsonp({ text: 'No se ha encontrado el usuario' });
+    }
+  }
+
+  // METODO PARA ACTUALIZAR DATOS DE USUARIO
+  public async ActualizarUsuario(req: Request, res: Response) {
+    try {
+      const { usuario, contrasena, id_rol, id_empleado } = req.body;
+      await pool.query(
+        `
+        UPDATE usuarios SET usuario = $1, contrasena = $2, id_rol = $3 WHERE id_empleado = $4
+        `
+        , [usuario, contrasena, id_rol, id_empleado]);
+      res.jsonp({ message: 'Registro actualizado.' });
+    }
+    catch (error) {
+      return res.jsonp({ message: 'error' });
+    }
+  }
+
+  // METODO PARA ACTUALIZAR CONTRASEÑA
+  public async CambiarPasswordUsuario(req: Request, res: Response): Promise<any> {
+    const { contrasena, id_empleado } = req.body;
+    await pool.query(
+      `
+      UPDATE usuarios SET contrasena = $1 WHERE id_empleado = $2
+      `
+      , [contrasena, id_empleado]);
+    res.jsonp({ message: 'Registro actualizado.' });
+  }
+
+
+  // ADMINISTRACION DEL MODULO DE ALIMENTACION
+  public async RegistrarAdminComida(req: Request, res: Response): Promise<void> {
+    const { admin_comida, id_empleado } = req.body;
+    await pool.query(
+      `
+      UPDATE usuarios SET admin_comida = $1 WHERE id_empleado = $2
+      `
+      , [admin_comida, id_empleado]);
+    res.jsonp({ message: 'Registro guardado.' });
+  }
+
+  /** ************************************************************************************* ** 
+   ** **                METODO FRASE DE SEGURIDAD ADMINISTRADOR                          ** **
+   ** ************************************************************************************* **/
+
+  // METODO PARA GUARDAR FRASE DE SEGURIDAD
+  public async ActualizarFrase(req: Request, res: Response): Promise<void> {
+    const { frase, id_empleado } = req.body;
+    await pool.query(
+      `
+      UPDATE usuarios SET frase = $1 WHERE id_empleado = $2
+      `
+      , [frase, id_empleado]);
+    res.jsonp({ message: 'Registro guardado.' });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
   public async list(req: Request, res: Response) {
     const USUARIOS = await pool.query('SELECT * FROM usuarios');
     if (USUARIOS.rowCount > 0) {
@@ -70,16 +170,7 @@ class UsuarioControlador {
     }
   }
 
-  public async ObtenerDatosUsuario(req: Request, res: Response): Promise<any> {
-    const { id_empleado } = req.params;
-    const UN_USUARIO = await pool.query('SELECT * FROM usuarios WHERE id_empleado = $1', [id_empleado]);
-    if (UN_USUARIO.rowCount > 0) {
-      return res.jsonp(UN_USUARIO.rows);
-    }
-    else {
-      res.status(404).jsonp({ text: 'No se ha encontrado el usuario' });
-    }
-  }
+
 
   public async ListarUsuriosNoEnrolados(req: Request, res: Response) {
     const USUARIOS = await pool.query('SELECT u.id, u.usuario, ce.id_usuario FROM usuarios AS u LEFT JOIN cg_enrolados AS ce ON u.id = ce.id_usuario WHERE ce.id_usuario IS null');
@@ -91,60 +182,12 @@ class UsuarioControlador {
     }
   }
 
-  public async CambiarPasswordUsuario(req: Request, res: Response): Promise<any> {
-    const { contrasena, id_empleado } = req.body;
-    const UN_USUARIO = await pool.query('UPDATE usuarios SET contrasena = $1 WHERE id_empleado = $2', [contrasena, id_empleado]);
-    res.jsonp({ message: 'Registro actualizado exitosamente' });
-  }
 
-  // public async getIdByUsuario(req: Request, res: Response): Promise<any>{
-  //   const  {id_empleado} = req.params;
-  //   const unUsuario = await pool.query('SELECT * FROM usuarios WHERE id_empleado = $1', [id_empleado]);
-  //   if (unUsuario.rowCount > 0) {
-  //     return res.jsonp(unUsuario.rows);
-  //   }
 
-  //   res.status(404).jsonp({ text: 'No se ha encontrado el usuario' });
-  // }
 
-  public async create(req: Request, res: Response) {
-    try {
-      const { usuario, contrasena, estado, id_rol, id_empleado, app_habilita } = req.body;
-      await pool.query('INSERT INTO usuarios ( usuario, contrasena, estado, id_rol, id_empleado, app_habilita ) VALUES ($1, $2, $3, $4, $5, $6)', [usuario, contrasena, estado, id_rol, id_empleado, app_habilita]);
-      res.jsonp({ message: 'Usuario Guardado' });
-    }
-    catch (error) {
-      return res.jsonp({ message: 'error' });
-    }
-  }
 
-  public async ActualizarUsuario(req: Request, res: Response) {
-    try {
-      const { usuario, contrasena, id_rol, id_empleado } = req.body;
-      await pool.query('UPDATE usuarios SET usuario = $1, contrasena = $2, id_rol = $3 WHERE id_empleado = $4', [usuario, contrasena, id_rol, id_empleado]);
-      res.jsonp({ message: 'Usuario Actualizado' });
-    }
-    catch (error) {
-      return res.jsonp({ message: 'error' });
-    }
-  }
 
-  // ADMINISTRACIÓN DEL MÓDULO DE ALIMENTACIÓN
-  public async RegistrarAdminComida(req: Request, res: Response): Promise<void> {
-    const { admin_comida, id_empleado } = req.body;
-    await pool.query('UPDATE usuarios SET admin_comida = $1 WHERE id_empleado = $2', [admin_comida, id_empleado]);
-    res.jsonp({ message: 'Registro exitoso' });
-  }
 
-  /** ************************************************************************************** *
-   **                MÉTODO FRASE DE SEGURIDAD ADMINISTRADOR                                 *
-   ** ************************************************************************************** */
-  // MÉTODO PARA GUARDAR FRASE DE SEGURIDAD
-  public async ActualizarFrase(req: Request, res: Response): Promise<void> {
-    const { frase, id_empleado } = req.body;
-    await pool.query('UPDATE usuarios SET frase = $1 WHERE id_empleado = $2', [frase, id_empleado]);
-    res.jsonp({ message: 'Frase exitosa' });
-  }
 
   public async RestablecerFrase(req: Request, res: Response) {
     const correo = req.body.correo;
@@ -176,16 +219,16 @@ class UsuarioControlador {
     if (puerto != null && puerto != '') {
       port = parseInt(puerto);
     }
-     var corr = enviarMail(servidor, parseInt(puerto));
-                corr.sendMail(data, function (error: any, info: any) {
-                    if (error) {
-                        console.log('Email error: ' + error);
-                        return res.jsonp({ message: 'error' });
-                    } else {
-                        console.log('Email sent: ' + info.response);
-                        return res.jsonp({ message: 'ok' });
-                    }
-                });
+    var corr = enviarMail(servidor, parseInt(puerto));
+    corr.sendMail(data, function (error: any, info: any) {
+      if (error) {
+        console.log('Email error: ' + error);
+        return res.jsonp({ message: 'error' });
+      } else {
+        console.log('Email sent: ' + info.response);
+        return res.jsonp({ message: 'ok' });
+      }
+    });
 
     res.jsonp({ mail: 'si', message: 'Mail enviado.' })
   }

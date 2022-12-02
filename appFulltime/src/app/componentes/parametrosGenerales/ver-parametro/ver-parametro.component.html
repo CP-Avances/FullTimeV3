@@ -1,26 +1,35 @@
 <div class="container" *ngFor="let tp of parametros" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div id="titulo">
-            <span>DATOS GENERALES</span>
+        <div class="d-flex bd-highlight" id="titulo">
+            <div class="w-100 bd-highlight">
+                <h5>{{tp.descripcion.toUpperCase()}}</h5>
+            </div>
+            <div class="flex-shrink-1 bd-highlight" style="margin-right: 10px;">
+                <button type="submit" class="btn btn-outline-light btn-sm" style="margin-top: -3px;"
+                    (click)="AbrirVentanaEditar(tp)">Editar</button>
+            </div>
         </div>
         <mat-card-content>
-            <div class="container" style="padding-top: 15px;">
-                <div class="row">
-                    <div class="col-md">
-                        <div class="d-flex justify-content-start">
-                            <label id="datosF">Descripción:</label>
-                            <label>{{tp.descripcion}}</label>
-                        </div>
-                    </div>
-                </div>
-                <div style="text-align: right;">
-                    <i id="editarF" (click)="AbrirVentanaEditar(tp)" matSuffix matTooltipPosition="right"
-                        matTooltip="Modificar datos de este registro." class="fas fa-edit">
-                        <p>Editar</p>
-                    </i>
+
+            <!-- CONTENIDO TOLERANCIA DE UBICACION -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="ubicacion">
+                <div class="nota">
+                    <span>
+                        NOTA: El usuario podrá realizar su marcación o timbre dentro del perímetro definido.
+                    </span>
                 </div>
             </div>
-            <hr>
+
+            <!-- CONTENIDO LIMITE DE CORREOS -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="limite_correo">
+                <div class="nota">
+                    <span>
+                        NOTA: El sistema solo permitirá enviar el número límite definido de mensajes por correo
+                        electrónico.
+                    </span>
+                </div>
+            </div>
+
             <!-- CONTENIDO DE SELECCION DE FORMATO DE FECHAS -->
             <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="formato_fecha">
                 <div class="nota">
@@ -142,7 +151,7 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let dp of datosDetalle | paginate:tamanio_pagina:numero_pagina">
-                                    <td>{{dp.descripcion}}</td>
+                                    <td>{{dp.descripcion}} <span *ngIf="ubicacion">m</span> </td>
                                     <td>
                                         <i *ngIf="formato" id="editarI" (click)="AbrirVentanaEditarDetalle(dp)"
                                             matSuffix matTooltipPosition="right"

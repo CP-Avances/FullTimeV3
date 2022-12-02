@@ -12,11 +12,20 @@ class CiudadRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/', verificarToken_1.TokenValidation, ciudadControlador_1.default.ListarNombreCiudad);
+        // BUSCAR INFORMACION DE LA CIUDAD
+        this.router.get('/informacion-ciudad/:id_ciudad', verificarToken_1.TokenValidation, ciudadControlador_1.default.ListarInformacionCiudad);
+        // BUSQUEDA DE LISTA DE CIUDADES
         this.router.get('/listaCiudad', verificarToken_1.TokenValidation, ciudadControlador_1.default.ListarCiudades);
-        this.router.get('/:id', verificarToken_1.TokenValidation, ciudadControlador_1.default.ConsularUnaCiudad);
+        // LISTAR CIUDADES POR PROVINCIA
+        this.router.get('/ciudad-provincia/:id_provincia', verificarToken_1.TokenValidation, ciudadControlador_1.default.ListarCiudadesProvincia);
+        // REGISTRAR CIUDAD
         this.router.post('/', verificarToken_1.TokenValidation, ciudadControlador_1.default.CrearCiudad);
+        // LISTAR NOMBRE DE CIUDADES-PROVINCIA
+        this.router.get('/', verificarToken_1.TokenValidation, ciudadControlador_1.default.ListarNombreCiudad);
+        // METODO PARA ELIMINAR REGISTRO
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, ciudadControlador_1.default.EliminarCiudad);
+        // METODO PARA BUSCAR DATOS DE UNA CIUDAD
+        this.router.get('/:id', verificarToken_1.TokenValidation, ciudadControlador_1.default.ConsultarUnaCiudad);
     }
 }
 const CIUDAD_RUTAS = new CiudadRutas();

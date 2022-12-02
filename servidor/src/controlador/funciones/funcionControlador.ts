@@ -3,15 +3,28 @@ import pool from '../../database';
 
 class FuncionesControlador {
 
+    // METODO PARA LISTAR FUNCIONES DEL SISTEMA
     public async ConsultarFunciones(req: Request, res: Response) {
-        const FUNCIONES = await pool.query('SELECT * FROM funciones');
+        const FUNCIONES = await pool.query(
+            `
+            SELECT * FROM funciones
+            `
+        );
         if (FUNCIONES.rowCount > 0) {
             return res.jsonp(FUNCIONES.rows)
         }
         else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
         }
     }
+
+
+
+
+
+
+
+
 
     public async RegistrarFunciones(req: Request, res: Response): Promise<void> {
         const { id, hora_extra, accion_personal, alimentacion, permisos } = req.body;

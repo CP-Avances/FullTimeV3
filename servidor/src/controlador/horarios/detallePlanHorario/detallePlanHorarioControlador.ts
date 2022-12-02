@@ -220,7 +220,7 @@ class DetallePlanHorarioControlador {
     public async EliminarRegistros(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM plan_hora_detalles WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
     public async ObtenerRegistrosFecha(req: Request, res: Response): Promise<any> {

@@ -21,9 +21,9 @@ p {
 }
 
 #datosF {
+    padding-right: 5px;
     font-weight: bold;
     font-size: 15px;
-    padding-right: 5px;
 }
 
 .espacio {

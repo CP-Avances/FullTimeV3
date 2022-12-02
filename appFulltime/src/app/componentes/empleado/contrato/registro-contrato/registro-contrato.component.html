@@ -2,18 +2,21 @@
     <div id="titulo">
         <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
         <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR CONTRATO {{empleados.nombre_}} </span>
+            REGISTRAR CONTRATO {{empleados.nombre_}}
+        </span>
     </div>
-    <!-- Formulario Completo -->
+    <!-- FORMULARIO COMPLETO -->
     <mat-card-content>
         <div class="container" style="text-align: center">
             <div class="nota">
-                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
-                    Guardar.</span>
+                <span>
+                    NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    Guardar.
+                </span>
             </div>
             <span class="nota">Desea subir un archivo (opcional) </span>
             <mat-slide-toggle [(ngModel)]="isChecked"></mat-slide-toggle>
-            <form [formGroup]="ContratoForm">
+            <form [formGroup]="formulario">
                 <div class="row">
                     <div class="col-md">
                         <div class="d-flex flex-wrap justify-content-around">
@@ -23,19 +26,21 @@
                                     [formControl]="nombrePaisF" [matAutocomplete]="auto" required>
                                 <mat-autocomplete #auto="matAutocomplete">
                                     <mat-option *ngFor="let option of filtro | async" [value]="option.nombre"
-                                        (click)="ObtenerRegimen(ContratoForm.value)">
+                                        (click)="ObtenerRegimen(formulario.value)">
                                         {{option.nombre}}
                                     </mat-option>
                                 </mat-autocomplete>
                                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Seleccionar uno de los paises de la lista.">
-                                    help_outline</mat-icon>
+                                    help_outline
+                                </mat-icon>
                             </mat-form-field>
                             <mat-form-field>
                                 <mat-label>Régimen Laboral</mat-label>
                                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Seleccionar Régimen Laboral con el cual va a prestar sus servicios el empleado.">
-                                    help_outline</mat-icon>
+                                    help_outline
+                                </mat-icon>
                                 <mat-select id="letras" [formControl]="idRegimenF" required>
                                     <mat-option *ngFor="let regimen of regimenLaboral" [value]="regimen.id">
                                         {{regimen.descripcion}}
@@ -50,7 +55,7 @@
                                 </mat-icon>
                                 <mat-select [formControl]="tipoF">
                                     <mat-option *ngFor="let tc of tipoContrato" [value]="tc.id"
-                                        (click)="IngresarOtro(ContratoForm.value)">
+                                        (click)="IngresarOtro(formulario.value)">
                                         {{tc.descripcion}}
                                     </mat-option>
                                 </mat-select>
@@ -61,7 +66,8 @@
                                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Regresar a la lista de contratos existentes"
                                     (click)="VerTiposContratos()">
-                                    help_outline</mat-icon>
+                                    help_outline
+                                </mat-icon>
                                 <mat-error *ngIf="contratoF.invalid">Ingresar un tipo de contrato válido</mat-error>
                             </mat-form-field>
                             <mat-radio-group aria-label="Select an option" [formControl]="controlVacacionesF"
@@ -72,10 +78,14 @@
                                 <div class="d-flex justify-content-around">
                                     <mat-radio-button matSuffix matTooltipPosition="right"
                                         matTooltip="No permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
-                                        value="true">Si</mat-radio-button>
+                                        value="true">
+                                        Si
+                                    </mat-radio-button>
                                     <mat-radio-button matSuffix matTooltipPosition="right"
                                         matTooltip="Sí permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
-                                        value="false">No</mat-radio-button>
+                                        value="false">
+                                        No
+                                    </mat-radio-button>
                                 </div>
                             </mat-radio-group>
                         </div>
@@ -107,9 +117,11 @@
                                     <mat-label>Controlar Asistencia *</mat-label>
                                 </label>
                                 <div class="d-flex justify-content-around">
-                                    <mat-radio-button value="true">Si
+                                    <mat-radio-button value="true">
+                                        Si
                                     </mat-radio-button>
-                                    <mat-radio-button value="false">No
+                                    <mat-radio-button value="false">
+                                        No
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -120,8 +132,9 @@
                                             id="file">
                                         <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" id="iHor"
                                             matSuffix matTooltipPosition="right"
-                                            matTooltip="Subir el repectivo documento contrato del empleado">Subir
-                                            Contrato</label>
+                                            matTooltip="Subir el repectivo documento contrato del empleado">
+                                            Subir Contrato
+                                        </label>
                                     </form>
                                 </div>
                                 <div class="separar">
@@ -138,14 +151,13 @@
                         </div>
                     </div>
                 </div>
-
             </form>
         </div>
     </mat-card-content>
     <div style="text-align: center">
         <mat-card-actions style="text-align: center">
-            <input type="submit" class="btn btn-sm" [disabled]="!ContratoForm.valid"
-                (click)="ValidarDatosContrato(ContratoForm.value)" value="Guardar">
+            <input type="submit" class="btn btn-sm" [disabled]="!formulario.valid"
+                (click)="ValidarDatosContrato(formulario.value)" value="Guardar">
             <input type="submit" (click)="CerrarVentana()" class="btn btn-sm" value=" Salir">
         </mat-card-actions>
     </div>

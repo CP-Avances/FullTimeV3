@@ -86,7 +86,7 @@ export class GraficasService {
 
 
   /**
-   * MÉTODOS DE GRÁFICOS PARA EMPLEADO
+   * METODOS DE GRÁFICOS PARA EMPLEADO
    */ 
   EmpleadoHoraExtra() {
     return this.http.get<any>(`${environment.url}/metricas/user/hora-extra/micro`);  

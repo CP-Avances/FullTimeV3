@@ -9,9 +9,55 @@ export class EmplCargosService {
 
   constructor(private http: HttpClient) { }
 
+  /** ****************************************************************************************** **
+   ** **                      METODO DE CONSULTA DE TIPOS DE CARGOS                           ** **
+   ** ****************************************************************************************** **/
+
+  // METODO DE BUSQUEDA DE TIPO DE CONTRATOS
+  ObtenerTipoCargos() {
+    return this.http.get(`${environment.url}/empleadoCargos/listar/tiposCargo`);
+  }
+
+  // METODO PARA REGISTRAR TIPO DE CARGO
+  CrearTipoCargo(data: any) {
+    return this.http.post<any>(`${environment.url}/empleadoCargos/tipo_cargo`, data);
+  }
+
+
+
+  /** ***************************************************************************************** **
+   ** **                METODO DE CONSULTA DE CARGOS DEL USUARIO                             ** ** 
+   ** ***************************************************************************************** **/
+
+  // METODO PARA REGISTRAR CARGO
+  RegistrarCargo(data: any) {
+    return this.http.post(`${environment.url}/empleadoCargos`, data);
+  }
+
+  // METODO PARA BUSCAR DATOS DE CARGO POR ID
   BuscarCargoID(id: number) {
     return this.http.get<any>(`${environment.url}/empleadoCargos/${id}`);
   }
+
+  // METODO DE ACTUALIZACION DE CARGO
+  ActualizarContratoEmpleado(id: number, id_empl_contrato: number, data: any) {
+    return this.http.put(`${environment.url}/empleadoCargos/${id_empl_contrato}/${id}/actualizar`, data);
+  }
+
+  // METODO PARA BUSCAR DATOS DE CARGO POR ID CONTRATO
+  BuscarCargoIDContrato(id_empl_contrato: number) {
+    return this.http.get<any>(`${environment.url}/empleadoCargos/cargoInfo/${id_empl_contrato}`);
+  }
+
+
+
+
+
+
+
+
+
+
 
   getEmpleadoCargosRest() {
     return this.http.get(`${environment.url}/empleadoCargos`);
@@ -22,13 +68,9 @@ export class EmplCargosService {
   }
 
 
-  getInfoCargoEmpleadoRest(id_empl_contrato: number) {
-    return this.http.get<any>(`${environment.url}/empleadoCargos/cargoInfo/${id_empl_contrato}`);
-  }
 
-  postEmpleadoCargosRest(data: any) {
-    return this.http.post(`${environment.url}/empleadoCargos`, data);
-  }
+
+
 
   BuscarIDCargo(id: number) {
     return this.http.get(`${environment.url}/empleadoCargos/buscar/${id}`);
@@ -38,26 +80,12 @@ export class EmplCargosService {
     return this.http.get(`${environment.url}/empleadoCargos/buscar/cargoActual/${id}`);
   }
 
-  ActualizarContratoEmpleado(id: number, id_empl_contrato: number, data: any) {
-    return this.http.put(`${environment.url}/empleadoCargos/${id_empl_contrato}/${id}/actualizar/`, data);
-  }
+
 
   ListarEmpleadosAutorizacion(id: number) {
     return this.http.get(`${environment.url}/empleadoCargos/empleadosAutorizan/${id}`);
   }
 
-  // SERVICIOS TIPO CARGO
-  ObtenerTipoCargos() {
-    return this.http.get(`${environment.url}/empleadoCargos/listar/tiposCargo`);
-  }
-
-  CrearTipoCargo(data: any) {
-    return this.http.post(`${environment.url}/empleadoCargos/tipo_cargo`, data);
-  }
-
-  ObtenerUltimoTipoCargos() {
-    return this.http.get(`${environment.url}/empleadoCargos/buscar/ultimoTipo/cargo`);
-  }
 
   ObtenerUnTipoCargo(id: number) {
     return this.http.get(`${environment.url}/empleadoCargos/buscar/ultimoTipo/nombreCargo/${id}`);

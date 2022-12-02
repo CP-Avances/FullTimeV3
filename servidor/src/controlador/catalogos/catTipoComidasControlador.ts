@@ -81,7 +81,7 @@ class TipoComidasControlador {
     public async EliminarRegistros(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM cg_tipo_comidas WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
     public async VerUltimoRegistro(req: Request, res: Response) {
@@ -130,7 +130,7 @@ class TipoComidasControlador {
     public async EliminarDetalle(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM detalle_menu WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
 }

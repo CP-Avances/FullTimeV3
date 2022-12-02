@@ -1,6 +1,11 @@
-.btn { background-color: rgb(80,87,97); color: white; }
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
-.button {margin: 5px 10px 5px 10px;}
+.button {
+    margin: 5px 10px 5px 10px;
+}
 
 .progress {
     margin: 250px auto auto auto;
@@ -19,12 +24,12 @@
 
 mat-progress-spinner {
     background: transparent;
-    z-index: 100; 
+    z-index: 100;
 }
 
 .scrollbar {
     float: left;
-    height: 400px;
+    height: 500px;
     width: 100%;
     background: #fff;
     overflow-y: scroll;
@@ -34,5 +39,38 @@ mat-progress-spinner {
 
 .scrollbar-primary::-webkit-scrollbar {
     width: 12px;
-    background-color: #F5F5F5; 
+    background-color: #F5F5F5;
+}
+
+
+.subtitulo {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+}
+
+#icono {
+    color: rgba(8, 10, 124, 0.828);
+}
+
+mat-form-field {
+    width: 280px;
+    padding: 10px 10px 0px 10px;
+}
+
+#campos {
+    width: 230px;
+    padding: 10px 10px 0px 10px;
+}
+
+label {
+    font-size: 16px;
+}
+
+.mat-radio-button {
+    font-size: 14px;
+}
+
+#letras {
+    font-size: 15px;
 }

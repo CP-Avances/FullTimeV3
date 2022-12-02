@@ -22,7 +22,7 @@ export class RegistroContratoComponent implements OnInit {
   habilitarSeleccion: boolean = true;
   habilitarContrato: boolean = false;
 
-  // DATOS RÉGIMEN
+  // DATOS REGIMEN
   seleccionarRegimen: any;
   regimenLaboral: any = [];
   empleados: any = [];
@@ -42,8 +42,8 @@ export class RegistroContratoComponent implements OnInit {
   contratoF = new FormControl('', Validators.minLength(3));
   tipoF = new FormControl('');
 
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public ContratoForm = new FormGroup({
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     controlVacacionesForm: this.controlVacacionesF,
     controlAsistenciaForm: this.controlAsistenciaF,
     fechaIngresoForm: this.fechaIngresoF,
@@ -99,7 +99,6 @@ export class RegistroContratoComponent implements OnInit {
     this.regimenLaboral = [];
     this.restR.ConsultarRegimenPais(pais).subscribe(datos => {
       this.regimenLaboral = datos;
-      console.log('ver regimen ', this.regimenLaboral)
     }, error => {
       this.toastr.info('Pais seleccionado no tiene registros de Régimen Laboral.', '', {
         timeOut: 6000,
@@ -108,7 +107,7 @@ export class RegistroContratoComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER TIPOS DE CONTRATOS
+  // METODO PARA OBTENER TIPOS DE CONTRATOS
   tipoContrato: any = [];
   ObtenerTipoContratos() {
     this.tipoContrato = [];
@@ -129,14 +128,14 @@ export class RegistroContratoComponent implements OnInit {
 
   // METODO PARA MOSTRAR LISTA MODALIDAD DE TRABAJO
   VerTiposContratos() {
-    this.ContratoForm.patchValue({
+    this.formulario.patchValue({
       contratoForm: '',
     });
     this.habilitarContrato = false;
     this.habilitarSeleccion = true;
   }
 
-  // VALODACIONES DE INGRESO DE FECHAS
+  // VALIDACIONES DE INGRESO DE FECHAS
   ValidarDatosContrato(form: any) {
     if (form.fechaSalidaForm === '' || form.fechaSalidaForm === null) {
       form.fechaSalidaForm = null;
@@ -176,7 +175,7 @@ export class RegistroContratoComponent implements OnInit {
   // ACTIVAR REGISTRO DE MODALIDAD DE TRABAJO
   IngresarOtro(form: any) {
     if (form.tipoForm === undefined) {
-      this.ContratoForm.patchValue({
+      this.formulario.patchValue({
         contratoForm: '',
       });
       this.habilitarContrato = true;
@@ -208,7 +207,7 @@ export class RegistroContratoComponent implements OnInit {
   // METODO PARA REGISTRAR DATOS DE CONTRATO
   RegistrarContrato(form: any, datos: any) {
     this.rest.CrearContratoEmpleado(datos).subscribe(response => {
-      this.toastr.success('Operación Exitosa.', 'Contrato registrado.', {
+      this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
         timeOut: 6000,
       })
       if (this.isChecked === true && form.documentoForm != '') {
@@ -216,7 +215,7 @@ export class RegistroContratoComponent implements OnInit {
       }
       this.CerrarVentana();
     }, error => {
-      this.toastr.error('Upss! algo salio mal.', '', {
+      this.toastr.error('Ups!!! algo salio mal.', '', {
         timeOut: 6000,
       })
     });
@@ -267,7 +266,7 @@ export class RegistroContratoComponent implements OnInit {
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
       if (this.archivoSubido[0].size <= 2e+6) {
-        this.ContratoForm.patchValue({ documentoForm: name });
+        this.formulario.patchValue({ documentoForm: name });
         this.HabilitarBtn = true;
       }
       else {
@@ -285,7 +284,7 @@ export class RegistroContratoComponent implements OnInit {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.rest.SubirContrato(formData, id, form.documentoForm).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Contrato subido con exito', {
+      this.toastr.success('Operación Exitosa.', 'Documento guardado.', {
         timeOut: 6000,
       });
       this.archivoForm.reset();
@@ -304,14 +303,14 @@ export class RegistroContratoComponent implements OnInit {
 
   // LIMPIAR DE FORMULARIO NOMBRE DE ARCHIVO
   LimpiarNombreArchivo() {
-    this.ContratoForm.patchValue({
+    this.formulario.patchValue({
       documentoForm: '',
     });
   }
 
   // LIMPIAR CAMPOS DE FORMULARIO
   LimpiarCampos() {
-    this.ContratoForm.reset();
+    this.formulario.reset();
   }
 
   // CERRAR VENTANA DE REGISTRO DE CONTRATO

@@ -580,10 +580,10 @@ class HorasExtrasPedidasControlador {
 
 
   /** ************************************************************************************************* **
-   ** **          MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **      
+   ** **          METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **      
    ** ************************************************************************************************* **/
 
-  // MÉTODO PARA ENVIAR CORREOS DESDE APLICACIÓN WEB
+  // METODO PARA ENVIAR CORREOS DESDE APLICACIÓN WEB
   public async SendMailNotifiHoraExtra(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
@@ -694,7 +694,7 @@ class HorasExtrasPedidasControlador {
 
   }
 
-  // MÉTODO DE ENVÍO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
+  // METODO DE ENVÍO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
   public async EnviarCorreoHoraExtraMovil(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();

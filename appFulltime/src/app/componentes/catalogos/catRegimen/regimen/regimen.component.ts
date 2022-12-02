@@ -881,8 +881,6 @@ export class RegimenComponent implements OnInit {
 
   // VALIDACIONES DE REGISTROS DE ANTIGUEDAD
   ValidarRegistrosAntiguedad(desde: any, hasta: any, vacaciones: any, alerta: any) {
-
-    console.log('ver antiguedad .. ', desde, '  h ', hasta, ' vaca ', vacaciones, ' aler ', alerta);
     if (desde != '' && hasta != '' && vacaciones != '') {
       if (parseFloat(hasta) > parseFloat(desde)) {
         if (alerta === 1) {
@@ -1185,11 +1183,11 @@ export class RegimenComponent implements OnInit {
   ValidarDatos(form1: any, form2: any, form3: any) {
     if (form3.antiguedadActivaForm === true && form3.antiguedadForm === 'fija') {
       if (form3.aniosAntiguedadForm != '' && form3.diasAdicionalesForm != '') {
-        this.InsertarRegimen(form1, form2, form3)
+        this.InsertarRegimen(form1, form2, form3);
       }
     }
     else {
-      this.InsertarRegimen(form1, form2, form3)
+      this.InsertarRegimen(form1, form2, form3);
     }
   }
 
@@ -1200,7 +1198,7 @@ export class RegimenComponent implements OnInit {
     let pais: number;
     this.paises.forEach(obj => {
       if (obj.nombre === form1.nombrePaisForm.toUpperCase()) {
-        pais = obj.id
+        pais = obj.id;
       }
     });
 
@@ -1246,10 +1244,7 @@ export class RegimenComponent implements OnInit {
       };
 
       this.ValidarInformacion(form1, form2, form3, regimen);
-
       this.FuncionInsertarDatos(regimen, form2, form3);
-
-      console.log('ver datos ingresados ... ', regimen)
     }
 
   }
@@ -1407,7 +1402,6 @@ export class RegimenComponent implements OnInit {
     });
   }
 
-
   // METODO PARA VALIDAR INGRESO DE NUMEROS
   IngresarSoloNumeros(evt: any) {
     if (window.event) {
@@ -1438,6 +1432,5 @@ export class RegimenComponent implements OnInit {
   CerrarVentana() {
     this.router.navigate(['/listarRegimen']);
   }
-
-
+  
 }

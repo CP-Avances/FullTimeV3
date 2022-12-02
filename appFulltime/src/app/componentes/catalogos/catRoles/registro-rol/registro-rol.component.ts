@@ -1,8 +1,8 @@
 // IMPORTAR LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialogRef } from '@angular/material/dialog';
 
 // IMPORTAR SERVICIOS
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
@@ -23,7 +23,7 @@ export class RegistroRolComponent implements OnInit {
   descripcion = new FormControl('', Validators.required);
 
   // CAMPOS DE FORMULARIO EN GRUPO
-  public nuevoRolForm = new FormGroup({
+  public formulario = new FormGroup({
     descripcionForm: this.descripcion
   });
 
@@ -33,68 +33,76 @@ export class RegistroRolComponent implements OnInit {
     private toastr: ToastrService, // VARIABLE PARA MANEJO DE NOTIFICACIONES
     public rest: RolesService, // SERVICIO DATOS DE CATÁLOGO ROLES
   ) {
-    this.nuevoRolForm.setValue({
+    this.formulario.setValue({
       descripcionForm: '',
     });
   }
 
   ngOnInit(): void {
+    this.ObtenerRoles();
   }
 
-  // MÉTODO PARA INSERTAR DATOS
-  contador: number = 0;
+  // METODO PARA INSERTAR DATOS
   data_nueva: any = [];
+  contador: number = 0;
   roles: any = [];
-  InsertarRol(form) {
+  InsertarRol(form: any) {
     this.contador = 0;
-    this.roles = [];
-    let dataRol = {
+    let rol = {
       nombre: form.descripcionForm,
     };
-    this.data_nueva = dataRol;
-    this.rest.getRoles().subscribe(response => {
-      this.roles = response;
+    this.data_nueva = rol;
+
+    // VERIFICAR SI HAY REGISTROS DE ROLES
+    if (this.roles.length != 0) {
+      // VALIDAR REGISTROS DUPLICADOS
       this.roles.forEach(obj => {
-        if (obj.nombre.toUpperCase() === dataRol.nombre.toUpperCase()) {
-          this.contador = this.contador + 1;
+        if (obj.nombre.toUpperCase() === rol.nombre.toUpperCase()) {
+          this.contador = 1;
         }
       })
       if (this.contador === 0) {
-        this.rest.postRoles(dataRol).subscribe(response => {
-          console.log(response);
-          this.toastr.success('Operacion Exitosa', 'Rol guardado', {
-            timeOut: 6000,
-          });
-          this.validar.Auditar('app-web', 'cg_roles', '', this.data_nueva, 'INSERT');
-          this.LimpiarCampos();
-          this.salir = true;
-        });
+        this.GuardarRegistro(rol);
       }
       else {
-        this.toastr.error('Para el correcto funcionamiento del sistema ingresar un nuevo rol ' +
-          'que no se encuentre registrado en el sistema.',
-          'Nombre de Rol Duplicado', {
+        this.toastr.error('Rol ya se encuentra registrado.',
+          'Ups!!! algo salio mal.', {
           timeOut: 6000,
         });
       }
-    })
-  }
-
-  IngresarSoloLetras(e) {
-    this.validar.IngresarSoloLetras(e);
-  }
-
-  ObtenerMensajeErrorDescripcion() {
-    if (this.descripcion.hasError('required')) {
-      return 'Debe ingresar alguna Descripción.';
+    }
+    else {
+      this.GuardarRegistro(rol);
     }
   }
 
-  LimpiarCampos() {
-    this.nuevoRolForm.reset();
+  // METODO PARA BUSCAR ROLES
+  ObtenerRoles() {
+    this.roles = [];
+    this.rest.BuscarRoles().subscribe(response => {
+      this.roles = response;
+    })
   }
 
-  CerrarVentanaRegistroRol() {
+  // METODO PARA ALMACENAR EN BASE DE DATOS
+  GuardarRegistro(rol: any) {
+    this.rest.RegistraRol(rol).subscribe(response => {
+      this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
+        timeOut: 6000,
+      });
+      this.validar.Auditar('app-web', 'cg_roles', '', this.data_nueva, 'INSERT');
+      this.salir = true;
+      this.CerrarVentana();
+    });
+  }
+
+  // METODO PARA LIMPIAR FORMULARIO
+  LimpiarCampos() {
+    this.formulario.reset();
+  }
+
+  // METODO PARA CERRAR VENTANA
+  CerrarVentana() {
     this.LimpiarCampos();
     this.ventana.close(this.salir);
   }

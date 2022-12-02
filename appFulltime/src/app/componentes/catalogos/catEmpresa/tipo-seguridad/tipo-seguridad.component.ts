@@ -1,11 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { ThemePalette } from '@angular/material/core';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-tipo-seguridad',
@@ -15,49 +15,58 @@ import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 
 export class TipoSeguridadComponent implements OnInit {
 
-  selec1: boolean = false;
-  selec2: boolean = false;
-  selec3: boolean = false;
-
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   tipoF = new FormControl('', [Validators.required]);
 
-  // Asignación de validaciones a inputs del formulario
-  public seguridadForm = new FormGroup({
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     tipoForm: this.tipoF
   });
 
   /**
-   * Variables progress spinner
+   * VARIABLES PROGRESS SPINNER
    */
+  habilitarprogress: boolean = false;
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'indeterminate';
   value = 10;
-  habilitarprogress: boolean = false;
 
   constructor(
-    private toastr: ToastrService,
     private rest: EmpresaService,
-    public dialogRef: MatDialogRef<TipoSeguridadComponent>,
+    private toastr: ToastrService,
+    public ventana: MatDialogRef<TipoSeguridadComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
-
 
   ngOnInit(): void {
     console.log('datos', this.data)
     this.ImprimirDatos();
   }
 
-  LimpiarCampos() {
-    this.seguridadForm.reset();
+  // METODO PARA IMPRIMIR DATOS EN FORMULARIO
+  ImprimirDatos() {
+
+    if (this.data.seg_contrasena != null && this.data.seg_contrasena != false) {
+      this.formulario.patchValue({ tipoForm: 'contrasena' });
+    }
+
+    if (this.data.seg_frase != null && this.data.seg_frase != false) {
+      this.formulario.patchValue({ tipoForm: 'frase' });
+    }
+
+    if (this.data.seg_ninguna != null && this.data.seg_ninguna != false) {
+      this.formulario.patchValue({ tipoForm: 'ninguna' });
+    }
+
   }
 
-  InsertarEmpresa(form) {
+  // METODO PARA CAPTURAR DATOS DE SEGURIDAD
+  InsertarEmpresa(form: any) {
     this.habilitarprogress = true;
     let datosEmpresa = {
       seg_contrasena: false,
-      seg_frase: false,
       seg_ninguna: false,
+      seg_frase: false,
       id: parseInt(localStorage.getItem('empresa'))
     };
     if (form.tipoForm === 'contrasena') {
@@ -69,48 +78,32 @@ export class TipoSeguridadComponent implements OnInit {
     else if (form.tipoForm === 'ninguna') {
       datosEmpresa.seg_ninguna = true;
     }
-    console.log('empresa', datosEmpresa, form.tipoForm)
+
     this.GuardarDatos(datosEmpresa);
-    this.CerrarVentanaRegistroEmpresa();
+    this.CerrarVentana();
   }
 
-  GuardarDatos(datos) {
+  // METODO PARA GUARDAR DATOS DE SEGURIDAD
+  GuardarDatos(datos: any) {
     this.habilitarprogress = true;
     this.rest.ActualizarSeguridad(datos).subscribe(response => {
       this.LimpiarCampos();
-      this.toastr.success('Operación Exitosa', 'Datos de Empresa registrados', {
+      this.toastr.success('Operación Exitosa.', 'Datos de Empresa registrados.', {
         timeOut: 6000,
       })
       this.habilitarprogress = false
     });
   }
 
-  CerrarVentanaRegistroEmpresa() {
-    this.LimpiarCampos();
-    this.dialogRef.close();
+  // METODO PARA LIMPIAR FORMULARIO
+  LimpiarCampos() {
+    this.formulario.reset();
   }
 
-  ImprimirDatos() {
-    if (this.data.seg_contrasena === null || this.data.seg_contrasena === '' || this.data.seg_contrasena === false) {
-      this.selec1 = false;
-    }
-    else {
-      this.selec1 = true;
-     this.seguridadForm.patchValue({ tipoForm: 'contrasena'});
-    }
-    if (this.data.seg_frase === null || this.data.seg_frase === '' || this.data.seg_frase === false) {
-      this.selec2 = false;
-    }
-    else {
-      this.selec2 = true;
-      this.seguridadForm.patchValue({ tipoForm: 'frase'});
-    }
-    if (this.data.seg_ninguna === null || this.data.seg_ninguna === '' || this.data.seg_ninguna === false) {
-      this.selec3 = false;
-    }
-    else {
-      this.seguridadForm.patchValue({ tipoForm: 'ninguna'});
-    }
+  // METODO PARA CERRAR VENTANA
+  CerrarVentana() {
+    this.LimpiarCampos();
+    this.ventana.close();
   }
 
 }

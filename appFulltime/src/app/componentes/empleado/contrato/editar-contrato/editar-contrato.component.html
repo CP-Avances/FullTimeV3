@@ -1,12 +1,15 @@
 <div id="titulo">
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-        MODIFICAR CONTRATO {{empleados.nombre_}} </span>
+        MODIFICAR CONTRATO {{empleados.nombre_}}
+    </span>
 </div>
 <div class="container" style="text-align: center">
     <div class="nota">
-        <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
-            Guardar.</span>
+        <span>
+            NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+            Guardar.
+        </span>
     </div>
     <span class="nota">Desea subir un archivo (opcional) </span>
     <mat-slide-toggle [(ngModel)]="isChecked"></mat-slide-toggle>
@@ -28,13 +31,15 @@
                     </mat-autocomplete>
                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Seleccionar uno de los paises de la lista.">
-                        help_outline</mat-icon>
+                        help_outline
+                    </mat-icon>
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Régimen Laboral</mat-label>
                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Seleccionar Régimen Laboral con el cual va a prestar sus servicios el empleado">
-                        help_outline</mat-icon>
+                        help_outline
+                    </mat-icon>
                     <mat-select id="letras" [formControl]="idRegimenF" required>
                         <mat-option *ngFor="let regimen of regimenLaboral" [value]="regimen.id">
                             {{regimen.descripcion}}
@@ -59,7 +64,8 @@
                     <input matInput placeholder="Ej: Indefinido" [formControl]="contratoF">
                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Regresar a la lista de contratos existentes" (click)="VerTiposContratos()">
-                        help_outline</mat-icon>
+                        help_outline
+                    </mat-icon>
                     <mat-error *ngIf="contratoF.invalid">Ingresar un tipo de contrato válido</mat-error>
                 </mat-form-field>
                 <mat-radio-group aria-label="Select an option" [formControl]="controlVacacionesF"
@@ -70,10 +76,14 @@
                     <div class="d-flex justify-content-around">
                         <mat-radio-button matSuffix matTooltipPosition="right"
                             matTooltip="No permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
-                            [value]="true">Si</mat-radio-button>
+                            [value]="true">
+                            Si
+                        </mat-radio-button>
                         <mat-radio-button matSuffix matTooltipPosition="right"
                             matTooltip="Sí permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
-                            [value]="false">No</mat-radio-button>
+                            [value]="false">
+                            No
+                        </mat-radio-button>
                     </div>
                 </mat-radio-group>
             </div>
@@ -116,15 +126,18 @@
                         <div class="bd-highlight">
                             <div class="row">
                                 <div class="col-md">
-                                    <mat-radio-button value=1 (click)="RetirarArchivo()">Retirar archivo
+                                    <mat-radio-button value=1 (click)="RetirarArchivo()">
+                                        Retirar archivo
                                     </mat-radio-button>
                                 </div>
                                 <div class="col-md">
-                                    <mat-radio-button value=2 (click)="ActivarArchivo()">Actualizar archivo
+                                    <mat-radio-button value=2 (click)="ActivarArchivo()">
+                                        Actualizar archivo
                                     </mat-radio-button>
                                 </div>
                                 <div class="col-md" *ngIf="acciones">
-                                    <mat-radio-button value=3 (click)="LimpiarAcciones()">Cancelar
+                                    <mat-radio-button value=3 (click)="LimpiarAcciones()">
+                                        Cancelar
                                     </mat-radio-button>
                                 </div>
                             </div>
@@ -136,9 +149,9 @@
                         <form method="post" enctype="multipart/form-data">
                             <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
                             <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()" id="iHor" matSuffix
-                                matTooltipPosition="right"
-                                matTooltip="Actualizar el documento contrato del empleado">Subir
-                                Contrato</label>
+                                matTooltipPosition="right" matTooltip="Actualizar el documento contrato del empleado">
+                                Subir Contrato
+                            </label>
                         </form>
                     </div>
                     <div class="separar">

@@ -16,6 +16,7 @@ import * as moment from 'moment';
 import { GraficasService } from 'src/app/servicios/graficas/graficas.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MainNavService } from '../administracionGeneral/main-nav/main-nav.service';
 
 @Component({
   selector: 'app-home',
@@ -27,8 +28,18 @@ export class HomeComponent implements OnInit {
 
   fecha: string;
 
+  // BUSQUEDA DE FUNCIONES ACTIVAS
+  get geolocalizacion(): boolean { return this.funciones.geolocalizacion; }
+  get alimentacion(): boolean { return this.funciones.alimentacion; }
+  get horasExtras(): boolean { return this.funciones.horasExtras; }
+  get vacaciones(): boolean { return this.funciones.vacaciones; }
+  get permisos(): boolean { return this.funciones.permisos; }
+  get accion(): boolean { return this.funciones.accionesPersonal; }
+  get movil(): boolean { return this.funciones.app_movil; }
+
   constructor(
     private restGraficas: GraficasService,
+    private funciones: MainNavService,
     private router: Router,
     private route: ActivatedRoute,
     public parametro: ParametrosService,
@@ -63,23 +74,6 @@ export class HomeComponent implements OnInit {
 
     this.ModeloGraficas();
     this.BuscarParametro();
-
-
-
-    const date = new Date();
-    const hora = date.getHours();
-    const minutos = date.getMinutes();
-    const fecha = date.toJSON().slice(4).split("T")[0];
-    console.log('datos h ', hora, ' minutos .. ', minutos, ' date ', date, ' fecha .. ', fecha)
-
-    var f = moment();
-
-
-    //console.log('horas .. ', hora, '    fecha .. ', fecha)
-
-    console.log('horas .. ', f.format('HH'), '    fecha .. ', f.format('MM-DD'))
-
-
   }
 
 
@@ -90,7 +84,7 @@ export class HomeComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -103,12 +97,13 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  // METODO PARA FORMATEAR FECHAS
   FormatearFechas(formato_fecha: string) {
     var f = moment();
     this.fecha = this.validar.FormatearFecha(moment(f).format('YYYY-MM-DD'), formato_fecha, this.validar.dia_completo);
   }
 
-
+  // METODO PARA PRESENTAR GRAFICAS
   ModeloGraficas() {
     this.GraficaUno()
     this.GraficaDos();
@@ -120,6 +115,7 @@ export class HomeComponent implements OnInit {
     this.GraficaOcho();
   }
 
+  // METODO GRAFICA ASISTENCIA
   GraficaUno() {
     let local = sessionStorage.getItem('asistencia');
     var chartDom = document.getElementById('charts_asistencia') as HTMLCanvasElement;
@@ -127,7 +123,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaAsistenciaMicro().subscribe(res => {
-        // console.log('************* Asistencia Micro **************');
         sessionStorage.setItem('asistencia', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -137,6 +132,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA HORAS EXTRAS
   GraficaDos() {
     let local = sessionStorage.getItem('HoraExtra');
     var chartDom = document.getElementById('charts_hora_extra') as HTMLCanvasElement;
@@ -144,7 +140,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaHoraExtraMicro().subscribe(res => {
-        // console.log('************* Hora Extra Micro **************');
         sessionStorage.setItem('HoraExtra', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -154,6 +149,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA INASISTENCIA
   GraficaTres() {
     let local = sessionStorage.getItem('inasistencia');
     var chartDom = document.getElementById('charts_inasistencia') as HTMLCanvasElement;
@@ -161,7 +157,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaInasistenciaMicro().subscribe(res => {
-        // console.log('************* Inasistencia Micro **************');
         sessionStorage.setItem('inasistencia', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -171,6 +166,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA JORNADA EXTRA
   GraficaCuatro() {
     let local = sessionStorage.getItem('JornadaHoraExtra');
     var chartDom = document.getElementById('charts_jornada_hora_extra') as HTMLCanvasElement;
@@ -178,7 +174,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaJornadaHoraExtraMicro().subscribe(res => {
-        // console.log('************* Jornada Hora Extra Micro **************');
         sessionStorage.setItem('JornadaHoraExtra', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -188,6 +183,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA MARACACIONES
   GraficaCinco() {
     let local = sessionStorage.getItem('marcaciones');
     var chartDom = document.getElementById('charts_marcaciones') as HTMLCanvasElement;
@@ -195,7 +191,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaMarcacionesMicro().subscribe(res => {
-        // console.log('************* Marcaciones Micro **************');
         sessionStorage.setItem('marcaciones', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -205,6 +200,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA RETRASOS
   GraficaSeis() {
     let local = sessionStorage.getItem('retrasos');
     var chartDom = document.getElementById('charts_retrasos') as HTMLCanvasElement;
@@ -212,7 +208,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaRetrasoMicro().subscribe(res => {
-        // console.log('************* Retrasos Micro **************');
         sessionStorage.setItem('retrasos', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -222,6 +217,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA TIEMPO JORNADA
   GraficaSiete() {
     let local = sessionStorage.getItem('tiempo_jornada');
     var chartDom = document.getElementById('charts_tiempo_jornada') as HTMLCanvasElement;
@@ -229,7 +225,6 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaTiempoJornadaHoraExtraMicro().subscribe(res => {
-        // console.log('************* Tiempo Jornada Micro **************');
         sessionStorage.setItem('tiempo_jornada', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
@@ -239,6 +234,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO GRAFICA SALIDA ANTICIPADA
   GraficaOcho() {
     let local = sessionStorage.getItem('salida_antes');
     var chartDom = document.getElementById('charts_salidas_antes') as HTMLCanvasElement;
@@ -246,17 +242,16 @@ export class HomeComponent implements OnInit {
 
     if (local === null) {
       this.restGraficas.MetricaSalidasAntesMicro().subscribe(res => {
-        // console.log('************* Salida Antes Micro **************');
         sessionStorage.setItem('salida_antes', JSON.stringify(res))
         thisChart.setOption(res.datos_grafica);
       });
     } else {
-      // this.salidas_antes = JSON.parse(local);
       var data_JSON = JSON.parse(local);
       thisChart.setOption(data_JSON.datos_grafica);
     }
   }
 
+  // METODO PARA ACTUALIZAR GRAFICAS
   RefrescarGraficas() {
     sessionStorage.removeItem('JornadaHoraExtra');
     sessionStorage.removeItem('retrasos');
@@ -269,25 +264,32 @@ export class HomeComponent implements OnInit {
     this.ModeloGraficas();
   }
 
+  // METODO DE MENU RAPIDO
   MenuRapido(num: number) {
     switch (num) {
-      case 1: //Reportes
+      case 1: // REPORTES
         this.router.navigate(['/listaReportes'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 2: //Horas Extras
+      case 2: // HORAS EXTRAS
         this.router.navigate(['/horas-extras-solicitadas'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 3: //Vacaciones
+      case 3: // VACACIONES
         this.router.navigate(['/vacaciones-solicitados'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 4: //Permisos
+      case 4: // PERMISOS
         this.router.navigate(['/permisos-solicitados'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 5: //Retrasos
-        this.router.navigate(['/macro/retrasos'], { relativeTo: this.route, skipLocationChange: false });
+      case 5: // ACCIONES PERSONAL
+        this.router.navigate(['/proceso'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 6: //Métricas
-        this.router.navigate(['/home'], { relativeTo: this.route, skipLocationChange: false });
+      case 6: // APP MOVIL
+        this.router.navigate(['/app-movil'], { relativeTo: this.route, skipLocationChange: false });
+        break;
+      case 7: // ALIMENTACION
+        this.router.navigate(['/listarTipoComidas'], { relativeTo: this.route, skipLocationChange: false });
+        break;
+      case 8: // GEOLOCALIZACION
+        this.router.navigate(['/coordenadas'], { relativeTo: this.route, skipLocationChange: false });
         break;
       default:
         this.router.navigate(['/home'], { relativeTo: this.route, skipLocationChange: false });
@@ -295,30 +297,31 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // METODO PARA DIRECCIONAR A RUTA DE GRAFICAS
   RedireccionarRutas(num: number) {
     switch (num) {
-      case 1: //Reportes
+      case 1: //REPORTES
         this.router.navigate(['/macro/inasistencia'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 2: //Horas Extras
+      case 2: //HORAS EXTRAS
         this.router.navigate(['/macro/hora-extra'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 3: //Vacaciones
+      case 3: //VACACIONES
         this.router.navigate(['/macro/asistencia'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 4: //Permisos
+      case 4: //PERMISOS
         this.router.navigate(['/macro/retrasos'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 5: //Retrasos
+      case 5: //RETRASOS
         this.router.navigate(['/macro/marcaciones'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 6: //Métricas
+      case 6: //METRICAS
         this.router.navigate(['/macro/tiempo-jornada-vs-hora-ext'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 7: //Métricas
+      case 7: //METRICAS
         this.router.navigate(['/macro/jornada-vs-hora-extra'], { relativeTo: this.route, skipLocationChange: false });
         break;
-      case 8: //Salidas antes
+      case 8: //SALIDAS ANTES
         this.router.navigate(['/macro/salidas-antes'], { relativeTo: this.route, skipLocationChange: false });
         break;
       default:

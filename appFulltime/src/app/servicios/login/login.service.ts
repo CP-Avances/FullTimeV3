@@ -13,9 +13,32 @@ export class LoginService {
     private http: HttpClient,
     public router: Router) { }
 
-  postCredenciales(data: any) {
+
+  // VALIDACIONES DE INGRESO AL SISTEMA 
+  ValidarCredenciales(data: any) {
     return this.http.post<any>(`${environment.url}/login`, data);
   }
+
+  // METODO PARA CAMBIAR CONTRASEÑA
+  EnviarCorreoContrasena(data: any) {
+    return this.http.post(`${environment.url}/login/recuperar-contrasenia/`, data)
+  }
+
+  // METODO PARA CAMBIAR CONTRASEÑA
+  ActualizarContrasenia(data: any) {
+    return this.http.post(`${environment.url}/login/cambiar-contrasenia`, data)
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   loggedIn() {
     return !!localStorage.getItem('token');
@@ -55,13 +78,9 @@ export class LoginService {
     this.router.navigate(['/'], { relativeTo: this.route, skipLocationChange: false });
   }
 
-  forgetPassword(data: any) {
-    return this.http.post(`${environment.url}/login/recuperar-contrasenia/`, data)
-  }
 
-  changePassword(data: any) {
-    return this.http.post(`${environment.url}/login/cambiar-contrasenia`, data)
-  }
+
+
 
   // AUDITAR
   Auditar(data: any) {

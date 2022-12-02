@@ -99,7 +99,7 @@ class DocumentosControlador {
             let filePath = `servidor\\documentacion\\${documento}`;
             let direccionCompleta = __dirname.split("servidor")[0] + filePath;
             fs_1.default.unlinkSync(direccionCompleta);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
 }

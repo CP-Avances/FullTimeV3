@@ -1,49 +1,34 @@
-<div id="resultados">
-    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
-        NIVEL DE SEGURIDAD</span>
-</div>
-<form [formGroup]="seguridadForm">
-    <mat-card-content>
-        <div class="container" style="text-align: center">
-            <div class="row">
-                <div class="col">
-                    <div class="col-sm" style="text-align: left;">
-                        <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
-                            <label>Tipo de seguridad </label>
-                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                matTooltip="Seleccionar el tipo de seguridad que se usara para realizar cambios importantes dentro del sistema">
-                                help_outline
-                            </mat-icon>
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-sm" style="text-align: left;">
-                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec1" [checked]="selec1"
-                                            [ngModelOptions]="{standalone: true}" value="contrasena">
-                                            Usar Contraseña
-                                        </mat-radio-button>
-                                        <br>
-                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec2" [checked]="selec2"
-                                            [ngModelOptions]="{standalone: true}" value="frase">Usar Frase
-                                        </mat-radio-button>
-                                        <br>
-                                        <mat-radio-button ngDefaultControl [(ngModel)]="selec3" [checked]="selec3"
-                                            [ngModelOptions]="{standalone: true}" value="ninguna">
-                                            Ninguna
-                                        </mat-radio-button>
-                                    </div>
-                                </div>
-                            </div>
-                        </mat-radio-group>
-                    </div>
+<div class="container">
+    <div id="resultados">
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
+            NIVEL DE SEGURIDAD
+        </span>
+    </div>
+    <form [formGroup]="formulario">
+        <div class="d-flex flex-wrap justify-content-start" style="padding-top: 20px;">
+            <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 15px;">
+                    <mat-radio-button value="contrasena">
+                        Usar Contraseña
+                    </mat-radio-button>
                 </div>
-            </div>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 15px;">
+                    <mat-radio-button value="frase">Usar Frase
+                    </mat-radio-button>
+                </div>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 15px;">
+                    <mat-radio-button value="ninguna">
+                        Ninguna
+                    </mat-radio-button>
+                </div>
+            </mat-radio-group>
         </div>
-    </mat-card-content>
-</form>
-<div class="d-flex flex-wrap justify-content-center">
-    <input type="submit" class="btn btn-sm button" [disabled]="!seguridadForm.valid" value="Guardar"
-        (click)="InsertarEmpresa(seguridadForm.value)">
-    <input type="submit" class="btn btn-sm button" (click)="CerrarVentanaRegistroEmpresa()" value="Salir">
+    </form>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
+        <input type="submit" class="btn btn-sm button" [disabled]="!formulario.valid" value="Guardar"
+            (click)="InsertarEmpresa(formulario.value)">
+        <input type="submit" class="btn btn-sm button" (click)="CerrarVentana()" value="Salir">
+    </div>
 </div>
 <div class="pantalla-progress" *ngIf="habilitarprogress">
     <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">

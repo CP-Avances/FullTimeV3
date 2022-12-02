@@ -1,27 +1,19 @@
 <div id="titulo">
-    <h5>AÑADIR TÍTULO DEL USUARIO</h5>
+    <h5>REGISTRAR TÍTULO PROFESIONAL</h5>
 </div>
-<form [formGroup]="nuevoTituloEmpleadoForm">
+<form [formGroup]="formulario">
     <mat-card-content>
         <div class="container" style="padding-top: 15px; text-align: center;">
             <div class="nota">
-                <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
-                    Guardar.</span>
+                <span>
+                    NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                    Guardar.
+                </span>
             </div>
             <mat-form-field>
-                <mat-label>Observaciones</mat-label>
-                <input matInput placeholder="Ejemplo" (keypress)="IngresarSoloLetras($event)"
-                    [formControl]="observa" required>
-                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
-                    matTooltip="Hacer una observación que referencia al título que posee el empleado">
-                    help_outline
-                </mat-icon>
-            </mat-form-field>
-            <br>
-            <mat-form-field>
                 <mat-label>Seleccionar título</mat-label>
-                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" 
-                    matTooltip="Seleccionar el Título profesional que tiene el empleado">
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                    matTooltip="Seleccionar título profesional que disponga el usuario.">
                     help_outline
                 </mat-icon>
                 <mat-select [formControl]="idTitulo" required>
@@ -30,26 +22,35 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-label>Observaciones</mat-label>
+                <input matInput placeholder="Ejemplo" (keypress)="IngresarSoloLetras($event)" [formControl]="observa"
+                    required>
+                <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                    matTooltip="Ingresar una descripción corta.">
+                    help_outline
+                </mat-icon>
+            </mat-form-field>
         </div>
     </mat-card-content>
 </form>
 <div style="text-align: center;">
-    <button type="submit" class="btn"
-        (click)="insertarTituloEmpleado(nuevoTituloEmpleadoForm.value)" [disabled]="!nuevoTituloEmpleadoForm.valid">
-        <span class="material-icons alinear" matSuffix matTooltipPosition="right" 
-            matTooltip="Guardar registro">save</span>
+    <button type="submit" class="btn" (click)="InsertarTituloEmpleado(formulario.value)" [disabled]="!formulario.valid">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Guardar registro.">save</span>
     </button>
-    <button type="submit" class="btn" (click)="limpiarCampos()">
-        <span class="material-icons alinear" matSuffix matTooltipPosition="right" 
-            matTooltip="Borrar datos ingresados">backspace</span>
+    <button type="submit" class="btn" (click)="LimpiarCampos()">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Borrar datos ingresados.">backspace</span>
     </button>
-    <button type="submit" class="btn" (click)="cerrarRegistro()">
-        <span class="material-icons alinear" matSuffix matTooltipPosition="right" 
-            matTooltip="Cancelar registro">close</span>
+    <button type="submit" class="btn" (click)="CerrarRegistro()">
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Cancelar registro.">close</span>
     </button>
 
     <button type="submit" class="btn" (click)="VerificarTitulo()">
-        <span class="material-icons alinear" matSuffix matTooltipPosition="right" 
-            matTooltip="Verificar título profesional del empleado antes de registrarlo">insert_link</span>
+        <span class="material-icons alinear" matSuffix matTooltipPosition="right"
+            matTooltip="Verificar título profesional del empleado antes de registrarlo.">insert_link</span>
     </button>
 </div>

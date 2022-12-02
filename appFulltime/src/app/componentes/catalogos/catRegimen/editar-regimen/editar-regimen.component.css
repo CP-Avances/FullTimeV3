@@ -1,6 +1,6 @@
 .btn {
-    margin-left: 15px;
     background-color: rgb(80, 87, 97);
+    margin-left: 15px;
     color: white;
 }
 
@@ -11,19 +11,19 @@ p {
 #validar {
     text-align: center;
     position: relative;
-    top: 15px;
-    left: 10px;
     cursor: pointer;
     color: red;
+    left: 10px;
+    top: 15px;
 }
 
 #correcto {
     text-align: center;
     position: relative;
-    top: 15px;
-    left: 10px;
     cursor: pointer;
     color: darkgreen;
+    left: 10px;
+    top: 15px;
 }
 
 mat-form-field {
@@ -77,32 +77,30 @@ label {
     font-size: 14px;
 }
 
-
-
 #check {
-    width: 210px;
-    padding: 15px 20px 15px 20x;
     margin-bottom: 10px;
-    margin-top: 20px;
     margin-right: 28px;
+    margin-top: 20px;
     font-size: 14px;
+    padding: 15px 20px 15px 20x;
+    width: 210px;
 }
 
 .check {
-    width: 210px;
-    padding: 15px 20px 15px 20x;
     margin-bottom: 10px;
-    margin-top: 20px;
     margin-right: 28px;
+    margin-top: 20px;
     font-size: 14px;
+    padding: 15px 20px 15px 20x;
+    width: 210px;
 }
 
 #check_ {
     width: 210px;
     padding: 15px 20px 5px 20x;
+    font-size: 14px;
     margin-top: 20px;
     margin-right: 28px;
-    font-size: 14px;
 }
 
 .mat-radio-button~.mat-radio-button {
@@ -115,10 +113,9 @@ mat-radio-group {
 }
 
 
-
 .subtitulo {
-    font-size: 15px;
     font-weight: bold;
+    font-size: 15px;
     color: rgb(0, 0, 0);
 }
 

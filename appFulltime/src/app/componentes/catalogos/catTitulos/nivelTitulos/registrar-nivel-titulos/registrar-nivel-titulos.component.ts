@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -14,50 +14,47 @@ import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulo
 export class RegistrarNivelTitulosComponent implements OnInit {
 
   nombre = new FormControl('', Validators.required)
-  
-  public nuevoNivelTituloForm = new FormGroup({
-    NivelTituloNombreForm: this.nombre
+
+  public formulario = new FormGroup({
+    nombreForm: this.nombre
   });
 
   constructor(
-    private restNivelTitulos: NivelTitulosService,
-    public dialogRef: MatDialogRef<RegistrarNivelTitulosComponent>,
     private toastr: ToastrService,
-  ) {}
-    
+    private nivel: NivelTitulosService,
+    public ventana: MatDialogRef<RegistrarNivelTitulosComponent>,
+  ) { }
+
   ngOnInit(): void {
   }
 
-  InsertarNivelTitulo(form){
-    let dataNivelTitulo = {
-      nombre: form.NivelTituloNombreForm,
+
+  // METODO PARA GUARDAR DATOS DE NIVELES DE TITULO
+  InsertarNivelTitulo(form: any) {
+    let nivel = {
+      nombre: form.nombreForm,
     };
-    this.restNivelTitulos.postNivelTituloRest(dataNivelTitulo).subscribe(response => {
-      this.toastr.success('Operación Exitosa', 'Nivel del título guardado', {
+    this.nivel.RegistrarNivel(nivel).subscribe(response => {
+      this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
         timeOut: 6000,
       });
-      this.LimpiarCampos();
+      this.CerrarVentana();
     }, error => {
     });;
   }
 
-  ObtenerMensajeErrorNombre() {
-    if (this.nombre.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-    return this.nombre.hasError('pattern') ? 'Ingrese un nombre válido' : '';
-  }
-
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.nuevoNivelTituloForm.reset();
+    this.formulario.reset();
   }
 
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -74,9 +71,10 @@ export class RegistrarNivelTitulosComponent implements OnInit {
     }
   }
 
-  CerrarVentanaRegistroTitulo() {
+  // METODO PARA CERRAR VENTANA DE REGISTRO
+  CerrarVentana() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
 }
