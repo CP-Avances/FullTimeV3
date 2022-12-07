@@ -18,6 +18,14 @@ class UbicacionRutas {
     }
     configuracion() {
         /** *********************************************************************************************** **
+         ** **                     CONSULTAS DE COORDENADAS DE UBICACION DEL USUARIO                     ** **
+         ** *********************************************************************************************** **/
+        // LISTAR COORDENADAS DE UBICACION DEL USUARIO
+        this.router.get('/coordenadas-usuario/:id_empl', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.ListarRegistroUsuario);
+        this.router.post('/coordenadas-usuario', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.RegistrarCoordenadasUsuario);
+        this.router.get('/coordenadas-usuarios/general/:id_ubicacion', emplUbicacionControlador_1.default.ListarRegistroUsuarioU);
+        this.router.delete('/eliminar-coordenadas-usuario/:id', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.EliminarCoordenadasUsuario);
+        /** *********************************************************************************************** **
          ** **           RUTAS DE ACCESO A CONSULTAS DE COORDENADAS DE UBICACIÓN GENERALES               ** **
          ** *********************************************************************************************** **/
         this.router.post('/', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.RegistrarCoordenadas);
@@ -27,13 +35,6 @@ class UbicacionRutas {
         this.router.get('/determinada/:id', emplUbicacionControlador_1.default.ListarUnaCoordenada);
         this.router.get('/ultimo-registro', emplUbicacionControlador_1.default.BuscarUltimoRegistro);
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.EliminarCoordenadas);
-        /** *********************************************************************************************** **
-         ** **           RUTAS DE ACCESO A CONSULTAS DE COORDENADAS DE UBICACIÓN GENERALES               ** **
-         ** *********************************************************************************************** **/
-        this.router.post('/coordenadas-usuario', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.RegistrarCoordenadasUsuario);
-        this.router.get('/coordenadas-usuario/:id_empl', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.ListarRegistroUsuario);
-        this.router.get('/coordenadas-usuarios/general/:id_ubicacion', emplUbicacionControlador_1.default.ListarRegistroUsuarioU);
-        this.router.delete('/eliminar-coordenadas-usuario/:id', verificarToken_1.TokenValidation, emplUbicacionControlador_1.default.EliminarCoordenadasUsuario);
     }
 }
 const UBICACION_RUTAS = new UbicacionRutas();

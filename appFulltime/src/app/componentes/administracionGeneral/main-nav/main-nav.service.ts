@@ -37,6 +37,7 @@ export class MainNavService {
   private _Alimentacion: boolean = false;
   private _Vacaciones: boolean = false;
   private _HoraExtra: boolean = false;
+  private _TimbreWeb: boolean = false;
   private _Permisos: boolean = false;
   private _Reportes: boolean = false;
   private _Movil: boolean = false;
@@ -65,6 +66,9 @@ export class MainNavService {
   get app_movil() { return this._Movil; }
   setAppMovil(arg: boolean) { this._Movil = arg; }
 
+  get timbre_web() { return this._TimbreWeb; }
+  setTimbreWeb(arg: boolean) { this._TimbreWeb = arg; }
+
   // METODO PARA COLOCAR VALORES POR DEFECTO
   private DefaultFuncionalidad(value = false) {
     this.setAccionesPersonal(value);
@@ -72,6 +76,7 @@ export class MainNavService {
     this.setAlimentacion(value);
     this.setVacaciones(value);
     this.setHoraExtra(value);
+    this.setTimbreWeb(value);
     this.setPermisos(value);
     this.setReportes(value);
     this.setAppMovil(value);
@@ -80,12 +85,13 @@ export class MainNavService {
   // METODO PARA SETEAR VALORES DE FUNCIONES
   public ValueFuncionalidad(value: any) {
     const { accion_personal, alimentacion, hora_extra, permisos, reportes, vacaciones,
-      geolocalizacion, app_movil } = value
+      geolocalizacion, app_movil, timbre_web } = value
     this.setAccionesPersonal(accion_personal);
     this.setGeolocalizacion(vacaciones);
     this.setAlimentacion(alimentacion);
     this.setVacaciones(geolocalizacion);
     this.setHoraExtra(hora_extra);
+    this.setTimbreWeb(timbre_web);
     this.setPermisos(permisos);
     this.setReportes(reportes);
     this.setAppMovil(app_movil);

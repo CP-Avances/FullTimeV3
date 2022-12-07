@@ -26,20 +26,29 @@ export class RelojesService {
     return this.http.post(`${environment.url}/relojes/xmlDownload`, data);
   }
 
-
-
-
-
-
-
-
-
-
-
-  // Invocación del METODO post para crear nuevo reloj
+  // METODO PARA REGISTRAR DISPOSITIVO
   CrearNuevoReloj(datos: any) {
     return this.http.post<any>(`${environment.url}/relojes`, datos);
   }
+
+  // METODO PARA ACTUALIZAR REGISTRO
+  ActualizarDispositivo(datos: any) {
+    return this.http.put<any>(`${environment.url}/relojes`, datos);
+  }
+
+  // METODO PARA CONSULTAR DATOS GENERALES DE DISPOSITIVO
+  ConsultarDatosId(id: number) {
+    return this.http.get(`${environment.url}/relojes/datosReloj/${id}`);
+  }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -47,17 +56,17 @@ export class RelojesService {
     return this.http.get(`${environment.url}/relojes/${id}`);
   }
 
-  ActualizarDispositivo(datos: any) {
-    return this.http.put<any>(`${environment.url}/relojes`, datos);
-  }
 
 
 
 
 
-  ConsultarDatosId(id: number) {
-    return this.http.get(`${environment.url}/relojes/datosReloj/${id}`);
-  }
+
+
+
+
+
+
 
   // METODOs para verificar datos de plantilla antes de registralos en el sistema
   subirArchivoExcel(formData) {

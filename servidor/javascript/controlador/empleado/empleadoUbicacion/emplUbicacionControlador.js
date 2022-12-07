@@ -102,6 +102,24 @@ class UbicacionControlador {
     /** **************************************************************************************** **
      ** **        COORDENADAS DE UBICACION ASIGNADAS A UN USUARIO (empl_ubicacion)            ** **
      ** **************************************************************************************** **/
+    // LISTAR REGISTROS DE COORDENADAS GENERALES DE UBICACION DE UN USUARIO
+    ListarRegistroUsuario(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empl } = req.params;
+            const UBICACIONES = yield database_1.default.query(`
+            SELECT eu.id AS id_emplu, eu.codigo, eu.id_ubicacion, eu.id_empl, cu.latitud, cu.longitud, 
+                cu.descripcion 
+            FROM empl_ubicacion AS eu, cg_ubicaciones AS cu 
+            WHERE eu.id_ubicacion = cu.id AND eu.id_empl = $1
+            `, [id_empl]);
+            if (UBICACIONES.rowCount > 0) {
+                return res.jsonp(UBICACIONES.rows);
+            }
+            else {
+                res.status(404).jsonp({ text: 'Registro no encontrado.' });
+            }
+        });
+    }
     // ASIGNAR COORDENADAS GENERALES DE UBICACIÓN A LOS USUARIOS
     RegistrarCoordenadasUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -109,22 +127,6 @@ class UbicacionControlador {
             yield database_1.default.query('INSERT INTO empl_ubicacion (codigo, id_empl, id_ubicacion) ' +
                 'VALUES ($1, $2, $3)', [codigo, id_empl, id_ubicacion]);
             res.jsonp({ message: 'Registro guardado.' });
-        });
-    }
-    // LISTAR REGISTROS DE COORDENADAS GENERALES DE UBICACIÓN DE UN USUARIO
-    ListarRegistroUsuario(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empl } = req.params;
-            const UBICACIONES = yield database_1.default.query('SELECT eu.id AS id_emplu, eu.codigo, eu.id_ubicacion, eu.id_empl, ' +
-                'cu.latitud, cu.longitud, cu.descripcion ' +
-                'FROM empl_ubicacion AS eu, cg_ubicaciones AS cu ' +
-                'WHERE eu.id_ubicacion = cu.id AND eu.id_empl = $1', [id_empl]);
-            if (UBICACIONES.rowCount > 0) {
-                return res.jsonp(UBICACIONES.rows);
-            }
-            else {
-                res.status(404).jsonp({ text: 'Registro no encontrado.' });
-            }
         });
     }
     // LISTAR REGISTROS DE COORDENADAS GENERALES DE UNA UBICACIÓN 

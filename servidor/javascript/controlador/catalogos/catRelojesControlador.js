@@ -12,8 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const database_1 = __importDefault(require("../../database"));
 const xlsx_1 = __importDefault(require("xlsx"));
+const database_1 = __importDefault(require("../../database"));
 const fs_1 = __importDefault(require("fs"));
 const builder = require('xmlbuilder');
 class RelojesControlador {
@@ -65,58 +65,84 @@ class RelojesControlador {
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
-    ListarUnReloj(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const RELOJES = yield database_1.default.query('SELECT * FROM cg_relojes WHERE id = $1', [id]);
-            if (RELOJES.rowCount > 0) {
-                return res.jsonp(RELOJES.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    ListarDatosUnReloj(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const RELOJES = yield database_1.default.query('SELECT * FROM NombreDispositivos WHERE id = $1', [id]);
-            if (RELOJES.rowCount > 0) {
-                return res.jsonp(RELOJES.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
+    // METODO PARA REGISTRAR DISPOSITIVO
     CrearRelojes(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac, tien_funciones, id_sucursal, id_departamento, id, numero_accion } = req.body;
-                yield database_1.default.query('INSERT INTO cg_relojes (nombre, ip, puerto, contrasenia, marca, modelo, serie, ' +
-                    'id_fabricacion, fabricante, mac, tien_funciones, id_sucursal, id_departamento, id, numero_accion ) ' +
-                    'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
+                const response = yield database_1.default.query(`
+                INSERT INTO cg_relojes (nombre, ip, puerto, contrasenia, marca, modelo, serie, 
+                    id_fabricacion, fabricante, mac, tien_funciones, id_sucursal, id_departamento, id, 
+                    numero_accion )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *
+                `, [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
                     tien_funciones, id_sucursal, id_departamento, id, numero_accion]);
-                return res.jsonp({ message: 'guardado' });
+                const [reloj] = response.rows;
+                if (reloj) {
+                    return res.status(200).jsonp({ message: 'guardado', reloj: reloj });
+                }
+                else {
+                    return res.status(404).jsonp({ message: 'mal_registro' });
+                }
             }
             catch (error) {
                 return res.jsonp({ message: 'error' });
             }
         });
     }
+    // METODO PARA VER DATOS DE UN DISPOSITIVO
+    ListarUnReloj(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const RELOJES = yield database_1.default.query(`
+            SELECT * FROM cg_relojes WHERE id = $1
+            `, [id]);
+            if (RELOJES.rowCount > 0) {
+                return res.jsonp(RELOJES.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+            }
+        });
+    }
+    // METODO PARA ACTUALIZAR REGISTRO
     ActualizarReloj(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac, tien_funciones, id_sucursal, id_departamento, id, numero_accion, id_real } = req.body;
-                yield database_1.default.query('UPDATE cg_relojes SET nombre = $1, ip = $2, puerto = $3, contrasenia = $4, ' +
-                    'marca = $5, modelo = $6, serie = $7, id_fabricacion = $8, fabricante = $9, mac = $10, ' +
-                    'tien_funciones = $11, id_sucursal = $12, id_departamento = $13, id = $14, ' +
-                    'numero_accion = $15 WHERE id = $16', [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
+                yield database_1.default.query(`
+                UPDATE cg_relojes SET nombre = $1, ip = $2, puerto = $3, contrasenia = $4, marca = $5, 
+                    modelo = $6, serie = $7, id_fabricacion = $8, fabricante = $9, mac = $10, 
+                    tien_funciones = $11, id_sucursal = $12, id_departamento = $13, id = $14, 
+                    numero_accion = $15 
+                WHERE id = $16
+                `, [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
                     tien_funciones, id_sucursal, id_departamento, id, numero_accion, id_real]);
                 return res.jsonp({ message: 'actualizado' });
             }
             catch (error) {
                 return res.jsonp({ message: 'error' });
+            }
+        });
+    }
+    // METODO PARA CONSULTAR DATOS GENERALES DE DISPOSITIVO
+    ListarDatosUnReloj(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const RELOJES = yield database_1.default.query(`
+            SELECT cr.id, cr.nombre, cr.ip, cr.puerto, cr.contrasenia, cr.marca, cr.modelo, cr.serie,
+                cr.id_fabricacion, cr.fabricante, cr.mac, cr.tien_funciones, cr.id_sucursal, 
+                cr.id_departamento, cr.numero_accion, cd.nombre AS nomdepar, s.nombre AS nomsucursal,
+                e.nombre AS nomempresa, c.descripcion AS nomciudad
+            FROM cg_relojes cr, cg_departamentos cd, sucursales s, ciudades c, cg_empresa e
+            WHERE cr.id_departamento = cd.id AND cd.id_sucursal = cr.id_sucursal AND cr.id_sucursal = s.id 
+                AND s.id_empresa = e.id AND s.id_ciudad = c.id AND cr.id = $1
+            `, [id]);
+            if (RELOJES.rowCount > 0) {
+                return res.jsonp(RELOJES.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }

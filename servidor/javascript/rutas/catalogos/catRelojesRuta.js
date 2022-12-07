@@ -24,11 +24,15 @@ class RelojesRuta {
         this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.FileXML);
         // METODO PARA DESCARGAR ARCHIVO XML
         this.router.get('/download/:nameXML', catRelojesControlador_1.default.downloadXML);
-        this.router.get('/:id', verificarToken_1.TokenValidation, catRelojesControlador_1.default.ListarUnReloj);
+        // METODO PARA REGISTRAR DISPOSITIVO
         this.router.post('/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.CrearRelojes);
-        this.router.post('/plantillaExcel/', [verificarToken_1.TokenValidation, multipartMiddlewarePlantilla], catRelojesControlador_1.default.CargaPlantillaRelojes);
+        // METODO PARA VER DATOS DE UN DISPOSITIVO
+        this.router.get('/:id', verificarToken_1.TokenValidation, catRelojesControlador_1.default.ListarUnReloj);
+        // METODO PARA ACTUALIZAR REGISTRO
         this.router.put('/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.ActualizarReloj);
+        // METODO PARA BUSCAR DATOS GENERALES DE DISPOSITIVOS
         this.router.get('/datosReloj/:id', verificarToken_1.TokenValidation, catRelojesControlador_1.default.ListarDatosUnReloj);
+        this.router.post('/plantillaExcel/', [verificarToken_1.TokenValidation, multipartMiddlewarePlantilla], catRelojesControlador_1.default.CargaPlantillaRelojes);
         // METODO para verificar datos de plantilla antes de subirlos
         this.router.post('/verificar_datos/plantillaExcel/', [verificarToken_1.TokenValidation, multipartMiddlewarePlantilla], catRelojesControlador_1.default.VerificarDatos);
         this.router.post('/verificar_plantilla/plantillaExcel/', [verificarToken_1.TokenValidation, multipartMiddlewarePlantilla], catRelojesControlador_1.default.VerificarPlantilla);

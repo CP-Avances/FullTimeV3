@@ -13,7 +13,6 @@ import { LogosComponent } from 'src/app/componentes/catalogos/catEmpresa/logos/l
 
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service'
-import { KardexService } from 'src/app/servicios/reportes/kardex.service';
 
 @Component({
   selector: 'app-ver-empresa',
@@ -40,10 +39,9 @@ export class VerEmpresaComponent implements OnInit {
 
   constructor(
     public ventana: MatDialog,
+    public empresa: EmpresaService,
     public router: Router,
     public restS: SucursalService,
-    public empresa: EmpresaService,
-    private restK: KardexService,
     private toastr: ToastrService,
   ) {
     var cadena = this.router.url;

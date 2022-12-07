@@ -131,7 +131,25 @@ class ParametrosControlador {
         res.jsonp({ message: 'Registro exitoso.' });
     }
 
+    // METODO PARA COMPARAR COORDENADAS
+    public async CompararCoordenadas(req: Request, res: Response): Promise<Response> {
+        try {
+            const { lat1, lng1, lat2, lng2, valor } = req.body;
+            const VALIDACION = await pool.query(
+                `
+                SELECT CASE ( SELECT 1 WHERE 
+                ($1::DOUBLE PRECISION  BETWEEN $3::DOUBLE PRECISION - $5 AND $3::DOUBLE PRECISION + $5) AND 
+                ($2::DOUBLE PRECISION  BETWEEN $4::DOUBLE PRECISION - $5 AND $4::DOUBLE PRECISION + $5)) 
+                IS null WHEN true THEN \'vacio\' ELSE \'ok\' END AS verificar
+                `
+                , [lat1, lng1, lat2, lng2, valor]);
 
+            return res.jsonp(VALIDACION.rows);
+        } catch (error) {
+            return res.status(500)
+                .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+        }
+    }
 
 
 
@@ -188,24 +206,7 @@ class ParametrosControlador {
         res.sendFile(__dirname.split("servidor")[0] + filePath);
     }
 
-    public async CompararCoordenadas(req: Request, res: Response): Promise<Response> {
-        try {
-            const { lat1, lng1, lat2, lng2, valor } = req.body;
-            console.log(lat1, lng1, lat2, lng2, valor);
-            const VALIDACION = await pool.query('SELECT CASE ( SELECT 1 ' +
-                'WHERE ' +
-                ' ($1::DOUBLE PRECISION  BETWEEN $3::DOUBLE PRECISION  - $5 AND $3::DOUBLE PRECISION  + $5) AND ' +
-                ' ($2::DOUBLE PRECISION  BETWEEN $4::DOUBLE PRECISION  - $5 AND $4::DOUBLE PRECISION  + $5) ' +
-                ') IS null WHEN true THEN \'vacio\' ELSE \'ok\' END AS verificar',
-                [lat1, lng1, lat2, lng2, valor]);
 
-            console.log(VALIDACION.rows);
-            return res.jsonp(VALIDACION.rows);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
-        }
-    }
 
 }
 

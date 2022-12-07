@@ -116,7 +116,7 @@
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/verDispositivos/',reloj.id]">
                                 <p>Ver</p>
                             </i>
-                            <i class="fas fa-edit" id="t-editar" (click)="AbrirVentanaEditar(reloj)" matSuffix
+                            <i class="fas fa-edit" id="t-editar" [routerLink]="['/editarRelojes/',reloj.id]" matSuffix
                                 matTooltipPosition="right" matTooltip="Modificar los datos generales de este registro.">
                                 <p>Editar</p>
                             </i>

@@ -6,15 +6,14 @@ import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
 
 import * as xlsx from 'xlsx';
+import * as moment from 'moment';
 import * as FileSaver from 'file-saver';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-import { EditarRelojComponent } from 'src/app/componentes/catalogos/catRelojes/editar-reloj/editar-reloj.component';
 import { RelojesComponent } from 'src/app/componentes/catalogos/catRelojes/relojes/relojes.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
@@ -163,17 +162,6 @@ export class ListarRelojesComponent implements OnInit {
   /** ********************************************************************************* **
    ** **           VENTANAS PARA REGISTRAR Y EDITAR DATOS DE UN DISPOSITIVO          ** **
    ** ********************************************************************************* **/
-
-  // VENTANA PARA EDITAR DATOS DE DISPOSITIVO SELECCIONADO
-  AbrirVentanaEditar(datosSeleccionados: any): void {
-    this.ventana.open(EditarRelojComponent, {
-      width: '1200px',
-      data: { datosReloj: datosSeleccionados, actualizar: true }
-    })
-      .afterClosed().subscribe(item => {
-        this.ObtenerReloj();
-      });;
-  }
 
   // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACION
   EliminarRelojes(id_reloj: number) {

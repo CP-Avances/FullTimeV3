@@ -161,6 +161,7 @@ export class MainNavComponent implements OnInit {
   get HabilitarAlimentacion(): boolean { return this.funciones.alimentacion; }
   get HabilitarVacaciones(): boolean { return this.funciones.vacaciones; }
   get HabilitarHoraExtra(): boolean { return this.funciones.horasExtras; }
+  get HabilitarTimbreWeb(): boolean { return this.funciones.timbre_web; }
   get HabilitarPermisos(): boolean { return this.funciones.permisos; }
   get HabilitarReportes(): boolean { return this.funciones.reportes; }
   get HabilitarAccion(): boolean { return this.funciones.accionesPersonal; }
@@ -420,7 +421,7 @@ export class MainNavComponent implements OnInit {
         color: true,
         children: [
           { name: 'Dispositivos', url: '/listarRelojes', color: true },
-          { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: true },
+          { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
           { name: 'Timbres Múltiples', url: '/timbres-multiples', color: true },
           { name: 'Administrar Timbres', url: '/timbres-admin', color: true },
         ]

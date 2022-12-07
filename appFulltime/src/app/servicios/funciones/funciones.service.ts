@@ -22,6 +22,14 @@ export class FuncionesService {
 
 
 
+
+
+
+
+
+  
+
+
   CrearFunciones(data: any) {
     return this.http.post(`${environment.url}/administracion`, data);
   }

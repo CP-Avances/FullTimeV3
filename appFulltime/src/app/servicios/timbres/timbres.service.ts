@@ -11,6 +11,25 @@ export class TimbresService {
     private http: HttpClient
   ) { }
 
+
+  // METODO PARA LISTAR MARCACIONES
+  ObtenerTimbres() {
+    return this.http.get<any>(`${environment.url}/timbres/`);
+  }
+
+  // METODO PARA REGISTRAR TIMBRE PERSONAL
+  RegistrarTimbreWeb(datos: any) {
+    return this.http.post<any>(`${environment.url}/timbres/`, datos);
+  }
+
+
+
+
+
+
+
+
+
   /**
    * METODO PARA TRAER LAS NOTIFICACIONES DE ATRASOS O SALIDAS ANTES SOLO VIENEN 5 NOTIFICACIONES
    * @param id_empleado Id DEL EMPLEADO QUE INICIA SESION
@@ -39,17 +58,12 @@ export class TimbresService {
     return this.http.put<any>(`${environment.url}/timbres/eliminar-multiples/avisos`, Seleccionados); //Eliminacion de datos seleccionados.
   }
 
-  PostTimbreWeb(datos: any) {
-    return this.http.post<any>(`${environment.url}/timbres/`, datos);
-  }
+
 
   PostTimbreWebAdmin(datos: any) {
     return this.http.post<any>(`${environment.url}/timbres/admin/`, datos);
   }
 
-  ObtenerTimbres() {
-    return this.http.get<any>(`${environment.url}/timbres/`);
-  }
 
   ObtenerTimbresEmpleado(id: number) {
     return this.http.get<any>(`${environment.url}/timbres/ver/timbres/${id}`);

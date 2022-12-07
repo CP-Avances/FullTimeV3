@@ -17,8 +17,10 @@
                     <span>Información general</span>
                 </div>
                 <div class="nota">
-                    <span>Por favor llenar todos los campos obligatorios (*) del formulario y dar click en Siguiente
-                        para continuar.</span>
+                    <span>
+                        Por favor llenar todos los campos obligatorios (*) del formulario y dar click en Siguiente
+                        para continuar.
+                    </span>
                 </div>
                 <form [formGroup]="primerFormulario">
                     <div class="row">
@@ -32,7 +34,8 @@
                                     </mat-icon>
                                     <mat-select [formControl]="idSucursalF" required>
                                         <mat-option *ngFor="let s of sucursales" [value]="s.id"
-                                            (click)="ObtenerDepartamentos(primerFormulario.value)">{{s.nombre}}</mat-option>
+                                            (click)="ObtenerDepartamentos(primerFormulario.value)">{{s.nombre}}
+                                        </mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
@@ -43,8 +46,9 @@
                                         help_outline
                                     </mat-icon>
                                     <mat-select [formControl]="idDepartamentoF" required>
-                                        <mat-option *ngFor="let d of departamento" [value]="d.id"
-                                            (click)="ObtenerNombre(primerFormulario.value)">{{d.nombre}}</mat-option>
+                                        <mat-option *ngFor="let d of departamento" [value]="d.id">
+                                            {{d.nombre}}
+                                        </mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
@@ -96,16 +100,12 @@
                                 <mat-radio-group aria-label="Select an option" formControlName="funcionesForm" required>
                                     <label class="d-flex justify-content-start">
                                         <span style="margin-left: 10px;">Tiene acciones *</span>
-                                        <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                            matTooltip="El dispositivo trabaja con funciones.">
-                                            help_outline
-                                        </mat-icon>
                                     </label>
                                     <div class="d-flex justify-content-around">
-                                        <mat-radio-button value="true" (click)="activarVista()">
+                                        <mat-radio-button value="true" (click)="ActivarVista()">
                                             Si
                                         </mat-radio-button>
-                                        <mat-radio-button value="false" (click)="desactivarVista()">
+                                        <mat-radio-button value="false" (click)="DesactivarVista()">
                                             No
                                         </mat-radio-button>
                                     </div>
@@ -119,7 +119,6 @@
                                         help_outline
                                     </mat-icon>
                                 </mat-form-field>
-
                             </div>
                         </div>
                     </div>
@@ -133,12 +132,13 @@
             <!-- ********************************* SEGUNDO FORMULARIO ************************************* -->
             <mat-step [stepControl]="segundoFormulario">
                 <ng-template matStepLabel>
-                    <mat-icon id="icono" matSuffix matTooltipPosition="right" matTooltip="Sección 2: Establecimientos">
-                        home
+                    <mat-icon id="icono" matSuffix matTooltipPosition="right"
+                        matTooltip="Sección 2: Información dispositivo">
+                        alarm_on
                     </mat-icon>
                 </ng-template>
                 <div class="subtitulo">
-                    <span>Establecimientos</span>
+                    <span>Dispositivo</span>
                 </div>
                 <div class="nota">
                     <span>Llenar todos los campos obligatorios (*) del formulario y dar click en Guardar.</span>
@@ -151,7 +151,7 @@
                                     <mat-label>Marca</mat-label>
                                     <input matInput placeholder="Ingresar marca" [formControl]="marcaF">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar la marca del dispositivo">help_outline
+                                        matTooltip="Ingresar la marca del dispositivo.">help_outline
                                     </mat-icon>
                                     <mat-error *ngIf="marcaF.invalid">Ingresar una marca válida</mat-error>
                                 </mat-form-field>
@@ -159,7 +159,7 @@
                                     <mat-label>Modelo</mat-label>
                                     <input matInput placeholder="Ingresar modelo" [formControl]="modeloF">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar el modelo del dispositivo">help_outline
+                                        matTooltip="Ingresar el modelo del dispositivo.">help_outline
                                     </mat-icon>
                                     <mat-error *ngIf="modeloF.invalid">Ingresar un modelo válido</mat-error>
                                 </mat-form-field>
@@ -168,9 +168,9 @@
                                     <input matInput placeholder="Ingresar id fabricación"
                                         [formControl]="idFabricacionF">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="left"
-                                        matTooltip="Ingresar ID de fabricación del dispositivo">
+                                        matTooltip="Ingresar ID de fabricación del dispositivo.">
                                         help_outline</mat-icon>
-                                    <mat-error id="idFabrica" *ngIf="idFabricacionF.invalid">
+                                    <mat-error id="mensaje" *ngIf="idFabricacionF.invalid">
                                         Ingresar un id de fabricación válido.
                                     </mat-error>
                                 </mat-form-field>
@@ -178,7 +178,7 @@
                                     <mat-label>Fabricante</mat-label>
                                     <input matInput placeholder="Ingresar fabricante" [formControl]="fabricanteF">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="left"
-                                        matTooltip="Ingresar nombre de empresa fabricante del dispositivo">
+                                        matTooltip="Ingresar nombre de empresa fabricante del dispositivo.">
                                         help_outline
                                     </mat-icon>
                                     <mat-error *ngIf="fabricanteF.invalid">Ingresar un modelo válido.</mat-error>
@@ -191,7 +191,7 @@
                                     <mat-label>Serie</mat-label>
                                     <input matInput placeholder="Ingresar serie" [formControl]="serieF">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar la serie del dispositivo">help_outline
+                                        matTooltip="Ingresar la serie del dispositivo.">help_outline
                                     </mat-icon>
                                     <mat-error *ngIf="serieF.invalid">Ingresar una serie válida</mat-error>
                                 </mat-form-field>

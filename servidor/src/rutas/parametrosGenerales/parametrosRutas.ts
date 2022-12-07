@@ -29,8 +29,8 @@ class ParametrosRutas {
         this.router.put('/actual-detalle', TokenValidation, PARAMETROS_CONTROLADOR.ActualizarDetalleParametro);
         // METODO PARA REGISTRAR PARAMETRO
         this.router.post('/tipo', TokenValidation, PARAMETROS_CONTROLADOR.IngresarTipoParametro);
-
-
+        // METODO PARA COMPARAR COORDENADAS
+        this.router.post('/coordenadas', TokenValidation, PARAMETROS_CONTROLADOR.CompararCoordenadas);
 
 
 
@@ -39,7 +39,7 @@ class ParametrosRutas {
 
         this.router.post('/xmlDownload/', TokenValidation, PARAMETROS_CONTROLADOR.FileXML);
         this.router.get('/download/:nameXML', PARAMETROS_CONTROLADOR.downloadXML);
-        this.router.post('/coordenadas', TokenValidation, PARAMETROS_CONTROLADOR.CompararCoordenadas);
+
     }
 }
 
