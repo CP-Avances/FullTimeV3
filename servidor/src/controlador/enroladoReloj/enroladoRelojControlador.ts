@@ -40,7 +40,7 @@ class EnroladoRelojControlador {
     public async EliminarRelojEnrolado(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM relj_enrolados WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
 

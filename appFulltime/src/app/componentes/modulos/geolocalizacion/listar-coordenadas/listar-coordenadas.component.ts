@@ -23,6 +23,8 @@ import { ParametrosService } from 'src/app/servicios/parametrosGenerales/paramet
 import { CrearCoordenadasComponent } from '../crear-coordenadas/crear-coordenadas.component';
 import { EditarCoordenadasComponent } from '../editar-coordenadas/editar-coordenadas.component';
 import { EmpleadoUbicacionService } from 'src/app/servicios/empleadoUbicacion/empleado-ubicacion.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-listar-coordenadas',
@@ -50,6 +52,8 @@ export class ListarCoordenadasComponent implements OnInit {
     descripcionForm: this.descripcionF,
   });
 
+  get habilitarGeolocalizacion(): boolean { return this.funciones.geolocalizacion; }
+
   constructor(
     private rest: TipoPermisosService,
     public restE: EmpleadoService,
@@ -58,19 +62,32 @@ export class ListarCoordenadasComponent implements OnInit {
     private restU: EmpleadoUbicacionService,
     private toastr: ToastrService,
     private router: Router,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
 
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerCoordenadas();
-    this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerLogo();
-    this.ObtenerColores();
+    if (this.habilitarGeolocalizacion === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Geolocalización. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.ObtenerCoordenadas();
+      this.ObtenerEmpleados(this.idEmpleado);
+      this.ObtenerLogo();
+      this.ObtenerColores();
+    }
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -78,7 +95,7 @@ export class ListarCoordenadasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -86,7 +103,7 @@ export class ListarCoordenadasComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -104,7 +121,7 @@ export class ListarCoordenadasComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA LISTAR UBICACIONES GEOGRÁFICAS
+  // METODO PARA LISTAR UBICACIONES GEOGRÁFICAS
   coordenadas: any = [];
   ObtenerCoordenadas() {
     this.coordenadas = [];
@@ -113,7 +130,7 @@ export class ListarCoordenadasComponent implements OnInit {
     }, error => { });
   }
 
-  // MÉTODO PARA LIMPIAR CAMPO DE BÚSQUEDA
+  // METODO PARA LIMPIAR CAMPO DE BUSQUEDA
   LimpiarCampos() {
     this.CoordenadasForm.setValue({
       descripcionForm: '',
@@ -121,7 +138,7 @@ export class ListarCoordenadasComponent implements OnInit {
     this.ObtenerCoordenadas();
   }
 
-  // MÉTODO PARA ABRIR VENTANA CREACIÓN DE REGISTRO
+  // METODO PARA ABRIR VENTANA CREACIÓN DE REGISTRO
   CrearParametro(): void {
     this.ventana.open(CrearCoordenadasComponent,
       { width: '400px' }).afterClosed().subscribe(item => {
@@ -129,7 +146,7 @@ export class ListarCoordenadasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA ABRIR VENTANA EDICIÓN DE REGISTRO
+  // METODO PARA ABRIR VENTANA EDICIÓN DE REGISTRO
   AbrirEditar(datos: any): void {
     this.ventana.open(EditarCoordenadasComponent,
       { width: '400px', data: { ubicacion: datos, actualizar: false } }).afterClosed().subscribe(item => {
@@ -137,7 +154,7 @@ export class ListarCoordenadasComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id: number) {
     this.restU.EliminarCoordenadas(id).subscribe(res => {
       if (res.message === 'false') {
@@ -146,7 +163,7 @@ export class ListarCoordenadasComponent implements OnInit {
         });
       }
       else {
-        this.toastr.error('Registro eliminado', '', {
+        this.toastr.error('Registro eliminado.', '', {
           timeOut: 6000,
         });
         this.ObtenerCoordenadas();
@@ -154,7 +171,7 @@ export class ListarCoordenadasComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -167,7 +184,7 @@ export class ListarCoordenadasComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
- *                                         MÉTODO PARA EXPORTAR A PDF
+ *                                         METODO PARA EXPORTAR A PDF
  ******************************************************************************************************/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -291,7 +308,7 @@ export class ListarCoordenadasComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.coordenadas);
@@ -301,7 +318,7 @@ export class ListarCoordenadasComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {
@@ -348,7 +365,7 @@ export class ListarCoordenadasComponent implements OnInit {
       arregloTipoPermisos.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloTipoPermisos).subscribe(res => {
+    this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/departamento/download/` + this.data.name;

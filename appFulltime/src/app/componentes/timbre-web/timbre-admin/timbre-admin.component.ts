@@ -1,11 +1,11 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { FormControl, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 
-// IMPORTACIÓN DE SERVICIOS
+// IMPORTACION DE SERVICIOS
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
@@ -22,14 +22,14 @@ export class TimbreAdminComponent implements OnInit {
   // VARIABLE DE ALMACENAMIENTO DE DATOS DE EMPLEADO
   datosEmpleado: any = [];
 
-  // DATOS DEL FORMULARIO DE BÚSQUEDA
+  // DATOS DEL FORMULARIO DE BUSQUEDA
   departamentoF = new FormControl('', Validators.minLength(2));
   cedula = new FormControl('', Validators.minLength(2));
   nombre = new FormControl('', Validators.minLength(2));
   cargoF = new FormControl('', Validators.minLength(2));
   codigo = new FormControl('');
 
-  // DATOS DE FILTROS DE BÚSQUEDA
+  // DATOS DE FILTROS DE BUSQUEDA
   filtroDepartamento: '';
   filtroEmpleado = '';
   filtroCodigo: number;
@@ -50,7 +50,7 @@ export class TimbreAdminComponent implements OnInit {
   tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
-  // FILTROS DE BÚSQUEDA DE TIMBRES POR FECHA
+  // FILTROS DE BUSQUEDA DE TIMBRES POR FECHA
   dataSource: any;
   filtroFechaTimbre = '';
 
@@ -76,7 +76,7 @@ export class TimbreAdminComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -131,31 +131,31 @@ export class TimbreAdminComponent implements OnInit {
     })
   }
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE ACUERDO A LA FECHA INGRESADA
+  // METODO DE BUSQUEDA DE DATOS DE ACUERDO A LA FECHA INGRESADA
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.filtroFechaTimbre = filterValue.trim().toLowerCase();
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  // MÉTODO PARA VER UBICACIÓN DE TIMBRE
+  // METODO PARA VER UBICACIÓN DE TIMBRE
   abrirMapa(latitud, longitud) {
     if (!latitud || !longitud) return this.toastr.warning('Timbre seleccionado no posee registro de coordenadas de ubicación.')
     const rutaMapa = "https://www.google.com/maps/search/+" + latitud + "+" + longitud;
     window.open(rutaMapa);
   }
 
-  // MÉTODO DE VALIDACIÓN DE INGRESO DE SOLO LETRAS
+  // METODO DE VALIDACIÓN DE INGRESO DE SOLO LETRAS
   IngresarSoloLetras(e) {
     return this.validar.IngresarSoloLetras(e)
   }
 
-  // MÉTODO DE VALIDACIÓN DE INGRESO DE SOLO NÚMEROS
+  // METODO DE VALIDACIÓN DE INGRESO DE SOLO NÚMEROS
   IngresarSoloNumeros(evt) {
     return this.validar.IngresarSoloNumeros(evt)
   }
 
-  // MÉTODO PARA LIMPIAR CAMPOS DE FORMULARIO
+  // METODO PARA LIMPIAR CAMPOS DE FORMULARIO
   LimpiarCampos() {
     this.departamentoF.reset();
     this.filtroEmpleado = '';
@@ -165,7 +165,7 @@ export class TimbreAdminComponent implements OnInit {
     this.cargoF.reset();
   }
 
-  // MÉTODO PARA CERRAR TABLA
+  // METODO PARA CERRAR TABLA
   CerrarTabla() {
     this.lista = false;
     this.timbres = [];

@@ -1,19 +1,9 @@
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
-
-#movilidad { 
-    cursor: grab;
-    color: blue;
-    font-size: 20px;
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
 }
 
-.empleHorario { 
-    font-size: 20px; 
-    text-align: center; 
-    background: rgb(52,65,84); 
-    color: white; 
-    padding-top: 10px; 
+#letra {
+    font-size: 13px;
 }
-
-
-
-

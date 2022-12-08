@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../login/login.service';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
-
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class ValidacionesService {
 
   constructor(
@@ -20,6 +20,30 @@ export class ValidacionesService {
   /** ********************************************************************************* **
    ** **                REDIRECCION POR ACCESO A MODULOS NO AUTORIZADOS              ** **
    ** ********************************************************************************* **/
+
+  // REDIRECCIONAMIENTO A LA PAGINA PRINCIPAL DEL ADMINISTRADOR
+  RedireccionarHomeAdmin(error: any) {
+    const { access, message, url, title } = error;
+
+    if (access === false) {
+      this.toastr.info(message + ' ' + url, title, {
+        timeOut: 6000,
+        positionClass: 'toast-top-center',
+
+      })
+        .onTap.subscribe(items => {
+          if (url) {
+            window.open(`https://${url}`, "_blank");
+          }
+        });
+      this.router.navigate(['/home']);
+    }
+  }
+
+
+
+
+
 
   RedireccionarEstadisticas(error) {
     const { access, message, text } = error;
@@ -35,25 +59,7 @@ export class ValidacionesService {
     // this.router.navigate(['/estadisticas', { relativeTo: this.route, skipLocationChange: false }]);
   }
 
-  RedireccionarHomeAdmin(error) {
-    const { access, message, text, url } = error;
-    console.log('validar error ', error);
-    console.log('validar error 2 ', access + ' ', message + ' ', text + ' ', url);
 
-    if (access === false) {
-      this.toastr.error(message)
-        .onTap.subscribe(items => {
-          if (url) {
-            window.open(`https://${url}`, "_blank");
-          }
-        });
-      this.router.navigate(['/home']);
-      // this.router.navigate(['/home', { relativeTo: this.route, skipLocationChange: false }]);
-    }
-    /* if (text) {
-       this.toastr.error(text)
-     }*/
-  }
 
   RedireccionarMixto(error) {
     const { access, message, text, url } = error;
@@ -75,7 +81,7 @@ export class ValidacionesService {
   }
 
   /** ******************************************************************** *
-   *                  MÉTODO PARA CONTROLAR INGRESO DE LETRAS              *
+   *                  METODO PARA CONTROLAR INGRESO DE LETRAS              *
    *  ******************************************************************** */
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
@@ -100,7 +106,7 @@ export class ValidacionesService {
   }
 
   /** ******************************************************************** *
-   *                  MÉTODO PARA CONTROLAR INGRESO DE NÚMEROS             *
+   *                  METODO PARA CONTROLAR INGRESO DE NÚMEROS             *
    *  ******************************************************************** */
   IngresarSoloNumeros(evt) {
     if (window.event) {

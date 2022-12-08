@@ -15,7 +15,7 @@ import { AutorizaDepartamentoService } from 'src/app/servicios/autorizaDepartame
 
 export class InformacionJefeComponent implements OnInit {
 
-  // Almacenamiento de datos y búsqueda
+  // Almacenamiento de datos y BUSQUEDA
   departamento: any = [];
   idEmpleado: string;
   idCargo: any = [];

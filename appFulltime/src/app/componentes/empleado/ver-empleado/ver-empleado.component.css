@@ -1,27 +1,13 @@
-.col-sm {
-    font-weight: bold;
-}
-
-#boton {
-    background-color: rgb(80, 87, 97);
-    color: white;
-    margin-top: 10px;
-}
-
 mat-divider {
     background: rgba(131, 131, 131, 0.609);
 }
 
-.material-icons {
-    margin-right: 8px;
-}
-
-#boton:hover {
-    background-color: rgba(75, 75, 75, 0.609);
-}
-
 p {
     font-size: x-small;
+}
+
+.material-icons {
+    margin-right: 8px;
 }
 
 .fas {
@@ -30,11 +16,6 @@ p {
 
 .far {
     cursor: pointer;
-}
-
-#detalleH {
-    color: rgb(38, 0, 255);
-    margin-right: 15px;
 }
 
 #cerrar {
@@ -65,19 +46,6 @@ mat-grid-tile:hover {
     padding-right: 5px;
 }
 
-#verticalLine {
-    border-left: 1px solid rgb(52, 65, 84);
-}
-
-.caja3 {
-    padding: 0px 5px 0px 5px;
-    width: 200px;
-}
-
-.caja2 {
-    padding: 0px 5px 0px 5px;
-    width: 300px;
-}
 
 #avatar {
     border-radius: 100%;
@@ -107,22 +75,15 @@ mat-grid-tile:hover {
     text-align: center;
 }
 
-#doc {
-    font-size: 14px;
-    text-align: center;
-}
-
 #delete {
     color: red;
     cursor: pointer;
     text-align: center;
 }
 
-
-
 table {
     width: 100%;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 td {
@@ -224,7 +185,6 @@ td {
     padding-top: 10px;
     padding-bottom: 6px;
 }
-
 
 #geolocalizacion {
     height: 400px;

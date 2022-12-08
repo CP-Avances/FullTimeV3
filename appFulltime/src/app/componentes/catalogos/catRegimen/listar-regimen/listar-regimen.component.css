@@ -28,7 +28,3 @@ table {
 .scrollme {
     overflow-x: scroll;
 }
-
-th {
-    font-size: 14px;
-}

@@ -63,7 +63,7 @@ class EnroladoControlador {
   public async EliminarEnrolado(req: Request, res: Response): Promise<void> {
     const id = req.params.id;
     await pool.query('DELETE FROM cg_enrolados WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
   public async CargaPlantillaEnrolado(req: Request, res: Response): Promise<void> {

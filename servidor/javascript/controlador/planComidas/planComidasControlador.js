@@ -215,7 +215,7 @@ class PlanComidasControlador {
             res.status(404).jsonp({ text: 'Registro no encontrado' });
         });
     }
-    // BÚSQUEDA DE PLANIFICACIONES POR EMPLEADO Y FECHA 
+    // BUSQUEDA DE PLANIFICACIONES POR EMPLEADO Y FECHA 
     BuscarPlanComidaEmpleadoFechas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id, fecha_inicio, fecha_fin, hora_inicio, hora_fin } = req.body;
@@ -490,7 +490,7 @@ class PlanComidasControlador {
             yield database_1.default.query(`
       DELETE FROM plan_comidas WHERE id = $1
       `, [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     // ELIMINAR PLANIFICACION DE UN USUARIO ESPECIFICO
@@ -501,7 +501,7 @@ class PlanComidasControlador {
             yield database_1.default.query(`
       DELETE FROM plan_comida_empleado WHERE id_plan_comida = $1 AND id_empleado = $2
       `, [id, id_empleado]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     // BUSQUEDA DE PLANIFICCAIONES DE ALIMENTACION POR ID DE PLANIFICACION
@@ -593,7 +593,7 @@ class PlanComidasControlador {
         });
     }
     /** ******************************************************************************************** **
-     ** *            MÉTODO ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE ALIMENTACIÓN             * **
+     ** *            METODO ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE ALIMENTACIÓN             * **
      ** ******************************************************************************************** **/
     // ENVIAR CORRE ELECTRÓNICO INDICANDO QUE SE HA REALIZADO UNA SOLICITUD DE COMIDA MEDIANTE APP WEB
     EnviarCorreoComidas(req, res) {
@@ -702,7 +702,7 @@ class PlanComidasControlador {
             }
         });
     }
-    // MÉTODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
+    // METODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
     EnviarCorreoComidasMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();

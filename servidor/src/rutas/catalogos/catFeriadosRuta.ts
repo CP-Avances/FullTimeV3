@@ -16,18 +16,36 @@ class FeriadosRuta {
     }
 
     configuracion(): void {
+
+        // METODO PARA LISTAR FERIADOS
         this.router.get('/', TokenValidation, FERIADOS_CONTROLADOR.ListarFeriados);
-        this.router.get('/listar/:id', TokenValidation, FERIADOS_CONTROLADOR.ListarFeriadosActualiza);
-        this.router.get('/ultimoId', TokenValidation, FERIADOS_CONTROLADOR.ObtenerUltimoId);
-        this.router.get('/:id', TokenValidation, FERIADOS_CONTROLADOR.ObtenerUnFeriado);
+        // METODO PARA ELIMINAR REGISTRO
+        this.router.delete('/delete/:id', TokenValidation, FERIADOS_CONTROLADOR.EliminarFeriado);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, FERIADOS_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', FERIADOS_CONTROLADOR.downloadXML);
+        // METODO PARA CREAR REGISTRO DE FERIADO
         this.router.post('/', TokenValidation, FERIADOS_CONTROLADOR.CrearFeriados);
+        // METODO PARA BUSCAR FERIADOS EXCEPTO REGISTRO EDITADO
+        this.router.get('/listar/:id', TokenValidation, FERIADOS_CONTROLADOR.ListarFeriadosActualiza);
+        // METODO PARA ACTUALIZAR REGISTRO
+        this.router.put('/', TokenValidation, FERIADOS_CONTROLADOR.ActualizarFeriado);
+        // METODO PARA BUSCAR INFORMACION DE UN FERIADO
+        this.router.get('/:id', TokenValidation, FERIADOS_CONTROLADOR.ObtenerUnFeriado);
+
+
+
+
+
+
+
         this.router.post('/upload/revision', [TokenValidation, multipartMiddleware], FERIADOS_CONTROLADOR.RevisarDatos);
         this.router.post('/upload/revision_data', [TokenValidation, multipartMiddleware], FERIADOS_CONTROLADOR.RevisarDatos_Duplicados);
         this.router.post('/upload', [TokenValidation, multipartMiddleware], FERIADOS_CONTROLADOR.CrearFeriadoPlantilla);
-        this.router.put('/', TokenValidation, FERIADOS_CONTROLADOR.ActualizarFeriado);
-        this.router.post('/xmlDownload/', TokenValidation, FERIADOS_CONTROLADOR.FileXML);
-        this.router.get('/download/:nameXML', FERIADOS_CONTROLADOR.downloadXML);
-        this.router.delete('/delete/:id', TokenValidation, FERIADOS_CONTROLADOR.EliminarFeriado);
+
+
+
     }
 }
 

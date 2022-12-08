@@ -11,7 +11,7 @@ export class TipoComidasService {
     private http: HttpClient
   ) { }
 
-  // Invocación del método post para crear nuevo tipo de comida
+  // Invocación del METODO post para crear nuevo tipo de comida
   CrearNuevoTipoComida(datos: any) {
     return this.http.post(`${environment.url}/tipoComidas`, datos);
   }
@@ -33,7 +33,7 @@ export class TipoComidasService {
     return this.http.put(`${environment.url}/tipoComidas`, datos);
   }
 
-  DownloadXMLRest(data: any) {
+  CrearXML(data: any) {
     return this.http.post(`${environment.url}/tipoComidas/xmlDownload`, data);
   }
 

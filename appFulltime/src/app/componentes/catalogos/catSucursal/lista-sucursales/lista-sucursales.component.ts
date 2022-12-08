@@ -1,18 +1,18 @@
-// IMPORTACIÓN DE LIBRERIAS
-import { environment } from 'src/environments/environment';
+// IMPORTACION DE LIBRERIAS
+import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 
+import * as xlsx from 'xlsx';
+import * as FileSaver from 'file-saver';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import * as xlsx from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 import { RegistrarSucursalesComponent } from '../registrar-sucursales/registrar-sucursales.component';
 import { EditarSucursalComponent } from 'src/app/componentes/catalogos/catSucursal/editar-sucursal/editar-sucursal.component';
@@ -37,7 +37,7 @@ export class ListaSucursalesComponent implements OnInit {
   filtroCiudadSuc = '';
   filtroEmpresaSuc = '';
 
-  public BuscarSucursalForm = new FormGroup({
+  public formulario = new FormGroup({
     buscarNombreForm: this.buscarNombre,
     buscarCiudadForm: this.buscarCiudad,
     buscarEmpresForm: this.buscarEmpresa
@@ -45,9 +45,9 @@ export class ListaSucursalesComponent implements OnInit {
 
   sucursales: any = [];
 
-  // Items de paginación de la tabla
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   empleado: any = [];
@@ -56,22 +56,22 @@ export class ListaSucursalesComponent implements OnInit {
   constructor(
     private rest: SucursalService,
     private toastr: ToastrService,
-    public restE: EmpleadoService,
-    public restEmpre: EmpresaService,
-    public vistaRegistrarDatos: MatDialog,
     private router: Router,
+    public restEmpre: EmpresaService,
+    public ventana: MatDialog,
+    public restE: EmpleadoService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerSucursal();
     this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerLogo();
+    this.ObtenerSucursal();
     this.ObtenerColores();
+    this.ObtenerLogo();
   }
 
-  // Método para ver la información del empleado 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -79,7 +79,7 @@ export class ListaSucursalesComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -87,7 +87,7 @@ export class ListaSucursalesComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -99,32 +99,37 @@ export class ListaSucursalesComponent implements OnInit {
     });
   }
 
+  // METODO PARA MANEJAR LA PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  // METODO PARA BUSCAR SUCURSALES
   ObtenerSucursal() {
-    this.rest.getSucursalesRest().subscribe(data => {
+    this.rest.BuscarSucursal().subscribe(data => {
       this.sucursales = data;
     });
   }
 
+  // METODO PARA REGISTRAR SUCURSAL
   AbrirVentanaRegistrarSucursal() {
-    this.vistaRegistrarDatos.open(RegistrarSucursalesComponent, { width: '900px' }).afterClosed().subscribe(items => {
+    this.ventana.open(RegistrarSucursalesComponent, { width: '900px' }).afterClosed().subscribe(items => {
       this.ObtenerSucursal();
     });
   }
 
+  // METODO PARA EDITAR SUCURSAL
   AbrirVentanaEditar(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados }).afterClosed().subscribe(items => {
-      this.ObtenerSucursal();
-    });
+    this.ventana.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
+      .afterClosed().subscribe(items => {
+        this.ObtenerSucursal();
+      });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampoBuscar() {
-    this.BuscarSucursalForm.setValue({
+    this.formulario.setValue({
       buscarNombreForm: '',
       buscarCiudadForm: '',
       buscarEmpresForm: ''
@@ -132,12 +137,13 @@ export class ListaSucursalesComponent implements OnInit {
     this.ObtenerSucursal();
   }
 
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR SOLO LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -154,20 +160,19 @@ export class ListaSucursalesComponent implements OnInit {
     }
   }
 
-  /** Función para eliminar registro seleccionado */
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_sucursal: number) {
-    //console.log("probando id", id_prov)
     this.rest.EliminarRegistro(id_sucursal).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerSucursal();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -177,9 +182,9 @@ export class ListaSucursalesComponent implements OnInit {
       });
   }
 
-  /****************************************************************************************************** 
-   *                                         MÉTODO PARA EXPORTAR A PDF
-   ******************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                      METODO PARA EXPORTAR A PDF                              ** **
+   ** ************************************************************************************************** **/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
 
@@ -196,15 +201,13 @@ export class ListaSucursalesComponent implements OnInit {
   getDocumentDefinicion() {
     sessionStorage.setItem('Establecimientos', this.sucursales);
     return {
-
-      // Encabezado de la página
+      // ENCABEZADO DE LA PÁGINA
       pageOrientation: 'landscape',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
-
-      // Pie de página
+      // PIE DE PÁGINA
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
-   var f = moment();
+        var f = moment();
         fecha = f.format('YYYY-MM-DD');
         hora = f.format('HH:mm:ss');
         return {
@@ -272,9 +275,9 @@ export class ListaSucursalesComponent implements OnInit {
     };
   }
 
-  /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
-   ******************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                      METODO PARA EXPORTAR A EXCEL                            ** **
+   ** ************************************************************************************************** **/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.sucursales);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -282,9 +285,9 @@ export class ListaSucursalesComponent implements OnInit {
     xlsx.writeFile(wb, "Establecimientos" + new Date().getTime() + '.xlsx');
   }
 
-  /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
-   ******************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                      METODO PARA EXPORTAR A CSV                              ** **
+   ** ************************************************************************************************** **/
 
   exportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.sucursales);
@@ -293,9 +296,9 @@ export class ListaSucursalesComponent implements OnInit {
     FileSaver.saveAs(data, "EstablecimientosCSV" + new Date().getTime() + '.csv');
   }
 
-  /* ****************************************************************************************************
- *                                 PARA LA EXPORTACIÓN DE ARCHIVOS XML
- * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                                PARA LA EXPORTACION DE ARCHIVOS XML                          ** **
+   ** ************************************************************************************************* **/
 
   urlxml: string;
   data: any = [];
@@ -314,13 +317,12 @@ export class ListaSucursalesComponent implements OnInit {
       arregloSucursales.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloSucursales).subscribe(res => {
+    this.rest.CrearXML(arregloSucursales).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/sucursales/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });
   }
-
 
 }

@@ -63,7 +63,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -83,10 +83,10 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
   }
 
   /** ******************************************************************************************** **
-   ** **                    MÉTODOS PARA MENEJO DE DATOS DE CONTRATO                            ** **
+   ** **                    METODOS PARA MENEJO DE DATOS DE CONTRATO                            ** **
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA OBTENER ULTIMO CONTRATO
+  // METODO PARA OBTENER ULTIMO CONTRATO
   BuscarContratoActual(formato_fecha: string) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.datoActual.id_contrato = datos[0].max;
@@ -94,7 +94,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
+  // METODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
   ObtenerContratoEmpleado(id_contrato: number, formato_fecha: string) {
     this.restEmpleado.BuscarDatosContrato(id_contrato).subscribe(res => {
       this.contratoEmpleado = res;
@@ -105,7 +105,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER LISTA DE TODOS LOS CONTRATOS
+  // METODO PARA VER LISTA DE TODOS LOS CONTRATOS
   contratoBuscado: any = [];
   ObtenerContratosEmpleado(formato_fecha: string) {
     this.contratoBuscado = [];
@@ -117,7 +117,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER DATOS DEL CONTRATO SELECCIONADO 
+  // METODO PARA VER DATOS DEL CONTRATO SELECCIONADO 
   fechaContrato = new FormControl('');
   public contratoForm = new FormGroup({
     fechaContratoForm: this.fechaContrato,
@@ -134,7 +134,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
         data.fec_salida_ = this.validar.FormatearFecha(data.fec_salida, this.formato_fecha, this.validar.dia_abreviado);
       })
     });
-    this.restCargo.getInfoCargoEmpleadoRest(form.fechaContratoForm).subscribe(datos => {
+    this.restCargo.BuscarCargoIDContrato(form.fechaContratoForm).subscribe(datos => {
       this.listaCargos = datos;
       this.listaCargos.forEach(data => {
         data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, this.formato_fecha, this.validar.dia_abreviado);
@@ -146,7 +146,7 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA LIMPIAR REGISTRO DE CONTRATO
+  // METODO PARA LIMPIAR REGISTRO DE CONTRATO
   LimpiarContrato() {
     this.contratoSeleccionado = [];
     this.cargoSeleccionado = [];
@@ -157,10 +157,10 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
 
 
   /** ** ***************************************************************************************** **
-   ** ** **                  MÉTODOS PARA MENEJO DE DATOS DE CARGO                              ** **
+   ** ** **                  METODOS PARA MENEJO DE DATOS DE CARGO                              ** **
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
+  // METODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
   cargoEmpleado: any = [];
   ObtenerCargoEmpleado(id_cargo: number, formato_fecha: string) {
     this.cargoEmpleado = [];
@@ -173,14 +173,14 @@ export class ContratoCargoEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA LIMPIAR REGISTRO 
+  // METODO PARA LIMPIAR REGISTRO 
   LimpiarCargo() {
     this.cargoSeleccionado = [];
     this.listaCargos = [];
     this.cargoForm.reset();
   }
 
-  // MÉTODO PARA VER CARGO SELECCIONADO 
+  // METODO PARA VER CARGO SELECCIONADO 
   fechaICargo = new FormControl('');
   public cargoForm = new FormGroup({
     fechaICargoForm: this.fechaICargo,

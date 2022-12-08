@@ -37,7 +37,7 @@ class EmpleadoHorariosControlador {
             }
         });
     }
-    // CREACIÓN DE HORARIO
+    // CREACION DE HORARIO
     CrearEmpleadoHorarios(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves, viernes, sabado, domingo, id_horarios, estado, codigo } = req.body;
@@ -47,7 +47,49 @@ class EmpleadoHorariosControlador {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             `, [id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves,
                 viernes, sabado, domingo, id_horarios, estado, codigo]);
-            res.jsonp({ message: 'El horario del empleado se registró con éxito' });
+            res.jsonp({ message: 'Registro guardado.' });
+        });
+    }
+    // METODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA
+    VerificarHorariosExistentes(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { fechaInicio, fechaFinal } = req.body;
+            const { empl_id } = req.params;
+            const HORARIO = yield database_1.default.query(`
+            SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final 
+            FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch 
+            WHERE ($1 BETWEEN fec_inicio AND fec_final
+                OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 
+                OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1 
+                AND eh.id_horarios = ch.id AND e.id = $3
+            `, [fechaInicio, fechaFinal, empl_id]);
+            if (HORARIO.rowCount > 0) {
+                return res.jsonp(HORARIO.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
+        });
+    }
+    // METODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA PROCESO EDICION
+    VerificarHorariosExistentesEdicion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { fechaInicio, fechaFinal, id } = req.body;
+            const { empl_id } = req.params;
+            const HORARIO = yield database_1.default.query(`
+            SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final
+            FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch
+            WHERE NOT eh.id = $4 AND ($1 BETWEEN fec_inicio AND fec_final
+                OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2
+                OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1
+                AND eh.id_horarios = ch.id AND e.id = $3
+            `, [fechaInicio, fechaFinal, empl_id, id]);
+            if (HORARIO.rowCount > 0) {
+                return res.jsonp(HORARIO.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados' });
+            }
         });
     }
     ListarEmpleadoHorarios(req, res) {
@@ -383,7 +425,7 @@ class EmpleadoHorariosControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             yield database_1.default.query('DELETE FROM empl_horarios WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     ObtenerHorariosEmpleadoFechas(req, res) {
@@ -412,44 +454,6 @@ class EmpleadoHorariosControlador {
                 'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
                 'OR fec_final BETWEEN $1 AND $2) AND id_horarios = $4) AS h ' +
                 'ON h.id_empl_cargo = dc.cargo_id  AND dc.empl_id = $3 AND dc.estado_empl = 1', [fechaInicio, fechaFinal, empl_id, id_horario]);
-            if (HORARIO.rowCount > 0) {
-                return res.jsonp(HORARIO.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    // MÉTODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA
-    VerificarHorariosExistentes(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { fechaInicio, fechaFinal } = req.body;
-            const { empl_id } = req.params;
-            const HORARIO = yield database_1.default.query('SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final ' +
-                'FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch ' +
-                'WHERE ($1 BETWEEN fec_inicio AND fec_final ' +
-                'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
-                'OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1 ' +
-                'AND eh.id_horarios = ch.id AND e.id = $3', [fechaInicio, fechaFinal, empl_id]);
-            if (HORARIO.rowCount > 0) {
-                return res.jsonp(HORARIO.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    // MÉTODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA PROCESO EDICIÓN
-    VerificarHorariosExistentesEdicion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { fechaInicio, fechaFinal, id } = req.body;
-            const { empl_id } = req.params;
-            const HORARIO = yield database_1.default.query('SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final ' +
-                'FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch ' +
-                'WHERE NOT eh.id = $4 AND ($1 BETWEEN fec_inicio AND fec_final ' +
-                'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
-                'OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1 ' +
-                'AND eh.id_horarios = ch.id AND e.id = $3', [fechaInicio, fechaFinal, empl_id, id]);
             if (HORARIO.rowCount > 0) {
                 return res.jsonp(HORARIO.rows);
             }

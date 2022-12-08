@@ -12,15 +12,21 @@ class NivelTituloRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.list);
-        this.router.get('/:id', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.getOne);
-        this.router.post('/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.create);
-        this.router.get('/buscar/:nombre', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.ObtenerNivelNombre);
-        this.router.put('/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.ActualizarNivelTitulo);
+        // METODO PARA BUSCAR LISTA DE NIVELES DE TITULO
+        this.router.get('/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.ListarNivel);
+        // METODO PARA ELIMINAR REGISTROS
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.EliminarNivelTitulo);
-        this.router.get('/nivel/datos', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.ObtenerUltimoId);
+        // METODO PARA CREAR ARCHIVO XML
         this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
         this.router.get('/download/:nameXML', nivelTituloControlador_1.default.downloadXML);
+        // METODO PARA REGISTRAR NIVEL DE TITULO
+        this.router.post('/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.CrearNivel);
+        // METODO PARA ACTUALIZAR REGISTRO DE NIVEL
+        this.router.put('/', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.ActualizarNivelTitulo);
+        // METODO PARA BUSCAR NIVEL POR SU NOMBRE
+        this.router.get('/buscar/:nombre', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.ObtenerNivelNombre);
+        this.router.get('/:id', verificarToken_1.TokenValidation, nivelTituloControlador_1.default.getOne);
     }
 }
 const NIVEL_TITULO_RUTAS = new NivelTituloRutas();

@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { VerEmpleadoComponent } from '../../ver-empleado/ver-empleado.component';
 
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
@@ -20,11 +21,13 @@ export class EditarCargoComponent implements OnInit {
   @Input() idSelectCargo: number;
   @Input() idEmploy: string;
 
+  // VARIABLES DE ALMACENAMIENTO
   cargo: any = [];
   departamento: any = [];
   sucursales: any = [];
   empresas: any = [];
 
+  // VARIABLES DE FORMULARIO
   idDepartamento = new FormControl('', [Validators.required]);
   horaTrabaja = new FormControl('', [Validators.required]);
   fechaInicio = new FormControl('', Validators.required);
@@ -34,7 +37,8 @@ export class EditarCargoComponent implements OnInit {
   cargoF = new FormControl('', [Validators.minLength(3)]);
   tipoF = new FormControl('');
 
-  public nuevoEmplCargosForm = new FormGroup({
+  // AGREGAR CAMPOS A UN GRUPO
+  public formulario = new FormGroup({
     horaTrabajaForm: this.horaTrabaja,
     idSucursalForm: this.idSucursal,
     fecInicioForm: this.fechaInicio,
@@ -51,6 +55,7 @@ export class EditarCargoComponent implements OnInit {
     private restSucursales: SucursalService,
     private restEmpleado: EmpleadoService,
     private verEmpleado: VerEmpleadoComponent,
+    private validar: ValidacionesService,
     private toastr: ToastrService,
   ) { }
 
@@ -61,49 +66,21 @@ export class EditarCargoComponent implements OnInit {
     this.tipoCargo[this.tipoCargo.length] = { cargo: "OTRO" };
   }
 
-  id_empl_contrato: number;
-  ObtenerCargoEmpleado() {
-    this.restEmplCargos.BuscarCargoID(this.idSelectCargo).subscribe(res => {
-      this.cargo = res;
-      this.id_empl_contrato = this.cargo[0].id_empl_contrato;
-      this.cargo.forEach(obj => {
-        this.ObtenerDepartamentosSet(obj.id_sucursal);
-        console.log(obj);
-        this.nuevoEmplCargosForm.patchValue({
-          idDeparForm: obj.id_departamento,
-          fecInicioForm: obj.fec_inicio,
-          fecFinalForm: obj.fec_final,
-          idSucursalForm: obj.id_sucursal,
-          sueldoForm: obj.sueldo.split('.')[0],
-          horaTrabajaForm: obj.hora_trabaja,
-          tipoForm: obj.cargo
-        })
-      });
-    })
-  }
-
-  tipoCargo: any = [];
-  BuscarTiposCargos() {
-    this.tipoCargo = [];
-    this.restEmplCargos.ObtenerTipoCargos().subscribe(datos => {
-      this.tipoCargo = datos;
-      this.tipoCargo[this.tipoCargo.length] = { cargo: "OTRO" };
-    })
-  }
-
+  // METODO PARA LISTAR SUCURSALES
   FiltrarSucursales() {
     let idEmpre = parseInt(localStorage.getItem('empresa'));
     this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(idEmpre).subscribe(datos => {
+    this.restSucursales.BuscarSucursalEmpresa(idEmpre).subscribe(datos => {
       this.sucursales = datos;
     }, error => {
-      this.toastr.info('La Empresa seleccionada no tiene Sucursales registradas', '', {
+      this.toastr.info('No se han encontrado datos de Sucursales.', '', {
         timeOut: 6000,
       })
     })
   }
 
-  ObtenerDepartamentos(form) {
+  // METODO PARA LISTAR DEARTAMENTOS SEGUN SUCURSAL
+  ObtenerDepartamentos(form: any) {
     this.departamento = [];
     let idSucursal = form.idSucursalForm;
     this.restCatDepartamento.BuscarDepartamentoSucursal(idSucursal).subscribe(datos => {
@@ -115,149 +92,156 @@ export class EditarCargoComponent implements OnInit {
     });
   }
 
-  FiltrarSucursalesSet(id: number) {
-    this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(id).subscribe(datos => {
-      this.sucursales = datos;
-    }, error => {
-      this.toastr.info('La Empresa seleccionada no tiene Sucursales registradas', '', {
-        timeOut: 6000,
-      })
-    })
-  }
-
-  ObtenerDepartamentosSet(id: number) {
+  // METODO DE BUSQUEDA DE DEPARTAMENTOS 
+  ObtenerDepartamentosImprimir(id: number) {
     this.departamento = [];
     this.restCatDepartamento.BuscarDepartamentoSucursal(id).subscribe(datos => {
       this.departamento = datos;
     }, error => {
-      this.toastr.info('Sucursal no cuenta con departamentos registrados', '', {
+      this.toastr.info('Sucursal no cuenta con departamentos registrados.', '', {
         timeOut: 6000,
       })
     });
   }
 
-
-  IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA OBTENER DATOS DE CARGO
+  id_empl_contrato: number;
+  ObtenerCargoEmpleado() {
+    this.restEmplCargos.BuscarCargoID(this.idSelectCargo).subscribe(res => {
+      this.cargo = res;
+      this.id_empl_contrato = this.cargo[0].id_empl_contrato;
+      this.cargo.forEach(obj => {
+        this.ObtenerDepartamentosImprimir(obj.id_sucursal);
+        this.formulario.patchValue({
+          horaTrabajaForm: obj.hora_trabaja,
+          idSucursalForm: obj.id_sucursal,
+          fecInicioForm: obj.fec_inicio,
+          fecFinalForm: obj.fec_final,
+          idDeparForm: obj.id_departamento,
+          sueldoForm: obj.sueldo.split('.')[0],
+          tipoForm: obj.cargo
+        })
+      });
+    })
   }
 
-  ValidarDatosRegistro(form) {
-    console.log('id contrato', this.cargo[0].id_empl_contrato);
+  // METODO DE BUSQUEDA DE TIPO DE CARGOS
+  tipoCargo: any = [];
+  BuscarTiposCargos() {
+    this.tipoCargo = [];
+    this.restEmplCargos.ObtenerTipoCargos().subscribe(datos => {
+      this.tipoCargo = datos;
+      this.tipoCargo[this.tipoCargo.length] = { cargo: "OTRO" };
+    })
+  }
+
+  // METODO PARA VALIDAR INFORMACION
+  ValidarDatosRegistro(form: any) {
     let datosBusqueda = {
       id_contrato: this.id_empl_contrato
     }
     this.restEmpleado.BuscarFechaIdContrato(datosBusqueda).subscribe(response => {
-      console.log('fecha', response[0].fec_ingreso.split('T')[0], ' ', Date.parse(form.fecInicioForm), Date.parse(response[0].fec_ingreso.split('T')[0]))
       if (Date.parse(response[0].fec_ingreso.split('T')[0]) < Date.parse(form.fecInicioForm)) {
         if (Date.parse(form.fecInicioForm) < Date.parse(form.fecFinalForm)) {
           this.ActualizarEmpleadoCargo(form);
         }
         else {
-          this.toastr.info('La fecha de finalización de actividades debe ser posterior a la fecha de inicio de actividades', '', {
+          this.toastr.info(
+            'La fecha de finalización de actividades debe ser posterior a la fecha de inicio de actividades.', '', {
             timeOut: 6000,
           })
         }
       }
       else {
-        this.toastr.info('La fecha de inicio de actividades no puede ser anterior a la fecha de ingreso de contrato.', '', {
+        this.toastr.info(
+          'La fecha de inicio de actividades no puede ser anterior a la fecha de ingreso de contrato.', '', {
           timeOut: 6000,
         });
       }
-    }, error => { });
-
+    });
   }
 
-  ActualizarEmpleadoCargo(form) {
+  // METODO PARA ACTUALIZAR REGISTRO
+  ActualizarEmpleadoCargo(form: any) {
     let dataEmpleadoCargo = {
       id_departamento: form.idDeparForm,
+      hora_trabaja: form.horaTrabajaForm,
+      id_sucursal: form.idSucursalForm,
       fec_inicio: form.fecInicioForm,
       fec_final: form.fecFinalForm,
-      id_sucursal: form.idSucursalForm,
       sueldo: form.sueldoForm,
-      hora_trabaja: form.horaTrabajaForm,
       cargo: form.tipoForm
     }
     if (form.tipoForm === undefined) {
       this.IngresarTipoCargo(form, dataEmpleadoCargo);
     }
     else {
-      console.log(dataEmpleadoCargo);
       this.restEmplCargos.ActualizarContratoEmpleado(this.idSelectCargo, this.id_empl_contrato, dataEmpleadoCargo).subscribe(res => {
         this.verEmpleado.ObtenerCargoEmpleado(this.idSelectCargo, this.verEmpleado.formato_fecha);
-        this.cancelar();
-        this.toastr.success('Operación Exitosa', 'Cargo del empleado Actualizado', {
+        this.Cancelar();
+        this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
           timeOut: 6000,
         });
       });
     }
   }
 
-  cancelar() { this.verEmpleado.VerCargoEdicion(true); }
 
-  estilo: any;
+  // METODO PARA MOSTRAR INGRESO DE CARGO
   habilitarCargo: boolean = false;
   habilitarSeleccion: boolean = true;
-  IngresarOtro(form) {
+  IngresarOtro(form: any) {
     if (form.tipoForm === undefined) {
-      this.nuevoEmplCargosForm.patchValue({
+      this.formulario.patchValue({
         cargoForm: '',
       });
-      this.estilo = { 'visibility': 'visible' }; this.habilitarCargo = true;
-      this.toastr.info('Ingresar nombre del nuevo cargo.', 'Etiqueta Cargo a desempeñar activa', {
+      this.habilitarCargo = true;
+      this.toastr.info('Ingresar nombre del nuevo cargo.', 'Etiqueta Cargo a desempeñar activa.', {
         timeOut: 6000,
       })
       this.habilitarSeleccion = false;
     }
   }
 
+  // METODO PARA MOSTRAR LISTA DE TIPO CARGOS
   VerTiposCargos() {
-    this.nuevoEmplCargosForm.patchValue({
+    this.formulario.patchValue({
       cargoForm: '',
     });
-    this.estilo = { 'visibility': 'hidden' }; this.habilitarCargo = false;
+    this.habilitarCargo = false;
     this.habilitarSeleccion = true;
   }
 
-  IngresarTipoCargo(form, datos: any) {
+  // METODO PARA REGISTRAR TIPO CARGO
+  IngresarTipoCargo(form: any, datos: any) {
     if (form.cargoForm != '') {
       let tipo_cargo = {
         cargo: form.cargoForm
       }
       this.restEmplCargos.CrearTipoCargo(tipo_cargo).subscribe(res => {
-        // Buscar id de último cargo ingresado
-        this.restEmplCargos.ObtenerUltimoTipoCargos().subscribe(data => {
-          // Buscar id de último cargo ingresado
-          datos.cargo = data[0].max;
-          this.restEmplCargos.ActualizarContratoEmpleado(this.idSelectCargo, this.id_empl_contrato, datos).subscribe(res => {
-            this.verEmpleado.ObtenerCargoEmpleado(this.idSelectCargo, this.verEmpleado.formato_fecha);
-            this.cancelar();
-            this.toastr.success('Operación Exitosa', 'Cargo del empleado Actualizado', {
-              timeOut: 6000,
-            });
+        datos.cargo = res.id;
+        this.restEmplCargos.ActualizarContratoEmpleado(this.idSelectCargo, this.id_empl_contrato, datos).subscribe(res => {
+          this.verEmpleado.ObtenerCargoEmpleado(this.idSelectCargo, this.verEmpleado.formato_fecha);
+          this.Cancelar();
+          this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
+            timeOut: 6000,
           });
         });
       });
     }
     else {
-      this.toastr.info('Ingresar el nuevo cargo a desempeñar', 'Verificar datos', {
+      this.toastr.info('Ingresar el nuevo cargo a desempeñar.', 'Verificar datos.', {
         timeOut: 6000,
       });
     }
+  }
+
+  // METODO PARA INGRESAR SOLO NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
+  }
+
+  Cancelar() {
+    this.verEmpleado.VerCargoEdicion(true);
   }
 }

@@ -3,27 +3,26 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRAR ROL</span>
 </div>
-<form [formGroup]="nuevoRolForm">
+<form [formGroup]="formulario">
     <div style="text-align: center;">
         <div class="nota">
             <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                 Guardar.</span>
         </div>
-        <div class="d-flex flex-wrap justify-content-between">
+        <div class="d-flex flex-wrap justify-content-center">
             <mat-form-field>
                 <mat-label>Descripción</mat-label>
-                <input matInput placeholder="Ej: Administrador" [formControl]="descripcion"
-                    (keypress)="IngresarSoloLetras($event)" required>
+                <input matInput placeholder="Ej: Administrador" [formControl]="descripcion" required>
                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ingresar nombre de identificación del nuevo rol.">
-                    help_outline</mat-icon>
-                <mat-error *ngIf="descripcion.invalid">{{ObtenerMensajeErrorDescripcion()}}</mat-error>
+                    help_outline
+                </mat-icon>
             </mat-form-field>
         </div>
     </div>
 </form>
 <div class="d-flex justify-content-around">
-    <input type="submit" class="btn btn-sm" (click)="InsertarRol(nuevoRolForm.value)" [disabled]="!nuevoRolForm.valid"
+    <input type="submit" class="btn btn-sm" (click)="InsertarRol(formulario.value)" [disabled]="!formulario.valid"
         value="Guardar">
-    <input type="submit" class="btn btn-sm" (click)="CerrarVentanaRegistroRol()" value="Salir">
+    <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Salir">
 </div>

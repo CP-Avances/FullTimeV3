@@ -67,7 +67,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO  
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO  
   empleadoUno: any = [];
   VerEmpleado(formato_fecha: string) {
     this.empleadoUno = [];
@@ -84,7 +84,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -106,10 +106,10 @@ export class VacacionesEmpleadoComponent implements OnInit {
   }
 
   /** ************************************************************************************************ **
-   ** **                              MÉTODO PARA MOSTRAR DATOS                                     ** **
+   ** **                              METODO PARA MOSTRAR DATOS                                     ** **
    ** ************************************************************************************************ **/
 
-  // MÉTODO PARA IMPRIMIR DATOS DE VACACIONES 
+  // METODO PARA IMPRIMIR DATOS DE VACACIONES 
   vacaciones: any = [];
   ObtenerVacaciones(formato_fecha: string) {
     this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
@@ -126,7 +126,7 @@ export class VacacionesEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA IMPRIMIR DATOS DEL PERIODO DE VACACIONES 
+  // METODO PARA IMPRIMIR DATOS DEL PERIODO DE VACACIONES 
   peridoVacaciones: any;
   ObtenerPeriodoVacaciones(formato_fecha: string) {
     this.peridoVacaciones = [];

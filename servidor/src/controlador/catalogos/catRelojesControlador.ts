@@ -1,68 +1,120 @@
-import { Request, Response, text } from 'express';
-import pool from '../../database';
+import { Request, Response } from 'express';
+import { QueryResult } from 'pg';
 import excel from 'xlsx';
+import pool from '../../database';
 import fs from 'fs';
 const builder = require('xmlbuilder');
 
 class RelojesControlador {
 
+    // METODO PARA BUSCAR DISPOSITIVOS
     public async ListarRelojes(req: Request, res: Response) {
-        const RELOJES = await pool.query('SELECT * FROM NombreDispositivos');
+        const RELOJES = await pool.query(
+            `
+            SELECT cr.id, cr.nombre, cr.ip, cr.puerto, cr.contrasenia, cr.marca, cr.modelo, cr.serie,
+                cr.id_fabricacion, cr.fabricante, cr.mac, cr.tien_funciones, cr.id_sucursal, 
+                cr.id_departamento, cr.numero_accion, cd.nombre AS nomdepar, s.nombre AS nomsucursal, 
+                e.nombre AS nomempresa, c.descripcion AS nomciudad
+            FROM cg_relojes cr, cg_departamentos cd, sucursales s, ciudades c, cg_empresa e
+            WHERE cr.id_departamento = cd.id AND cd.id_sucursal = cr.id_sucursal AND 
+                cr.id_sucursal = s.id AND s.id_empresa = e.id AND s.id_ciudad = c.id;
+            `
+        );
         if (RELOJES.rowCount > 0) {
             return res.jsonp(RELOJES.rows)
         }
         else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
         }
     }
 
-    public async ListarUnReloj(req: Request, res: Response): Promise<any> {
-        const { id } = req.params;
-        const RELOJES = await pool.query('SELECT * FROM cg_relojes WHERE id = $1', [id]);
-        if (RELOJES.rowCount > 0) {
-            return res.jsonp(RELOJES.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
+    // METODO PARA ELIMINAR REGISTROS
+    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+        const id = req.params.id;
+        await pool.query(
+            `
+            DELETE FROM cg_relojes WHERE id = $1
+            `
+            , [id]);
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
-    public async ListarDatosUnReloj(req: Request, res: Response): Promise<any> {
-        const { id } = req.params;
-        const RELOJES = await pool.query('SELECT * FROM NombreDispositivos WHERE id = $1', [id]);
-        if (RELOJES.rowCount > 0) {
-            return res.jsonp(RELOJES.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
+    // METODO PARA CREAR ARCHIVO XML
+    public async FileXML(req: Request, res: Response): Promise<any> {
+        var xml = builder.create('root').ele(req.body).end({ pretty: true });
+        let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+        fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+        });
+        res.jsonp({ text: 'XML creado', name: filename });
     }
 
+    // METODO PARA DESCARGAR ARCHIVO XML
+    public async downloadXML(req: Request, res: Response): Promise<any> {
+        const name = req.params.nameXML;
+        let filePath = `servidor\\xmlDownload\\${name}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+    }
+
+    // METODO PARA REGISTRAR DISPOSITIVO
     public async CrearRelojes(req: Request, res: Response) {
         try {
             const { nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
                 tien_funciones, id_sucursal, id_departamento, id, numero_accion } = req.body;
-            await pool.query('INSERT INTO cg_relojes (nombre, ip, puerto, contrasenia, marca, modelo, serie, ' +
-                'id_fabricacion, fabricante, mac, tien_funciones, id_sucursal, id_departamento, id, numero_accion ) ' +
-                'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',
-                [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
+
+            const response: QueryResult = await pool.query(
+                `
+                INSERT INTO cg_relojes (nombre, ip, puerto, contrasenia, marca, modelo, serie, 
+                    id_fabricacion, fabricante, mac, tien_funciones, id_sucursal, id_departamento, id, 
+                    numero_accion )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *
+                `
+                , [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
                     tien_funciones, id_sucursal, id_departamento, id, numero_accion]);
-            return res.jsonp({ message: 'guardado' });
+
+            const [reloj] = response.rows;
+
+            if (reloj) {
+                return res.status(200).jsonp({ message: 'guardado', reloj: reloj })
+            }
+            else {
+                return res.status(404).jsonp({ message: 'mal_registro' })
+            }
         }
         catch (error) {
             return res.jsonp({ message: 'error' });
         }
     }
 
+    // METODO PARA VER DATOS DE UN DISPOSITIVO
+    public async ListarUnReloj(req: Request, res: Response): Promise<any> {
+        const { id } = req.params;
+        const RELOJES = await pool.query(
+            `
+            SELECT * FROM cg_relojes WHERE id = $1
+            `
+            , [id]);
+        if (RELOJES.rowCount > 0) {
+            return res.jsonp(RELOJES.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+    // METODO PARA ACTUALIZAR REGISTRO
     public async ActualizarReloj(req: Request, res: Response) {
         try {
             const { nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
                 tien_funciones, id_sucursal, id_departamento, id, numero_accion, id_real } = req.body;
-            await pool.query('UPDATE cg_relojes SET nombre = $1, ip = $2, puerto = $3, contrasenia = $4, ' +
-                'marca = $5, modelo = $6, serie = $7, id_fabricacion = $8, fabricante = $9, mac = $10, ' +
-                'tien_funciones = $11, id_sucursal = $12, id_departamento = $13, id = $14, ' +
-                'numero_accion = $15 WHERE id = $16',
-                [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
+            await pool.query(
+                `
+                UPDATE cg_relojes SET nombre = $1, ip = $2, puerto = $3, contrasenia = $4, marca = $5, 
+                    modelo = $6, serie = $7, id_fabricacion = $8, fabricante = $9, mac = $10, 
+                    tien_funciones = $11, id_sucursal = $12, id_departamento = $13, id = $14, 
+                    numero_accion = $15 
+                WHERE id = $16
+                `
+                , [nombre, ip, puerto, contrasenia, marca, modelo, serie, id_fabricacion, fabricante, mac,
                     tien_funciones, id_sucursal, id_departamento, id, numero_accion, id_real]);
             return res.jsonp({ message: 'actualizado' });
         }
@@ -70,6 +122,57 @@ class RelojesControlador {
             return res.jsonp({ message: 'error' });
         }
     }
+
+    // METODO PARA CONSULTAR DATOS GENERALES DE DISPOSITIVO
+    public async ListarDatosUnReloj(req: Request, res: Response): Promise<any> {
+        const { id } = req.params;
+        const RELOJES = await pool.query(
+            `
+            SELECT cr.id, cr.nombre, cr.ip, cr.puerto, cr.contrasenia, cr.marca, cr.modelo, cr.serie,
+                cr.id_fabricacion, cr.fabricante, cr.mac, cr.tien_funciones, cr.id_sucursal, 
+                cr.id_departamento, cr.numero_accion, cd.nombre AS nomdepar, s.nombre AS nomsucursal,
+                e.nombre AS nomempresa, c.descripcion AS nomciudad
+            FROM cg_relojes cr, cg_departamentos cd, sucursales s, ciudades c, cg_empresa e
+            WHERE cr.id_departamento = cd.id AND cd.id_sucursal = cr.id_sucursal AND cr.id_sucursal = s.id 
+                AND s.id_empresa = e.id AND s.id_ciudad = c.id AND cr.id = $1
+            `
+            , [id]);
+        if (RELOJES.rowCount > 0) {
+            return res.jsonp(RELOJES.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public async CargaPlantillaRelojes(req: Request, res: Response): Promise<void> {
         let list: any = req.files;
@@ -256,30 +359,8 @@ class RelojesControlador {
         fs.unlinkSync(filePath);
     }
 
-    public async FileXML(req: Request, res: Response): Promise<any> {
-        var xml = builder.create('root').ele(req.body).end({ pretty: true });
-        console.log(req.body.userName);
-        let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-        fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-            if (err) {
-                return console.log(err);
-            }
-            console.log("Archivo guardado");
-        });
-        res.jsonp({ text: 'XML creado', name: filename });
-    }
 
-    public async downloadXML(req: Request, res: Response): Promise<any> {
-        const name = req.params.nameXML;
-        let filePath = `servidor\\xmlDownload\\${name}`
-        res.sendFile(__dirname.split("servidor")[0] + filePath);
-    }
 
-    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        await pool.query('DELETE FROM cg_relojes WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
-    }
 
 }
 

@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-metodos',
@@ -11,18 +11,19 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class MetodosComponent implements OnInit {
 
   constructor(
-    public dialogo: MatDialogRef<MetodosComponent>,
+    public ventana: MatDialogRef<MetodosComponent>,
     @Inject(MAT_DIALOG_DATA) public mensaje: string) { }
 
-  cerrarDialogo(): void {
-    this.dialogo.close(false);
+  CerrarVentana(): void {
+    this.ventana.close(false);
   }
-  confirmado(): void {
-    this.dialogo.close(true);
+
+  Confirmar(): void {
+    this.ventana.close(true);
   }
 
   ngOnInit(): void {
 
   }
-  
+
 }

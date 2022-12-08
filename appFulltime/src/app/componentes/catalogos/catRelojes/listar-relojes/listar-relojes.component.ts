@@ -1,25 +1,24 @@
-// IMPORTACIÓN DE LIBRERIAS
-import { environment } from 'src/environments/environment';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+// IMPORTACION DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import * as moment from 'moment';
+import { Router } from '@angular/router';
 
+import * as xlsx from 'xlsx';
+import * as moment from 'moment';
+import * as FileSaver from 'file-saver';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import * as xlsx from 'xlsx';
-import * as FileSaver from 'file-saver';
 
 import { RelojesComponent } from 'src/app/componentes/catalogos/catRelojes/relojes/relojes.component';
-import { EditarRelojComponent } from 'src/app/componentes/catalogos/catRelojes/editar-reloj/editar-reloj.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
-import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
 @Component({
@@ -30,62 +29,62 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 
 export class ListarRelojesComponent implements OnInit {
 
-  // Almacenamiento de datos y búsqueda
+  // ALMACENAMIENTO DE DATOS Y BUSQUEDA
+  filtroDepartamentoReloj = '';
+  filtroSucursalReloj = '';
+  filtroEmpresaReloj = '';
   filtroNombreReloj = '';
   filtroModeloReloj = '';
   filtroIpReloj = '';
-  filtroEmpresaReloj = '';
-  filtroSucursalReloj = '';
-  filtroDepartamentoReloj = '';
   relojes: any = [];
 
   empleado: any = [];
   idEmpleado: number;
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
+  ipF = new FormControl('');
   nombreF = new FormControl('', [Validators.minLength(2)]);
+  modeloF = new FormControl('', [Validators.minLength(2)]);
   empresaF = new FormControl('', [Validators.minLength(2)]);
   sucursalF = new FormControl('', [Validators.minLength(2)]);
   departamentoF = new FormControl('', [Validators.minLength(2)]);
-  ipF = new FormControl('');
-  modeloF = new FormControl('', [Validators.minLength(2)]);
 
-  // Asignación de validaciones a inputs del formulario
-  public BuscarRelojesForm = new FormGroup({
-    nombreForm: this.nombreF,
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     ipForm: this.ipF,
+    nombreForm: this.nombreF,
     modeloForm: this.modeloF,
     empresaForm: this.empresaF,
     sucursalForm: this.sucursalF,
     departamentoForm: this.departamentoF
   });
 
-  // items de paginacion de la tabla
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACION DE LA TABLA
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   hipervinculo: string = environment.url;
 
   constructor(
-    private rest: RelojesService,
-    public restE: EmpleadoService,
     public restEmpre: EmpresaService,
+    public ventana: MatDialog,
     public router: Router,
-    public vistaRegistrarDatos: MatDialog,
+    public restE: EmpleadoService,
+    private rest: RelojesService,
     private toastr: ToastrService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.ObtenerReloj();
     this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerLogo();
     this.ObtenerColores();
+    this.ObtenerReloj();
+    this.ObtenerLogo();
   }
 
-  // Método para ver la información del empleado 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -93,7 +92,7 @@ export class ListarRelojesComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -101,7 +100,7 @@ export class ListarRelojesComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -113,11 +112,13 @@ export class ListarRelojesComponent implements OnInit {
     });
   }
 
+  // METODO PARA MANEJAR PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  // METODO PARA BUSCAR RELOJES
   ObtenerReloj() {
     this.relojes = [];
     this.rest.ConsultarRelojes().subscribe(datos => {
@@ -125,27 +126,29 @@ export class ListarRelojesComponent implements OnInit {
     })
   }
 
-  IngresarIp(evt) {
+  // METODO PARA INGRESAR IP
+  IngresarIp(evt: any) {
     if (window.event) {
       var keynum = evt.keyCode;
     }
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMERICO Y QUE TECLAS NO RECIBIRA.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6 || keynum == 46) {
       return true;
     }
     else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
+      this.toastr.info('No se admite el ingreso de letras.', 'Usar solo números.', {
         timeOut: 6000,
       })
       return false;
     }
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.BuscarRelojesForm.setValue({
+    this.formulario.setValue({
       nombreForm: '',
       ipForm: '',
       modeloForm: '',
@@ -156,36 +159,23 @@ export class ListarRelojesComponent implements OnInit {
     this.ObtenerReloj();
   }
 
-  /*************************************************************************************
-   * VENTANAS PARA REGISTRAR Y EDITAR DATOS DE UN DISPOSITIVO
-   * ***********************************************************************************/
+  /** ********************************************************************************* **
+   ** **           VENTANAS PARA REGISTRAR Y EDITAR DATOS DE UN DISPOSITIVO          ** **
+   ** ********************************************************************************* **/
 
-  /* Ventana para editar datos de dispositivo seleccionado */
-  AbrirVentanaEditar(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarRelojComponent, {
-      width: '1200px',
-      data: { datosReloj: datosSeleccionados, actualizar: true }
-    })
-      .afterClosed().subscribe(item => {
-        this.ObtenerReloj();
-      });;
-  }
-
-  /** Función para eliminar registro seleccionado Planificación*/
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACION
   EliminarRelojes(id_reloj: number) {
     this.rest.EliminarRegistro(id_reloj).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerReloj();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO
   ConfirmarDelete(datos: any) {
-    console.log(datos);
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.EliminarRelojes(datos.id);
@@ -195,23 +185,23 @@ export class ListarRelojesComponent implements OnInit {
       });
   }
 
-  /** Ventana para registrar datos de un nuevo dispositivo */
+  // VENTANA PARA REGISTRAR DATOS DE UN NUEVO DISPOSITIVO
   AbrirVentanaRegistrarReloj(): void {
-    this.vistaRegistrarDatos.open(RelojesComponent, { width: '1200px' })
+    this.ventana.open(RelojesComponent, { width: '1200px' })
       .afterClosed().subscribe(item => {
         this.ObtenerReloj();
       });;
   }
 
-  /*************************************************************************************
-   * MÉTODOS Y VARIABLES PARA SUBIR PLANTILLAS
-   * ***********************************************************************************/
+  /** ********************************************************************************* **
+   ** **                 METODOS Y VARIABLES PARA SUBIR PLANTILLAS                   ** **
+   ** ********************************************************************************* **/
 
   nameFile: string;
   archivoSubido: Array<File>;
   archivoForm = new FormControl('', Validators.required);
 
-  fileChange(element) {
+  fileChange(element: any) {
     this.archivoSubido = element.target.files;
     this.nameFile = this.archivoSubido[0].name;
     let arrayItems = this.nameFile.split(".");
@@ -221,7 +211,9 @@ export class ListarRelojesComponent implements OnInit {
       if (itemName.toLowerCase() == 'dispositivos') {
         this.plantilla();
       } else {
-        this.toastr.error('Solo se acepta plantilla con nombre Dispositivos.', 'Plantilla seleccionada incorrecta.', {
+        this.toastr.error(
+          'Solo se acepta plantilla con nombre Dispositivos.',
+          'Plantilla seleccionada incorrecta.', {
           timeOut: 6000,
         });
         this.archivoForm.reset();
@@ -243,11 +235,12 @@ export class ListarRelojesComponent implements OnInit {
     }
     this.rest.Verificar_Datos_ArchivoExcel(formData).subscribe(res => {
       if (res.message === 'error') {
-        this.toastr.error('Para asegurar el buen funcionamiento del sistema es necesario que verifique los datos ' +
-          'de la plantilla ingresada, recuerde que los datos no pueden estar duplicados dentro del sistema, ' +
-          'es decir el nombre del equipo, código y la dirección IP son datos únicos de cada registro Aseguresa ' +
-          'que el nombre de la sucursal y el departamento exitan dentro del sistema.',
-          'Verificar los datos ingresados en la plantilla', {
+        this.toastr.error(
+          `Para asegurar el buen funcionamiento del sistema es necesario que verifique los datos
+          de la plantilla ingresada, recuerde que los datos no pueden estar duplicados dentro del sistema,
+          nombre del equipo, código y dirección IP son datos únicos de cada registro, asegurese
+          que el nombre de la sucursal y el departamento exitan dentro del sistema.`,
+          'Verificar los datos ingresados en la plantilla.', {
           timeOut: 10000,
         });
         this.archivoForm.reset();
@@ -255,18 +248,19 @@ export class ListarRelojesComponent implements OnInit {
       } else {
         this.rest.VerificarArchivoExcel(formData).subscribe(response => {
           if (response.message === 'error') {
-            this.toastr.error('Para asegurar el buen funcionamiento del sistema es necesario que verifique los datos ' +
-              'de la plantilla ingresada, recuerde que los datos no pueden estar duplicados dentro del sistema ' +
-              'es decir el nombre del equipo, código y la dirección IP son datos únicos de cada registro. Aseguresa ' +
-              'que el nombre de la sucursal y el departamento exitan dentro del sistema.',
-              'Verificar los datos ingresados en la plantilla', {
+            this.toastr.error(
+              `Para asegurar el buen funcionamiento del sistema es necesario que verifique los datos
+              de la plantilla ingresada, recuerde que los datos no pueden estar duplicados dentro del sistema,
+              nombre del equipo, código y dirección IP son datos únicos de cada registro, asegurese
+              que el nombre de la sucursal y el departamento exitan dentro del sistema.`,
+              'Verificar los datos ingresados en la plantilla.', {
               timeOut: 10000,
             });
             this.archivoForm.reset();
             this.nameFile = '';
           } else {
             this.rest.subirArchivoExcel(formData).subscribe(datos_reloj => {
-              this.toastr.success('Operación Exitosa', 'Plantilla de Relojes importada.', {
+              this.toastr.success('Operación Exitosa.', 'Plantilla de Relojes importada.', {
                 timeOut: 10000,
               });
               this.archivoForm.reset();
@@ -279,9 +273,9 @@ export class ListarRelojesComponent implements OnInit {
     });
   }
 
-  /*************************************************************************************
-   * GENERACIÓN DE PDFs 
-   *************************************************************************************/
+  /** ********************************************************************************* **
+   ** **                        GENERACION DE PDFs                                   ** **
+   ** ********************************************************************************* **/
 
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -299,28 +293,20 @@ export class ListarRelojesComponent implements OnInit {
     sessionStorage.setItem('Dispositivos', this.relojes);
     return {
 
-      // Encabezado de la página
+      // ENCABEZADO DE LA PAGINA
       pageOrientation: 'landscape',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
-      // Pie de la página
+      // PIE DE LA PAGINA
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
         var f = moment();
         fecha = f.format('YYYY-MM-DD');
-
-        var h = new Date();
-        // Formato de hora actual
-        if (h.getMinutes() < 10) {
-          var time = h.getHours() + ':0' + h.getMinutes();
-        }
-        else {
-          var time = h.getHours() + ':' + h.getMinutes();
-        }
+        hora = f.format('HH:mm:ss');
         return {
           margin: 10,
           columns: [
-            { text: 'Fecha: ' + fecha + ' Hora: ' + time, opacity: 0.3 },
+            { text: 'Fecha: ' + fecha + ' Hora: ' + hora, opacity: 0.3 },
             {
               text: [
                 {
@@ -402,9 +388,9 @@ export class ListarRelojesComponent implements OnInit {
     };
   }
 
-  /*************************************************************************************
-   * GENERACIÓN DE EXCEL 
-   *************************************************************************************/
+  /** ********************************************************************************* **
+   ** **                              GENERACION DE EXCEL                            ** **
+   ** ********************************************************************************* **/
 
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.relojes);
@@ -413,9 +399,9 @@ export class ListarRelojesComponent implements OnInit {
     xlsx.writeFile(wb, "RelojesEXCEL" + new Date().getTime() + '.xlsx');
   }
 
-  /****************************************************************************************************** 
-   * MÉTODO PARA EXPORTAR A CSV 
-   ******************************************************************************************************/
+  /** ********************************************************************************************** ** 
+   ** **                              METODO PARA EXPORTAR A CSV                                  ** **
+   ** ********************************************************************************************** **/
 
   exportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.relojes);
@@ -424,14 +410,14 @@ export class ListarRelojesComponent implements OnInit {
     FileSaver.saveAs(data, "DispositivosCSV" + new Date().getTime() + '.csv');
   }
 
-  /* ****************************************************************************************************
-   *                                 PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ********************************************************************************************** **
+   ** **                          PARA LA EXPORTACION DE ARCHIVOS XML                             ** **
+   ** ********************************************************************************************** **/
 
   urlxml: string;
   data: any = [];
   exportToXML() {
-    var objeto;
+    var objeto: any;
     var arregloDispositivos = [];
     this.relojes.forEach(obj => {
       objeto = {
@@ -455,9 +441,8 @@ export class ListarRelojesComponent implements OnInit {
       arregloDispositivos.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloDispositivos).subscribe(res => {
+    this.rest.CrearXML(arregloDispositivos).subscribe(res => {
       this.data = res;
-      console.log("prueba data", res)
       this.urlxml = `${environment.url}/relojes/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });

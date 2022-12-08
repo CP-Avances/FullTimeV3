@@ -12,21 +12,74 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const builder = require('xmlbuilder');
-const database_1 = __importDefault(require("../../database"));
 const moment_1 = __importDefault(require("moment"));
 const xlsx_1 = __importDefault(require("xlsx"));
+const database_1 = __importDefault(require("../../database"));
 const fs_1 = __importDefault(require("fs"));
+const builder = require('xmlbuilder');
 class FeriadosControlador {
-    // CONSULTA DE LISTA DE FERIADOS ORDENADOS POR SU DESCRIPCIÓN
+    // CONSULTA DE LISTA DE FERIADOS ORDENADOS POR SU DESCRIPCION
     ListarFeriados(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const FERIADOS = yield database_1.default.query('SELECT * FROM cg_feriados ORDER BY descripcion ASC');
+            const FERIADOS = yield database_1.default.query(`
+            SELECT * FROM cg_feriados ORDER BY descripcion ASC
+            `);
             if (FERIADOS.rowCount > 0) {
                 return res.jsonp(FERIADOS.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+            }
+        });
+    }
+    // METODO PARA ELIMINAR UN REGISTRO DE FERIADOS
+    EliminarFeriado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            yield database_1.default.query(`
+            DELETE FROM cg_feriados WHERE id = $1
+            `, [id]);
+            res.jsonp({ text: 'Registro eliminado.' });
+        });
+    }
+    // METODO PARA CREAR ARCHIVO EN FORMATO XML
+    FileXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            let filename = "Feriados-" + req.body.userName + '-' + req.body.userId + '-' +
+                new Date().getTime() + '.xml';
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+            });
+            res.jsonp({ text: 'XML creado', name: filename });
+        });
+    }
+    // METODO PARA DESCARGAR ARCHIVO XML DE FERIADOS
+    downloadXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.nameXML;
+            let filePath = `servidor\\xmlDownload\\${name}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
+    // METODO PARA CREAR REGISTRO DE FERIADO
+    CrearFeriados(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { fecha, descripcion, fec_recuperacion } = req.body;
+                const response = yield database_1.default.query(`
+                INSERT INTO cg_feriados (fecha, descripcion, fec_recuperacion) 
+                VALUES ($1, $2, $3) RETURNING *
+                `, [fecha, descripcion, fec_recuperacion]);
+                const [feriado] = response.rows;
+                if (feriado) {
+                    return res.status(200).jsonp(feriado);
+                }
+                else {
+                    return res.status(404).jsonp({ message: 'error' });
+                }
+            }
+            catch (error) {
+                return res.jsonp({ message: 'error' });
             }
         });
     }
@@ -34,49 +87,27 @@ class FeriadosControlador {
     ListarFeriadosActualiza(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            const FERIADOS = yield database_1.default.query('SELECT * FROM cg_feriados WHERE NOT id = $1', [id]);
+            const FERIADOS = yield database_1.default.query(`
+            SELECT * FROM cg_feriados WHERE NOT id = $1
+            `, [id]);
             if (FERIADOS.rowCount > 0) {
                 return res.jsonp(FERIADOS.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }
-    // OBTENER ÚLTIMO REGISTRO DE LISTA DE FERIADOS
-    ObtenerUltimoId(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const FERIADOS = yield database_1.default.query('SELECT MAX(id) FROM cg_feriados');
-            if (FERIADOS.rowCount > 0) {
-                return res.jsonp(FERIADOS.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    // MÉTODO PARA ACTUALIZAR UN FERIADO
+    // METODO PARA ACTUALIZAR UN FERIADO
     ActualizarFeriado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { fecha, descripcion, fec_recuperacion, id } = req.body;
-                yield database_1.default.query('UPDATE cg_feriados SET fecha = $1, descripcion = $2, fec_recuperacion = $3 ' +
-                    'WHERE id = $4', [fecha, descripcion, fec_recuperacion, id]);
-                res.jsonp({ message: 'Feriado actualizado exitosamente' });
-            }
-            catch (error) {
-                return res.jsonp({ message: 'error' });
-            }
-        });
-    }
-    // MÉTODO PARA CREAR REGISTRO DE FERIADO
-    CrearFeriados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { fecha, descripcion, fec_recuperacion } = req.body;
-                yield database_1.default.query('INSERT INTO cg_feriados (fecha, descripcion, fec_recuperacion) ' +
-                    'VALUES ($1, $2, $3)', [fecha, descripcion, fec_recuperacion]);
-                res.jsonp({ message: 'Feriado guardado' });
+                yield database_1.default.query(`
+                UPDATE cg_feriados SET fecha = $1, descripcion = $2, fec_recuperacion = $3
+                WHERE id = $4
+                `, [fecha, descripcion, fec_recuperacion, id]);
+                res.jsonp({ message: 'Registro actualizado.' });
             }
             catch (error) {
                 return res.jsonp({ message: 'error' });
@@ -87,14 +118,16 @@ class FeriadosControlador {
     ObtenerUnFeriado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const FERIADO = yield database_1.default.query('SELECT * FROM cg_feriados WHERE id = $1', [id]);
+            const FERIADO = yield database_1.default.query(`
+            SELECT * FROM cg_feriados WHERE id = $1
+            `, [id]);
             if (FERIADO.rowCount > 0) {
                 return res.jsonp(FERIADO.rows);
             }
-            res.status(404).jsonp({ text: 'Registros no encontrados' });
+            res.status(404).jsonp({ text: 'Registros no encontrados.' });
         });
     }
-    // MÉTODO PARA REVISAR LOS DATOS DE LA PLANTILLA DENTRO DEL SISTEMA - MENSAJES DE CADA ERROR
+    // METODO PARA REVISAR LOS DATOS DE LA PLANTILLA DENTRO DEL SISTEMA - MENSAJES DE CADA ERROR
     RevisarDatos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
@@ -364,36 +397,6 @@ class FeriadosControlador {
                 contador = contador + 1;
             }));
             fs_1.default.unlinkSync(filePath);
-        });
-    }
-    // MÉTODO PARA CREAR ARCHIVO EN FORMATO XML
-    FileXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var xml = builder.create('root').ele(req.body).end({ pretty: true });
-            let filename = "Feriados-" + req.body.userName + '-' + req.body.userId + '-' +
-                new Date().getTime() + '.xml';
-            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-            });
-            res.jsonp({ text: 'XML creado', name: filename });
-        });
-    }
-    // MÉTODO PARA DESCARGAR ARCHIVO XML DE FERIADOS
-    downloadXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownload\\${name}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
-    // MÉTODO PARA ELIMINAR UN REGISTRO DE FERIADOS
-    EliminarFeriado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield database_1.default.query('DELETE FROM cg_feriados WHERE id = $1', [id]);
-            res.jsonp({ text: 'registro eliminado' });
         });
     }
 }

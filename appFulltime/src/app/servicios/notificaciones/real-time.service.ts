@@ -52,7 +52,7 @@ export class RealTimeService {
 
 
   /** ************************************************************************************ **
-   ** **                        MÉTODOS PARA CONFIG_NOTI                                ** ** 
+   ** **                        METODOS PARA CONFIG_NOTI                                ** ** 
    ** ************************************************************************************ **/
 
   // METODO DE BUSQUEDA DE CONFIGURACION DE RECEPCION DE NOTIFICACIONES
@@ -74,7 +74,7 @@ export class RealTimeService {
   }
 
   /** ************************************************************************************ **
-   ** **                 MÉTODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
+   ** **                 METODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
    ** ************************************************************************************ **/
 
   EnviarCorreoComunicado(datos: any) {
@@ -82,7 +82,7 @@ export class RealTimeService {
   }
 
   /** ************************************************************************************ **
-   ** **                 MÉTODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
+   ** **                 METODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
    ** ************************************************************************************ **/
 
   EnviarMensajeGeneral(data: any) {

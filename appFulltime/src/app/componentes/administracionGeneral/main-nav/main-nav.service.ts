@@ -13,63 +13,88 @@ export class MainNavService {
     private http: HttpClient,
   ) { }
 
+  // CONSULTAS DE FUNCIONES
   LogicaFunciones() {
     this.consultarFuncionalidad = sessionStorage.getItem('queryFuncionalidad');
-    
     if (this.consultarFuncionalidad === null) {
       this.http.get<any>(`${environment.url}/administracion/funcionalidad`).subscribe((res: any) => {
-        const [ result ] = res
-        sessionStorage.setItem('queryFuncionalidad', JSON.stringify(result))
+        const [result] = res;
+        sessionStorage.setItem('queryFuncionalidad', JSON.stringify(result));
         this.ValueFuncionalidad(result);
       }, error => {
-        console.log(error);
         this.DefaultFuncionalidad();
       })
-      
+
     } else {
-      const result = JSON.parse(this.consultarFuncionalidad)
+      const result = JSON.parse(this.consultarFuncionalidad);
       this.ValueFuncionalidad(result);
     }
-
   }
 
+  // CONTROL DE FUNCIONES DEL SISTEMA
   private _AccionesPersonal: boolean = false;
-  private _HoraExtra: boolean = false;
+  private _Geolocalizacion: boolean = false;
   private _Alimentacion: boolean = false;
+  private _Vacaciones: boolean = false;
+  private _HoraExtra: boolean = false;
+  private _TimbreWeb: boolean = false;
   private _Permisos: boolean = false;
   private _Reportes: boolean = false;
+  private _Movil: boolean = false;
 
   get accionesPersonal() { return this._AccionesPersonal; }
-  setAccionesPersonal(arg: boolean) { this._AccionesPersonal = arg }
-  
+  setAccionesPersonal(arg: boolean) { this._AccionesPersonal = arg; }
+
   get horasExtras() { return this._HoraExtra; }
-  setHoraExtra(arg: boolean) { this._HoraExtra = arg }
+  setHoraExtra(arg: boolean) { this._HoraExtra = arg; }
 
   get alimentacion() { return this._Alimentacion; }
-  setAlimentacion(arg: boolean) { this._Alimentacion = arg }
+  setAlimentacion(arg: boolean) { this._Alimentacion = arg; }
 
   get permisos() { return this._Permisos; }
-  setPermisos(arg: boolean) { this._Permisos = arg }
+  setPermisos(arg: boolean) { this._Permisos = arg; }
 
   get reportes() { return this._Reportes; }
-  setReportes(arg: boolean) { this._Reportes = arg }
+  setReportes(arg: boolean) { this._Reportes = arg; }
 
+  get geolocalizacion() { return this._Geolocalizacion; }
+  setGeolocalizacion(arg: boolean) { this._Geolocalizacion = arg; }
+
+  get vacaciones() { return this._Vacaciones; }
+  setVacaciones(arg: boolean) { this._Vacaciones = arg; }
+
+  get app_movil() { return this._Movil; }
+  setAppMovil(arg: boolean) { this._Movil = arg; }
+
+  get timbre_web() { return this._TimbreWeb; }
+  setTimbreWeb(arg: boolean) { this._TimbreWeb = arg; }
+
+  // METODO PARA COLOCAR VALORES POR DEFECTO
   private DefaultFuncionalidad(value = false) {
     this.setAccionesPersonal(value);
-    this.setHoraExtra(value);
+    this.setGeolocalizacion(value);
     this.setAlimentacion(value);
+    this.setVacaciones(value);
+    this.setHoraExtra(value);
+    this.setTimbreWeb(value);
     this.setPermisos(value);
     this.setReportes(value);
+    this.setAppMovil(value);
   }
 
+  // METODO PARA SETEAR VALORES DE FUNCIONES
   public ValueFuncionalidad(value: any) {
-    const { accion_personal, alimentacion, hora_extra, permisos, reportes } = value
-    
+    const { accion_personal, alimentacion, hora_extra, permisos, reportes, vacaciones,
+      geolocalizacion, app_movil, timbre_web } = value
     this.setAccionesPersonal(accion_personal);
-    this.setHoraExtra(hora_extra);
+    this.setGeolocalizacion(vacaciones);
     this.setAlimentacion(alimentacion);
+    this.setVacaciones(geolocalizacion);
+    this.setHoraExtra(hora_extra);
+    this.setTimbreWeb(timbre_web);
     this.setPermisos(permisos);
     this.setReportes(reportes);
+    this.setAppMovil(app_movil);
   }
 
 }

@@ -42,7 +42,7 @@ export class CrearCoordenadasComponent implements OnInit {
     this.BuscarParametro();
   }
 
-  // MÉTODO PARA OBTENER RANGO DE PERÍMETRO
+  // METODO PARA OBTENER RANGO DE PERÍMETRO
   rango: any;
   BuscarParametro() {
     // id_tipo_parametro PARA RANGO DE UBICACIÓN = 22
@@ -59,7 +59,7 @@ export class CrearCoordenadasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  // METODO PARA REGISTRAR NUEVO PARÁMETRO
   GuardarDatos(form: any) {
     if (form.latitudForm != '' && form.longitudForm != '') {
       let datos = {
@@ -138,7 +138,7 @@ export class CrearCoordenadasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA CERRAR VENTANA
+  // METODO PARA CERRAR VENTANA
   CerrarVentana() {
     this.ventanap.close();
   }

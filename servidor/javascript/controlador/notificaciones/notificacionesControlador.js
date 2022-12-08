@@ -108,9 +108,9 @@ class NotificacionTiempoRealControlador {
         });
     }
     /** *********************************************************************************************** **
-     **                         MÉTODOS PARA LA TABLA DE CONFIG_NOTI                                    **
+     **                         METODOS PARA LA TABLA DE CONFIG_NOTI                                    **
      ** *********************************************************************************************** **/
-    // MÉTODO PARA REGISTRAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+    // METODO PARA REGISTRAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
     CrearConfiguracion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empleado, vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail, hora_extra_noti, comida_mail, comida_noti, comunicado_mail, comunicado_noti } = req.body;
@@ -123,7 +123,7 @@ class NotificacionTiempoRealControlador {
             res.jsonp({ message: 'Configuracion guardada' });
         });
     }
-    // MÉTODO PARA ACTUALIZAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+    // METODO PARA ACTUALIZAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
     ActualizarConfigEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail, hora_extra_noti, comida_mail, comida_noti, comunicado_mail, comunicado_noti } = req.body;
@@ -138,7 +138,7 @@ class NotificacionTiempoRealControlador {
     /** ******************************************************************************************** **
      ** **                               CONSULTAS DE NOTIFICACIONES                              ** **
      ** ******************************************************************************************** **/
-    // MÉTODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
+    // METODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
     ObtenerConfigEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id_empleado = req.params.id;
@@ -203,9 +203,9 @@ class NotificacionTiempoRealControlador {
         });
     }
     /** ******************************************************************************************** **
-     ** **                      MÉTODOS PARA ENVIOS DE COMUNICADOS                                ** **
+     ** **                      METODOS PARA ENVIOS DE COMUNICADOS                                ** **
      ** ******************************************************************************************** **/
-    // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
+    // METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
     EnviarCorreoComunicado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
@@ -303,7 +303,7 @@ class NotificacionTiempoRealControlador {
                 .jsonp({ message: 'Comunicado enviado exitosamente.', respuesta: notificiacion });
         });
     }
-    // MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
+    // METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
     EnviarCorreoComunicadoMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
@@ -379,7 +379,7 @@ class NotificacionTiempoRealControlador {
             }
         });
     }
-    // MÉTODO PARA CREAR NOTIFICACIONES
+    // METODO PARA CREAR NOTIFICACIONES
     CrearNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

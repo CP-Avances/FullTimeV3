@@ -1,11 +1,10 @@
 // IMPORTAR LIBRERIAS
-import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, ThemePalette } from '@angular/material/core';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { ThemePalette } from '@angular/material/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 
@@ -16,35 +15,25 @@ import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriado
   selector: 'app-registrar-feriados',
   templateUrl: './registrar-feriados.component.html',
   styleUrls: ['./registrar-feriados.component.css'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'es' },
-  ]
 })
 
 export class RegistrarFeriadosComponent implements OnInit {
 
-  // VARIABLE DE ALMACENAMIENTO DE REGISTROS
-  idUltimoFeriado: any = [];
-  salir: boolean = false;
-
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
-  descripcionF = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
-  fechaF = new FormControl('', Validators.required);
   fechaRecuperacionF = new FormControl('');
+  descripcionF = new FormControl('');
+  fechaF = new FormControl('', Validators.required);
 
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public FeriadosForm = new FormGroup({
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     fechaRecuperacionForm: this.fechaRecuperacionF,
     descripcionForm: this.descripcionF,
     fechaForm: this.fechaF,
   });
 
   // VARIABLES PROGRESS SPINNER
-  mode: ProgressSpinnerMode = 'indeterminate';
   habilitarprogress: boolean = false;
+  mode: ProgressSpinnerMode = 'indeterminate';
   color: ThemePalette = 'primary';
   value = 10;
 
@@ -56,134 +45,114 @@ export class RegistrarFeriadosComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.ObtenerFeriados();
   }
 
+  // METODO PARA CONSULTAR FERIADOS
   feriados: any = [];
-  contador: number = 0;
-  InsertarFeriado(form) {
-    this.habilitarprogress = true;
+  ObtenerFeriados() {
     this.feriados = [];
+    this.rest.ConsultarFeriado().subscribe(response => {
+      this.feriados = response;
+    })
+  }
+
+  // METODO PARA GUARDAR DATOS 
+  contador: number = 0;
+  InsertarFeriado(form: any) {
     this.contador = 0;
-    let datosFeriado = {
+    let feriado = {
       fecha: form.fechaForm,
       descripcion: form.descripcionForm,
       fec_recuperacion: form.fechaRecuperacionForm
     };
-    if (datosFeriado.fec_recuperacion === '' || datosFeriado.fec_recuperacion === null) {
-      datosFeriado.fec_recuperacion = null;
-      this.rest.ConsultarFeriado().subscribe(response => {
-        this.habilitarprogress = false;
-        this.feriados = response;
-        this.feriados.forEach(obj => {
-          if (moment(obj.fec_recuperacion).format('YYYY-MM-DD') === moment(datosFeriado.fecha).format('YYYY-MM-DD')) {
-            this.contador = this.contador + 1;
-          }
-        })
-        if (this.contador === 0) {
-          this.CrearFeriado(datosFeriado);
-        }
-        else {
-          this.toastr.error('La fecha asignada para feriado ya se encuentra registrada como una fecha de recuperación.', 'Verificar fecha de recuperación', {
-            timeOut: 6000,
-          })
-        }
-      }, vacio => {
-        this.CrearFeriado(datosFeriado);
-      })
+    // VERIFICAR INGRESO DE FECHAS
+    if (feriado.fec_recuperacion === '' || feriado.fec_recuperacion === null) {
+      feriado.fec_recuperacion = null;
+      this.VerificarSinRecuperacion(feriado);
     }
     else {
-      this.rest.ConsultarFeriado().subscribe(response => {
-        this.habilitarprogress = false;
-        this.feriados = response;
-        this.feriados.forEach(obj => {
-          if (obj.fecha.split('T')[0] === moment(datosFeriado.fec_recuperacion).format('YYYY-MM-DD') ||
-            moment(obj.fec_recuperacion).format('YYYY-MM-DD') === moment(datosFeriado.fecha).format('YYYY-MM-DD')) {
-            this.contador = this.contador + 1;
-          }
-        })
-        if (this.contador === 0) {
-          if (Date.parse(form.fechaForm) < Date.parse(datosFeriado.fec_recuperacion)) {
-            this.CrearFeriado(datosFeriado);
-          }
-          else {
-            this.toastr.error('La fecha de recuperación debe ser posterior a la fecha del feriado registrado.', 'Fecha de recuperación incorrecta', {
-              timeOut: 6000,
-            })
-          }
-        }
-        else {
-          this.toastr.error('La fecha asignada para feriado ya se encuentra registrada como una fecha de recuperación o la fecha de recuperación ya se encuentra registrada como un feriado', 'Verificar fecha de recuperación', {
-            timeOut: 6000,
-          })
-        }
-      }, vacio => {
-        this.CrearFeriado(datosFeriado);
-      })
+      this.ValidarFechaRecuperacion(feriado, form);
     }
   }
 
-  CrearFeriado(datos) {
+  // METODO PARA VALIDAR REGISTRO SIN FECHA DE RECUPERACION
+  VerificarSinRecuperacion(feriado: any) {
+    // VERIFICAMOS SI EXISTE REGISTROS
+    if (this.feriados.length != 0) {
+      this.feriados.forEach(obj => {
+        if (moment(obj.fec_recuperacion).format('YYYY-MM-DD') === moment(feriado.fecha).format('YYYY-MM-DD')) {
+          this.contador = 1;
+        }
+      })
+      if (this.contador === 0) {
+        this.CrearFeriado(feriado);
+      }
+      else {
+        this.toastr.error('La fecha asignada para feriado ya se encuentra registrada como una fecha de recuperación.', 'Verificar fecha de recuperación.', {
+          timeOut: 6000,
+        })
+      }
+    }
+    else {
+      this.CrearFeriado(feriado);
+    }
+  }
+
+  // VALIDAR REGISTRO CON FECHA DE RECUPERACION
+  ValidarFechaRecuperacion(feriado: any, form: any) {
+    // VERIFICAMOS SI EXISTE REGISTROS
+    if (this.feriados.length != 0) {
+      this.feriados.forEach(obj => {
+        if (obj.fecha.split('T')[0] === moment(feriado.fec_recuperacion).format('YYYY-MM-DD') ||
+          moment(obj.fec_recuperacion).format('YYYY-MM-DD') === moment(feriado.fecha).format('YYYY-MM-DD')) {
+          this.contador = 1;
+        }
+      })
+      if (this.contador === 0) {
+        if (Date.parse(form.fechaForm) < Date.parse(feriado.fec_recuperacion)) {
+          this.CrearFeriado(feriado);
+        }
+        else {
+          this.toastr.error('La fecha de recuperación debe ser posterior a la fecha del feriado registrado.', 'Fecha de recuperación incorrecta', {
+            timeOut: 6000,
+          })
+        }
+      }
+      else {
+        this.toastr.error('La fecha asignada para feriado ya se encuentra registrada como una fecha de recuperación o la fecha de recuperación ya se encuentra registrada como un feriado', 'Verificar fecha de recuperación', {
+          timeOut: 6000,
+        })
+      }
+    }
+    else {
+      this.CrearFeriado(feriado);
+    }
+  }
+
+  // METODO PARA REGISTRAR DATOS EN BASE DE DATOS
+  CrearFeriado(datos: any) {
     this.habilitarprogress = true;
     this.rest.CrearNuevoFeriado(datos).subscribe(response => {
       this.habilitarprogress = false;
       if (response.message === 'error') {
-        this.toastr.error('La fecha del feriado o la fecha de recuperación se encuentran dentro de otro registro.', 'Verificar las fechas', {
+        this.toastr.error('La fecha del feriado o la fecha de recuperación se encuentran dentro de otro registro.', 'Upss!!! algo salio mal.', {
           timeOut: 6000,
         })
       }
       else {
-        this.toastr.success('Operación Exitosa', 'Feriado registrado', {
+        this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
           timeOut: 6000,
         })
-        this.habilitarprogress = true;
-        this.rest.ConsultarUltimoId().subscribe(response => {
-          this.habilitarprogress = false;
-          this.idUltimoFeriado = response;
-          this.LimpiarCampos();
-          this.salir = true;
-          this.ventana.close(this.salir)
-          this.router.navigate(['/verFeriados/', this.idUltimoFeriado[0].max]);
-        });
+        this.ventana.close(true)
+        this.router.navigate(['/verFeriados/', response.id]);
       }
     });
   }
 
-  ObtenerMensajeErrorNombreRequerido() {
-    if (this.descripcionF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-    return this.descripcionF.hasError('pattern') ? 'Ingrese un nombre válido' : '';
-  }
-
-  LimpiarCampos() {
-    this.FeriadosForm.reset();
-  }
-
-  CerrarVentanaRegistroFeriado() {
-    this.LimpiarCampos();
-    this.ventana.close(this.salir);
-  }
-
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA CERRAR VENTANA DE REGISTRO
+  CerrarVentana() {
+    this.ventana.close(false);
   }
 
 }

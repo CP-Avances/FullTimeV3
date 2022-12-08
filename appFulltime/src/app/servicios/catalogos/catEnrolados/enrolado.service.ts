@@ -46,7 +46,7 @@ export class EnroladoService {
     return this.http.post(`${environment.url}/enrolados/plantillaExcel/`, formData);
   }
 
-  DownloadXMLRest(data: any) {
+  CrearXML(data: any) {
     return this.http.post(`${environment.url}/enrolados/xmlDownload`, data);
   }
 

@@ -10,13 +10,24 @@ class TituloRutas {
     }
 
     configuracion(): void {
-        this.router.get('/', TokenValidation, TITULO_CONTROLADOR.list);
+
+        // METODO PARA LISTAR TITULOS
+        this.router.get('/', TokenValidation, TITULO_CONTROLADOR.ListarTitulos);
+        // METODO PARA ELIMINAR REGISTRO
+        this.router.delete('/eliminar/:id', TokenValidation, TITULO_CONTROLADOR.EliminarRegistros);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, TITULO_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', TITULO_CONTROLADOR.downloadXML);
+        // METODO PARA ACTUALIZAR REGISTRO DE TITULO
+        this.router.put('/', TokenValidation, TITULO_CONTROLADOR.ActualizarTitulo);
+
+
         this.router.get('/:id', TokenValidation, TITULO_CONTROLADOR.getOne);
         this.router.post('/', TokenValidation, TITULO_CONTROLADOR.create);
-        this.router.put('/', TokenValidation, TITULO_CONTROLADOR.ActualizarTitulo);
-        this.router.delete('/eliminar/:id', TokenValidation, TITULO_CONTROLADOR.EliminarRegistros);
-        this.router.post('/xmlDownload/', TokenValidation, TITULO_CONTROLADOR.FileXML);
-        this.router.get('/download/:nameXML', TITULO_CONTROLADOR.downloadXML);
+
+
+
     }
 }
 

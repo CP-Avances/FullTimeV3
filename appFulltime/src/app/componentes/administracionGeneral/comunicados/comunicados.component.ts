@@ -411,7 +411,7 @@ export class ComunicadosComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA NOTIFICACION DE COMUNICADO
+  // METODO PARA NOTIFICACION DE COMUNICADO
   NotificarPlanificacion(empleado_envia: any, empleado_recive: any, form) {
     let mensaje = {
       id_empl_envia: empleado_envia,
@@ -479,7 +479,7 @@ export class ComunicadosComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LEER NUMERO DE OCRREOS PERMITIDOS
+  // METODO PARA LEER NUMERO DE OCRREOS PERMITIDOS
   correos: number;
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREO = 24
@@ -496,7 +496,7 @@ export class ComunicadosComponent implements OnInit {
       });
   }
 
-  // MÉTODO USADO PARA ENVIAR COMUNICADO POR CORREO
+  // METODO USADO PARA ENVIAR COMUNICADO POR CORREO
   EnviarCorreo(correos, form) {
     let datosCorreo = {
       id_envia: this.idEmpleado,

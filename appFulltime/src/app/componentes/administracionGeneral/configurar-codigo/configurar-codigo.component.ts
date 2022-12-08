@@ -19,30 +19,30 @@ export class ConfigurarCodigoComponent implements OnInit {
   HabilitarDescrip: boolean = true;
   automaticoF = false;
   manualF = false;
-  estilo: any;
+  registrar: boolean = true;
 
   // CAMPOS FORMULARIO
   inicioF = new FormControl('');
   seleccionF = new FormControl('');
 
   // CAMPOS DEL FORMULARIO DENTRO DE UN GRUPO
-  public configuracionForm = new FormGroup({
+  public formulario = new FormGroup({
     inicioForm: this.inicioF,
     seleccionForm: this.seleccionF,
   });
 
   constructor(
     private toastr: ToastrService, // VARIABLE MANEJO DE MENSAJES DE NOTIFICACIONES
-    public rest: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     private router: Router, // VARIABLE DE NAVEGACIÓN RUTAS URL
+    public rest: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
   ) { }
 
   ngOnInit(): void {
     this.VerUltimoCodigo();
   }
 
-  // SELECCIÓN DE MÉTODO DE REGISTRO DE CÓDIGO DE EMPLEADO
-  RegistrarConfiguracion(form) {
+  // SELECCION DE METODO DE REGISTRO DE CODIGO DE EMPLEADO
+  RegistrarConfiguracion(form: any) {
     this.rest.ObtenerCodigo().subscribe(datos => {
       if (this.automaticoF === true) {
         this.ActualizarAutomatico(form);
@@ -60,13 +60,13 @@ export class ConfigurarCodigoComponent implements OnInit {
     });
   }
 
-  // MÉTODO DE REGISTRO AUTOMATICO DE CÓDIGO DE EMPLEADO
-  CrearAutomatico(form) {
+  // METODO DE REGISTRO AUTOMATICO DE CÓDIGO DE EMPLEADO
+  CrearAutomatico(form: any) {
     let dataCodigo = {
       id: 1,
       valor: form.inicioForm,
+      manual: this.manualF,
       automatico: this.automaticoF,
-      manual: this.manualF
     }
     if (form.inicioForm != '') {
       this.rest.CrearCodigo(dataCodigo).subscribe(datos => {
@@ -84,13 +84,13 @@ export class ConfigurarCodigoComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE REGISTRO DE CÓDIGO MANUAL
+  // METODO DE REGISTRO DE CODIGO MANUAL
   CrearManual() {
     let dataCodigo = {
       id: 1,
       valor: null,
+      manual: this.manualF,
       automatico: this.automaticoF,
-      manual: this.manualF
     }
     this.rest.CrearCodigo(dataCodigo).subscribe(datos => {
       this.toastr.success('Configuración Registrada', '', {
@@ -101,13 +101,13 @@ export class ConfigurarCodigoComponent implements OnInit {
     this.Limpiar();
   }
 
-  // MÉTODO DE ACTUALIZACIÓN DE CÓDIGO DE EMPLEADO AUTOMÁTICO
-  ActualizarAutomatico(form) {
+  // METODO DE ACTUALIZACION DE CODIGO DE EMPLEADO AUTOMATICO
+  ActualizarAutomatico(form: any) {
     let dataCodigo = {
       id: 1,
       valor: form.inicioForm,
+      manual: this.manualF,
       automatico: this.automaticoF,
-      manual: this.manualF
     }
     if (form.inicioForm != '') {
       this.rest.ObtenerCodigoMAX().subscribe(datosE => {
@@ -135,13 +135,13 @@ export class ConfigurarCodigoComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE ACTUALIZACIÓN DE CÓDIGO DE EMPLEADO MANUAL
+  // METODO DE ACTUALIZACION DE CODIGO DE EMPLEADO MANUAL
   ActualizarManual() {
     let dataCodigo = {
       id: 1,
       valor: null,
+      manual: this.manualF,
       automatico: this.automaticoF,
-      manual: this.manualF
     }
     this.rest.ActualizarCodigoTotal(dataCodigo).subscribe(datos => {
       this.toastr.success('Configuración Registrada', '', {
@@ -152,27 +152,29 @@ export class ConfigurarCodigoComponent implements OnInit {
     this.Limpiar();
   }
 
-  // MÉTODO PARA VER CAMPO DE REGISTRO DE CÓDIGO
+  // METODO PARA VER CAMPO DE REGISTRO DE CODIGO
   VerCampo() {
-    this.estilo = { 'visibility': 'visible' }; this.HabilitarDescrip = false;
-    this.configuracionForm.patchValue({
+    this.HabilitarDescrip = false;
+    this.formulario.patchValue({
       inicioForm: this.valor_codigo
     })
     this.automaticoF = true;
+    this.registrar = false;
     this.manualF = false;
   }
 
-  // MÉTODO PARA OCULTAR CAMPO DE REGISTRO DE CÓDIGO
+  // METODO PARA OCULTAR CAMPO DE REGISTRO DE CODIGO
   QuitarCampo() {
-    this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
-    this.configuracionForm.patchValue({
+    this.HabilitarDescrip = true;
+    this.formulario.patchValue({
       inicioForm: ''
     })
     this.automaticoF = false;
+    this.registrar = false;
     this.manualF = true;
   }
 
-  // MÉTODO PARA BUSCAR EL ÚLTIMO CÓDIGO REGISTADO EN EL SISTEMA
+  // METODO PARA BUSCAR EL ULTIMO CODIGO REGISTRADO EN EL SISTEMA
   valor_codigo: any;
   VerUltimoCodigo() {
     this.rest.ObtenerCodigoMAX().subscribe(datosE => {
@@ -182,8 +184,8 @@ export class ConfigurarCodigoComponent implements OnInit {
     })
   }
 
-  // MÉTODO DE INGRESO DE SOLO NÚMEROS EN EL CAMPO DEL FORMULARIO
-  IngresarSoloNumeros(evt) {
+  // METODO DE INGRESO DE SOLO NUMEROS EN EL CAMPO DEL FORMULARIO
+  IngresarSoloNumeros(evt: any) {
     if (window.event) {
       var keynum = evt.keyCode;
     }
@@ -202,9 +204,9 @@ export class ConfigurarCodigoComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE RESETEAR VALORES EN EL FORMULARIO
+  // METODO DE RESETEAR VALORES EN EL FORMULARIO
   Limpiar() {
-    this.configuracionForm.reset();
+    this.formulario.reset();
     this.QuitarCampo();
   }
 

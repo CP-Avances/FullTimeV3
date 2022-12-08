@@ -95,7 +95,7 @@ export class PlanificacionComidasComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarFecha() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -191,7 +191,7 @@ export class PlanificacionComidasComponent implements OnInit {
     // METODO PARA VALIDAR FECHAS INGRESADAS
     if (Date.parse(form.fechaInicioForm) <= Date.parse(form.fechaFinForm)) {
 
-      // MÉTODO PARA VALIDAR REGISTRO INDIVIDUAL O MULTIPLE
+      // METODO PARA VALIDAR REGISTRO INDIVIDUAL O MULTIPLE
       if (this.data.servicios.length != undefined) {
         this.ContarCorreos(this.data.servicios);
         if (this.cont_correo <= this.correos) {
@@ -222,7 +222,7 @@ export class PlanificacionComidasComponent implements OnInit {
       fecha_fin: form.fechaFinForm,
       fecha_inicio: form.fechaInicioForm,
     }
-    // MÉTODO QUE VALIDA SI EXISTE UN REGISTRO EN LAS FECHAS INDICADAS
+    // METODO QUE VALIDA SI EXISTE UN REGISTRO EN LAS FECHAS INDICADAS
     this.restPlan.BuscarDuplicadosFechas(datosDuplicados).subscribe(plan => {
       this.toastr.info(this.data.servicios.nombre + ' ya tiene registrada una planificación de alimentación en las fechas ingresadas.', '', {
         timeOut: 6000,
@@ -330,7 +330,7 @@ export class PlanificacionComidasComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA INGRESAR PLANIFICACION MULTIPLE
+  // METODO PARA INGRESAR PLANIFICACION MULTIPLE
   empleados_conPlanificacion: any = [];
   empleados_sinPlanificacion: any = [];
   VerificarDuplicidadMultiple(form, datosPlanComida) {
@@ -551,7 +551,7 @@ export class PlanificacionComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
@@ -572,7 +572,7 @@ export class PlanificacionComidasComponent implements OnInit {
     }
 
     console.log('DATOS A ENVIARSE POR CORREO', DataCorreo);
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
     this.restPlan.EnviarCorreoPlan(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {
@@ -596,7 +596,7 @@ export class PlanificacionComidasComponent implements OnInit {
   }
 
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
   NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
     let mensaje = {
       id_comida: datos.id_comida,
@@ -618,7 +618,7 @@ export class PlanificacionComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE CORREOS
+  // METODO PARA BUSCAR PARÁMETRO DE CORREOS
   correos: number;
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
@@ -635,7 +635,7 @@ export class PlanificacionComidasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA CONTAR CORREOS A ENVIARSE
+  // METODO PARA CONTAR CORREOS A ENVIARSE
   cont_correo: number = 0;
   info_correo: string = '';
   ContarCorreos(data: any) {

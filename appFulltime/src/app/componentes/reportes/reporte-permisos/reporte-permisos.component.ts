@@ -21,7 +21,7 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-// SERVICIOS FILTROS DE BÚSQUEDA
+// SERVICIOS FILTROS DE BUSQUEDA
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
@@ -47,7 +47,7 @@ export class ReportePermisosComponent implements OnInit {
   // ARREGLO DATOS EMPLEADO
   datosEmpleado: any = [];
 
-  // DATOS DEL FORMULARIO DE BÚSQUEDA
+  // DATOS DEL FORMULARIO DE BUSQUEDA
   departamentoF = new FormControl('', [Validators.minLength(2)]);
   regimenF = new FormControl('', [Validators.minLength(2)]);
   codigo = new FormControl('');
@@ -65,7 +65,7 @@ export class ReportePermisosComponent implements OnInit {
     finalForm: this.fechaFinalF,
   });
 
-  // DATOS DE FILTROS DE BÚSQUEDA
+  // DATOS DE FILTROS DE BUSQUEDA
   filtroDepartamento: '';
   filtroEmpleado = '';
   filtroRegimen: '';
@@ -82,13 +82,13 @@ export class ReportePermisosComponent implements OnInit {
   empleadoLogueado: any = [];
   idEmpleado: number;
 
-  // FILTROS DE BÚSQUEDA 
+  // FILTROS DE BUSQUEDA 
   sucursalF = new FormControl('');
   laboralF = new FormControl('');
   cargosF = new FormControl('');
   depaF = new FormControl('');
 
-  // FORMULARIO DE BÚSQUEDAS
+  // FORMULARIO DE BUSQUEDAS
   public busquedasForm = new FormGroup({
     sucursalForm: this.sucursalF,
     laboralForm: this.laboralF,
@@ -97,7 +97,7 @@ export class ReportePermisosComponent implements OnInit {
   });
 
   constructor(
-    // FILTROS DE BÚSQUEDA 
+    // FILTROS DE BUSQUEDA 
     public restGeneralepa: DepartamentosService,
     public restRegimen: RegimenService,
     public restSucur: SucursalService,
@@ -122,7 +122,7 @@ export class ReportePermisosComponent implements OnInit {
     this.ObtenerLogo();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -130,7 +130,7 @@ export class ReportePermisosComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -138,7 +138,7 @@ export class ReportePermisosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -150,7 +150,7 @@ export class ReportePermisosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA MANEJO DE PAGINACIÓN
+  // METODO PARA MANEJO DE PAGINACIÓN
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
@@ -286,7 +286,7 @@ export class ReportePermisosComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA CONTROLAR INGRESO ADECUADO DE PERIODO DE FECHAS
+  // METODO PARA CONTROLAR INGRESO ADECUADO DE PERIODO DE FECHAS
   VerPermisos(form, archivo, id_seleccionado) {
     if (form.inicioForm === '' && form.finalForm === '' || form.inicioForm === null && form.finalForm === null) {
       this.VerPermisosEmpleado(id_seleccionado, archivo, form);
@@ -315,17 +315,17 @@ export class ReportePermisosComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA INGRESAR SOLO LETRAS
+  // METODO PARA INGRESAR SOLO LETRAS
   IngresarSoloLetras(e) {
     this.validar.IngresarSoloLetras(e);
   }
 
-  // MÉTODO PARA INGRESAR SOLO NÚMEROS
+  // METODO PARA INGRESAR SOLO NÚMEROS
   IngresarSoloNumeros(evt) {
     this.validar.IngresarSoloNumeros(evt);
   }
 
-  // MÉTODO PARA LIMPIAR CAMPOS DE BÚSQUEDA
+  // METODO PARA LIMPIAR CAMPOS DE BUSQUEDA
   LimpiarCampos() {
     this.codigo.reset();
     this.cedula.reset();
@@ -336,7 +336,7 @@ export class ReportePermisosComponent implements OnInit {
     this.filtroEmpleado = '';
   }
 
-  // MÉTODO PARA LIMPIAR CAMPOS DE FECHA
+  // METODO PARA LIMPIAR CAMPOS DE FECHA
   LimpiarFechas() {
     this.fechaInicialF.reset();
     this.fechaFinalF.reset();
@@ -370,7 +370,7 @@ export class ReportePermisosComponent implements OnInit {
 
       // Pie de página
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
-        // Método de obtención de fecha y hora actual
+        // METODO de obtención de fecha y hora actual
         var h = new Date();
         var f = moment();
         fecha = f.format('YYYY-MM-DD');
@@ -737,7 +737,7 @@ export class ReportePermisosComponent implements OnInit {
   presentarDatosEmpleado(id_seleccionado, form) {
     // INICIALIZACIÓN DE VARIBLES
     var ciudad, nombre, apellido, cedula, codigo, sucursal, departamento, cargo, regimen;
-    // BÚSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
+    // BUSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
     this.datosEmpleado.forEach(obj => {
       if (obj.codigo === id_seleccionado) {
         nombre = obj.nombre;
@@ -964,11 +964,11 @@ export class ReportePermisosComponent implements OnInit {
     }
   }
 
-  /*FILTROS DE BÚSQUEDA*/
+  /*FILTROS DE BUSQUEDA*/
   sucursales: any = [];
   ListarSucursales() {
     this.sucursales = [];
-    this.restSucur.getSucursalesRest().subscribe(res => {
+    this.restSucur.BuscarSucursal().subscribe(res => {
       this.sucursales = res;
     });
   }

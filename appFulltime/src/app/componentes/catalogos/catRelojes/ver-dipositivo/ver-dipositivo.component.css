@@ -1,9 +1,19 @@
-p { font-size: x-small; text-align: center; }
+.btn {
+    margin-left: 15px;
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
 
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
+#verticalLine {
+    border-left: 1px solid rgb(52, 65, 84);
+}
 
-#editarF { color:green; cursor: pointer; text-align: center; margin-left: 15px; }
+#datosF {
+    padding-right: 5px;
+    font-weight: bold;
+    font-size: 15px;
+}
 
-#datosF { font-weight: bold; font-size: 18px; }
-
-#verticalLine { border-left: 1px solid rgb(52,65,84); }
+.espacio {
+    padding: 0px 10px 0px 10px;
+}

@@ -11,45 +11,45 @@ export class SucursalService {
     private http: HttpClient,
   ) { }
 
-  // Catálogo de Horarios
-  getSucursalesRest() {
-    return this.http.get(`${environment.url}/sucursales`);
+  // BUSCAR SUCURSALES POR EL NOMBRE
+  BuscarNombreSucursal(nombre: any) {
+    return this.http.post(`${environment.url}/sucursales/nombre-sucursal`, nombre);
   }
 
-  VerSucursalesRegistro() {
-    return this.http.get(`${environment.url}/sucursales/registro`);
+  // GUARDAR DATOS DE REGISTRO
+  RegistrarSucursal(data: any) {
+    return this.http.post<any>(`${environment.url}/sucursales`, data);
   }
 
-  VerSucursalActualizar(id: number) {
-    return this.http.get(`${environment.url}/sucursales/actualizar/${id}`);
-  }
-
-  EncontrarUltimoId() {
-    return this.http.get(`${environment.url}/sucursales/ultimoId`);
-  }
-
-  getOneSucursalRest(id: number) {
-    return this.http.get(`${environment.url}/sucursales/unaSucursal/${id}`);
-  }
-
-  postSucursalRest(data: any) {
-    return this.http.post(`${environment.url}/sucursales`, data);
-  }
-
-  BuscarSucEmpresa(id_empresa: number) {
-    return this.http.get(`${environment.url}/sucursales/buscar/nombreSuc/${id_empresa}`);
-  }
-
+  // ACTUALIZAR REGISTRO
   ActualizarSucursal(datos: any) {
     return this.http.put(`${environment.url}/sucursales`, datos);
   }
 
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/sucursales/xmlDownload`, data);
+  // BUSCAR SUCURSAL POR ID DE EMPRESA
+  BuscarSucursalEmpresa(id_empresa: number) {
+    return this.http.get(`${environment.url}/sucursales/empresa-sucursal/${id_empresa}`);
   }
 
+  // BUSCAR LISTA DE SUCURSALES
+  BuscarSucursal() {
+    return this.http.get(`${environment.url}/sucursales`);
+  }
+
+  // METODO PARA ELIMINAR REGISTRO 
   EliminarRegistro(id: number) {
     return this.http.delete(`${environment.url}/sucursales/eliminar/${id}`);
   }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/sucursales/xmlDownload`, data);
+  }
+
+  // METODO PARA BUSCAR DATOS DE UNA SUCURSAL
+  BuscarUnaSucursal(id: number) {
+    return this.http.get(`${environment.url}/sucursales/unaSucursal/${id}`);
+  }
+
 
 }

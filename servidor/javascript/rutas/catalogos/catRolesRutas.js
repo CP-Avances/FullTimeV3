@@ -12,14 +12,19 @@ class PruebasRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO PARA LISTAR ROLES DEL SISTEMA
         this.router.get('/', verificarToken_1.TokenValidation, catRolesControlador_1.default.ListarRoles);
+        // METODO PARA ELIMINAR REGISTRO
+        this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, catRolesControlador_1.default.EliminarRol);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catRolesControlador_1.default.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', catRolesControlador_1.default.downloadXML);
+        // METODO PARA REGISTRAR ROL
+        this.router.post('/', verificarToken_1.TokenValidation, catRolesControlador_1.default.CrearRol);
         this.router.get('/:id', verificarToken_1.TokenValidation, catRolesControlador_1.default.ObtnenerUnRol);
         this.router.get('/actualiza/:id', verificarToken_1.TokenValidation, catRolesControlador_1.default.ListarRolesActualiza);
-        this.router.post('/', verificarToken_1.TokenValidation, catRolesControlador_1.default.CrearRol);
         this.router.put('/', verificarToken_1.TokenValidation, catRolesControlador_1.default.ActualizarRol);
-        this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catRolesControlador_1.default.FileXML);
-        this.router.get('/download/:nameXML', catRolesControlador_1.default.downloadXML);
-        this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, catRolesControlador_1.default.EliminarRol);
     }
 }
 const ROLES_RUTAS = new PruebasRutas();

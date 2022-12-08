@@ -1,243 +1,223 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
-import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
+import { Router } from '@angular/router';
 
+import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
+import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 
 @Component({
   selector: 'app-relojes',
   templateUrl: './relojes.component.html',
   styleUrls: ['./relojes.component.css'],
-  //encapsulation: ViewEncapsulation.None
 })
+
 export class RelojesComponent implements OnInit {
 
+  // VARIABLES DE ALMACENAMIENTO
   sucursales: any = [];
   departamento: any = [];
-  nomDepartamento: any = [];
 
-  // Activar ingreso de número de acciones
+  // CONTROL DE FORMULARIOS
+  isLinear = true;
+  primerFormulario: FormGroup;
+  segundoFormulario: FormGroup;
+
+  // ACTIVAR INGRESO DE NUMERO DE ACCIONES
   activarCampo: boolean = false;
 
-  // Control de campos y validaciones del formulario
-  nombreF = new FormControl('', [Validators.required, Validators.minLength(4)]);
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
+
+  // PRIMER FORMULARIO
   ipF = new FormControl('', [Validators.required, Validators.pattern("[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}")]);
+  nombreF = new FormControl('', [Validators.required, Validators.minLength(4)]);
   puertoF = new FormControl('', [Validators.required, Validators.pattern('[0-9]{4}')]);
-  contraseniaF = new FormControl('', [Validators.minLength(4)]);
-  marcaF = new FormControl('', [Validators.minLength(4)]);
-  modeloF = new FormControl('', [Validators.minLength(3)]);
-  serieF = new FormControl('', Validators.minLength(4));
-  idFabricacionF = new FormControl('', [Validators.minLength(4)]);
-  fabricanteF = new FormControl('', [Validators.minLength(4)]);
-  funcionesF = new FormControl('', [Validators.required]);
-  macF = new FormControl('');
   codigoF = new FormControl('', Validators.required);
+  numeroF = new FormControl('', [Validators.required]);
+  funcionesF = new FormControl('', [Validators.required]);
   idSucursalF = new FormControl('', Validators.required);
   idDepartamentoF = new FormControl('', [Validators.required]);
-  numeroF = new FormControl('', [Validators.required]);
 
-  // Asignación de validaciones a inputs del formulario
-  public RelojesForm = new FormGroup({
-    nombreForm: this.nombreF,
-    ipForm: this.ipF,
-    puertoForm: this.puertoF,
-    contraseniaForm: this.contraseniaF,
-    marcaForm: this.marcaF,
-    modeloForm: this.modeloF,
-    serieForm: this.serieF,
-    idFabricacionForm: this.idFabricacionF,
-    fabricanteForm: this.fabricanteF,
-    macForm: this.macF,
-    funcionesForm: this.funcionesF,
-    idSucursalForm: this.idSucursalF,
-    idDepartamentoForm: this.idDepartamentoF,
-    codigoForm: this.codigoF,
-    numeroForm: this.numeroF
-  });
+  // SEGUNDO FORMULARIO
+  macF = new FormControl('');
+  marcaF = new FormControl('', [Validators.minLength(4)]);
+  serieF = new FormControl('', Validators.minLength(4));
+  modeloF = new FormControl('', [Validators.minLength(3)]);
+  fabricanteF = new FormControl('', [Validators.minLength(4)]);
+  contraseniaF = new FormControl('', [Validators.minLength(4)]);
+  idFabricacionF = new FormControl('', [Validators.minLength(4)]);
 
   constructor(
-    private rest: RelojesService,
     private restCatDepartamento: DepartamentosService,
     private restSucursales: SucursalService,
+    private formulario: FormBuilder,
+    private validar: ValidacionesService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RelojesComponent>,
+    private router: Router,
+    private rest: RelojesService,
   ) { }
 
   ngOnInit(): void {
     this.FiltrarSucursales();
+    this.ValidarFormulario();
   }
 
+  // VALIDACIONES DE FORMULARIO
+  ValidarFormulario() {
+    this.primerFormulario = this.formulario.group({
+      ipForm: this.ipF,
+      nombreForm: this.nombreF,
+      puertoForm: this.puertoF,
+      numeroForm: this.numeroF,
+      codigoForm: this.codigoF,
+      funcionesForm: this.funcionesF,
+      idSucursalForm: this.idSucursalF,
+      idDepartamentoForm: this.idDepartamentoF,
+    });
+    this.segundoFormulario = this.formulario.group({
+      macForm: this.macF,
+      marcaForm: this.marcaF,
+      serieForm: this.serieF,
+      modeloForm: this.modeloF,
+      fabricanteForm: this.fabricanteF,
+      contraseniaForm: this.contraseniaF,
+      idFabricacionForm: this.idFabricacionF,
+    });
+  }
+
+  // METODO PARA LISTAR ESTABLECIMIENTOS
   FiltrarSucursales() {
     let idEmpre = parseInt(localStorage.getItem('empresa'));
     this.sucursales = [];
-    this.restSucursales.BuscarSucEmpresa(idEmpre).subscribe(datos => {
+    this.restSucursales.BuscarSucursalEmpresa(idEmpre).subscribe(datos => {
       this.sucursales = datos;
     }, error => {
-      this.toastr.info('No se han encntrado registros de establecimientos', '', {
+      this.toastr.info('No se han encntrado registros de establecimientos.', '', {
         timeOut: 6000,
       })
     })
   }
 
-  ObtenerDepartamentos(form) {
+  // METODO PARA LISTAR DEPARTAMENTOS DE ESTABLECIMIENTO
+  ObtenerDepartamentos(form: any) {
     this.departamento = [];
     let idSucursal = form.idSucursalForm;
     this.restCatDepartamento.BuscarDepartamentoSucursal(idSucursal).subscribe(datos => {
       this.departamento = datos;
     }, error => {
-      this.toastr.info('Sucursal no cuenta con departamentos registrados', '', {
+      this.toastr.info('Sucursal no cuenta con departamentos registrados.', '', {
         timeOut: 6000,
       })
     });
   }
 
-  ObtenerNombre(form) {
-    this.nomDepartamento = [];
-    this.restCatDepartamento.EncontrarUnDepartamento(form.idDepartamentoForm).subscribe(datos => {
-      this.nomDepartamento = datos;
-      console.log(this.nomDepartamento.nombre)
-      if (this.nomDepartamento.nombre === 'Ninguno') {
-        this.toastr.info('No ha seleccionado ningún departamento. Seleccione un departamento y continue con el registro', '', {
-          timeOut: 6000,
-        })
-      }
-    }, error => {
-      this.toastr.info('Descripción ingresada no coincide con los registros', '', {
-        timeOut: 6000,
-      })
-    });
-  }
+  // METODO PARA REGISTRAR DISPOSITIVO
+  InsertarReloj(form1: any, form2: any) {
+    let reloj = {
 
-  InsertarReloj(form) {
-    let datosReloj = {
-      nombre: form.nombreForm,
-      ip: form.ipForm,
-      puerto: form.puertoForm,
-      contrasenia: form.contraseniaForm,
-      marca: form.marcaForm,
-      modelo: form.modeloForm,
-      serie: form.serieForm,
-      id_fabricacion: form.idFabricacionForm,
-      fabricante: form.fabricanteForm,
-      mac: form.macForm,
-      tien_funciones: form.funcionesForm,
-      id_sucursal: form.idSucursalForm,
-      id_departamento: form.idDepartamentoForm,
-      id: form.codigoForm,
-      numero_accion: form.numeroForm
+      // PRIMER FORMULARIO
+      ip: form1.ipForm,
+      id: form1.codigoForm,
+      nombre: form1.nombreForm,
+      puerto: form1.puertoForm,
+      id_sucursal: form1.idSucursalForm,
+      numero_accion: form1.numeroForm,
+      tien_funciones: form1.funcionesForm,
+      id_departamento: form1.idDepartamentoForm,
+
+      // SEGUNDO FORMULARIO
+      mac: form2.macForm,
+      serie: form2.serieForm,
+      marca: form2.marcaForm,
+      modelo: form2.modeloForm,
+      fabricante: form2.fabricanteForm,
+      contrasenia: form2.contraseniaForm,
+      id_fabricacion: form2.idFabricacionForm,
     };
-    this.nomDepartamento = [];
-    this.restCatDepartamento.EncontrarUnDepartamento(form.idDepartamentoForm).subscribe(datos => {
-      this.nomDepartamento = datos;
-      console.log(this.nomDepartamento.nombre)
-      if (this.nomDepartamento.nombre === 'Ninguno') {
-        this.toastr.info('No ha seleccionado ningún departamento. Seleccione un departamento y continue con el registro', '', {
+    this.rest.CrearNuevoReloj(reloj).subscribe(response => {
+      if (response.message === 'guardado') {
+        this.LimpiarCampos();
+        this.router.navigate(['/verDispositivos/', response.reloj.id]);
+        this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
           timeOut: 6000,
         })
       }
       else {
-        this.rest.CrearNuevoReloj(datosReloj).subscribe(response => {
-          if (response.message === 'guardado') {
-            this.LimpiarCampos();
-            this.toastr.success('Operación Exitosa', 'Dispositivo registrado', {
-              timeOut: 6000,
-            })
-          }
-          else {
-            this.toastr.error('Verificar que el código de reloj y la ip del dispositivo no se encuentren registrados.',
-              'Operación Fallida', {
-              timeOut: 6000,
-            })
-          }
-
-        }, error => { });
+        this.toastr.error('Verificar que el código de reloj y la ip del dispositivo no se encuentren registrados.',
+          'Operación Fallida.', {
+          timeOut: 6000,
+        })
       }
-    }, error => { });
-
+    });
   }
 
-  ObtenerMensajeErrorNombreRequerido() {
-    if (this.nombreF.hasError('required')) {
-      return 'Campo Obligatorio';
-    }
-  }
-
+  // MENSAJES DE ERRORES
   ObtenerMensajeErrorIp() {
     if (this.ipF.hasError('pattern')) {
       return 'Ingresar IP Ej: 0.0.0.0';
     }
-    return this.ipF.hasError('required') ? 'Campo Obligatorio' : '';
   }
 
+  // MENSAJES DE ERRORES
   ObtenerMensajeErrorPuerto() {
     if (this.puertoF.hasError('pattern')) {
-      return 'Ingresar 4 números';
+      return 'Ingresar 4 números.';
     }
-    return this.puertoF.hasError('required') ? 'Campo Obligatorio' : '';
   }
 
-  IngresarIp(evt) {
+  // METODO PARA VALIDAR INGRESO DE IP
+  IngresarIp(evt: any) {
     if (window.event) {
       var keynum = evt.keyCode;
     }
     else {
       keynum = evt.which;
     }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
+    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
     if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6 || keynum == 46) {
       return true;
     }
     else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
+      this.toastr.info('No se admite el ingreso de letras.', 'Usar solo números.', {
         timeOut: 6000,
       })
       return false;
     }
   }
 
-  IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA INGRESAR SOLO NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
-  activarVista() {
+  // METODO PARA VISUALIZAR CAMPO NUMERO DE FUNCIONES
+  ActivarVista() {
     this.activarCampo = true;
-    this.RelojesForm.patchValue({
+    this.primerFormulario.patchValue({
       numeroForm: ''
     })
   }
 
-  desactivarVista() {
+  // METODO PARA OCULTAR CAMPO DE NUMERO DE FUNCIONES
+  DesactivarVista() {
     this.activarCampo = false;
-    this.RelojesForm.patchValue({
+    this.primerFormulario.patchValue({
       numeroForm: 0
     })
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.RelojesForm.reset();
+    this.primerFormulario.reset();
+    this.segundoFormulario.reset();
   }
 
-  CerrarVentanaRegistroReloj() {
+  // METODO PARA CERRAR VENTANA
+  CerrarVentana() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.router.navigate(['/listarRelojes']);
   }
 
 }

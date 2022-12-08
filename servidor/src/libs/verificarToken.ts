@@ -36,7 +36,7 @@ export const TokenValidation = (req: Request, res: Response, next: NextFunction)
         // se extrae los datos del token 
         const payload = jwt.verify(token, process.env.TOKEN_SECRET || 'llaveSecreta') as IPayload;
         // cuando se extrae los datos se guarda en una propiedad req.userId para q las demas funciones puedan utilizar ese id 
-
+       // console.log('payload ', payload)
         if (!payload._web_access) return res.status(401).send('No tiene acceso a los recursos de la aplicacion.');
 
         fs.readFile('licencia.conf.json', 'utf8', function (err, data) {
@@ -50,7 +50,7 @@ export const TokenValidation = (req: Request, res: Response, next: NextFunction)
                     o.fec_desactivacion = new Date(o.fec_desactivacion)
                 return o
             })
-            // console.log(ok_licencias);
+            console.log('ver licencias ', ok_licencias.lenght);
             if (ok_licencias.lenght === 0) return res.status(401).send('La licencia no existe');
 
             const hoy = new Date();

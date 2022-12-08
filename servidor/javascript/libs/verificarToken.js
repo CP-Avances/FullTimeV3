@@ -22,6 +22,7 @@ const TokenValidation = (req, res, next) => {
         // se extrae los datos del token 
         const payload = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET || 'llaveSecreta');
         // cuando se extrae los datos se guarda en una propiedad req.userId para q las demas funciones puedan utilizar ese id 
+        // console.log('payload ', payload)
         if (!payload._web_access)
             return res.status(401).send('No tiene acceso a los recursos de la aplicacion.');
         fs_1.default.readFile('licencia.conf.json', 'utf8', function (err, data) {
@@ -35,7 +36,7 @@ const TokenValidation = (req, res, next) => {
                     o.fec_desactivacion = new Date(o.fec_desactivacion);
                 return o;
             });
-            // console.log(ok_licencias);
+            console.log('ver licencias ', ok_licencias.lenght);
             if (ok_licencias.lenght === 0)
                 return res.status(401).send('La licencia no existe');
             const hoy = new Date();

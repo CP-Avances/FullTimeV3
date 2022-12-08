@@ -1,15 +1,48 @@
-p { font-size: x-small; text-align: center; }
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
+p {
+    font-size: x-small;
+    text-align: center;
+}
 
-#editarF { color:green; cursor: pointer; text-align: center; margin-left: 15px; }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-#datosF { font-weight: bold; font-size: 18px; }
+#datosF {
+    font-weight: bold;
+    font-size: 18px;
+}
 
-#verticalLine { border-left: 1px solid rgb(52,65,84); }
+#verticalLine {
+    border-left: 1px solid rgb(52, 65, 84);
+}
 
-td { padding-top: 10px; text-align: center; }
+#eliminar {
+    color: red;
+    cursor: pointer;
+    margin-left: 20px;
+}
 
-#eliminar { color:red; cursor: pointer; margin-left: 20px; }
+#editarI {
+    color: green;
+    cursor: pointer;
+    margin-left: 25px;
+}
 
-#editarI { color:green; margin-left: 25px; cursor: pointer; }
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
+}
+
+#editarF {
+    color: green;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 15px;
+}

@@ -67,7 +67,7 @@ export class PorUsuarioComponent implements OnInit {
     this.ObtenerEmpleados(this.idEmpleadoLogueado);
   }
 
-  // MÉTODO PARA MOSTRAR UN DETERMINADO NÚMERO DE FILAS EN LA TABLA DE SOLICITUDES PENDIENTES
+  // METODO PARA MOSTRAR UN DETERMINADO NÚMERO DE FILAS EN LA TABLA DE SOLICITUDES PENDIENTES
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1;
     this.tamanio_pagina = e.pageSize;
@@ -86,7 +86,7 @@ export class PorUsuarioComponent implements OnInit {
     ]
   }
 
-  // BÚSQUEDA DE DATOS DE EMPLEADO LOGUEADO
+  // BUSQUEDA DE DATOS DE EMPLEADO LOGUEADO
   empleado: any = [];
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
@@ -95,7 +95,7 @@ export class PorUsuarioComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -103,7 +103,7 @@ export class PorUsuarioComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;

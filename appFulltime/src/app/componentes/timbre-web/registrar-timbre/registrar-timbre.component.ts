@@ -1,15 +1,14 @@
 // IMPORTAR LIBRERIAS
 import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
 
 // SECCIÓN DE SERVICIOS
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpleadoUbicacionService } from 'src/app/servicios/empleadoUbicacion/empleado-ubicacion.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { FuncionesService } from 'src/app/servicios/funciones/funciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
   selector: 'app-registrar-timbre',
@@ -21,11 +20,11 @@ export class RegistrarTimbreComponent implements OnInit {
 
   // CAMPOS DEL FORMULARIO Y VALIDACIONES
   accionF = new FormControl('', Validators.required);
-  teclaFuncionF = new FormControl('');
   observacionF = new FormControl('');
+  teclaFuncionF = new FormControl('');
 
   // CAMPOS DENTRO DEL FORMULARIO EN UN GRUPO
-  public TimbreForm = new FormGroup({
+  public formulario = new FormGroup({
     teclaFuncionForm: this.teclaFuncionF,
     observacionForm: this.observacionF,
     accionForm: this.accionF,
@@ -39,7 +38,7 @@ export class RegistrarTimbreComponent implements OnInit {
   latitud: number;
   longitud: number;
 
-  // MÉTODO DE CONTROL DE MEMORIA
+  // METODO DE CONTROL DE MEMORIA
   private options = {
     enableHighAccuracy: false,
     maximumAge: 30000,
@@ -54,24 +53,78 @@ export class RegistrarTimbreComponent implements OnInit {
 
   constructor(
     private toastr: ToastrService, // VARIABLE DE USO EN NOTIFICACIONES
-    public ventana: MatDialogRef<RegistrarTimbreComponent>, // VARIABLE DE USO DE VENTANA DE DIÁLOGO
     public restP: ParametrosService,
     public restE: EmpleadoService,
     public restU: EmpleadoUbicacionService,
-    public restF: FuncionesService
+    public restF: FuncionesService,
+    public ventana: MatDialogRef<RegistrarTimbreComponent>, // VARIABLE DE USO DE VENTANA DE DIÁLOGO
   ) {
     this.id_empl = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
+    this.VerificarFunciones();
     this.BuscarParametro();
     this.Geolocalizar();
-    this.VerificarFunciones();
   }
 
-  // MÉTODO PARA ACTIVAR Y DESACTIVAR BOTONES
-  ActivarBotones(ob: MatCheckboxChange) {
-    if (ob.checked === true) {
+  // METODO PARA CONSULTAR FUNCIONES ACTIVAS DEL SISTEMA
+  funciones: any = [];
+  VerificarFunciones() {
+    this.restF.ListarFunciones().subscribe(res => {
+      this.funciones = res;
+    })
+  }
+
+  // METODO PARA OBTENER RANGO DE PERIMETRO
+  rango: any;
+  BuscarParametro() {
+    // id_tipo_parametro PARA RANGO DE UBICACION = 22
+    let datos = [];
+    this.restP.ListarDetalleParametros(22).subscribe(
+      res => {
+        datos = res;
+        if (datos.length != 0) {
+          this.rango = ((parseInt(datos[0].descripcion) * (0.0048)) / 500)
+        }
+        else {
+          this.rango = 0.00
+        }
+      });
+  }
+
+  // METODO PARA TOMAR CORDENAS DE UBICACION
+  Geolocalizar() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (objPosition) => {
+          this.latitud = objPosition.coords.latitude;
+          this.longitud = objPosition.coords.longitude;
+        }, (objPositionError) => {
+          switch (objPositionError.code) {
+            case objPositionError.PERMISSION_DENIED:
+              console.log('NO SE HA PERMITIDO EL ACCESO A POSICIÓN DEL USUARIO.');
+              break;
+            case objPositionError.POSITION_UNAVAILABLE:
+              console.log('NO SE HA PODIDO ACCEDER A INFORMACIÓN DE SU POSICIÓN.');
+              break;
+            case objPositionError.TIMEOUT:
+              console.log('EL SERVICIO HA TARDADO DEMASIADO TIEMPO EN RESPONDER.');
+              break;
+            default:
+              console.log('ERROR DESCONOCIDO.');
+          }
+        }, this.options);
+    }
+    else {
+      console.log('SU NAVEGADOR NO SOPORTA API DE GEOLOCALIZACIÓN.');
+    }
+  }
+
+  // METODO PARA ACTIVAR Y DESACTIVAR BOTONES
+  boton: boolean = false;
+  ActivarBotones() {
+    if (this.boton_abierto === false) {
       this.boton_abierto = true;
       this.botones_normal = false;
     }
@@ -81,9 +134,8 @@ export class RegistrarTimbreComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA GUARDAR DATOS DEL TIMBRE SEGUN LA OPCIÓN INGRESADA
-  AlmacenarDatos(opcion: number) {
-    console.log(opcion);
+  // METODO PARA GUARDAR DATOS DEL TIMBRE SEGUN LA OPCION INGRESADA
+  AlmacenarDatos(opcion: number, form: any) {
     switch (opcion) {
       case 1:
         this.accionF.setValue('E')
@@ -117,92 +169,46 @@ export class RegistrarTimbreComponent implements OnInit {
         this.accionF.setValue('code 99')
         break;
     }
+    this.InsertarTimbre(form);
   }
 
-  // MÉTODO PARA TOMAR CORDENAS DE UBICACIÓN
-  Geolocalizar() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (objPosition) => {
-          this.latitud = objPosition.coords.latitude;
-          this.longitud = objPosition.coords.longitude;
-          console.log(this.longitud, this.latitud);
-        }, (objPositionError) => {
-          switch (objPositionError.code) {
-            case objPositionError.PERMISSION_DENIED:
-              console.log('No se ha permitido el acceso a posición del usuario.');
-              break;
-            case objPositionError.POSITION_UNAVAILABLE:
-              console.log('No se ha podido acceder a información de su posición.');
-              break;
-            case objPositionError.TIMEOUT:
-              console.log('El servicio ha tardado demasiado tiempo en responder.');
-              break;
-            default:
-              console.log('Error desconocido.');
-          }
-        }, this.options);
-    }
-    else {
-      console.log('Su navegador no soporta API de geolocalización.');
-    }
-  }
-
-  // MÉTODO PARA TOMAR DATOS DEL TIMBRE
-  insertarTimbre(form1) {
+  // METODO PARA TOMAR DATOS DEL TIMBRE
+  InsertarTimbre(form: any) {
     if (this.boton_abierto === true) {
-      if (form1.observacionForm != '' && form1.observacionForm != undefined) {
-        this.ValidarModulo(this.latitud, this.longitud, this.rango, form1);
+      if (form.observacionForm != '' && form.observacionForm != undefined) {
+        this.ValidarModulo(this.latitud, this.longitud, this.rango, form);
       }
       else {
-        this.toastr.info('Ingresar un descripción del timbre.', 'Campo de observación es obligatorio.', {
+        this.toastr.info(
+          'Ingresar descripción del timbre.', 'Campo de observación es obligatorio.', {
           timeOut: 6000,
         })
       }
     }
     else {
-      this.ValidarModulo(this.latitud, this.longitud, this.rango, form1);
+      this.ValidarModulo(this.latitud, this.longitud, this.rango, form);
     }
   }
 
-  // MÉTODO PARA TOMAR DATOS DE MARCACIÓN
-  RegistrarDatosTimbre(form1, ubicacion) {
+  // METODO PARA TOMAR DATOS DE MARCACION
+  RegistrarDatosTimbre(form: any, ubicacion: any) {
     let dataTimbre = {
       fec_hora_timbre: this.f.toLocaleString(),
-      accion: form1.accionForm,
-      tecl_funcion: form1.teclaFuncionForm,
-      observacion: form1.observacionForm,
-      latitud: this.latitud,
+      tecl_funcion: form.teclaFuncionForm,
+      observacion: form.observacionForm,
+      ubicacion: ubicacion,
       longitud: this.longitud,
       id_reloj: 98,
-      ubicacion: ubicacion
+      latitud: this.latitud,
+      accion: form.accionForm,
     }
-    this.ventana.close(dataTimbre)
+    this.ventana.close(dataTimbre);
   }
 
-  // MÉTODO PARA OBTENER RANGO DE PERÍMETRO
-  rango: any;
-  BuscarParametro() {
-    // id_tipo_parametro PARA RANGO DE UBICACIÓN = 22
-    let datos = [];
-    this.restP.ListarDetalleParametros(22).subscribe(
-      res => {
-        datos = res;
-        if (datos.length != 0) {
-          this.rango = ((parseInt(datos[0].descripcion) * (0.0048)) / 500)
-        }
-        else {
-          this.rango = 0.00
-        }
-      });
-  }
-
-
-  ubicacion: string = '';
-
+  // METODO QUE VERIFICAR SI EL TIMBRE FUE REALIZADO EN UN PERIMETRO DEFINIDO
   contar: number = 0;
+  ubicacion: string = '';
   sin_ubicacion: number = 0;
-  // MÉTODO QUE VERIFICAR SI EL TIMBRE FUE REALIZADO EN UN PERíMETRO DEFINIDO
   CompararCoordenadas(informacion: any, form: any, descripcion: any, data: any) {
 
     this.restP.ObtenerCoordenadas(informacion).subscribe(
@@ -212,7 +218,8 @@ export class RegistrarTimbreComponent implements OnInit {
           this.ubicacion = descripcion;
           if (this.contar === 1) {
             this.RegistrarDatosTimbre(form, this.ubicacion);
-            this.toastr.info('Marcación realizada dentro del perímetro definido como ' + this.ubicacion + '.', '', {
+            this.toastr.info(
+              'Marcación realizada dentro del perímetro definido como ' + this.ubicacion + '.', '', {
               timeOut: 6000,
             })
           }
@@ -227,15 +234,7 @@ export class RegistrarTimbreComponent implements OnInit {
       });
   }
 
-  funciones: any = [];
-  VerificarFunciones() {
-    this.restF.ListarFunciones().subscribe(res => {
-      this.funciones = res;
-      console.log('ver funcionalidades', this.funciones);
-    })
-  }
-
-  // MÉTODO QUE PERMITE VALIDACIONES DE UBICACIÓN
+  // METODO QUE PERMITE VALIDACIONES DE UBICACION
   BuscarUbicacion(latitud: any, longitud: any, rango: any, form: any) {
     var datosUbicacion: any = [];
     this.contar = 0;
@@ -254,12 +253,12 @@ export class RegistrarTimbreComponent implements OnInit {
           informacion.lng2 = obj.longitud;
           this.CompararCoordenadas(informacion, form, obj.descripcion, datosUbicacion);
         })
-        console.log('ver empleado....... ', res)
       }, error => {
         this.ValidarDomicilio(informacion, form);
       });
   }
 
+  // METODO PARA VERIFICAR ACTIVACION DE MODULO DE GEOLOCALIZACION
   ValidarModulo(latitud: any, longitud: any, rango: any, form: any) {
     if (this.funciones[0].geolocalizacion === true) {
       this.BuscarUbicacion(latitud, longitud, rango, form);
@@ -269,6 +268,7 @@ export class RegistrarTimbreComponent implements OnInit {
     }
   }
 
+  // METODO PARA VALIDAR UBICACION DOMICILIO
   ValidarDomicilio(informacion: any, form: any) {
     this.restE.BuscarUbicacion(this.id_empl).subscribe(res => {
       if (res[0].longitud != null) {
@@ -300,9 +300,7 @@ export class RegistrarTimbreComponent implements OnInit {
           timeOut: 6000,
         })
       }
-
     })
-
   }
 
 }

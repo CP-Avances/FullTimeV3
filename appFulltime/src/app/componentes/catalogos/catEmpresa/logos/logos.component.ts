@@ -21,16 +21,15 @@ export class LogosComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
     public restE: EmpresaService,
-    public dialogRef: MatDialogRef<LogosComponent>,
+    public ventana: MatDialogRef<LogosComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
-
-    console.log('ver data --------------', this.data)
     this.MostrarImagen();
   }
 
+  // METODO PARA MOSTRAR LOGOS
   MostrarImagen() {
     if (this.data.pagina === 'empresa') {
       this.VerLogoEmpresa();
@@ -41,10 +40,10 @@ export class LogosComponent implements OnInit {
     }
   }
 
+  // METODO PARA SELECCIONAR LOGO DE EQUIPO
   archivoSubido: Array<File>;
   archivoForm = new FormControl('');
-
-  fileChange(element) {
+  fileChange(element: any) {
     this.archivoSubido = element.target.files;
     if (this.data.pagina === 'empresa') {
       this.ActualizarLogoEmpresa();
@@ -56,15 +55,13 @@ export class LogosComponent implements OnInit {
   }
 
   /** ************************************************************************************** **
-   ** **              MÉTODOS PARA CONSULTAR Y ACTUALIZAR LOGO DE EMPRESA                 ** **
+   ** **              METODOS PARA CONSULTAR Y ACTUALIZAR LOGO DE EMPRESA                 ** **
    ** ************************************************************************************** **/
 
   ActualizarLogoEmpresa() {
     let formData = new FormData();
     for (var i = 0; i < this.archivoSubido.length; i++) {
-      // console.log(this.archivoSubido[i], this.archivoSubido[i].name)
       formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
-      // console.log("image", formData);
     }
     this.restE.EditarLogoEmpresa(this.data.empresa, formData).subscribe(res => {
       this.logo = 'data:image/jpeg;base64,' + res.imagen;
@@ -73,27 +70,32 @@ export class LogosComponent implements OnInit {
         timeOut: 6000,
       });
       this.archivoForm.reset();
-      this.dialogRef.close({ actualizar: false })
+      this.ventana.close({ actualizar: false })
     });
   }
 
+  imagen_default: boolean = true;
   VerLogoEmpresa() {
     this.restE.LogoEmpresaImagenBase64(this.data.empresa).subscribe(res => {
-      if (res.imagen === 0) { this.textoBoton = 'Añadir' };
-      this.logo = 'data:image/jpeg;base64,' + res.imagen;
+      if (res.imagen === 0) {
+        this.textoBoton = 'Añadir';
+        this.imagen_default = true
+      }
+      else {
+        this.logo = 'data:image/jpeg;base64,' + res.imagen;
+        this.imagen_default = false;
+      };
     });
   }
 
   /** ************************************************************************************** **
-   ** **             MÉTODOS PARA CONSULTAR Y ACTUALIZAR CABECERA DE CORREO               ** **
+   ** **             METODOS PARA CONSULTAR Y ACTUALIZAR CABECERA DE CORREO               ** **
    ** ************************************************************************************** **/
 
   ActualizarCabeceraCorreo() {
     let formData = new FormData();
     for (var i = 0; i < this.archivoSubido.length; i++) {
-      // console.log(this.archivoSubido[i], this.archivoSubido[i].name)
       formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
-      // console.log("image", formData);
     }
     this.restE.EditarCabeceraCorreo(this.data.empresa, formData).subscribe(res => {
       this.logo = 'data:image/jpeg;base64,' + res.imagen;
@@ -102,27 +104,31 @@ export class LogosComponent implements OnInit {
         timeOut: 6000,
       });
       this.archivoForm.reset();
-      this.dialogRef.close({ actualizar: false })
+      this.ventana.close({ actualizar: false })
     });
   }
 
   VerCabeceraCorreo() {
     this.restE.ObtenerCabeceraCorreo(this.data.empresa).subscribe(res => {
-      if (res.imagen === 0) { this.textoBoton = 'Añadir' };
-      this.logo = 'data:image/jpeg;base64,' + res.imagen;
+      if (res.imagen === 0) {
+        this.textoBoton = 'Añadir';
+        this.imagen_default = true;
+      }
+      else {
+        this.logo = 'data:image/jpeg;base64,' + res.imagen;
+        this.imagen_default = false;
+      }
     });
   }
 
   /** ************************************************************************************** **
-   ** **             MÉTODOS PARA CONSULTAR Y ACTUALIZAR PIE DE CORREO                    ** **
+   ** **             METODOS PARA CONSULTAR Y ACTUALIZAR PIE DE CORREO                    ** **
    ** ************************************************************************************** **/
 
   ActualizarPieCorreo() {
     let formData = new FormData();
     for (var i = 0; i < this.archivoSubido.length; i++) {
-      // console.log(this.archivoSubido[i], this.archivoSubido[i].name)
       formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
-      // console.log("image", formData);
     }
     this.restE.EditarPieCorreo(this.data.empresa, formData).subscribe(res => {
       this.logo = 'data:image/jpeg;base64,' + res.imagen;
@@ -131,14 +137,19 @@ export class LogosComponent implements OnInit {
         timeOut: 6000,
       });
       this.archivoForm.reset();
-      this.dialogRef.close({ actualizar: false })
+      this.ventana.close({ actualizar: false })
     });
   }
 
   VerPieCorreo() {
     this.restE.ObtenerPieCorreo(this.data.empresa).subscribe(res => {
-      if (res.imagen === 0) { this.textoBoton = 'Añadir' };
-      this.logo = 'data:image/jpeg;base64,' + res.imagen;
+      if (res.imagen === 0) {
+        this.textoBoton = 'Añadir';
+        this.imagen_default = true;
+      } else {
+        this.logo = 'data:image/jpeg;base64,' + res.imagen;
+        this.imagen_default = false;
+      }
     });
   }
 

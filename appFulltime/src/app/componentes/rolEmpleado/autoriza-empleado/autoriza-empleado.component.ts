@@ -27,11 +27,11 @@ export class AutorizaEmpleadoComponent implements OnInit {
 
   /* 
    * ***************************************************************************************************
-   *                               MÉTODO PARA MOSTRAR DATOS
+   *                               METODO PARA MOSTRAR DATOS
    * ***************************************************************************************************
   */
 
-  /* Método para mostrar datos de autoridad departamentos */
+  /* METODO para mostrar datos de autoridad departamentos */
   autorizacionEmpleado: any;
   autorizacionesTotales: any;
   ObtenerAutorizaciones(id_empleado: number) {

@@ -65,7 +65,7 @@ import { CancelarVacacionesComponent } from 'src/app/componentes/rolEmpleado/vac
 import { RegistrarPeriodoVComponent } from '../../modulos/vacaciones/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { EditarPlanComidasComponent } from '../../modulos/alimentacion/editar-plan-comidas/editar-plan-comidas.component';
 import { CancelarHoraExtraComponent } from 'src/app/componentes/rolEmpleado/horasExtras-empleado/cancelar-hora-extra/cancelar-hora-extra.component';
-import { CambiarContrasenaComponent } from '../../rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
+import { CambiarContrasenaComponent } from '../../iniciarSesion/contrasenia/cambiar-contrasena/cambiar-contrasena.component';
 import { AdministraComidaComponent } from '../../modulos/alimentacion/administra-comida/administra-comida.component';
 import { RegistroContratoComponent } from 'src/app/componentes/empleado/contrato/registro-contrato/registro-contrato.component';
 import { CancelarPermisoComponent } from '../../rolEmpleado/permisos-empleado/cancelar-permiso/cancelar-permiso.component';
@@ -82,6 +82,7 @@ import { EmplLeafletComponent } from '../../modulos/geolocalizacion/empl-leaflet
 import { CrearVacunaComponent } from '../vacunacion/crear-vacuna/crear-vacuna.component';
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { LoginService } from 'src/app/servicios/login/login.service';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -105,10 +106,6 @@ export class VerEmpleadoComponent implements OnInit {
   idEmpleado: string; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO SELECCIONADO PARA VER DATOS
   editar: string = '';
 
-  // VARIABLES PARA HABILITAR O DESHABILITAR FUNCIONES
-  HabilitarAccion: boolean = true;
-  HabilitarHorasE: boolean = true;
-
   hipervinculo: string = environment.url; // VARIABLE DE MANEJO DE RUTAS CON URL
   idEmpleadoLogueado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESIÓN
   FechaActual: any; // VARIBLE PARA ALMACENAR LA FECHA DEL DÍA DE HOY
@@ -119,7 +116,7 @@ export class VerEmpleadoComponent implements OnInit {
   numero_pagina: number = 1;
   selectedIndex: number;
 
-  // MÉTODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
   get s_color(): string { return this.plantillaPDF.color_Secundary }
   get p_color(): string { return this.plantillaPDF.color_Primary }
   get frase_m(): string { return this.plantillaPDF.marca_Agua }
@@ -151,6 +148,7 @@ export class VerEmpleadoComponent implements OnInit {
     private restF: FuncionesService, // SERVICIO DATOS FUNCIONES DEL SISTEMA
     private toastr: ToastrService, // VARIABLE MANEJO DE MENSAJES DE NOTIFICACIONES
     private restHE: PedHoraExtraService, // SERVICIO DATOS PEDIDO HORA EXTRA
+    private sesion: LoginService,
     private informacion: DatosGeneralesService,
     private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
     private scriptService: ScriptService, // SERVICIO DATOS EMPLEADO - REPORTE
@@ -174,52 +172,54 @@ export class VerEmpleadoComponent implements OnInit {
       .subscribe(() => {
       });
     this.ObtenerEmpleadoLogueado(this.idEmpleadoLogueado);
-    this.BuscarParametro();
     this.ObtenerTituloEmpleado();
     this.ObtenerDiscapacidadEmpleado();
-    this.ObtenerAutorizaciones();
-    this.VerAdminComida();
     this.VerAccionContrasena();
     this.ObtenerNacionalidades();
     this.VerFuncionalidades();
     this.VerEmpresa();
-    //this.VerAccionPersonal();
   }
 
-  /** **************************************************************************************** **
-   ** **                       METODOS GENERALES DEL SISTEMA                                ** ** 
-   ** **************************************************************************************** **/
+  /** ***************************************************************************************** **
+   ** **                       METODO PARA ACTIVAR FUNCIONALIDADES                           ** **
+   ** ***************************************************************************************** **/
 
-  // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
-  datoActual: any = [];
-  VerDatosActuales(formato_fecha: string) {
-    this.datoActual = [];
-    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(res => {
-      this.datoActual = res[0];
-      // LLAMADO A DATOS DE USUARIO
-      this.ObtenerContratoEmpleado(this.datoActual.id_contrato, formato_fecha);
-      this.ObtenerCargoEmpleado(this.datoActual.id_cargo, formato_fecha);
-      this.ObtenerHorariosEmpleado(this.datoActual.codigo, formato_fecha);
-      this.ObtenerHorarioRotativo(this.datoActual.codigo, formato_fecha);
-    }, vacio => {
-      this.BuscarContratoActual(formato_fecha);
-    });
-  }
+  // METODO PARA ACTIVAR FUNCIONALIDADES
+  HabilitarAlimentacion: boolean = false;
+  habilitarVacaciones: boolean = false;
+  HabilitarPermisos: boolean = false;
+  HabilitarAccion: boolean = false;
+  HabilitarHorasE: boolean = false;
+  autorizar: boolean = false;
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESION
-  ObtenerEmpleadoLogueado(idemploy: any) {
-    this.empleadoLogueado = [];
-    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
-      this.empleadoLogueado = data;
+  VerFuncionalidades() {
+    this.restF.ListarFunciones().subscribe(datos => {
+      if (datos[0].hora_extra === true) {
+        if (this.idEmpleadoLogueado === parseInt(this.idEmpleado)) {
+          this.HabilitarHorasE = true;
+        }
+      }
+      if (datos[0].accion_personal === true) {
+        this.HabilitarAccion = true;
+      }
+      if (datos[0].alimentacion === true) {
+        this.HabilitarAlimentacion = true;
+        this.autorizar = true;
+        // FUNCIONES DE AUTORIZACIONES
+        this.ObtenerAutorizaciones();
+        this.VerAdminComida();
+      }
+      if (datos[0].permisos === true) {
+        this.HabilitarPermisos = true;
+        this.autorizar = true;
+      }
+      if (datos[0].vacaciones === true) {
+        this.habilitarVacaciones = true;
+      }
+      // METODOS DE CONSULTAS GENERALES
+      this.BuscarParametro();
     })
   }
-
-  // EVENTO PARA MOSTRAR NÚMERO DE FILAS EN TABLA
-  ManejarPagina(e: PageEvent) {
-    this.numero_pagina = e.pageIndex + 1;
-    this.tamanio_pagina = e.pageSize;
-  }
-
 
   /** **************************************************************************************** **
    ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
@@ -228,7 +228,7 @@ export class VerEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -260,21 +260,66 @@ export class VerEmpleadoComponent implements OnInit {
     this.VerEmpleado(formato_fecha);
     this.ObtenerDatosVacunas(formato_fecha);
     this.ObtenerContratosEmpleado(formato_fecha);
-    this.ObtenerVacaciones(formato_fecha);
-    this.ObtenerPermisos(formato_fecha, formato_hora);
-    this.ObtenerPlanComidasEmpleado(formato_fecha, formato_hora);
-    this.ObtenerSolComidas(formato_fecha, formato_hora);
-    this.ObtenerEmpleadoProcesos(formato_fecha);
-    this.ObtenerlistaHorasExtrasEmpleado(formato_fecha, formato_hora);
-    this.ObtenerPlanHorasExtras(formato_fecha, formato_hora);
+    if (this.habilitarVacaciones === true) {
+      this.ObtenerVacaciones(formato_fecha);
+    }
+    if (this.HabilitarPermisos === true) {
+      this.ObtenerPermisos(formato_fecha, formato_hora);
+    }
+    if (this.HabilitarAlimentacion === true) {
+      this.ObtenerPlanComidasEmpleado(formato_fecha, formato_hora);
+      this.ObtenerSolComidas(formato_fecha, formato_hora);
+    }
+    if (this.HabilitarAccion === true) {
+      this.ObtenerEmpleadoProcesos(formato_fecha);
+    }
+    if (this.HabilitarHorasE === true) {
+      this.ObtenerlistaHorasExtrasEmpleado(formato_fecha, formato_hora);
+      this.ObtenerPlanHorasExtras(formato_fecha, formato_hora);
+    }
+  }
+
+
+  /** **************************************************************************************** **
+   ** **                       METODOS GENERALES DEL SISTEMA                                ** ** 
+   ** **************************************************************************************** **/
+
+  // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
+  datoActual: any = [];
+  VerDatosActuales(formato_fecha: string) {
+    this.datoActual = [];
+    this.informacion.ObtenerDatosActuales(parseInt(this.idEmpleado)).subscribe(res => {
+      this.datoActual = res[0];
+      // LLAMADO A DATOS DE USUARIO
+      this.ObtenerContratoEmpleado(this.datoActual.id_contrato, formato_fecha);
+      this.ObtenerCargoEmpleado(this.datoActual.id_cargo, formato_fecha);
+      this.ObtenerHorariosEmpleado(this.datoActual.codigo, formato_fecha);
+      this.ObtenerHorarioRotativo(this.datoActual.codigo, formato_fecha);
+    }, vacio => {
+      this.BuscarContratoActual(formato_fecha);
+    });
+  }
+
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO QUE INICIA SESION
+  ObtenerEmpleadoLogueado(idemploy: any) {
+    this.empleadoLogueado = [];
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
+      this.empleadoLogueado = data;
+    })
+  }
+
+  // EVENTO PARA MOSTRAR NÚMERO DE FILAS EN TABLA
+  ManejarPagina(e: PageEvent) {
+    this.numero_pagina = e.pageIndex + 1;
+    this.tamanio_pagina = e.pageSize;
   }
 
 
   /** ********************************************************************************************* **
-   ** **                      MÉTODO PARA MOSTRAR DATOS PERFIL DE USUARIO                        ** **                                           *
+   ** **                      METODO PARA MOSTRAR DATOS PERFIL DE USUARIO                        ** **                                           *
    ** ********************************************************************************************* **/
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL USUARIO 
+  // METODO PARA VER LA INFORMACIÓN DEL USUARIO 
   urlImagen: any;
   iniciales: any;
   mostrarImagen: boolean = false;
@@ -284,9 +329,9 @@ export class VerEmpleadoComponent implements OnInit {
     this.restEmpleado.BuscarUnEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
       this.empleadoUno = data;
       this.empleadoUno[0].fec_nacimiento_ = this.validar.FormatearFecha(this.empleadoUno[0].fec_nacimiento, formato_fecha, this.validar.dia_abreviado);
-      var empleado = data[0]['nombre'] + data[0]['apellido'];
-      if (data[0]['imagen'] != null) {
-        this.urlImagen = `${environment.url}/empleado/img/` + data[0]['imagen'];
+      var empleado = data[0].nombre + data[0].apellido;
+      if (data[0].imagen != null) {
+        this.urlImagen = `${environment.url}/empleado/img/` + data[0].imagen;
         this.mostrarImagen = true;
         this.textoBoton = 'Editar foto';
       } else {
@@ -294,8 +339,11 @@ export class VerEmpleadoComponent implements OnInit {
         this.mostrarImagen = false;
         this.textoBoton = 'Subir foto';
       }
-      this.MapGeolocalizar(data[0]['latitud'], data[0]['longitud'], empleado);
-      this.ObtenerPeriodoVacaciones(formato_fecha);
+      this.MapGeolocalizar(data[0].latitud, data[0].longitud, empleado);
+
+      if (this.habilitarVacaciones === true) {
+        this.ObtenerPeriodoVacaciones(formato_fecha);
+      }
     })
   }
 
@@ -305,10 +353,15 @@ export class VerEmpleadoComponent implements OnInit {
   MapGeolocalizar(latitud: number, longitud: number, empleado: string) {
     let zoom = 19;
     if (latitud === null && longitud === null) {
-      latitud = -0.9286188999999999;
-      longitud = -78.6059801;
+      latitud = -0.1918213;
+      longitud = -78.4875258;
       zoom = 7
     }
+
+    if (this.MAP) {
+      this.MAP = this.MAP.remove();
+    }
+
     this.MAP = L.map('geolocalizacion', {
       center: [latitud, longitud],
       zoom: zoom
@@ -327,22 +380,21 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // METODO INCLUIR EL CROKIS
-  AbrirLeaflet(nombre: string, apellido: string) {
-    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' }).afterClosed().subscribe((res: any) => {
-      console.log(res);
-      if (res.message === true) {
-        if (res.latlng != undefined) {
-          this.restEmpleado.putGeolocalizacion(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
-            this.toastr.success(respuesta.message);
-            this.MAP.off();
-            this.MAP.remove();
-            this.MapGeolocalizar(res.latlng.lat, res.latlng.lng, nombre + ' ' + apellido)
-          }, err => {
-            this.toastr.error(err)
-          });
+  AbrirUbicacion(nombre: string, apellido: string) {
+    this.ventana.open(EmplLeafletComponent, { width: '500px', height: '500px' })
+      .afterClosed().subscribe((res: any) => {
+        if (res.message === true) {
+          if (res.latlng != undefined) {
+            this.restEmpleado.ActualizarDomicilio(parseInt(this.idEmpleado), res.latlng).subscribe(respuesta => {
+              this.toastr.success(respuesta.message);
+              this.MAP.off();
+              this.MapGeolocalizar(res.latlng.lat, res.latlng.lng, nombre + ' ' + apellido);
+            }, err => {
+              this.toastr.error(err);
+            });
+          }
         }
-      }
-    });
+      });
   }
 
   // METODO EDICION DE REGISTRO DE EMPLEADO
@@ -363,20 +415,41 @@ export class VerEmpleadoComponent implements OnInit {
   nameFile: string;
   archivoSubido: Array<File>;
   archivoForm = new FormControl('');
-  FileChange(element) {
+  FileChange(element: any) {
     this.archivoSubido = element.target.files;
-    this.SubirPlantilla();
+    var detalle = this.archivoSubido[0].name;
+    let arrayItems = detalle.split(".");
+    let itemExtencion = arrayItems[arrayItems.length - 1];
+    // VALIDAR FORMATO PERMITIDO DE ARCHIVO
+    if (itemExtencion == 'png' || itemExtencion == 'jpg' || itemExtencion == 'jpeg') {
+      // VALIDAR PESO DE IMAGEN
+      if (this.archivoSubido.length != 0) {
+        if (this.archivoSubido[0].size <= 2e+6) {
+          this.SubirPlantilla();
+        }
+        else {
+          this.toastr.info('El archivo ha excedido el tamaño permitido.',
+            'Tamaño de archivos permitido máximo 2MB.', {
+            timeOut: 6000,
+          });
+        }
+      }
+    }
+    else {
+      this.toastr.info(
+        'Formatos permitidos .png, .jpg, .jpeg', 'Formato de imagen no permitido.', {
+        timeOut: 6000,
+      });
+    }
   }
 
   SubirPlantilla() {
     let formData = new FormData();
     for (var i = 0; i < this.archivoSubido.length; i++) {
-      console.log(this.archivoSubido[i], this.archivoSubido[i].name)
       formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
-      console.log("iamge", formData);
     }
-    this.restEmpleado.subirImagen(formData, parseInt(this.idEmpleado)).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'imagen subida.', {
+    this.restEmpleado.SubirImagen(formData, parseInt(this.idEmpleado)).subscribe(res => {
+      this.toastr.success('Operación Exitosa.', 'Imagen registrada.', {
         timeOut: 6000,
       });
       this.VerEmpleado(this.formato_fecha);
@@ -401,14 +474,14 @@ export class VerEmpleadoComponent implements OnInit {
   // BUSQUEDA DE TITULOS
   ObtenerTituloEmpleado() {
     this.tituloEmpleado = [];
-    this.restEmpleado.getEmpleadoTituloRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restEmpleado.BuscarTituloUsuario(parseInt(this.idEmpleado)).subscribe(data => {
       this.tituloEmpleado = data;
     });
   }
 
   // REGISTRAR NUEVO TITULO
   AbrirVentanaRegistarTituloEmpleado() {
-    this.ventana.open(TituloEmpleadoComponent, { data: this.idEmpleado, width: '360px' })
+    this.ventana.open(TituloEmpleadoComponent, { data: this.idEmpleado, width: '400px' })
       .afterClosed().subscribe(result => {
         if (result) {
           this.ObtenerTituloEmpleado();
@@ -417,8 +490,8 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // EDITAR UN TITULO
-  AbrirVentanaEditarTitulo(dataTitulo) {
-    this.ventana.open(EditarTituloComponent, { data: dataTitulo, width: '360px' })
+  AbrirVentanaEditarTitulo(dataTitulo: any) {
+    this.ventana.open(EditarTituloComponent, { data: dataTitulo, width: '400px' })
       .afterClosed().subscribe(result => {
         if (result) {
           this.ObtenerTituloEmpleado();
@@ -426,17 +499,17 @@ export class VerEmpleadoComponent implements OnInit {
       })
   }
 
-  // ELIMINAR REGISTRO DE TÍTULO 
+  // ELIMINAR REGISTRO DE TITULO 
   EliminarTituloEmpleado(id: number) {
-    this.restEmpleado.deleteEmpleadoTituloRest(id).subscribe(res => {
+    this.restEmpleado.EliminarTitulo(id).subscribe(res => {
       this.ObtenerTituloEmpleado();
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteTitulo(id: number) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -454,10 +527,10 @@ export class VerEmpleadoComponent implements OnInit {
    ** **               BUSQUEDA DE DATOS DE ASIGNACIONES: DISCAPACIDAD                           ** **                        *
    ** ********************************************************************************************* **/
 
-  // MÉTODO PARA OBTENER DATOS DE DISCAPACIDAD 
+  // METODO PARA OBTENER DATOS DE DISCAPACIDAD 
   ObtenerDiscapacidadEmpleado() {
     this.discapacidadUser = [];
-    this.restDiscapacidad.getDiscapacidadUsuarioRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restDiscapacidad.BuscarDiscapacidadUsuario(parseInt(this.idEmpleado)).subscribe(data => {
       this.discapacidadUser = data;
       this.HabilitarBtn();
     });
@@ -465,16 +538,16 @@ export class VerEmpleadoComponent implements OnInit {
 
   // ELIMINAR REGISTRO DE DISCAPACIDAD 
   EliminarDiscapacidad(id_discapacidad: number) {
-    this.restDiscapacidad.deleteDiscapacidadUsuarioRest(id_discapacidad).subscribe(res => {
+    this.restDiscapacidad.EliminarDiscapacidad(id_discapacidad).subscribe(res => {
       this.ObtenerDiscapacidadEmpleado();
       this.btnDisc = 'Añadir';
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
     })
   };
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteDiscapacidad(id: number) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -520,13 +593,12 @@ export class VerEmpleadoComponent implements OnInit {
    ** **                          BUSQUEDA DE DATOS DE VACUNACIÓN                                ** **                        *
    ** ********************************************************************************************* **/
 
-  // MÉTODO PARA CONSULTAR DATOS DE REGISTRO DE VACUNACIÓN
+  // METODO PARA CONSULTAR DATOS DE REGISTRO DE VACUNACIÓN
   datosVacuna: any = [];
   ObtenerDatosVacunas(formato_fecha: string) {
     this.datosVacuna = [];
     this.restVacuna.ObtenerVacunaEmpleado(parseInt(this.idEmpleado)).subscribe(data => {
       this.datosVacuna = data;
-
       this.datosVacuna.forEach(data => {
         data.fecha_ = this.validar.FormatearFecha(data.fecha, formato_fecha, this.validar.dia_completo);
       })
@@ -557,13 +629,13 @@ export class VerEmpleadoComponent implements OnInit {
   EliminarVacuna(datos: any) {
     this.restVacuna.EliminarRegistroVacuna(datos.id, datos.carnet).subscribe(res => {
       this.ObtenerDatosVacunas(this.formato_fecha);
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarEliminarVacuna(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -576,10 +648,10 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   /** ******************************************************************************************** **
-   ** **                    MÉTODOS PARA MANEJO DE DATOS DE CONTRATO                            ** **
+   ** **                    METODOS PARA MANEJO DE DATOS DE CONTRATO                            ** **
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA OBTENER ULTIMO CONTRATO
+  // METODO PARA OBTENER ULTIMO CONTRATO
   BuscarContratoActual(formato_fecha: string) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.datoActual.id_contrato = datos[0].max;
@@ -587,7 +659,7 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
+  // METODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO REGIMEN LABORAL 
   ObtenerContratoEmpleado(id_contrato: number, formato_fecha: string) {
     this.contratoEmpleado = [];
     this.restEmpleado.BuscarDatosContrato(id_contrato).subscribe(res => {
@@ -599,7 +671,7 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER LISTA DE TODOS LOS CONTRATOS
+  // METODO PARA VER LISTA DE TODOS LOS CONTRATOS
   contratoBuscado: any = [];
   ObtenerContratosEmpleado(formato_fecha: string) {
     this.contratoBuscado = [];
@@ -611,7 +683,7 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER DATOS DEL CONTRATO SELECCIONADO 
+  // METODO PARA VER DATOS DEL CONTRATO SELECCIONADO 
   fechaContrato = new FormControl('');
   public contratoForm = new FormGroup({
     fechaContratoForm: this.fechaContrato,
@@ -628,19 +700,19 @@ export class VerEmpleadoComponent implements OnInit {
         data.fec_salida_ = this.validar.FormatearFecha(data.fec_salida, this.formato_fecha, this.validar.dia_abreviado);
       })
     });
-    this.restCargo.getInfoCargoEmpleadoRest(form.fechaContratoForm).subscribe(datos => {
+    this.restCargo.BuscarCargoIDContrato(form.fechaContratoForm).subscribe(datos => {
       this.listaCargos = datos;
       this.listaCargos.forEach(data => {
         data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, this.formato_fecha, this.validar.dia_abreviado);
       })
     }, error => {
-      this.toastr.info('El contrato seleccionado no registra ningún cargo', 'VERIFICAR', {
+      this.toastr.info('El contrato seleccionado no registra ningún cargo.', 'VERIFICAR', {
         timeOut: 6000,
       });
     });
   }
 
-  // MÉTODO PARA LIMPIAR REGISTRO DE CONTRATO
+  // METODO PARA LIMPIAR REGISTRO DE CONTRATO
   LimpiarContrato() {
     this.contratoSeleccionado = [];
     this.cargoSeleccionado = [];
@@ -650,10 +722,10 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // METODO DE EDICION DE CONTRATOS
-  AbrirVentanaEditarContrato(dataContrato) {
+  AbrirVentanaEditarContrato(dataContrato: any) {
     this.ventana.open(EditarContratoComponent, { data: dataContrato, width: '900px' })
       .afterClosed().subscribe(result => {
-        this.ObtenerContratoEmpleado(this.datoActual.id_contrato, this.formato_fecha)
+        this.VerDatosActuales(this.formato_fecha);
       })
   }
 
@@ -679,10 +751,10 @@ export class VerEmpleadoComponent implements OnInit {
 
 
   /** ** ***************************************************************************************** **
-   ** ** **                  MÉTODOS PARA MANEJO DE DATOS DE CARGO                              ** **
+   ** ** **                  METODOS PARA MANEJO DE DATOS DE CARGO                              ** **
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
+  // METODO PARA OBTENER LOS DATOS DEL CARGO DEL EMPLEADO 
   cargoEmpleado: any = [];
   ObtenerCargoEmpleado(id_cargo: number, formato_fecha: string) {
     this.cargoEmpleado = [];
@@ -695,14 +767,14 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA LIMPIAR REGISTRO 
+  // METODO PARA LIMPIAR REGISTRO 
   LimpiarCargo() {
     this.cargoSeleccionado = [];
     this.listaCargos = [];
     this.cargoForm.reset();
   }
 
-  // MÉTODO PARA VER CARGO SELECCIONADO 
+  // METODO PARA VER CARGO SELECCIONADO 
   fechaICargo = new FormControl('');
   public cargoForm = new FormGroup({
     fechaICargoForm: this.fechaICargo,
@@ -751,7 +823,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **              METODOS PARA MANEJAR HORARIOS FIJOS DEL USUARIO                        ** ** 
    ** ***************************************************************************************** **/
 
-  // MÉTODO PARA MOSTRAR DATOS DE HORARIO 
+  // METODO PARA MOSTRAR DATOS DE HORARIO 
   horariosEmpleado: any = [];
   ObtenerHorariosEmpleado(codigo: number, formato_fecha: string) {
     this.horariosEmpleado = [];
@@ -802,17 +874,17 @@ export class VerEmpleadoComponent implements OnInit {
 
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO HORARIO
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO HORARIO
   EliminarHorario(id_horario: number) {
     this.restEmpleHorario.EliminarRegistro(id_horario).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerHorariosEmpleado(this.datoActual.codigo, this.formato_fecha);
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteHorario(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -927,7 +999,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **             METODO DE PRESENTACION DE DATOS DE HORARIOS ROTATIVOS                  ** **
    ** **************************************************************************************** **/
 
-  // MÉTODO PARA IMPRIMIR DATOS DE LA HORARIOS ROTATIVOS 
+  // METODO PARA IMPRIMIR DATOS DE LA HORARIOS ROTATIVOS 
   horarioRotativo: any = [];
   ObtenerHorarioRotativo(codigo: number, formato_fecha: string) {
     this.horarioRotativo = [];
@@ -996,17 +1068,17 @@ export class VerEmpleadoComponent implements OnInit {
     })
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE HORARIO ROTATIVO
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE HORARIO ROTATIVO
   EliminarHorarioRotativo(id_plan: number) {
     this.restPlanH.EliminarRegistro(id_plan).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerHorarioRotativo(this.datoActual.codigo, this.formato_fecha);
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO DE HORARIO ROTATIVO
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO DE HORARIO ROTATIVO
   ConfirmarHorarioRotativo(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -1054,7 +1126,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **                METODO DE PRESENTACION DE DATOS DE PERMISOS                         ** ** 
    ** **************************************************************************************** **/
 
-  // MÉTODO PARA IMPRIMIR DATOS DEL PERMISO 
+  // METODO PARA IMPRIMIR DATOS DEL PERMISO 
   permisosTotales: any = [];
   ObtenerPermisos(formato_fecha: string, formato_hora: string) {
     this.permisosTotales = [];
@@ -1073,7 +1145,7 @@ export class VerEmpleadoComponent implements OnInit {
     }, err => {
       const { access, message } = err.error.message;
       if (access === false) {
-        this.toastr.error(message)
+        // this.toastr.error(message)
       }
     })
   }
@@ -1131,7 +1203,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **            METODO DE PRESENTACION DE DATOS DE PERIODO DE VACACIONES                ** ** 
    ** **************************************************************************************** **/
 
-  // MÉTODO PARA IMPRIMIR DATOS DEL PERIODO DE VACACIONES 
+  // METODO PARA IMPRIMIR DATOS DEL PERIODO DE VACACIONES 
   peridoVacaciones: any;
   ObtenerPeriodoVacaciones(formato_fecha: string) {
     this.peridoVacaciones = [];
@@ -1189,7 +1261,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **                 METODO DE PRESENTACION DE DATOS DE VACACIONES                      ** ** 
    ** **************************************************************************************** **/
 
-  // MÉTODO PARA IMPRIMIR DATOS DE VACACIONES 
+  // METODO PARA IMPRIMIR DATOS DE VACACIONES 
   vacaciones: any = [];
   ObtenerVacaciones(formato_fecha: string) {
     this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
@@ -1299,7 +1371,7 @@ export class VerEmpleadoComponent implements OnInit {
       })
 
     }, err => {
-      return this.validar.RedireccionarEstadisticas(err.error);
+      //return this.validar.RedireccionarEstadisticas(err.error);
     });
   }
 
@@ -1344,7 +1416,7 @@ export class VerEmpleadoComponent implements OnInit {
       })
 
     }, err => {
-      return this.validar.RedireccionarEstadisticas(err.error);
+      // return this.validar.RedireccionarEstadisticas(err.error);
     });
   }
 
@@ -1397,7 +1469,7 @@ export class VerEmpleadoComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlan(datos: any) {
     console.log('ver data seleccionada... ', datos)
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -1408,7 +1480,7 @@ export class VerEmpleadoComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanEmpleado(id_plan: number, id_empleado: number, datos: any) {
 
     // LECTURA DE DATOS DE USUARIO
@@ -1425,14 +1497,14 @@ export class VerEmpleadoComponent implements OnInit {
     this.plan_hora.EliminarPlanEmpleado(id_plan, id_empleado).subscribe(res => {
       this.NotificarPlanHora(desde, hasta, h_inicio, h_fin, id_empleado);
       this.EnviarCorreoPlanH(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerPlanHorasExtras(this.formato_fecha, this.formato_hora);
     });
   }
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
   NotificarPlanHora(desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.idEmpleadoLogueado,
@@ -1447,7 +1519,7 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
   EnviarCorreoPlanH(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
@@ -1466,7 +1538,7 @@ export class VerEmpleadoComponent implements OnInit {
       fin: h_fin,
     }
 
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
     this.plan_hora.EnviarCorreoPlanificacion(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {
@@ -1497,7 +1569,7 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA REGISTRAR ADMINISTRACION DE MÓDULO DE ALIMENTACIÓN 
   AbrirVentanaAdminComida(): void {
     this.ventana.open(AdministraComidaComponent,
-      { width: '600px', data: { idEmpleado: this.idEmpleado } })
+      { width: '400px', data: { idEmpleado: this.idEmpleado } })
       .afterClosed().subscribe(item => {
         this.VerAdminComida();
       });
@@ -1507,7 +1579,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **          METODO DE PRESENTACION DE DATOS DE SERVICIO DE ALIMENTACION              ** **
    ** *************************************************************************************** **/
 
-  // MÉTODO PARA MOSTRAR DATOS DE PLANIFICACIÓN DE ALMUERZOS 
+  // METODO PARA MOSTRAR DATOS DE PLANIFICACION DE ALMUERZOS 
   planComidas: any = [];
   ObtenerPlanComidasEmpleado(formato_fecha: string, formato_hora: string) {
     this.planComidas = [];
@@ -1537,7 +1609,7 @@ export class VerEmpleadoComponent implements OnInit {
     })
   }
 
-  // VENTANA PARA INGRESAR PLANIFICACIÓN DE COMIDAS 
+  // VENTANA PARA INGRESAR PLANIFICACION DE COMIDAS 
   AbrirVentanaPlanificacion(): void {
     console.log(this.idEmpleado);
     var info = {
@@ -1590,7 +1662,7 @@ export class VerEmpleadoComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlanComidas(datos: any) {
     // VERIFICAR SI HAY UN REGISTRO CON ESTADO CONSUMIDO DENTRO DE LA PLANIFICACION
     let datosConsumido = {
@@ -1614,7 +1686,7 @@ export class VerEmpleadoComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanComidas(id_plan: number, id_empleado: number, datos: any) {
 
     // LECTURA DE DATOS DE USUARIO
@@ -1632,7 +1704,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.restPlanComidas.EliminarPlanComida(id_plan, id_empleado).subscribe(res => {
       this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
       this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerPlanComidasEmpleado(this.formato_fecha, this.formato_hora);
@@ -1656,7 +1728,7 @@ export class VerEmpleadoComponent implements OnInit {
     this.plan_comida = false;
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE PLANIFICACIÓN DE ALMUERZOS 
+  // METODO PARA MOSTRAR DATOS DE PLANIFICACIÓN DE ALMUERZOS 
   solicitaComida: any = [];
   ObtenerSolComidas(formato_fecha: string, formato_hora: string) {
     this.solicitaComida = [];
@@ -1671,7 +1743,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **               METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE ALIMENTACION                ** **
    ** ***************************************************************************************************** **/
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
   NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
     let mensaje = {
       id_comida: datos.id_detalle,
@@ -1687,7 +1759,7 @@ export class VerEmpleadoComponent implements OnInit {
     })
   }
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
     // DATOS DE ESTRUCTURA DEL CORREO
     let DataCorreo = {
@@ -1706,7 +1778,7 @@ export class VerEmpleadoComponent implements OnInit {
       final: h_fin,
     }
 
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
     this.restPlanComidas.EnviarCorreoPlan(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {
@@ -1726,19 +1798,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **                   METODO DE PRSENTACION DE DATOS DE PROCESOS                          ** ** 
    ** ******************************************************************************************* **/
 
-  // HABILITAR O DESHABILITAR VISTA DE ACCIONES DE PERSONAL 
-  VerAccionPersonal() {
-    this.restEmpresa.ConsultarEmpresas().subscribe(res => {
-      if (res[0].tipo_empresa === 'Pública') {
-        this.HabilitarAccion = false;
-      }
-      else {
-        this.HabilitarAccion = true;
-      }
-    })
-  }
-
-  // MÉTODO PARA MOSTRAR DATOS DE LOS PROCESOS DEL EMPLEADO 
+  // METODO PARA MOSTRAR DATOS DE LOS PROCESOS DEL EMPLEADO 
   empleadoProcesos: any = [];
   ObtenerEmpleadoProcesos(formato_fecha: string) {
     this.empleadoProcesos = [];
@@ -1776,17 +1836,17 @@ export class VerEmpleadoComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PROCESOS
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PROCESOS
   EliminarProceso(id_plan: number) {
     this.restEmpleadoProcesos.EliminarRegistro(id_plan).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerEmpleadoProcesos(this.formato_fecha);
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteProceso(datos: any) {
     console.log(datos);
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -1804,7 +1864,7 @@ export class VerEmpleadoComponent implements OnInit {
    ** **                METODO DE PRESENTACION DE DATOS DE AUTORIZACION                        ** ** 
    ** ******************************************************************************************* **/
 
-  // MÉTODO PARA MOSTRAR DATOS DE AUTORIDAD DEPARTAMENTOS 
+  // METODO PARA MOSTRAR DATOS DE AUTORIDAD DEPARTAMENTOS 
   autorizacionesTotales: any = [];
   ObtenerAutorizaciones() {
     this.autorizacionesTotales = [];
@@ -1817,7 +1877,7 @@ export class VerEmpleadoComponent implements OnInit {
   AbrirVentanaAutorizar(): void {
     if (this.datoActual.id_cargo != undefined) {
       this.ventana.open(RegistroAutorizacionDepaComponent,
-        { width: '600px', data: { idEmpleado: this.idEmpleado, idCargo: this.datoActual.id_cargo } })
+        { width: '550px', data: { idEmpleado: this.idEmpleado, idCargo: this.datoActual.id_cargo } })
         .afterClosed().subscribe(item => {
           this.ObtenerAutorizaciones();
         });
@@ -1830,28 +1890,26 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // VENTANA PARA EDITAR AUTORIZACIONES DE DIFERENTES DEPARTAMENTOS 
-  AbrirEditarAutorizar(datoSeleccionado): void {
-    console.log('datos auto', datoSeleccionado);
+  AbrirEditarAutorizar(datoSeleccionado: any): void {
     this.ventana.open(EditarAutorizacionDepaComponent,
-      { width: '600px', data: { idEmpleado: this.idEmpleado, datosAuto: datoSeleccionado } })
+      { width: '550px', data: { idEmpleado: this.idEmpleado, datosAuto: datoSeleccionado } })
       .afterClosed().subscribe(item => {
         this.ObtenerAutorizaciones();
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarAutorizacion(id_auto: number) {
     this.restAutoridad.EliminarRegistro(id_auto).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerAutorizaciones();
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteAutorizacion(datos: any) {
-    console.log(datos);
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
@@ -1868,9 +1926,13 @@ export class VerEmpleadoComponent implements OnInit {
 
   // VENTANA PARA MODIFICAR CONTRASEÑA 
   CambiarContrasena(): void {
-    console.log(this.idEmpleado);
     this.ventana.open(CambiarContrasenaComponent, { width: '350px', data: this.idEmpleado })
-      .disableClose = true;
+      .afterClosed()
+      .subscribe((confirmado: Boolean) => {
+        if (confirmado) {
+          this.sesion.logout();
+        }
+      });
   }
 
   // INGRESAR FRASE 
@@ -1887,7 +1949,7 @@ export class VerEmpleadoComponent implements OnInit {
       .disableClose = true;
   }
 
-  // VER BOTÓN FRASE DE ACUERDO A LA  CONFIGURACIÓN DE SEGURIDAD
+  // VER BOTON FRASE DE ACUERDO A LA  CONFIGURACION DE SEGURIDAD
   empresa: any = [];
   frase: boolean = false;
   cambiar_frase: boolean = false;
@@ -1914,51 +1976,14 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // MOSTRAR BOTON CAMBIAR CONTRASEÑA
-  usuario: any = [];
   activar: boolean = false;
   VerAccionContrasena() {
-    this.usuario = [];
-    this.restU.BuscarDatosUser(parseInt(this.idEmpleado)).subscribe(res => {
-      this.usuario = res;
-      if (this.usuario[0].id_rol === 1) {
-        this.activar = true;
-      }
-      else {
-        this.activar = false;
-      }
-    });
-  }
-
-  /** ***************************************************************************************** **
-   ** **                       METODO PARA ACTIVAR FUNCIONALIDADES                           ** **
-   ** ***************************************************************************************** **/
-
-  // METODO PARA ACTIVAR FUNCIONALIDADES
-  HabilitarAlimentacion: boolean;
-  HabilitarPermisos: boolean;
-  VerFuncionalidades() {
-    this.restF.ListarFunciones().subscribe(datos => {
-      console.log('datos', datos)
-      if (datos[0].hora_extra === true) {
-        if (this.idEmpleadoLogueado === parseInt(this.idEmpleado)) {
-          this.HabilitarHorasE = false;
-        }
-      }
-      if (datos[0].accion_personal === true) {
-        this.VerAccionPersonal();
-      }
-      if (datos[0].alimentacion === true) {
-        this.HabilitarAlimentacion = true;
-      }
-      if (datos[0].permisos === true) {
-        this.HabilitarPermisos = true;
-      }
-
-    }, error => {
-      this.HabilitarHorasE = true;
-      this.HabilitarAlimentacion = false;
-      this.HabilitarPermisos = false;
-    })
+    if (parseInt(this.idEmpleado) === this.idEmpleadoLogueado) {
+      this.activar = true;
+    }
+    else {
+      this.activar = false;
+    }
   }
 
 
@@ -2135,12 +2160,12 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   /** ******************************************************************************************* ** 
-   ** **                             MÉTODO PARA IMPRIMIR EN XML                               ** **
+   ** **                             METODO PARA IMPRIMIR EN XML                               ** **
    ** ******************************************************************************************* **/
 
   nacionalidades: any = [];
   ObtenerNacionalidades() {
-    this.restEmpleado.getListaNacionalidades().subscribe(res => {
+    this.restEmpleado.BuscarNacionalidades().subscribe(res => {
       this.nacionalidades = res;
     });
   }
@@ -2184,7 +2209,7 @@ export class VerEmpleadoComponent implements OnInit {
       }
       arregloEmpleado.push(objeto)
     });
-    this.restEmpleado.DownloadXMLRest(arregloEmpleado).subscribe(res => {
+    this.restEmpleado.CrearXML(arregloEmpleado).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/empleado/download/` + this.data.name;
       window.open(this.urlxml, "_blank");

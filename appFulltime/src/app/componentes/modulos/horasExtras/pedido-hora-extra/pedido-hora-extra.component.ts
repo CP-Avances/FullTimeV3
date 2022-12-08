@@ -108,7 +108,7 @@ export class PedidoHoraExtraComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -147,7 +147,7 @@ export class PedidoHoraExtraComponent implements OnInit {
       })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   empleados: any = [];
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
@@ -156,7 +156,7 @@ export class PedidoHoraExtraComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL HORARIO DEL EMPLEADO 
+  // METODO PARA OBTENER EL HORARIO DEL EMPLEADO 
   Horario: any
   HorarioEmpleadoSemanal(id_cargo: number) {
     this.restHE.HorarioEmpleadoSemanal(id_cargo).subscribe(res => {
@@ -170,7 +170,7 @@ export class PedidoHoraExtraComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VALIDAR LA FECHA DE LA SOLICITUD CON EL HORARIO DEL EMPLEADO 
+  // METODO PARA VALIDAR LA FECHA DE LA SOLICITUD CON EL HORARIO DEL EMPLEADO 
   ValidarFechas(formFechas) {
     var fi = new Date(formFechas.fechaInicioForm);
     var ff = new Date(formFechas.FechaFinForm)
@@ -212,7 +212,7 @@ export class PedidoHoraExtraComponent implements OnInit {
     console.log(valor1, '===', valor2);
   }
 
-  // MÉTODO PARA REGISTRAR LOS DATOS DEL PEDIDO DE HORA EXTRA 
+  // METODO PARA REGISTRAR LOS DATOS DEL PEDIDO DE HORA EXTRA 
   HoraExtraResponse: any;
   NotifiRes: any;
   arrayNivelesDepa: any = [];
@@ -239,17 +239,17 @@ export class PedidoHoraExtraComponent implements OnInit {
     this.GuardarInformacion(form1, dataPedirHoraExtra);
   }
 
-  // MÉTODO PARA VALIDAR EL INGRESO DE LETRAS 
+  // METODO PARA VALIDAR EL INGRESO DE LETRAS 
   IngresarSoloLetras(e) {
     return this.validar.IngresarSoloLetras(e)
   }
 
-  // MÉTODO PARA VALIDAR EL INGRESO DE NÚMEROS
+  // METODO PARA VALIDAR EL INGRESO DE NÚMEROS
   IngresarSoloNumeros(evt) {
     return this.validar.IngresarSoloNumeros(evt)
   }
 
-  // MÉTODO PARA CALCULAR EL NÚMERO DE HORAS SOLICITADAS  
+  // METODO PARA CALCULAR EL NÚMERO DE HORAS SOLICITADAS  
   CalcularTiempo(form) {
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
     if (form.horaInicioForm != '' && form.horaFinForm != '') {
@@ -282,7 +282,7 @@ export class PedidoHoraExtraComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LIMPIAR LOS CAMPOS DEL FORMULARIO 
+  // METODO PARA LIMPIAR LOS CAMPOS DEL FORMULARIO 
   LimpiarCampoHoras() {
     this.PedirHoraExtraForm.patchValue({ horasForm: '' })
   }
@@ -295,7 +295,7 @@ export class PedidoHoraExtraComponent implements OnInit {
     var cont = 0;
     var correo_usuarios = '';
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
     let solicitud = this.validar.FormatearFecha(horaExtra.fec_solicita, this.formato_fecha, this.validar.dia_completo);
     let desde = this.validar.FormatearFecha(moment(horaExtra.fec_inicio).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
     let hasta = this.validar.FormatearFecha(moment(horaExtra.fec_final).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
@@ -373,7 +373,7 @@ export class PedidoHoraExtraComponent implements OnInit {
   // METODO PARA ENVIAR NOTIIFICACIONES AL SISTEMA
   EnviarNotificacion(horaExtra: any) {
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE HORA EXTRA
     let desde = this.validar.FormatearFecha(moment(horaExtra.fec_inicio).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
     let hasta = this.validar.FormatearFecha(moment(horaExtra.fec_final).format('YYYY-MM-DD'), this.formato_fecha, this.validar.dia_completo);
 
@@ -516,7 +516,7 @@ export class PedidoHoraExtraComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA QUITAR ARCHIVO SELECCIONADO
+  // METODO PARA QUITAR ARCHIVO SELECCIONADO
   HabilitarBtn: boolean = false;
   RetirarArchivo() {
     this.archivoSubido = [];

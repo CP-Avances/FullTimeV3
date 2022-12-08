@@ -331,9 +331,9 @@ class VacacionesControlador {
         });
     }
     /** ********************************************************************************************** **
-     **                MÉTODOS DE ENVIO DE CORREOS DE SOLICITUDES DE VACACIONES                        **
+     **                METODOS DE ENVIO DE CORREOS DE SOLICITUDES DE VACACIONES                        **
      ** ********************************************************************************************** **/
-    // MÉTODO DE ENVIO DE CORREO DESDE APLICACIÓN WEB
+    // METODO DE ENVIO DE CORREO DESDE APLICACIÓN WEB
     EnviarCorreoVacacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
@@ -430,7 +430,7 @@ class VacacionesControlador {
             }
         });
     }
-    // MÉTODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MOVIL
+    // METODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MOVIL
     EnviarCorreoVacacionesMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();

@@ -87,6 +87,38 @@ class UbicacionControlador {
      ** **        COORDENADAS DE UBICACION ASIGNADAS A UN USUARIO (empl_ubicacion)            ** **
      ** **************************************************************************************** **/
 
+    // LISTAR REGISTROS DE COORDENADAS GENERALES DE UBICACION DE UN USUARIO
+    public async ListarRegistroUsuario(req: Request, res: Response) {
+        const { id_empl } = req.params;
+        const UBICACIONES = await pool.query(
+            `
+            SELECT eu.id AS id_emplu, eu.codigo, eu.id_ubicacion, eu.id_empl, cu.latitud, cu.longitud, 
+                cu.descripcion 
+            FROM empl_ubicacion AS eu, cg_ubicaciones AS cu 
+            WHERE eu.id_ubicacion = cu.id AND eu.id_empl = $1
+            `
+            , [id_empl]);
+        if (UBICACIONES.rowCount > 0) {
+            return res.jsonp(UBICACIONES.rows)
+        }
+        else {
+            res.status(404).jsonp({ text: 'Registro no encontrado.' });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
     // ASIGNAR COORDENADAS GENERALES DE UBICACIÓN A LOS USUARIOS
     public async RegistrarCoordenadasUsuario(req: Request, res: Response): Promise<void> {
         const { codigo, id_empl, id_ubicacion } = req.body;
@@ -96,21 +128,7 @@ class UbicacionControlador {
         res.jsonp({ message: 'Registro guardado.' });
     }
 
-    // LISTAR REGISTROS DE COORDENADAS GENERALES DE UBICACIÓN DE UN USUARIO
-    public async ListarRegistroUsuario(req: Request, res: Response) {
-        const { id_empl } = req.params;
-        const UBICACIONES = await pool.query('SELECT eu.id AS id_emplu, eu.codigo, eu.id_ubicacion, eu.id_empl, ' +
-            'cu.latitud, cu.longitud, cu.descripcion ' +
-            'FROM empl_ubicacion AS eu, cg_ubicaciones AS cu ' +
-            'WHERE eu.id_ubicacion = cu.id AND eu.id_empl = $1',
-            [id_empl]);
-        if (UBICACIONES.rowCount > 0) {
-            return res.jsonp(UBICACIONES.rows)
-        }
-        else {
-            res.status(404).jsonp({ text: 'Registro no encontrado.' });
-        }
-    }
+
 
     // LISTAR REGISTROS DE COORDENADAS GENERALES DE UNA UBICACIÓN 
     public async ListarRegistroUsuarioU(req: Request, res: Response) {

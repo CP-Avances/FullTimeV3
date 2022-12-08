@@ -201,7 +201,7 @@ function ObtenerDiasAdicionales(aniosLaborados: number) {
 }
 
 /**
- * Método para pedir el periodo del presente año hasta la fecha actual de solicitud
+ * METODO para pedir el periodo del presente año hasta la fecha actual de solicitud
  * @param id_empl Id de empleado que solicita el cardex
  * @param ant Fecha del año anterior solo el año Ejm: 2015
  * @param pre Fecha del año presente solo el año Ejm: 2016
@@ -220,7 +220,7 @@ async function PeriodoVacacionContrato(id_empl: number, ant: string, pre: string
 }
 
 /**
- * Método para obtener las vacaciones de un determinado perido con un rango de fechas
+ * METODO para obtener las vacaciones de un determinado perido con un rango de fechas
  * @param id_peri_vac Id del preriodo de vacaciones
  * @param fec_inicio Fecha inicio del periodo
  * @param fec_final Fecha finaliza el periodo
@@ -233,7 +233,7 @@ async function Vacaciones(id_peri_vac: number, fec_inicio: Date, fec_final: Date
 }
 
 /**
- * Método para obtener permisos de acuerdo a un periodo en especifico y un rango de fechas
+ * METODO para obtener permisos de acuerdo a un periodo en especifico y un rango de fechas
  * @param id_peri_vac Id del periodo de vacaciones
  * @param fec_inicio Fecha de inicio del periodo
  * @param fec_final Fecha de finalizacion del periodo
@@ -246,7 +246,7 @@ async function Permisos(id_peri_vac: number, fec_inicio: Date, fec_final: Date) 
 }
 
 /**
- * Método para obtener el sueldo y horas de trabajo de un empleado en especifico de acuerdo a su ultimo contrato y cargo.
+ * METODO para obtener el sueldo y horas de trabajo de un empleado en especifico de acuerdo a su ultimo contrato y cargo.
  * @param id_empleado Id del empleado que solicita
  */
 async function SueldoHorasTrabaja(id_empleado: number) {
@@ -257,7 +257,7 @@ async function SueldoHorasTrabaja(id_empleado: number) {
 }
 
 /**
- * Método para obtener los dias obligatorios de vacación y el máximo de dias que puede acumular el empleado según el regimen laboral que usa.
+ * METODO para obtener los dias obligatorios de vacación y el máximo de dias que puede acumular el empleado según el regimen laboral que usa.
  * @param id_regimen Id del regimen laboral 
  */
 async function diasObligaByRegimen(id_regimen: number) {

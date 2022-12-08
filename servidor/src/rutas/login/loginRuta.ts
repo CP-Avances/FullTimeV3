@@ -9,9 +9,20 @@ class LoginRuta {
     }
 
     configuracion(): void {
+
+        // VALIDAR CREDENCIALES DE ACCESO AL SISTEMA
         this.router.post('/', LOGIN_CONTROLADOR.ValidarCredenciales);
-        this.router.post('/recuperar-contrasenia/', LOGIN_CONTROLADOR.RestablecerContrasenia);
+
+        // METODO PARA ENVIAR CORREO PARA CAMBIAR CONTRASEÑA
+        this.router.post('/recuperar-contrasenia/', LOGIN_CONTROLADOR.EnviarCorreoContrasena);
+
+        // METODO PARA CAMBIAR CONTRASEÑA
         this.router.post('/cambiar-contrasenia/', LOGIN_CONTROLADOR.CambiarContrasenia);
+
+
+
+
+
         this.router.post('/auditar', LOGIN_CONTROLADOR.Auditar);
 
     }

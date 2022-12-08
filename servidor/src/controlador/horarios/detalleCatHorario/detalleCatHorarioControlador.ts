@@ -5,25 +5,14 @@ import fs from 'fs';
 
 class DetalleCatalogoHorarioControlador {
 
-    public async ListarDetalleHorarios(req: Request, res: Response) {
-        const HORARIO = await pool.query('SELECT * FROM deta_horarios');
-        if (HORARIO.rowCount > 0) {
-            return res.jsonp(HORARIO.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
-    }
-
-    public async CrearDetalleHorarios(req: Request, res: Response): Promise<void> {
-        const { orden, hora, minu_espera, id_horario, tipo_accion } = req.body;
-        await pool.query('INSERT INTO deta_horarios (orden, hora, minu_espera, id_horario, tipo_accion) VALUES ($1, $2, $3, $4, $5)', [orden, hora, minu_espera, id_horario, tipo_accion]);
-        res.jsonp({ message: 'Detalle de Horario se registró con éxito' });
-    }
-
+    // METODO PARA BUSCAR DETALLE DE UN HORARIO
     public async ListarUnDetalleHorario(req: Request, res: Response): Promise<any> {
         const { id_horario } = req.params;
-        const HORARIO = await pool.query('SELECT * FROM deta_horarios WHERE id_horario = $1 ORDER BY orden ASC', [id_horario])
+        const HORARIO = await pool.query(
+            `
+            SELECT * FROM deta_horarios WHERE id_horario = $1 ORDER BY orden ASC
+            `
+            , [id_horario])
             .then(result => {
                 if (result.rowCount === 0) return [];
 
@@ -34,11 +23,11 @@ class DetalleCatalogoHorarioControlador {
                             o.tipo_accion = 'E';
                             break;
                         case 'S/A':
-                            o.tipo_accion_show = 'Inicio Alimentación';
+                            o.tipo_accion_show = 'Inicio alimentación';
                             o.tipo_accion = 'S/A';
                             break;
                         case 'E/A':
-                            o.tipo_accion_show = 'Fin Alimentación';
+                            o.tipo_accion_show = 'Fin alimentación';
                             o.tipo_accion = 'E/A';
                             break;
                         case 'S':
@@ -46,7 +35,7 @@ class DetalleCatalogoHorarioControlador {
                             o.tipo_accion = 'S';
                             break;
                         default:
-                            o.tipo_accion_show = 'codigo 99';
+                            o.tipo_accion_show = 'Codigo 99';
                             o.tipo_accion = 'codigo 99';
                             break;
                     }
@@ -58,9 +47,72 @@ class DetalleCatalogoHorarioControlador {
             return res.jsonp(HORARIO)
         }
         else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+    // METODO PARA ELIMINAR REGISTRO
+    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+        const id = req.params.id;
+        await pool.query(
+            `
+            DELETE FROM deta_horarios WHERE id = $1
+            `
+            , [id]);
+        res.jsonp({ message: 'Registro eliminado.' });
+    }
+
+    // METODO PARA REGISTRAR DETALLES
+    public async CrearDetalleHorarios(req: Request, res: Response): Promise<void> {
+        const { orden, hora, minu_espera, id_horario, tipo_accion } = req.body;
+        await pool.query(
+            `
+            INSERT INTO deta_horarios (orden, hora, minu_espera, id_horario, tipo_accion) 
+            VALUES ($1, $2, $3, $4, $5)
+            `
+            , [orden, hora, minu_espera, id_horario, tipo_accion]);
+        res.jsonp({ message: 'Registro guardado.' });
+    }
+
+    // METODO PARA ACTUALIZAR DETALLE DE HORARIO
+    public async ActualizarDetalleHorarios(req: Request, res: Response): Promise<void> {
+        const { orden, hora, minu_espera, id_horario, tipo_accion, id } = req.body;
+        await pool.query(
+            `
+            UPDATE deta_horarios SET orden = $1, hora = $2, minu_espera = $3, id_horario = $4,
+            tipo_accion = $5 WHERE id = $6
+            `
+            , [orden, hora, minu_espera, id_horario, tipo_accion, id]);
+        res.jsonp({ message: 'Registro actualizado.' });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public async ListarDetalleHorarios(req: Request, res: Response) {
+        const HORARIO = await pool.query('SELECT * FROM deta_horarios');
+        if (HORARIO.rowCount > 0) {
+            return res.jsonp(HORARIO.rows)
+        }
+        else {
             return res.status(404).jsonp({ text: 'No se encuentran registros' });
         }
     }
+
+
+
+
 
     /** Verificar que el nombre del horario exista dentro del sistema */
     public async VerificarDatosDetalles(req: Request, res: Response): Promise<void> {
@@ -137,17 +189,9 @@ class DetalleCatalogoHorarioControlador {
         fs.unlinkSync(filePath);
     }
 
-    public async ActualizarDetalleHorarios(req: Request, res: Response): Promise<void> {
-        const { orden, hora, minu_espera, id_horario, tipo_accion, id } = req.body;
-        await pool.query('UPDATE deta_horarios SET orden = $1, hora = $2, minu_espera = $3, id_horario = $4, tipo_accion = $5 WHERE id = $6', [orden, hora, minu_espera, id_horario, tipo_accion, id]);
-        res.jsonp({ message: 'Detalle de Horario se registró con éxito' });
-    }
 
-    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        await pool.query('DELETE FROM deta_horarios WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
-    }
+
+
 
 }
 

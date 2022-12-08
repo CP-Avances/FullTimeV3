@@ -75,7 +75,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -130,10 +130,10 @@ export class VerDetallePlanHorariosComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarDetalle(id_detalle: number, fecha, horario, codigo) {
     this.restDP.EliminarRegistro(id_detalle).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ListarDetalles(this.idPlanH, this.formato_fecha);
@@ -158,7 +158,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
     })
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     console.log('detalle plan', datos);
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -173,7 +173,7 @@ export class VerDetallePlanHorariosComponent implements OnInit {
 
   empleado: any = [];
   usuario: string = '';
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
     this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {

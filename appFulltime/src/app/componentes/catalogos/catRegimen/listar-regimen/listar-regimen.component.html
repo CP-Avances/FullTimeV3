@@ -7,8 +7,8 @@
             </div>
             <mat-card class="example-card mat-elevation-z9">
                 <div class="d-flex flex-wrap justify-content-center">
-                    <button mat-button type="submit" class="btn btn-sm" [routerLink]="['/regimenLaboral']">Crear
-                        nuevo régimen laboral
+                    <button mat-button type="submit" class="btn btn-sm" [routerLink]="['/regimenLaboral']">
+                        Crear régimen laboral
                     </button>
                     <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
@@ -26,26 +26,25 @@
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
                     <tr style="text-align: center;">
-                        <th scope="col">Régimen Laboral</th>
-                        <th scope="col">V: días por año</th>
-                        <th scope="col">V: días por mes</th>
-                        <th scope="col">Años considerados antiguedad</th>
-                        <th scope="col">V: días de incremento</th>
-                        <th scope="col">Máximo días acumulables</th>
-                        <th scope="col">V: días libres</th>
-                        <th scope="col">Acciones</th>
+                        <th scope="col" rowspan="2">Régimen Laboral</th>
+                        <th scope="col" rowspan="2">Periodo</th>
+                        <th scope="col" colspan="3">VACACIONES</th>
+                        <th scope="col" rowspan="2">Acciones</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Días hábiles</th>
+                        <th scope="col">Días libres</th>
+                        <th scope="col">Días calendario</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
                             <mat-form-field id="t-inputs">
-                                <input matInput placeholder="Buscar" (keypress)="IngresarSoloLetras($event)"
-                                    [formControl]="descripcionF" [(ngModel)]="filtroRegimenLaboral">
+                                <input matInput placeholder="Buscar" [formControl]="descripcionF"
+                                    [(ngModel)]="filtroRegimenLaboral">
                             </mat-form-field>
                         </td>
-                        <td></td>
-                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -60,19 +59,18 @@
                     <tr
                         *ngFor="let regimenL of regimen | filtroRegion: filtroRegimenLaboral | paginate:tamanio_pagina:numero_pagina">
                         <td>{{regimenL.descripcion}}</td>
-                        <td>{{regimenL.dia_anio_vacacion}}</td>
-                        <td>{{regimenL.dia_mes_vacacion}}</td>
-                        <td>{{regimenL.anio_antiguedad}}</td>
-                        <td>{{regimenL.dia_incr_antiguedad}}</td>
-                        <td>{{regimenL.max_dia_acumulacion}}</td>
-                        <td>{{regimenL.dia_libr_anio_vacacion}}</td>
+                        <td>{{regimenL.mes_periodo}} meses</td>
+                        <td>{{regimenL.vacacion_dias_laboral}}</td>
+                        <td>{{regimenL.vacacion_dias_libre}}</td>
+                        <td>{{regimenL.vacacion_dias_calendario}}</td>
                         <td class="d-flex justify-content-center">
                             <i matSuffix matTooltipPosition="right" matTooltip="Ver datos generales de este registro."
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/verRegimen/',regimenL.id]">
                                 <p>Ver</p>
                             </i>
-                            <i class="fas fa-edit" (click)="AbrirVentanaEditar(regimenL)" id="t-editar" matSuffix
-                                matTooltipPosition="right" matTooltip="Editar los datos generales de este registro.">
+                            <i class="fas fa-edit" [routerLink]="['/regimen/laboral/',regimenL.id]" id="t-editar"
+                                matSuffix matTooltipPosition="right"
+                                matTooltip="Editar los datos generales de este registro.">
                                 <p>Editar</p>
                             </i>
                             <i (click)="ConfirmarDelete(regimenL)" class="far fa-trash-alt" id="t-eliminar" matSuffix

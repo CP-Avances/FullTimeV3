@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { QueryResult } from 'pg';
 import pool from '../../../database';
 
 class EmpleadoCargosControlador {
@@ -26,6 +27,63 @@ class EmpleadoCargosControlador {
     }
 
   }
+
+  // METODO DE REGISTRO DE CARGO
+  public async Crear(req: Request, res: Response): Promise<void> {
+    const { id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo } = req.body;
+    await pool.query(
+      `
+      INSERT INTO empl_cargos (id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal,
+         sueldo, hora_trabaja, cargo) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `
+      , [id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo]);
+
+    res.jsonp({ message: 'Registro guardado.' });
+  }
+
+  // METODO PARA ACTUALIZAR REGISTRO
+  public async EditarCargo(req: Request, res: Response): Promise<any> {
+    const { id_empl_contrato, id } = req.params;
+    const { id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo } = req.body;
+
+    await pool.query(
+      `
+      UPDATE empl_cargos SET id_departamento = $1, fec_inicio = $2, fec_final = $3, id_sucursal = $4, 
+        sueldo = $5, hora_trabaja = $6, cargo = $7  
+      WHERE id_empl_contrato = $8 AND id = $9
+      `
+      , [id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo,
+        id_empl_contrato, id]);
+    res.jsonp({ message: 'Registro actualizado exitosamente.' });
+  }
+
+  // METODO PARA BUSCAR DATOS DE CARGO POR ID CONTRATO
+  public async EncontrarCargoIDContrato(req: Request, res: Response): Promise<any> {
+    const { id_empl_contrato } = req.params;
+    const unEmplCargp = await pool.query(
+      `
+      SELECT ec.id, ec.cargo, ec.fec_inicio, ec.fec_final, ec.sueldo, ec.hora_trabaja, 
+      s.nombre AS sucursal, d.nombre AS departamento 
+      FROM empl_cargos AS ec, sucursales AS s, cg_departamentos AS d 
+      WHERE ec.id_empl_contrato = $1 AND ec.id_sucursal = s.id AND ec.id_departamento = d.id
+      `
+      , [id_empl_contrato]);
+    if (unEmplCargp.rowCount > 0) {
+      return res.jsonp(unEmplCargp.rows)
+    }
+    else {
+      return res.status(404).jsonp({ message: 'error' });
+    }
+  }
+
+
+
+
+
+
+
+
 
 
 
@@ -62,12 +120,7 @@ class EmpleadoCargosControlador {
 
 
 
-  public async Crear(req: Request, res: Response): Promise<void> {
-    const { id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo } = req.body;
-    await pool.query('INSERT INTO empl_cargos ( id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [id_empl_contrato, id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo]);
-    console.log(req.body);
-    res.jsonp({ message: 'Cargo empleado guardado' });
-  }
+
 
   public async EncontrarIdCargo(req: Request, res: Response): Promise<any> {
     const { id_empleado } = req.params;
@@ -100,54 +153,12 @@ class EmpleadoCargosControlador {
     }
   }
 
-  public async EncontrarInfoCargoEmpleado(req: Request, res: Response): Promise<any> {
-    const { id_empl_contrato } = req.params;
-    const unEmplCargp = await pool.query('SELECT ec.id, ec.cargo, ec.fec_inicio, ec.fec_final, ec.sueldo, ec.hora_trabaja, s.nombre AS sucursal, d.nombre AS departamento FROM empl_cargos AS ec, sucursales AS s, cg_departamentos AS d WHERE ec.id_empl_contrato = $1 AND ec.id_sucursal = s.id AND ec.id_departamento = d.id', [id_empl_contrato]);
-    if (unEmplCargp.rowCount > 0) {
-      return res.jsonp(unEmplCargp.rows)
-    }
-    else {
-      return res.status(404).jsonp({ message: 'error' });
-    }
 
-  }
 
-  public async EditarCargo(req: Request, res: Response): Promise<any> {
-    const { id_empl_contrato, id } = req.params;
-    const { id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo } = req.body;
 
-    await pool.query('UPDATE empl_cargos SET id_departamento = $1, fec_inicio = $2, fec_final = $3, id_sucursal = $4, sueldo = $5, hora_trabaja = $6, cargo = $7  WHERE id_empl_contrato = $8 AND id = $9', [id_departamento, fec_inicio, fec_final, id_sucursal, sueldo, hora_trabaja, cargo, id_empl_contrato, id]);
-    res.jsonp({ message: 'Cargo del empleado actualizado exitosamente' });
-  }
 
-  // CREAR TIPO DE CARGO
 
-  public async CrearTipoCargo(req: Request, res: Response): Promise<void> {
-    const { cargo } = req.body;
-    await pool.query('INSERT INTO tipo_cargo (cargo) VALUES ($1)', [cargo]);
-    console.log(req.body);
-    res.jsonp({ message: 'Cargo empleado guardado' });
-  }
 
-  public async ListarTiposCargo(req: Request, res: Response) {
-    const Cargos = await pool.query('SELECT *FROM tipo_cargo');
-    if (Cargos.rowCount > 0) {
-      return res.jsonp(Cargos.rows);
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Registro no encontrado' });
-    }
-  }
-
-  public async BuscarUltimoTipo(req: Request, res: Response) {
-    const Cargos = await pool.query('SELECT MAX(id) FROM tipo_cargo');
-    if (Cargos.rowCount > 0) {
-      return res.jsonp(Cargos.rows);
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Registro no encontrado' });
-    }
-  }
 
   public async BuscarUnTipo(req: Request, res: Response) {
     const id = req.params.id;
@@ -194,6 +205,51 @@ class EmpleadoCargosControlador {
     }
     else {
       return res.status(404).jsonp({ text: 'Registro no encontrado' });
+    }
+  }
+
+
+
+
+
+
+
+
+  /** **************************************************************************************** **
+   ** **                  METODOS DE CONSULTA DE TIPOS DE CARGOS                            ** ** 
+   ** **************************************************************************************** **/
+
+  // METODO DE BUSQUEDA DE TIPO DE CARGOS
+  public async ListarTiposCargo(req: Request, res: Response) {
+    const Cargos = await pool.query(
+      `
+      SELECT * FROM tipo_cargo
+      `
+    );
+    if (Cargos.rowCount > 0) {
+      return res.jsonp(Cargos.rows);
+    }
+    else {
+      return res.status(404).jsonp({ text: 'Registro no encontrado.' });
+    }
+  }
+
+  // METODO DE REGISTRO DE TIPO DE CARGO
+  public async CrearTipoCargo(req: Request, res: Response): Promise<Response> {
+    const { cargo } = req.body;
+    const response: QueryResult = await pool.query(
+      `
+      INSERT INTO tipo_cargo (cargo) VALUES ($1) RETURNING *
+      `
+      , [cargo]);
+
+    const [tipo_cargo] = response.rows;
+
+    if (tipo_cargo) {
+      return res.status(200).jsonp(tipo_cargo)
+    }
+    else {
+      return res.status(404).jsonp({ message: 'error' })
     }
   }
 

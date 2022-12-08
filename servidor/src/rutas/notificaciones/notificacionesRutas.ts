@@ -41,7 +41,7 @@ class NotificacionTiempoRealRutas {
         // RUTA PARA CREAR NOTIFICACIÓN
         this.router.post('/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.CrearNotificacion);
 
-        // RUTA DE BÚSQUEDA DE UNA NOTIFICACION ESPECIFICA
+        // RUTA DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
         this.router.get('/one/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerUnaNotificacion);
 
     }

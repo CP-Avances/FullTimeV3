@@ -3,6 +3,53 @@ import pool from '../../../database';
 
 class PlanHorarioControlador {
 
+    // METODO PARA VERIFICAR FECHAS DE HORARIOS
+    public async VerificarFechasPlan(req: Request, res: Response): Promise<any> {
+        const { fechaInicio, fechaFinal } = req.body;
+        const codigo = req.params.codigo;
+        const PLAN = await pool.query(
+            `
+            SELECT * FROM plan_horarios 
+            WHERE ($1 BETWEEN fec_inicio AND fec_final OR $2 BETWEEN fec_inicio AND fec_final 
+                OR fec_inicio BETWEEN $1 AND $2 OR fec_final BETWEEN $1 AND $2) AND codigo = $3
+            `
+            , [fechaInicio, fechaFinal, codigo]);
+        if (PLAN.rowCount > 0) {
+            return res.jsonp(PLAN.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+        }
+    }
+
+    // METODO PARA VERIFICAR FECHAS DE HORARIOS ACTUALIZACION
+    public async VerificarFechasPlanEdicion(req: Request, res: Response): Promise<any> {
+        const id = req.params.id;
+        const { codigo } = req.params;
+        const { fechaInicio, fechaFinal } = req.body;
+        const PLAN = await pool.query(
+            `
+            SELECT * FROM plan_horarios 
+            WHERE NOT id=$3 AND ($1 BETWEEN fec_inicio AND fec_final OR $2 BETWEEN fec_inicio AND fec_final
+                OR fec_inicio BETWEEN $1 AND $2 OR fec_final BETWEEN $1 AND $2) AND codigo = $4
+            `
+            , [fechaInicio, fechaFinal, id, codigo]);
+        if (PLAN.rowCount > 0) {
+            return res.jsonp(PLAN.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+        }
+    }
+
+
+
+
+
+
+
+
+
     public async ListarPlanHorario(req: Request, res: Response) {
         const HORARIO = await pool.query('SELECT * FROM plan_horarios');
         if (HORARIO.rowCount > 0) {
@@ -38,7 +85,7 @@ class PlanHorarioControlador {
             SELECT * FROM plan_horarios AS p WHERE p.codigo = $1
             `
             , [codigo]);
-            console.log('data .. ', HORARIO)
+        console.log('data .. ', HORARIO)
         if (HORARIO.rowCount > 0) {
             return res.jsonp(HORARIO.rows)
         }
@@ -67,7 +114,7 @@ class PlanHorarioControlador {
     public async EliminarRegistros(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM plan_horarios WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
     public async ObtenerPlanificacionEmpleadoFechas(req: Request, res: Response): Promise<any> {
@@ -88,36 +135,9 @@ class PlanHorarioControlador {
         }
     }
 
-    public async VerificarFechasPlan(req: Request, res: Response): Promise<any> {
-        const { fechaInicio, fechaFinal } = req.body;
-        const codigo = req.params.codigo;
-        const PLAN = await pool.query('SELECT * FROM plan_horarios WHERE ($1 BETWEEN fec_inicio AND fec_final ' +
-            'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
-            'OR fec_final BETWEEN $1 AND $2) ' +
-            'AND codigo = $3', [fechaInicio, fechaFinal, codigo]);
-        if (PLAN.rowCount > 0) {
-            return res.jsonp(PLAN.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'Registros no encontrados' });
-        }
-    }
 
-    public async VerificarFechasPlanEdicion(req: Request, res: Response): Promise<any> {
-        const id = req.params.id;
-        const { codigo } = req.params;
-        const { fechaInicio, fechaFinal } = req.body;
-        const PLAN = await pool.query('SELECT * FROM plan_horarios WHERE NOT id=$3 AND ' +
-            '($1 BETWEEN fec_inicio AND fec_final OR $2 BETWEEN fec_inicio AND fec_final ' +
-            'OR fec_inicio BETWEEN $1 AND $2 OR fec_final BETWEEN $1 AND $2) ' +
-            'AND codigo = $4', [fechaInicio, fechaFinal, id, codigo]);
-        if (PLAN.rowCount > 0) {
-            return res.jsonp(PLAN.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'Registros no encontrados' });
-        }
-    }
+
+
 
 }
 

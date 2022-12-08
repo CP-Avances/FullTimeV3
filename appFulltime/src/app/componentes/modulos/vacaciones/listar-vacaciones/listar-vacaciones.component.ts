@@ -9,6 +9,7 @@ import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmplea
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 export interface VacacionesElemento {
   apellido: string;
@@ -34,36 +35,50 @@ export interface VacacionesElemento {
 
 export class ListarVacacionesComponent implements OnInit {
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA
+  // ITEMS DE PAGINACION DE LA TABLA
   numero_pagina: number = 1;
   tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   vacaciones: any = [];
 
-  // HABILITAR LISTAS SEGÚN LOS DATOS
+  // HABILITAR LISTAS SEGUN LOS DATOS
   lista_vacaciones: boolean = false;
   lista_autoriza: boolean = false;
 
   // HABILITAR ICONOS DE AUTORIZACION INDIVIDUAL
   auto_individual: boolean = true;
 
-  // ITEMS DE PAGINACIÓN DE LISTA AUTORIZADOS
+  // ITEMS DE PAGINACION DE LISTA AUTORIZADOS
   tamanio_pagina_auto: number = 5;
   numero_pagina_auto: number = 1;
   pageSizeOptions_auto = [5, 10, 20, 50];
 
   vacaciones_autorizadas: any = [];
 
+  get habilitarVacaciones(): boolean { return this.funciones.vacaciones; }
+
   constructor(
     private restV: VacacionesService,
     private ventana: MatDialog,
+    private funciones: MainNavService,
     public validar: ValidacionesService,
     public parametro: ParametrosService,
   ) { }
 
   ngOnInit(): void {
-    this.BuscarParametro();
+    if (this.habilitarVacaciones === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Vacaciones. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.BuscarParametro();
+    }
   }
 
   /** **************************************************************************************** **
@@ -73,7 +88,7 @@ export class ListarVacacionesComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(

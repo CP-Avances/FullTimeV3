@@ -98,7 +98,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -142,7 +142,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
       })
   }
 
-  // MÉTODO PARA MOSTRAR LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA MOSTRAR LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     var f = moment();
@@ -156,7 +156,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA CARGAR LA INFORMACIÓN DE LA PLANIFICACIÓN SELECCIONADA EN EL FORMULARIO
+  // METODO PARA CARGAR LA INFORMACIÓN DE LA PLANIFICACIÓN SELECCIONADA EN EL FORMULARIO
   CargarDatos() {
     this.rest.ConsultarUnServicio(this.data.solicitud.id_servicio).subscribe(datos => {
       this.tipoComidas = datos;
@@ -185,7 +185,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA BUSCAR SERVICIO DE ALIMENTACIÓN
+  // METODO PARA BUSCAR SERVICIO DE ALIMENTACIÓN
   servicios: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE SERVICIOS
   ObtenerServicios() {
     this.servicios = [];
@@ -210,7 +210,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     })
   }
 
-  // MÉTODO DE BÚSQUEDA DE DETALLES DE MENÚS
+  // METODO DE BUSQUEDA DE DETALLES DE MENÚS
   detalle: any = [];
   ObtenerDetalleMenu(form) {
     this.horaInicioF.reset();
@@ -247,7 +247,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VERIFICAR SI EL EMPLEADO TIENE SOLICITADO UN SERVICIO DE ALIMENTACIÓN
+  // METODO PARA VERIFICAR SI EL EMPLEADO TIENE SOLICITADO UN SERVICIO DE ALIMENTACIÓN
   VerificarSolicitudEmpleado(form) {
     // SUMA DE UN MINUTO A LA HORA INICIO DE SERVICIO DE ALIMENTACIÓN
     var inicio_hora = moment(form.horaInicioForm, 'HH:mm:ss').add(moment.duration("00:01:00")).format('HH:mm:ss');
@@ -269,7 +269,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VERIFICAR SI EL EMPLEADO TIENE REGISTRADO UN HORARIO EN LAS FECHAS INGRESADAS
+  // METODO PARA VERIFICAR SI EL EMPLEADO TIENE REGISTRADO UN HORARIO EN LAS FECHAS INGRESADAS
   VerificarHorarioEmpleado(form) {
     let datosHorario = {
       fechaInicio: form.fechaPlanificacionForm,
@@ -284,7 +284,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA ACTUALIZAR LA SOLICITUD SELECCIONADA
+  // METODO PARA ACTUALIZAR LA SOLICITUD SELECCIONADA
   ActualizarSolicitud(form) {
     let datosPlanComida = {
       id_empleado: this.data.solicitud.id_empleado,
@@ -319,7 +319,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     var cont = 0;
     var correo_usuarios = '';
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
     let solicitud = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
 
     alimentacion.EmpleadosSendNotiEmail.forEach(e => {
@@ -385,7 +385,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
   // METODO PARA ENVIO DE NOTIFICACION
   NotificarPlanificacion(alimentacion: any) {
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE ALIMENTACIÓN
     let desde = this.validar.FormatearFecha(alimentacion.fec_comida, this.formato_fecha, this.validar.dia_completo);
 
     let inicio = this.validar.FormatearHora(alimentacion.hora_inicio, this.formato_hora);
@@ -415,7 +415,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
 
 
 
-  // MÉTODO PARA INGRESAR SOLO LETRAS
+  // METODO PARA INGRESAR SOLO LETRAS
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
@@ -438,7 +438,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA INDICAR ERROR EN EL INGRESO DE OBSERVACIONES
+  // METODO PARA INDICAR ERROR EN EL INGRESO DE OBSERVACIONES
   ObtenerMensajeErrorObservacion() {
     if (this.observacionF.hasError('pattern')) {
       return 'Ingrese información válida';
@@ -446,7 +446,7 @@ export class EditarSolicitudComidaComponent implements OnInit {
     return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
   }
 
-  // MÉTODO PARA CERRAR VENTANA DE DIÁLOGO
+  // METODO PARA CERRAR VENTANA DE DIÁLOGO
   CerrarRegistroPlanificacion() {
     this.ventana.close();
   }

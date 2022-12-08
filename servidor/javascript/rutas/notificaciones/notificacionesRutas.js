@@ -31,7 +31,7 @@ class NotificacionTiempoRealRutas {
         this.router.post('/noti-comunicado-movil/', notificacionesControlador_1.default.EnviarNotificacionGeneral);
         // RUTA PARA CREAR NOTIFICACIÓN
         this.router.post('/', verificarToken_1.TokenValidation, notificacionesControlador_1.default.CrearNotificacion);
-        // RUTA DE BÚSQUEDA DE UNA NOTIFICACION ESPECIFICA
+        // RUTA DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
         this.router.get('/one/:id', verificarToken_1.TokenValidation, notificacionesControlador_1.default.ObtenerUnaNotificacion);
     }
 }

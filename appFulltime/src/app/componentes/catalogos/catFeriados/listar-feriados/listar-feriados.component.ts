@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -6,25 +6,24 @@ import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import pdfMake from 'pdfmake/build/pdfmake';
 import * as FileSaver from 'file-saver';
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-// IMPORTACIÓN DE COMPONENTES
+// IMPORTACION DE COMPONENTES
 import { RegistrarFeriadosComponent } from 'src/app/componentes/catalogos/catFeriados/registrar-feriados/registrar-feriados.component';
 import { EditarFeriadosComponent } from 'src/app/componentes/catalogos/catFeriados/editar-feriados/editar-feriados.component';
-import { AsignarCiudadComponent } from 'src/app/componentes/catalogos/catFeriados/asignar-ciudad/asignar-ciudad.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
-// IMPORTACIÓN DE SERVICIOS
+// IMPORTACION DE SERVICIOS
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
   selector: 'app-listar-feriados',
@@ -35,12 +34,12 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 export class ListarFeriadosComponent implements OnInit {
 
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
-  descripcionF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
+  descripcionF = new FormControl('');
   archivoForm = new FormControl('', Validators.required);
   fechaF = new FormControl('');
 
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public BuscarFeriadosForm = new FormGroup({
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     descripcionForm: this.descripcionF,
     fechaForm: this.fechaF,
   });
@@ -49,13 +48,13 @@ export class ListarFeriadosComponent implements OnInit {
   feriados: any = [];
   empleado: any = [];
 
-  // VARAIBLES USADAS PARA FILTROS DE BÚSQUEDA
+  // VARAIBLES USADAS PARA FILTROS DE BUSQUEDA
   filtroDescripcion = '';
   filtradoFecha = '';
 
-  idEmpleado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESIÓN
+  idEmpleado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESION
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA
+  // ITEMS DE PAGINACION DE LA TABLA
   pageSizeOptions = [5, 10, 20, 50];
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
@@ -67,7 +66,7 @@ export class ListarFeriadosComponent implements OnInit {
   // VARIABLE PARA TOMAR RUTA DEL SISTEMA
   hipervinculo: string = environment.url
 
-  // MÉTODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
   get s_color(): string { return this.plantillaPDF.color_Secundary }
   get p_color(): string { return this.plantillaPDF.color_Primary }
   get frase(): string { return this.plantillaPDF.marca_Agua }
@@ -97,7 +96,7 @@ export class ListarFeriadosComponent implements OnInit {
 
   formato_fecha: string = 'DD/MM/YYYY';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -110,7 +109,7 @@ export class ListarFeriadosComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -132,7 +131,7 @@ export class ListarFeriadosComponent implements OnInit {
     })
   }
 
-  // ORDENAR LOS DATOS SEGÚN EL ID 
+  // ORDENAR LOS DATOS SEGUN EL ID 
   OrdenarDatos(array: any) {
     function compare(a: any, b: any) {
       if (a.id < b.id) {
@@ -146,6 +145,7 @@ export class ListarFeriadosComponent implements OnInit {
     array.sort(compare);
   }
 
+  // METODO PARA REGISTRAR FERIADO
   AbrirVentanaRegistrarFeriado(): void {
     this.ventana.open(RegistrarFeriadosComponent, { width: '350px' }).afterClosed().subscribe(items => {
       if (items == true) {
@@ -154,29 +154,23 @@ export class ListarFeriadosComponent implements OnInit {
     });
   }
 
+  // METODO PARA EDITAR FERIADOS
   AbrirVentanaEditarFeriado(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.ventana.open(EditarFeriadosComponent, { width: '350px', data: { datosFeriado: datosSeleccionados, actualizar: true } }).disableClose = true;
-    console.log(datosSeleccionados.fecha);
+    this.ventana.open(EditarFeriadosComponent,
+      { width: '350px', data: { datosFeriado: datosSeleccionados, actualizar: true } }).disableClose = true;
   }
 
-  AbrirVentanaAsignarCiudad(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.ventana.open(AsignarCiudadComponent, { width: '600px', data: { feriado: datosSeleccionados, actualizar: false } }).disableClose = true;
-    console.log(datosSeleccionados.fecha);
-  }
-
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_feriado: number) {
     this.rest.EliminarFeriado(id_feriado).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.BuscarParametro();
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -188,16 +182,17 @@ export class ListarFeriadosComponent implements OnInit {
       });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.BuscarFeriadosForm.setValue({
+    this.formulario.setValue({
       descripcionForm: '',
       fechaForm: ''
     });
     this.BuscarParametro();
   }
 
-  // MÉTODO PARA INGRESAR SOLO LETRAS
-  IngresarSoloLetras(e) {
+  // METODO PARA INGRESAR SOLO LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
     // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
@@ -219,19 +214,13 @@ export class ListarFeriadosComponent implements OnInit {
     }
   }
 
-  ObtenerMensajeDescripcionLetras() {
-    if (this.descripcionF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
   // EVENTO PARA MOSTRAR FILAS DETERMINADAS EN LA TABLA
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1
   }
 
-  // MÉTODO PARA SELECCIONAR PLANTILLA DE DATOS DE FERIADOS
+  // METODO PARA SELECCIONAR PLANTILLA DE DATOS DE FERIADOS
   FileChange(element: any) {
     this.archivoSubido = element.target.files;
     this.nameFile = this.archivoSubido[0].name;
@@ -257,7 +246,7 @@ export class ListarFeriadosComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA ENVIAR MENSAJES DE ERROR O CARGAR DATOS SI LA PLANTILLA ES CORRECTA
+  // METODO PARA ENVIAR MENSAJES DE ERROR O CARGAR DATOS SI LA PLANTILLA ES CORRECTA
   Revisarplantilla() {
     let formData = new FormData();
     for (var i = 0; i < this.archivoSubido.length; i++) {
@@ -376,9 +365,9 @@ export class ListarFeriadosComponent implements OnInit {
     });
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS PDF
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                           PARA LA EXPORTACION DE ARCHIVOS PDF                               ** **
+   ** ************************************************************************************************* **/
 
   GenerarPdf(action = 'open') {
     this.OrdenarDatos(this.feriados);
@@ -468,9 +457,9 @@ export class ListarFeriadosComponent implements OnInit {
     };
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                          PARA LA EXPORTACION DE ARCHIVOS EXCEL                              ** **
+   ** ************************************************************************************************* **/
 
   ExportToExcel() {
     this.OrdenarDatos(this.feriados);
@@ -482,7 +471,7 @@ export class ListarFeriadosComponent implements OnInit {
         FECHA_RECUPERA: obj.fec_recuperacion
       }
     }));
-    // MÉTODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
     const header = Object.keys(this.feriados[0]); // NOMBRE DE CABECERAS DE COLUMNAS
     var wscols = [];
     for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
@@ -495,9 +484,9 @@ export class ListarFeriadosComponent implements OnInit {
     this.BuscarParametro();
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                              PARA LA EXPORTACION DE ARCHIVOS XML                            ** **
+   ** ************************************************************************************************* **/
 
   urlxml: string;
   data: any = [];
@@ -517,7 +506,7 @@ export class ListarFeriadosComponent implements OnInit {
       arregloFeriados.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloFeriados).subscribe(res => {
+    this.rest.CrearXML(arregloFeriados).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/feriados/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
@@ -525,9 +514,9 @@ export class ListarFeriadosComponent implements OnInit {
     this.BuscarParametro();
   }
 
-  /* ***************************************************************************************************** 
-   *                                     MÉTODO PARA EXPORTAR A CSV 
-   * *****************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                METODO PARA EXPORTAR A CSV                                    ** **
+   ** ************************************************************************************************** **/
 
   ExportToCVS() {
     this.OrdenarDatos(this.feriados);

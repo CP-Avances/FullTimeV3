@@ -43,7 +43,7 @@ export class DetallePlanificadosComponent implements OnInit {
   // Arreglo datos del empleado
   datosEmpleado: any = [];
 
-  // Datos del Formulario de búsqueda
+  // Datos del Formulario de BUSQUEDA
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
@@ -62,7 +62,7 @@ export class DetallePlanificadosComponent implements OnInit {
     finalForm: this.fechaFinalF,
   });
 
-  // Datos de filtros de búsqueda
+  // Datos de filtros de BUSQUEDA
   filtroCodigo: number;
   filtroCedula: '';
   filtroNombre: '';
@@ -101,7 +101,7 @@ export class DetallePlanificadosComponent implements OnInit {
     this.ObtenerColores();
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -110,7 +110,7 @@ export class DetallePlanificadosComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -118,7 +118,7 @@ export class DetallePlanificadosComponent implements OnInit {
     });
   }
 
-  // Método para obtener colores de empresa
+  // METODO para obtener colores de empresa
   p_color: any;
   s_color: any;
   empresa: any;
@@ -173,10 +173,10 @@ export class DetallePlanificadosComponent implements OnInit {
         // 2. Buscamos registros de servicios solicitados
         this.restA.ObtenerDetallesSolicitadosConsumidos(fechas).subscribe(sol => {
           this.solicitados = sol;
-          // 3. Método de búsqueda de registros de servicios extras 
+          // 3. METODO de BUSQUEDA de registros de servicios extras 
           this.ObtenerExtrasConsumidos(fechas, archivo, form);
         }, err => {
-          // 4. Método de búsqueda de registros de servicios extras 
+          // 4. METODO de BUSQUEDA de registros de servicios extras 
           this.ObtenerExtrasConsumidos(fechas, archivo, form);
           return this.validacionesService.RedireccionarHomeAdmin(err.error)
         });
@@ -184,10 +184,10 @@ export class DetallePlanificadosComponent implements OnInit {
         // 5. Buscamos registros de servicios solicitados
         this.restA.ObtenerDetallesSolicitadosConsumidos(fechas).subscribe(sol => {
           this.solicitados = sol;
-          // 6. Método de búsqueda de registros de servicios extras 
+          // 6. METODO de BUSQUEDA de registros de servicios extras 
           this.ObtenerExtrasConsumidos(fechas, archivo, form);
         }, err => {
-          // 7. Método de búsqueda de registros de servicios extras 
+          // 7. METODO de BUSQUEDA de registros de servicios extras 
           this.ObtenerExtrasConsumidos(fechas, archivo, form);
           return this.validacionesService.RedireccionarHomeAdmin(err.error)
         });
@@ -202,29 +202,29 @@ export class DetallePlanificadosComponent implements OnInit {
     }
   }
 
-  // Método de búsqueda de registros de servicios extras
+  // METODO de BUSQUEDA de registros de servicios extras
   ObtenerExtrasConsumidos(fecha, archivo, form) {
-    // 1. Búsqueda de servicios extras planificados
+    // 1. BUSQUEDA de servicios extras planificados
     this.restA.ObtenerDetallesExtrasPlanConsumidos(fecha).subscribe(plan => {
       this.extras = plan;
       console.log('comidas 1', this.extras);
-      // 2. Búsqueda de servicios extras solicitados
+      // 2. BUSQUEDA de servicios extras solicitados
       this.restA.ObtenerDetallesExtrasSolConsumidos(fecha).subscribe(sol => {
         this.extras = this.extras.concat(sol);
         console.log('comidas 2', this.extras);
-        // Llamado a método de impresión de archivos
+        // Llamado a METODO de impresión de archivos
         this.ImprimirArchivo(archivo, form);
       }, err => {
-        // Llamado a método de impresión de archivos
+        // Llamado a METODO de impresión de archivos
         this.ImprimirArchivo(archivo, form);
         return this.validacionesService.RedireccionarHomeAdmin(err.error)
       });
     }, err => {
-      // 3. Búsqueda de servicios extras solicitados
+      // 3. BUSQUEDA de servicios extras solicitados
       this.restA.ObtenerDetallesExtrasSolConsumidos(fecha).subscribe(sol2 => {
         this.extras = sol2;
         console.log('comidas 3', this.extras);
-        // Llamado a método de impresión de archivos
+        // Llamado a METODO de impresión de archivos
         this.ImprimirArchivo(archivo, form);
       }, err => {
         // Revisamos si todos los datos son vacios
@@ -233,13 +233,13 @@ export class DetallePlanificadosComponent implements OnInit {
           this.toastr.info('No existen registros en el periodo indicado.', 'Dar click aquí, para obtener reporte, en el que se indica que no existen registros.', {
             timeOut: 10000,
           }).onTap.subscribe(obj => {
-            // Llamado a método de impresión de archivo sin registros
+            // Llamado a METODO de impresión de archivo sin registros
             this.generarPdf('open');
             this.LimpiarFechas();
           });
         }
         else {
-          // Llamado a método de impresión de archivos
+          // Llamado a METODO de impresión de archivos
           this.ImprimirArchivo(archivo, form);
         }
         
@@ -628,7 +628,7 @@ export class DetallePlanificadosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-     *                                       MÉTODO PARA EXPORTAR A EXCEL
+     *                                       METODO PARA EXPORTAR A EXCEL
      ******************************************************************************************************/
   exportToExcelAlimentacion(form) {
     var j = 0;

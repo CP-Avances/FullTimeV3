@@ -52,47 +52,37 @@ export class HorarioService {
     return this.http.post<any>(`${environment.url}/horario/buscar_horario/edicion`, datos);
   }
 
-
-
-
-
-
-
-
-
-
-
-  getOneHorarioRest(id: number) {
-    return this.http.get(`${environment.url}/horario/${id}`);
-  }
-
-
-
-
-
-  updateHorasTrabajaByDetalleHorario(id: number, data: any) {
-    return this.http.put(`${environment.url}/horario/update-horas-trabaja/${id}`, data);
-  }
-
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/horario/xmlDownload`, data);
-  }
-
-
-
-  EditarDocumento(id: number, data: any) {
-    return this.http.put(`${environment.url}/horario/editar/editarDocumento/${id}`, data);
-  }
-
+  // METODO PARA ELIMINAR REGISTRO
   EliminarRegistro(id: number) {
     return this.http.delete(`${environment.url}/horario/eliminar/${id}`);
   }
 
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/horario/xmlDownload`, data);
+  }
+
+  // BUSCAR DATOS DE UN HORARIO
+  BuscarUnHorario(id: number) {
+    return this.http.get(`${environment.url}/horario/${id}`);
+  }
+
+  // METODO PARA ACTUALIZAR HORAS DE TRABAJO
+  ActualizarHorasTrabaja(id: number, data: any) {
+    return this.http.put(`${environment.url}/horario/update-horas-trabaja/${id}`, data);
+  }
 
 
 
 
-  // Verificar datos de la plantilla de catálogo horario y cargar al sistema
+
+
+
+
+
+
+  
+  // VERIFICAR DATOS DE LA PLANTILLA DE CATÁLOGO HORARIO Y CARGAR AL SISTEMA
   VerificarDatosHorario(formData) {
     return this.http.post<any>(`${environment.url}/horario/cargarHorario/verificarDatos/upload`, formData);
   }

@@ -1,21 +1,40 @@
-<div *ngIf="contenidoDeshabilitar">
-    <h3>Deshabilitar empleados </h3>
-    <p>Confirmar que los siguientes empleados van a ser deshabilitados del sistema</p>
-</div>
-<div *ngIf="contenidoHabilitar">
-    <h3>Habilitar empleados </h3>
-    <p>Confirmar que los siguientes empleados van a ser habilitados nuevamente con la misma información</p>
-</div>
-<div *ngIf="contenidoReactivar">
-    <h3>Reactivación de empleados </h3>
-    <p>Confirmar que los siguientes empleados van a ser reactivados con la información actualizada debido a su reingreso a la empresa</p>
-</div>
-<ul *ngFor="let e of Empleados.lista">
-    <li style="margin-top: -10px;">{{e.empleado}}</li>
-</ul>
+<mat-card-content>
+    <div id="titulo" *ngIf="contenidoDeshabilitar">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            DESHABILITAR USUARIOS
+        </span>
+    </div>
+    <div *ngIf="contenidoDeshabilitar">
+        <p>Los siguientes usuarios serán deshabilitados del sistema.</p>
+    </div>
 
+    <div id="titulo" *ngIf="contenidoHabilitar">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            HABILITAR USUARIOS
+        </span>
+    </div>
+    <div *ngIf="contenidoHabilitar">
+        <p>Los siguientes usuario serán habilitados en el sistema.</p>
+    </div>
 
-<div class="d-flex justify-content-between">
-    <button class="btn btn-success" (click)="ConfirmarListaEmpleados()">Aceptar</button>
-    <button class="btn btn-danger" (click)="dialogRef.close(false)">Salir</button>
+    <div id="titulo" *ngIf="contenidoReactivar">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            REACTIVACIÓN DE USUARIOS
+        </span>
+    </div>
+    <div *ngIf="contenidoReactivar">
+        <p>Los siguientes usuarios serán reincorporados con información actualizada debido a su
+            reingreso a la entidad.</p>
+    </div>
+    <ul *ngFor="let e of Empleados.lista">
+        <li style="margin-top: -10px;">{{e.empleado}}</li>
+    </ul>
+</mat-card-content>
+
+<div class="d-flex justify-content-between" style="padding-top: 20px;">
+    <button class="btn btn-primary btn-sm" (click)="ConfirmarListaEmpleados()">Confirmar</button>
+    <button id="cancelar" class="btn btn-sm" (click)="ventana.close(false)">Cancelar</button>
 </div>

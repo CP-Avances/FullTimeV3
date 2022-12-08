@@ -525,9 +525,9 @@ class HorasExtrasPedidasControlador {
         });
     }
     /** ************************************************************************************************* **
-     ** **          MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **
+     ** **          METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE HORAS EXTRAS                **
      ** ************************************************************************************************* **/
-    // MÉTODO PARA ENVIAR CORREOS DESDE APLICACIÓN WEB
+    // METODO PARA ENVIAR CORREOS DESDE APLICACIÓN WEB
     SendMailNotifiHoraExtra(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();
@@ -627,7 +627,7 @@ class HorasExtrasPedidasControlador {
             }
         });
     }
-    // MÉTODO DE ENVÍO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
+    // METODO DE ENVÍO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MÓVIL
     EnviarCorreoHoraExtraMovil(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();

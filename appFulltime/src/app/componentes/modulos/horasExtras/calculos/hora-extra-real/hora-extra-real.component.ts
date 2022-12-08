@@ -105,7 +105,7 @@ export class HoraExtraRealComponent implements OnInit {
     })
   }
 
-    // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+    // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
     p_color: any;
     s_color: any;
     frase: any;
@@ -307,7 +307,7 @@ export class HoraExtraRealComponent implements OnInit {
 
   getEmpleados() {
     this.empleado = [];
-    this.rest.getEmpleadosRest().subscribe(data => {
+    this.rest.ListarEmpleadosActivos().subscribe(data => {
       this.empleado = data;
       //console.log(this.empleado);
     })
@@ -329,7 +329,7 @@ export class HoraExtraRealComponent implements OnInit {
     this.fechaFinalF.reset();
   }
   obtenerNacionalidades() {
-    this.rest.getListaNacionalidades().subscribe(res => {
+    this.rest.BuscarNacionalidades().subscribe(res => {
       this.nacionalidades = res;
     });
   }
@@ -548,7 +548,7 @@ export class HoraExtraRealComponent implements OnInit {
       arregloEmpleado.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloEmpleado).subscribe(res => {
+    this.rest.CrearXML(arregloEmpleado).subscribe(res => {
       console.log(arregloEmpleado)
       this.data = res;
       console.log("prueba-empleado", res)
@@ -558,7 +558,7 @@ export class HoraExtraRealComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   * MÉTODO PARA EXPORTAR A CSV 
+   * METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {

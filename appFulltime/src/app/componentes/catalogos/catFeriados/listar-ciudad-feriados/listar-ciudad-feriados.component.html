@@ -1,25 +1,22 @@
 <div class="container" *ngFor="let f of datosFeriado" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
         <div id="titulo">
-            <span>DATOS GENERALES</span>
+            <span>{{f.descripcion.toUpperCase()}}</span>
         </div>
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
                     <div class="col-md">
-                        <label class="col-sm col-form-label">Descripción:</label>
-                        <br>
-                        <label id="datosF" class="col-sm col-form-label">{{f.descripcion}}</label>
+                        <div class="d-flex justify-content-start">
+                            <label id="datosF">Fecha:</label>
+                            <label>{{f.fecha_}}</label>
+                        </div>
                     </div>
                     <div class="col-md">
-                        <label class="col-sm col-form-label">Fecha:</label>
-                        <br>
-                        <label id="datosF" class="col-sm col-form-label">{{f.fecha_}}</label>
-                    </div>
-                    <div class="col-md">
-                        <label class="col-sm col-form-label">Fecha de Recuperación:</label>
-                        <br>
-                        <label id="datosF" class="col-sm col-form-label">{{f.fec_recuperacion_}}</label>
+                        <div class="d-flex justify-content-start">
+                            <label id="datosF">Fecha Recuperación:</label>
+                            <label>{{f.fec_recuperacion_}}</label>
+                        </div>
                     </div>
                 </div>
                 <div style="text-align: right;">
@@ -30,8 +27,17 @@
                 </div>
             </div>
             <hr>
-            <div class="container table-responsive" style="padding-bottom: 50px;">
-                <div id="resultados">CIUDADES EN LAS QUE RIGE ESTE FERIADO</div>
+            <div class="container table-responsive" style="padding-bottom: 15px;">
+                <div class="d-flex bd-highlight" id="resultados">
+                    <span class="w-100 bd-highlight">
+                        CIUDADES EN LAS QUE RIGE ESTE FERIADO
+                    </span>
+                    <mat-icon style="float: right; margin-right: 10px; color: white;"
+                        (click)="ListarCiudadesFeriados(idFeriado)" matSuffix matTooltipPosition="right"
+                        matTooltip="Actualizar registros." id="i-cursor">
+                        autorenew
+                    </mat-icon>
+                </div>
                 <table class="mat-elevation-z8 table table-hover table-sm">
                     <thead class="thead-light">
                         <tr style="text-align: center;">
@@ -51,7 +57,7 @@
                                     <p>Editar</p>
                                 </i>
                                 <i class="far fa-trash-alt" (click)="ConfirmarDelete(dc)"
-                                    style="color:red; margin-left: 15px;" id="iprocesoL" matSuffix
+                                    style="color:red; margin-left: 15px;" id="i-cursor" matSuffix
                                     matTooltipPosition="right" matTooltip="Eliminar registro">
                                     <p>Eliminar</p>
                                 </i>
@@ -63,8 +69,12 @@
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/listarFeriados/']" value="Ir a lista de feriados">
-            <input type="submit" class="btn btn-sm" (click)="AbrirVentanaAsignarCiudad(f)" value="Asignar una ciudad">
+            <div class="d-flex flex-wrap justify-content-between">
+                <input type="submit" class="btn btn-sm float-right" [routerLink]="['/feriados-ciudades/', f.id]"
+                    value="Asignar ciudad">
+                <input type="submit" class="btn btn-sm float-left" [routerLink]="['/listarFeriados/']"
+                    value="Ir a lista de feriados">
+            </div>
         </mat-card-content>
     </mat-card>
 </div>

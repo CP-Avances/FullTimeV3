@@ -22,7 +22,7 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
 import { ScriptService } from 'src/app/servicios/empleado/script.service';
 
-import { CambiarContrasenaComponent } from 'src/app/componentes/rolEmpleado/cambiar-contrasena/cambiar-contrasena.component';
+import { CambiarContrasenaComponent } from 'src/app/componentes/iniciarSesion/contrasenia/cambiar-contrasena/cambiar-contrasena.component';
 import { TituloEmpleadoComponent } from '../../empleado/titulos/titulo-empleado/titulo-empleado.component';
 import { EditarTituloComponent } from '../../empleado/titulos/editar-titulo/editar-titulo.component';
 import { DiscapacidadComponent } from '../../empleado/discapacidad/discapacidad.component';
@@ -90,7 +90,7 @@ export class DatosEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -111,7 +111,7 @@ export class DatosEmpleadoComponent implements OnInit {
   }
 
   /** ********************************************************************************************* **
-   ** **                            MÉTODO GENERALES DE CONSULTAS                                ** **                                           *
+   ** **                            METODO GENERALES DE CONSULTAS                                ** **                                           *
    ** ********************************************************************************************* **/
 
   // BUSQUEDA DE DATOS ACTUALES DEL USUARIO
@@ -127,7 +127,7 @@ export class DatosEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logoE: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -135,7 +135,7 @@ export class DatosEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -159,10 +159,10 @@ export class DatosEmpleadoComponent implements OnInit {
   }
 
   /** ********************************************************************************************* **
-   ** **                      MÉTODO PARA MOSTRAR DATOS PERFIL DE USUARIO                        ** **                                           *
+   ** **                      METODO PARA MOSTRAR DATOS PERFIL DE USUARIO                        ** **                                           *
    ** ********************************************************************************************* **/
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL USUARIO 
+  // METODO PARA VER LA INFORMACIÓN DEL USUARIO 
   urlImagen: any;
   iniciales: any;
   mostrarImagen: boolean = false;
@@ -203,7 +203,7 @@ export class DatosEmpleadoComponent implements OnInit {
       formData.append("image[]", this.archivoSubido[i], this.archivoSubido[i].name);
       console.log("iamge", formData);
     }
-    this.restEmpleado.subirImagen(formData, parseInt(this.idEmpleado)).subscribe(res => {
+    this.restEmpleado.SubirImagen(formData, parseInt(this.idEmpleado)).subscribe(res => {
       this.toastr.success('Operación Exitosa', 'imagen subida.', {
         timeOut: 6000,
       });
@@ -220,7 +220,7 @@ export class DatosEmpleadoComponent implements OnInit {
   // BUSQUEDA DE TITULOS
   ObtenerTituloEmpleado() {
     this.tituloEmpleado = [];
-    this.restEmpleado.getEmpleadoTituloRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restEmpleado.BuscarTituloUsuario(parseInt(this.idEmpleado)).subscribe(data => {
       this.tituloEmpleado = data;
     });
   }
@@ -247,15 +247,15 @@ export class DatosEmpleadoComponent implements OnInit {
 
   // ELIMINAR REGISTRO DE TÍTULO 
   EliminarTituloEmpleado(id: number) {
-    this.restEmpleado.deleteEmpleadoTituloRest(id).subscribe(res => {
+    this.restEmpleado.EliminarTitulo(id).subscribe(res => {
       this.ObtenerTituloEmpleado();
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteTitulo(id: number) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -273,10 +273,10 @@ export class DatosEmpleadoComponent implements OnInit {
    ** **               BUSQUEDA DE DATOS DE ASIGNACIONES: DISCAPACIDAD                           ** **                        *
    ** ********************************************************************************************* **/
 
-  // MÉTODO PARA OBTENER DATOS DE DISCAPACIDAD 
+  // METODO PARA OBTENER DATOS DE DISCAPACIDAD 
   ObtenerDiscapacidadEmpleado() {
     this.discapacidadUser = [];
-    this.restDiscapacidad.getDiscapacidadUsuarioRest(parseInt(this.idEmpleado)).subscribe(data => {
+    this.restDiscapacidad.BuscarDiscapacidadUsuario(parseInt(this.idEmpleado)).subscribe(data => {
       this.discapacidadUser = data;
       this.HabilitarBtn();
     });
@@ -284,16 +284,16 @@ export class DatosEmpleadoComponent implements OnInit {
 
   // ELIMINAR REGISTRO DE DISCAPACIDAD 
   EliminarDiscapacidad(id_discapacidad: number) {
-    this.restDiscapacidad.deleteDiscapacidadUsuarioRest(id_discapacidad).subscribe(res => {
+    this.restDiscapacidad.EliminarDiscapacidad(id_discapacidad).subscribe(res => {
       this.ObtenerDiscapacidadEmpleado();
       this.btnDisc = 'Añadir';
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
     })
   };
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteDiscapacidad(id: number) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -339,7 +339,7 @@ export class DatosEmpleadoComponent implements OnInit {
    ** **                          BUSQUEDA DE DATOS DE VACUNACIÓN                                ** **                        *
    ** ********************************************************************************************* **/
 
-  // MÉTODO PARA CONSULTAR DATOS DE REGISTRO DE VACUNACIÓN
+  // METODO PARA CONSULTAR DATOS DE REGISTRO DE VACUNACIÓN
   datosVacuna: any = [];
   ObtenerDatosVacunas(formato_fecha: string) {
     this.datosVacuna = [];
@@ -376,13 +376,13 @@ export class DatosEmpleadoComponent implements OnInit {
   EliminarVacuna(datos: any) {
     this.restVacuna.EliminarRegistroVacuna(datos.id, datos.carnet).subscribe(res => {
       this.ObtenerDatosVacunas(this.formato_fecha);
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarEliminarVacuna(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -395,10 +395,10 @@ export class DatosEmpleadoComponent implements OnInit {
   }
 
   /** ******************************************************************************************** **
-   ** **                    MÉTODOS PARA MENEJO DE DATOS DE CONTRATO                            ** **
+   ** **                    METODOS PARA MENEJO DE DATOS DE CONTRATO                            ** **
    ** ******************************************************************************************** **/
 
-  // MÉTODO PARA OBTENER ULTIMO CONTRATO
+  // METODO PARA OBTENER ULTIMO CONTRATO
   BuscarContratoActual(formato_fecha: string) {
     this.restEmpleado.BuscarIDContratoActual(parseInt(this.idEmpleado)).subscribe(datos => {
       this.datoActual.id_contrato = datos[0].max;
@@ -406,7 +406,7 @@ export class DatosEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
+  // METODO PARA OBTENER EL CONTRATO DE UN EMPLEADO CON SU RESPECTIVO RÉGIMEN LABORAL 
   ObtenerContratoEmpleado(id_contrato: number, formato_fecha: string) {
     this.restEmpleado.BuscarDatosContrato(id_contrato).subscribe(res => {
       this.contratoEmpleado = res;
@@ -590,12 +590,12 @@ export class DatosEmpleadoComponent implements OnInit {
   }
 
   /** ******************************************************************************************* ** 
-   ** **                             MÉTODO PARA IMPRIMIR EN XML                               ** **
+   ** **                             METODO PARA IMPRIMIR EN XML                               ** **
    ** ******************************************************************************************* **/
 
   nacionalidades: any = [];
   ObtenerNacionalidades() {
-    this.restEmpleado.getListaNacionalidades().subscribe(res => {
+    this.restEmpleado.BuscarNacionalidades().subscribe(res => {
       this.nacionalidades = res;
     });
   }
@@ -639,7 +639,7 @@ export class DatosEmpleadoComponent implements OnInit {
       }
       arregloEmpleado.push(objeto)
     });
-    this.restEmpleado.DownloadXMLRest(arregloEmpleado).subscribe(res => {
+    this.restEmpleado.CrearXML(arregloEmpleado).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/empleado/download/` + this.data.name;
       window.open(this.urlxml, "_blank");

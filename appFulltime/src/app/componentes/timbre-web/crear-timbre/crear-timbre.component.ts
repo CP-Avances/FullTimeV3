@@ -57,7 +57,7 @@ export class CrearTimbreComponent implements OnInit {
     teclaFuncionForm: this.teclaFuncionF,
   });
 
-  // MÉTODO DE CONTROL DE MEMORIA
+  // METODO DE CONTROL DE MEMORIA
   private options = {
     enableHighAccuracy: false,
     maximumAge: 30000,
@@ -85,7 +85,7 @@ export class CrearTimbreComponent implements OnInit {
     this.Geolocalizar();
   }
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE EMPLEADO
+  // METODO DE BUSQUEDA DE DATOS DE EMPLEADO
   empleadoUno: any = [];
   VerDatosEmpleado(idemploy: number) {
     this.empleadoUno = [];
@@ -94,7 +94,7 @@ export class CrearTimbreComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA TOMAR CORDENAS DE UBICACIÓN
+  // METODO PARA TOMAR CORDENAS DE UBICACIÓN
   Geolocalizar() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -123,7 +123,7 @@ export class CrearTimbreComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE INGRESO DE ACCIONES DEL TIMBRE
+  // METODO DE INGRESO DE ACCIONES DEL TIMBRE
   TeclaFuncion(opcion: string) {
     console.log(opcion);
     if (opcion == 'E') {
@@ -145,7 +145,7 @@ export class CrearTimbreComponent implements OnInit {
   // VARIABLE DE ALMACENAMIENTO DE DATOS
   data_nueva: any = [];
 
-  // MÉTODO DE INGRESO DE TIMBRES
+  // METODO DE INGRESO DE TIMBRES
   contador: number = 0;
   insertarTimbre(form1) {
     console.log(form1.fechaForm.toJSON());
@@ -179,9 +179,9 @@ export class CrearTimbreComponent implements OnInit {
         // LIMPIAR VARIABLE Y ALMACENAR DATOS
         this.data_nueva = [];
         this.data_nueva = dataTimbre;
-        // MÉTODO DE INSERCIÓN DE TIMBRES
+        // METODO DE INSERCIÓN DE TIMBRES
         this.restTimbres.PostTimbreWebAdmin(dataTimbre).subscribe(res => {
-          // MÉTODO PARA AUDITAR TIMBRES
+          // METODO PARA AUDITAR TIMBRES
           this.data_nueva.id_empleado = obj.id;
           this.validar.Auditar('app-web', 'timbres', '', this.data_nueva, 'INSERT');
           this.contador = this.contador + 1;

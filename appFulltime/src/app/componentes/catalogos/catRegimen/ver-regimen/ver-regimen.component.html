@@ -1,54 +1,238 @@
-<div class="container" *ngFor="let r of datosRegimen" style="padding-top: 15px;">
+<div class="container" style="padding-top: 15px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div id="titulo">
-            <span>DATOS GENERALES</span>
+        <div class="d-flex bd-highlight" id="titulo">
+            <span class="w-100 bd-highlight">
+                {{regimen.descripcion}}
+            </span>
+            <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
+                [routerLink]="['/regimen/laboral/',regimen.id]">
+                Editar
+            </button>
         </div>
         <mat-card-content>
-            <div class="container" style="padding-top: 15px;">
-                <div class="row">
-                    <br>
-                    <div class="col">
-                        <label id="datosF"
-                            class="col-sm col-form-label text-center">{{r.descripcion.toUpperCase()}}</label>
-                    </div>
+            <!-- ****************** INFORMACION GENERAL DEL REGISTRO ***************************** -->
+            <div class="container" style="padding-top: 30px;">
+                <div id="resultados">
+                    <span>INFORMACION GENERAL</span>
                 </div>
-                <br>
-                <div class="row">
-                    <div class="col" id="verticalLine">
-                        <label class="col-sm col-form-label"><b>Meses de duración del Período:</b>
-                            {{r.meses_periodo}}
-                        </label>
-                        <br>
-                        <label class="col-sm col-form-label"><b>Días de vacaciones por año:</b>
-                            {{r.dia_anio_vacacion}}
-                        </label>
-                        <br>
-                        <label class="col-sm col-form-label"><b>Días de vacaciones por mes:</b>
-                            {{r.dia_mes_vacacion}}</label>
-                        <br>
-                        <label class="col-sm col-form-label"><b>Días de vacaciones por antiguedad:</b>
-                            {{r.dia_incr_antiguedad}}</label>
+                <div class="container" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">País:</label>
+                                <label>{{regimen.pais}}</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Meses Periodo:</label>
+                                <label>{{regimen.mes_periodo}} meses</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días por mes:</label>
+                                <label>{{regimen.dias_mes}} días</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start" *ngIf="regimen.tiempo != false">
+                                <label id="datosF">Tiempo limite de servicios:</label>
+                                <label>{{regimen.tiempo}}</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start"
+                                *ngIf="regimen.continuidad_laboral != false">
+                                <label id="datosF">Requerido:</label>
+                                <label>Periodo continuo de servicio</label>
+                            </div>
+                        </div>
                     </div>
-                    <br>
-                    <div class="col" id="verticalLine">
-                        <label class="col-sm col-form-label"><b>Años para considerar antiguedad:</b>
-                            {{r.anio_antiguedad}}</label>
-                        <br>
-                        <label class="col-sm col-form-label"><b>Días máximos de acumulación:</b>
-                            {{r.max_dia_acumulacion}}</label>
-                        <br>
-                        <label class="col-sm col-form-label"><b>Días libres:</b> {{r.dia_libr_anio_vacacion}}</label>
-                    </div>
-                </div>
-                <div style="text-align: right;">
-                    <i id="editarF" (click)="EditarDatosRegimen(r)" matSuffix matTooltipPosition="right"
-                        matTooltip="Modificar datos de este registro" class="fas fa-edit">
-                        <p>Editar</p>
-                    </i>
                 </div>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/listarRegimen/']"
-                value="Ir a lista de régimen laboral">
+            <!-- ****************** VACACIONES ***************************** -->
+            <div class="container" style="padding-top: 30px;">
+                <div id="resultados">
+                    <span>VACACIONES</span>
+                </div>
+                <div class="container" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días hábiles:</label>
+                                <label>{{regimen.vacacion_dias_laboral}} días</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días libres:</label>
+                                <label>{{regimen.vacacion_dias_libre}} días</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días calendario:</label>
+                                <label>{{regimen.vacacion_dias_calendario}} días</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start" *ngIf="regimen.acumular === true">
+                                <label id="datosF">Días máximos acumulación:</label>
+                                <label>{{regimen.dias_max_acumulacion}} días</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Solicitudes de vacaciones contabiliza:</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start" style="position: relative; left: 40px;"
+                                *ngIf="regimen.contar_feriados === true">
+                                <mat-checkbox matSuffix matTooltipPosition="right" disabled
+                                    [checked]="regimen.contar_feriados"
+                                    matTooltip="Dentro de la solicitud de vacaciones se contabilizará feriados.">
+                                    <span id="color_fuente">Feriados</span>
+                                </mat-checkbox>
+                            </div>
+                            <div class="espacio d-flex justify-content-start" style="position: relative; left: 40px;"
+                                *ngIf="regimen.contar_dias_libres === true">
+                                <mat-checkbox matSuffix matTooltipPosition="right" disabled
+                                    [checked]="regimen.contar_dias_libres"
+                                    matTooltip="Dentro de la solicitud de vacaciones se contabilizará días libres.">
+                                    <span id="color_fuente">Días libres</span>
+                                </mat-checkbox>
+                            </div>
+                            <div class="espacio d-flex justify-content-start" style="position: relative; left: 40px;"
+                                *ngIf="regimen.contar_licencias === true">
+                                <mat-checkbox matSuffix matTooltipPosition="right" disabled
+                                    [checked]="regimen.contar_dias_libres"
+                                    matTooltip="Dentro de la solicitud de vacaciones se contabilizará licencias.">
+                                    <span id="color_fuente">Licencias</span>
+                                </mat-checkbox>
+                            </div>
+                            <div class="espacio d-flex justify-content-start" style="position: relative; left: 40px;"
+                                *ngIf="regimen.contar_faltas === true">
+                                <mat-checkbox matSuffix matTooltipPosition="right" disabled
+                                    [checked]="regimen.contar_faltas"
+                                    matTooltip="Dentro de la solicitud de vacaciones se contabilizará faltas.">
+                                    <span id="color_fuente">Faltas</span>
+                                </mat-checkbox>
+                            </div>
+                            <div class="espacio d-flex justify-content-start" style="position: relative; left: 40px;"
+                                *ngIf="regimen.contar_permiso === true">
+                                <mat-checkbox matSuffix matTooltipPosition="right" disabled
+                                    [checked]="regimen.contar_permiso"
+                                    matTooltip="Dentro de la solicitud de vacaciones se contabilizará faltas.">
+                                    <span id="color_fuente">Permisos</span>
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ****************** PROPORCIONALES DE VACACIONES ***************************** -->
+            <div class="container" style="padding-top: 30px;">
+                <div id="resultados">
+                    <span>PROPORCIONALES DE VACACIONES</span>
+                </div>
+                <div class="container" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días hábiles ganados por mes:</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label>{{regimen.vacacion_dias_laboral_mes}} días</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días calendario ganados por mes:</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label>{{regimen.vacacion_dias_calendario_mes}} días</label>
+                            </div>
+                        </div>
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días hábiles ganados por día:</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label>{{regimen.laboral_dias}} días</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días calendario ganados por día:</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label>{{regimen.calendario_dias}} días</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ****************** VACACIONES POR PERIODOS ***************************** -->
+            <div class="container" style="padding-top: 30px;" *ngIf="ver_periodo">
+                <div id="resultados">
+                    <span>VACACIONES POR PERIODOS</span>
+                </div>
+                <div class="container" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-md" id="verticalLine" *ngFor="let p of periodo">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Descripción:</label>
+                                <label>{{p.descripcion}}</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días de vacaciones:</label>
+                                <label>{{p.dias_vacacion}} días</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ****************** ANTIGUEDAD VARIABLE ***************************** -->
+            <div class="container" style="padding-top: 30px;" *ngIf="ver_antiguedad_variable">
+                <div id="resultados">
+                    <span>VACACIONES ANTIGUEDAD</span>
+                </div>
+                <div class="container" style="padding-top: 20px;" *ngFor="let a of antiguedad">
+                    <div class="row">
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Desde:</label>
+                                <label>{{a.anio_desde}} años</label>
+                            </div>
+                        </div>
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Hasta:</label>
+                                <label>{{a.anio_hasta}} años</label>
+                            </div>
+                        </div>
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días de vacaciones:</label>
+                                <label>{{a.dias_antiguedad}} días</label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <!-- ****************** ANTIGUEDAD FIJA ***************************** -->
+            <div class="container" style="padding-top: 30px;" *ngIf="ver_antiguedad_fija">
+                <div id="resultados">
+                    <span>VACACIONES ANTIGUEDAD</span>
+                </div>
+                <div class="container" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-md" id="verticalLine">
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Años de antiguedad:</label>
+                                <label>{{regimen.anio_antiguedad}} años</label>
+                            </div>
+                            <div class="espacio d-flex justify-content-start">
+                                <label id="datosF">Días de antiguedad:</label>
+                                <label>{{regimen.dias_antiguedad}} días</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding-top: 25px; text-align: right;">
+                <button [routerLink]="['/listarRegimen/']" class="btn btn-sm">
+                    Ir a lista Régimen laboral
+                </button>
+            </div>
         </mat-card-content>
     </mat-card>
 </div>

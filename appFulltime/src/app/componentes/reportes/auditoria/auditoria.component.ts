@@ -28,7 +28,7 @@ import { SeguridadComponent } from '../../administracionGeneral/frase-seguridad/
 })
 export class AuditoriaComponent implements OnInit {
 
-  // CRITERIOS DE BÚSQUEDA POR FECHAS
+  // CRITERIOS DE BUSQUEDA POR FECHAS
   get rangoFechas() { return this.reporteService.rangoFechas };
 
   // ITEMS DE PAGINACION DE LA TABLA
@@ -87,7 +87,7 @@ export class AuditoriaComponent implements OnInit {
     ]
   }
 
-  // MÉTODO PARA GENERAR PDF SEGÚN OPCION SELECCIONADA
+  // METODO PARA GENERAR PDF SEGÚN OPCION SELECCIONADA
   auditoria: any = [];
   PresentarReporte(opcion: number, valor: any) {
     this.auditoria = [];
@@ -113,7 +113,7 @@ export class AuditoriaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER LA INFORMACION DE EMPLEADO QUE INICIA SESIÓN 
+  // METODO PARA VER LA INFORMACION DE EMPLEADO QUE INICIA SESIÓN 
   urlImagen: string;
   nombreEmpresa: string;
   ObtenerEmpleadoLogueado(idemploy: any) {
@@ -127,7 +127,7 @@ export class AuditoriaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -139,7 +139,7 @@ export class AuditoriaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA MANEJAR PAGINACIÓN DE LA TABLA DE DATOS
+  // METODO PARA MANEJAR PAGINACIÓN DE LA TABLA DE DATOS
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;

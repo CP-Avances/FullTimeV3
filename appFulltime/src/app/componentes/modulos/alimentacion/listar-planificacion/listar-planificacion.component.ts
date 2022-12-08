@@ -17,6 +17,7 @@ import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.serv
 
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
 export interface SolicitudElemento {
@@ -78,6 +79,8 @@ export class ListarPlanificacionComponent implements OnInit {
 
   idEmpleadoLogueado: number; // VARIABLE PARA ALMACENAR ID DE EMPLEADO QUE INICIA SESIÓN
 
+  get habilitarComida(): boolean { return this.funciones.alimentacion; }
+
   constructor(
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
     public validar: ValidacionesService,
@@ -87,13 +90,26 @@ export class ListarPlanificacionComponent implements OnInit {
     public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
     private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
     private parametro: ParametrosService,
+    private funciones: MainNavService,
+
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.BuscarParametro();
+    if (this.habilitarComida === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Alimentación. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.BuscarParametro();
     this.BuscarFecha();
+    }
   }
 
   /** **************************************************************************************** **
@@ -103,7 +119,7 @@ export class ListarPlanificacionComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarFecha() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -130,16 +146,16 @@ export class ListarPlanificacionComponent implements OnInit {
   }
 
   /** ********************************************************************************************* */
-  /**            MÉTODOS USADOS PARA MANEJO DE DATOS DE PLANIFICACIONES DE COMIDAS                  */
+  /**            METODOS USADOS PARA MANEJO DE DATOS DE PLANIFICACIONES DE COMIDAS                  */
   /** ********************************************************************************************* */
 
-  // MÉTODO PARA MOSTRAR UN DETERMINADO NÚMERO DE FILAS EN LA TABLA DE SOLICITUDES PENDIENTES
+  // METODO PARA MOSTRAR UN DETERMINADO NÚMERO DE FILAS EN LA TABLA DE SOLICITUDES PENDIENTES
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1;
     this.tamanio_pagina = e.pageSize;
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
+  // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
   ObtenerPlanificaciones(formato_fecha: string, formato_hora: string) {
     this.planificaciones = [];
     this.restC.ObtenerPlanComidas().subscribe(res => {
@@ -151,18 +167,18 @@ export class ListarPlanificacionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA CON ÍCONO EDITAR ACTIVO
+  // METODO PARA VER LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA CON ÍCONO EDITAR ACTIVO
   tipo_accion: string = '';
   HabilitarTablaEditar(id: any) {
     this.ObtenerEmpleadosPlanificacion(id, '1', true, false, true, false);
   }
 
-  // MÉTODO PARA VER LISTA DE EMPLEADOS CON PLANIIFCACIÓN SELECCIONADA CON ÍCONO ELIMINAR ACTIVO
+  // METODO PARA VER LISTA DE EMPLEADOS CON PLANIIFCACIÓN SELECCIONADA CON ÍCONO ELIMINAR ACTIVO
   HabilitarTablaEliminar(id: any) {
     this.ObtenerEmpleadosPlanificacion(id, '2', true, false, false, true);
   }
 
-  // MÉTODO PARA CERRAR TABLA DE LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA
+  // METODO PARA CERRAR TABLA DE LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA
   CerrarTabla() {
     this.lista_empleados = false;
     this.ver_icono = true;
@@ -215,7 +231,7 @@ export class ListarPlanificacionComponent implements OnInit {
   }
 
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanComidas(id_plan: number, id_empleado: number, datos: any) {
 
     // LECTURA DE DATOS DE USUARIO
@@ -232,7 +248,7 @@ export class ListarPlanificacionComponent implements OnInit {
     this.restC.EliminarPlanComida(id_plan, id_empleado).subscribe(res => {
       this.NotificarPlanificacion(datos, desde, hasta, h_inicio, h_fin, id_empleado);
       this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.VerificarPlanificacion(id_plan, '2', false, true);
@@ -243,7 +259,7 @@ export class ListarPlanificacionComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlanComidas(datos: any) {
     console.log('ver data seleccionada... ', datos)
     // VERIFICAR SI HAY UN REGISTRO CON ESTADO CONSUMIDO DENTRO DE LA PLANIFICACION
@@ -276,16 +292,16 @@ export class ListarPlanificacionComponent implements OnInit {
 
 
   /** ********************************************************************************************* */
-  /**      MÉTODOS USADOS PARA MANEJO DE DATOS EMPLEADOS CON PLANIFICACIÓN SELECCIONADA             */
+  /**      METODOS USADOS PARA MANEJO DE DATOS EMPLEADOS CON PLANIFICACIÓN SELECCIONADA             */
   /** ********************************************************************************************* */
 
-  // MÉTODO PARA MOSTRAR FILAS DETERMINADAS EN TABLA DE EMPLEADOS CON PLANIFICACIÓN
+  // METODO PARA MOSTRAR FILAS DETERMINADAS EN TABLA DE EMPLEADOS CON PLANIFICACIÓN
   ManejarPaginaEmpleados(e: PageEvent) {
     this.tamanio_pagina_empleado = e.pageSize;
     this.numero_pagina_empleado = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE EMPLEADOS CON PLANIFICACIÓN
+  // METODO PARA BUSQUEDA DE DATOS DE EMPLEADOS CON PLANIFICACIÓN
   planEmpleados: any = []; // VARIABLE PARA GUARDAR DATOS DE EMPLEADOS CON PLANIFICACIÓN
   ObtenerEmpleadosPlanificacion(id: any, accion: any, lista_empleados: any, icono: any, editar: any, eliminar: any) {
 
@@ -299,7 +315,7 @@ export class ListarPlanificacionComponent implements OnInit {
       this.ver_eliminar = eliminar;
     }, error => {
       this.restC.EliminarRegistro(id).subscribe(res => {
-        this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
+        this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro eliminado.', {
           timeOut: 6000,
         })
         // window.location.reload();
@@ -308,7 +324,7 @@ export class ListarPlanificacionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA HABILITAR O DESHABILITAR EL BOTÓN EDITAR O ELIMINAR
+  // METODO PARA HABILITAR O DESHABILITAR EL BOTÓN EDITAR O ELIMINAR
   botonSeleccion: boolean = false;
   botonEditar: boolean = false;
   botonEliminar: boolean = false;
@@ -361,7 +377,7 @@ export class ListarPlanificacionComponent implements OnInit {
     return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y EDITAR
+  // METODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y EDITAR
   EditarRegistrosMultiple() {
     let EmpleadosSeleccionados;
     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
@@ -396,7 +412,7 @@ export class ListarPlanificacionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y ELIMINAR
+  // METODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y ELIMINAR
   EliminarRegistrosMultiple() {
     let EmpleadosSeleccionados;
     EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
@@ -430,7 +446,7 @@ export class ListarPlanificacionComponent implements OnInit {
   }
 
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   id_plan: any;
   EliminarPlanComidasMultiple(datos: any) {
 
@@ -468,7 +484,7 @@ export class ListarPlanificacionComponent implements OnInit {
     })
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   empleado_conConsumo: any = [];
   empleado_sinConsumo: any = [];
   contar: number = 0;
@@ -509,7 +525,7 @@ export class ListarPlanificacionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA MOSTRAR MENSAJES SEGÚN LECTURA DE DATOS
+  // METODO PARA MOSTRAR MENSAJES SEGÚN LECTURA DE DATOS
   MostrarMensajeEliminado(consumidos: any, datos_seleccion: any, nota: any) {
     if (consumidos.length === datos_seleccion.length) {
       this.toastr.error('Proceso no permitido.', 'Los usuarios seleccionados ya tienen registro de planificación consumida.', {
@@ -522,7 +538,7 @@ export class ListarPlanificacionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA ABRIR VENTA DE SELECCIÓN ELIMINAR DATOS
+  // METODO PARA ABRIR VENTA DE SELECCIÓN ELIMINAR DATOS
   MetodoEliminar(datos_eliminar: any) {
     if (datos_eliminar.length > 0) {
       this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -561,7 +577,7 @@ export class ListarPlanificacionComponent implements OnInit {
    ** **               METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE ALIMENTACION                ** **
    ** ***************************************************************************************************** **/
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
@@ -582,7 +598,7 @@ export class ListarPlanificacionComponent implements OnInit {
     }
 
     console.log('DATOS A ENVIARSE POR CORREO', DataCorreo);
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
     this.restC.EnviarCorreoPlan(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {
@@ -600,7 +616,7 @@ export class ListarPlanificacionComponent implements OnInit {
   }
 
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
   NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
     let mensaje = {
       id_comida: datos.id_detalle,
@@ -616,7 +632,7 @@ export class ListarPlanificacionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE CORREOS
+  // METODO PARA BUSCAR PARÁMETRO DE CORREOS
   correos: number;
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
@@ -633,7 +649,7 @@ export class ListarPlanificacionComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA CONTAR CORREOS A ENVIARSE
+  // METODO PARA CONTAR CORREOS A ENVIARSE
   cont_correo: number = 0;
   info_correo: string = '';
   ContarCorreos(data: any) {

@@ -90,7 +90,7 @@ class TipoPermisosControlador {
   public async EliminarRegistros(req: Request, res: Response): Promise<void> {
     const id = req.params.id;
     await pool.query('DELETE FROM cg_tipo_permisos WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
 }

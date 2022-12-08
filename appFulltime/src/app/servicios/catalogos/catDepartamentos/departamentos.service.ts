@@ -12,11 +12,59 @@ export class DepartamentosService {
     private http: HttpClient,
   ) { }
 
-  // catalogo de departamentos
 
+  // REGISTRAR DEPARTAMENTO
+  RegistrarDepartamento(data: any) {
+    return this.http.post(`${environment.url}/departamento`, data).pipe(
+      catchError(data)
+    );
+  }
+
+  // BUSCAR DEPARTAMENTOS POR ID SUCURSAL 
+  BuscarDepartamentoSucursal(id: number) {
+    return this.http.get(`${environment.url}/departamento/sucursal-departamento/${id}`);
+  }
+
+  // BUSCAR DEPARTAMENTOS POR ID SUCURSAL EXCLUYENDO REGISTRO A EDITAR
+  BuscarDepartamentoSucursal_(id_sucursal: number, id: number) {
+    return this.http.get(`${environment.url}/departamento/sucursal-departamento-edicion/${id_sucursal}/${id}`);
+  }
+
+  // REGISTRAR ACTUALIZACION DE DEPARTAMENTO
+  ActualizarDepartamento(idDepartamento: number, data: any) {
+    return this.http.put(`${environment.url}/departamento/${idDepartamento}`, data).pipe(
+      catchError(data)
+    );
+  }
+
+  // METODO PARA LISTAR INFORMACION DE DEPARTAMENTOS POR ID DE SUCURSAL
+  BuscarInformacionDepartamento(id_sucursal: number) {
+    return this.http.get(`${environment.url}/departamento/buscar/datosDepartamento/${id_sucursal}`);
+  }
+
+  // METODO PARA BUSCAR DEPARTAMENTOS
   ConsultarDepartamentos() {
     return this.http.get(`${environment.url}/departamento`);
   }
+
+  // METODO PARA ELIMINAR REGISTRO
+  EliminarRegistro(id: number) {
+    return this.http.delete(`${environment.url}/departamento/eliminar/${id}`);
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/departamento/xmlDownload`, data);
+  }
+
+
+
+
+
+
+  // catalogo de departamentos
+
+
 
   ConsultarDepartamentoPorContrato(id_cargo: number) {
     return this.http.get(`${environment.url}/departamento/busqueda-cargo/${id_cargo}`);
@@ -30,41 +78,24 @@ export class DepartamentosService {
     return this.http.get(`${environment.url}/departamento/idDepartamento/${nombreDepartamento}`);
   }
 
-  postDepartamentoRest(data: any) {
-    return this.http.post(`${environment.url}/departamento`, data).pipe(
-      catchError(data)
-    );
-  }
+
 
   getIdDepartamentoPadre(departamentoPadre: string) {
     return this.http.get(`${environment.url}/departamento/busqueda/${departamentoPadre}`);
   }
 
-  updateDepartamento(idDepartamento: number, data: any) {
-    return this.http.put(`${environment.url}/departamento/${idDepartamento}`, data).pipe(
-      catchError(data)
-    );
-  }
+
 
   EncontrarUnDepartamento(id: number) {
     return this.http.get(`${environment.url}/departamento/${id}`);
   }
 
-  BuscarDepartamentoSucursal(id: number) {
-    return this.http.get(`${environment.url}/departamento/buscarDepa/${id}`);
-  }
 
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/departamento/xmlDownload`, data);
-  }
 
-  EliminarRegistro(id: number) {
-    return this.http.delete(`${environment.url}/departamento/eliminar/${id}`);
-  }
 
-  BuscarDepaSucursal(id_sucursal: number) {
-    return this.http.get(`${environment.url}/departamento/buscar/datosDepartamento/${id_sucursal}`);
-  }
+
+
+
 
   BuscarDepartamentoRegimen(id: number) {
     return this.http.get(`${environment.url}/departamento/buscar/regimen-departamento/${id}`);

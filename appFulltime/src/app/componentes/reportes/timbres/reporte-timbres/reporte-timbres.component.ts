@@ -21,7 +21,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 
-// SERVICIOS FILTROS DE BÚSQUEDA
+// SERVICIOS FILTROS DE BUSQUEDA
 import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
@@ -46,7 +46,7 @@ export class ReporteTimbresComponent implements OnInit {
   empleado: any = [];  // DATOS DEL USUARIO QUE TIMBRE
   datosEmpleado: any = []; // LISTA DE USUARIOS
 
-  // DATOS DEL FORMULARIO DE BÚSQUEDA
+  // DATOS DEL FORMULARIO DE BUSQUEDA
   departamentoF = new FormControl('', Validators.minLength(2));
   regimenF = new FormControl('', Validators.minLength(2));
   cedula = new FormControl('', Validators.minLength(2));
@@ -64,7 +64,7 @@ export class ReporteTimbresComponent implements OnInit {
     finalForm: this.fechaFinalF,
   });
 
-  // DATOS DE FILTROS DE BÚSQUEDA
+  // DATOS DE FILTROS DE BUSQUEDA
   filtroDepartamento: '';
   filtroCodigo: number;
   filtroEmpleado = '';
@@ -82,13 +82,13 @@ export class ReporteTimbresComponent implements OnInit {
   idEmpleado: number;
 
 
-  // FILTROS DE BÚSQUEDA 
+  // FILTROS DE BUSQUEDA 
   sucursalF = new FormControl('');
   laboralF = new FormControl('');
   cargosF = new FormControl('');
   depaF = new FormControl('');
 
-  // FORMULARIO DE BÚSQUEDAS
+  // FORMULARIO DE BUSQUEDAS
   public busquedasForm = new FormGroup({
     sucursalForm: this.sucursalF,
     laboralForm: this.laboralF,
@@ -97,7 +97,7 @@ export class ReporteTimbresComponent implements OnInit {
   });
 
   constructor(
-    // FILTROS DE BÚSQUEDA 
+    // FILTROS DE BUSQUEDA 
     public restDepa: DepartamentosService,
     public restCargo: EmplCargosService,
     public restRegimen: RegimenService,
@@ -122,14 +122,14 @@ export class ReporteTimbresComponent implements OnInit {
     this.ObtenerColores();
     this.ObtenerLogo();
 
-    //FILTROS DE BÚSQUEDA
+    //FILTROS DE BUSQUEDA
     this.ListarSucursales();
     this.ListarDepartamentos();
     this.ListarCargos();
     this.ListarRegimen();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -138,7 +138,7 @@ export class ReporteTimbresComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -146,7 +146,7 @@ export class ReporteTimbresComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -837,7 +837,7 @@ export class ReporteTimbresComponent implements OnInit {
   presentarDatosEmpleado(id_seleccionado, form) {
     // Inicialización de varibles
     var ciudad, nombre, apellido, cedula, codigo, sucursal, departamento, cargo, regimen;
-    // Búsqueda de los datos del empleado del cual se obtiene el reporte
+    // BUSQUEDA de los datos del empleado del cual se obtiene el reporte
     this.datosEmpleado.forEach(obj => {
       if (obj.codigo === id_seleccionado) {
         nombre = obj.nombre;
@@ -900,7 +900,7 @@ export class ReporteTimbresComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-    *                                       MÉTODO PARA EXPORTAR A EXCEL
+    *                                       METODO PARA EXPORTAR A EXCEL
     ******************************************************************************************************/
   exportToExcelTimbres(id_empleado: number, form) {
     var j = 0;
@@ -998,11 +998,11 @@ export class ReporteTimbresComponent implements OnInit {
 
 
 
-  /*FILTROS DE BÚSQUEDA*/
+  /*FILTROS DE BUSQUEDA*/
   sucursales: any = [];
   ListarSucursales() {
     this.sucursales = [];
-    this.restSucur.getSucursalesRest().subscribe(res => {
+    this.restSucur.BuscarSucursal().subscribe(res => {
       this.sucursales = res;
     });
   }

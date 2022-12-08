@@ -146,7 +146,7 @@ export class PermisosMultiplesComponent implements OnInit {
     this.ObtenerTiposPermiso();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO
   empleado: any = [];
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
@@ -155,7 +155,7 @@ export class PermisosMultiplesComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL DEL USUARIO
+  // METODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL DEL USUARIO
   ObtenerTiposPermiso() {
     this.tipoPermisos = [];
     let rol = this.loginServise.getRol();
@@ -197,11 +197,11 @@ export class PermisosMultiplesComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA VALIDAR SI EL PERMISO TIENE RESTRICCIONES POR FECHA
+  // METODO PARA VALIDAR SI EL PERMISO TIENE RESTRICCIONES POR FECHA
   dSalida: any;
   validarFechaSalida(event, form) {
 
-    // MÉTODO PARA LIMPIAR CAMPOS USADOS POR FECHAS
+    // METODO PARA LIMPIAR CAMPOS USADOS POR FECHAS
     this.LimpiarCamposFecha();
 
     // VALIDACIÓN SELECCIÓN DE UN TIPO DE PERMISO
@@ -418,7 +418,7 @@ export class PermisosMultiplesComponent implements OnInit {
     this.validar.IngresarSoloNumeros(evt);
   }
 
-  // MÉTODO PARA VALIDAR DATOS DE SOLICITUD DE PERMISO
+  // METODO PARA VALIDAR DATOS DE SOLICITUD DE PERMISO
   ValidarPermiso(form) {
 
     // CONSULTA DE DATOS DE TIPO DE PERMISO
@@ -442,17 +442,17 @@ export class PermisosMultiplesComponent implements OnInit {
     });
   }
 
-  // MÉTODO INGRESO DE DATOS DE PERMISO
+  // METODO INGRESO DE DATOS DE PERMISO
   contador: number = 0;
   InsertarPermiso(form, validar) {
     this.contador = 0;
     // LECTURA DE DATOS DE USUARIOS SELECCIONADOS
     this.data.datos.map(obj => {
 
-      // MÉTODO BÚSQUEDA DE PERIODO DE VACACIONES
+      // METODO BUSQUEDA DE PERIODO DE VACACIONES
       this.restPerV.BuscarIDPerVacaciones(parseInt(obj.id)).subscribe(res => {
 
-        // MÉTODO BÚSQUEDA NÚMERO DE PERMISO
+        // METODO BUSQUEDA NÚMERO DE PERMISO
         this.restP.BuscarNumPermiso(obj.id).subscribe(datosn => {
 
           // CONTABILIZAR NÚMERO DE PERMISO
@@ -488,20 +488,20 @@ export class PermisosMultiplesComponent implements OnInit {
             depa_user_loggin: parseInt(localStorage.getItem('departamento')),
           }
 
-          // MÉTODO PARA CAMBIAR VALOR DE DÍAS - HORAS
+          // METODO PARA CAMBIAR VALOR DE DÍAS - HORAS
           this.CambiarValoresDiasHoras(form, datosPermiso);
 
-          // MÉTODO PARA CAMBIAR DÍA LIBRE
+          // METODO PARA CAMBIAR DÍA LIBRE
           this.CambiarValorDiaLibre(datosPermiso);
 
-          // MÉTODO PARA LEER DATOS DE LA SOLICITUD
+          // METODO PARA LEER DATOS DE LA SOLICITUD
           this.GuardarDatos(datosPermiso, form, validar);
         })
       })
     });
   }
 
-  // MÉTODO PARA CAMBIAR FORMATO DE DÍAS LIBRES
+  // METODO PARA CAMBIAR FORMATO DE DÍAS LIBRES
   CambiarValorDiaLibre(datos) {
     if (datos.dia_libre === '') {
       datos.dia_libre = 0;
@@ -710,7 +710,7 @@ export class PermisosMultiplesComponent implements OnInit {
   }
 
 
-  // MÉTODO PARA GUARDAR DATOS DE SOLICITUD DE PERMISO
+  // METODO PARA GUARDAR DATOS DE SOLICITUD DE PERMISO
   idPermisoRes: any;
   NotifiRes: any;
   arrayNivelesDepa: any = [];
@@ -735,21 +735,22 @@ export class PermisosMultiplesComponent implements OnInit {
 
 
   RegistrarPermiso(datos) {
-    // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
+    // METODO PARA INGRESAR SOLICITUD DE PERMISO
     this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
 
       this.arrayNivelesDepa = response;
+      console.log('response 1.. ', response)
 
       this.arrayNivelesDepa.forEach(obj => {
 
         // LECTURA DE DATOS DE NOTIFICACIÓN CORREO
         let datosPermisoCreado = this.LeerDatosMail(obj, datos);
 
-        // MÉTODO PARA ENVÍO DE CORREOS
+        // METODO PARA ENVÍO DE CORREOS
         this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(res => {
           this.idPermisoRes = res;
 
-          // MÉTODO PARA REGISTRO DE AUTORIZACIÓN
+          // METODO PARA REGISTRO DE AUTORIZACIÓN
           this.IngresarAutorizacion(this.idPermisoRes.id);
 
           // LECTURA DE DATOS Y ENVIO DE NOTIFICACIÓN SISTEMA
@@ -771,23 +772,25 @@ export class PermisosMultiplesComponent implements OnInit {
   }
 
   RegistrarPermiso_Documento(datos: any, form: any) {
-    // MÉTODO PARA INGRESAR SOLICITUD DE PERMISO
+    // METODO PARA INGRESAR SOLICITUD DE PERMISO
     this.restP.IngresarEmpleadoPermisos(datos).subscribe(response => {
 
       this.arrayNivelesDepa = response;
+      
+      console.log('response 2.. ', response)
 
       this.arrayNivelesDepa.forEach(obj => {
 
         // LECTURA DE DATOS DE NOTIFICACIÓN CORREO
         let datosPermisoCreado = this.LeerDatosMail(obj, datos);
 
-        // MÉTODO PARA ENVÍO DE CORREOS
+        // METODO PARA ENVÍO DE CORREOS
         this.restP.EnviarCorreoWeb(datosPermisoCreado).subscribe(res => {
           this.idPermisoRes = res;
 
           this.SubirRespaldo(this.idPermisoRes.id, form);
 
-          // MÉTODO PARA REGISTRO DE AUTORIZACIÓN
+          // METODO PARA REGISTRO DE AUTORIZACIÓN
           this.IngresarAutorizacion(this.idPermisoRes.id);
 
           // LECTURA DE DATOS Y ENVIO DE NOTIFICACIÓN SISTEMA
@@ -812,7 +815,7 @@ export class PermisosMultiplesComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA VALIDAR ACCESO A FUNCIONES DE PERMISOS
+  // METODO PARA VALIDAR ACCESO A FUNCIONES DE PERMISOS
   ValidarAcceso(info: any) {
     const { access, message } = info.error.message;
     if (access === false) {
@@ -821,7 +824,7 @@ export class PermisosMultiplesComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA LEER DATOS DE ENVÍO DE EMAIL
+  // METODO PARA LEER DATOS DE ENVÍO DE EMAIL
   LeerDatosMail(obj: any, datos: any) {
     let datosPermisoCreado = {
       id: obj.id,
@@ -848,7 +851,7 @@ export class PermisosMultiplesComponent implements OnInit {
     return datosPermisoCreado;
   }
 
-  // MÉTODO PARA LEER DATOS DE NOTIIFCACIÓN SISTEMA 
+  // METODO PARA LEER DATOS DE NOTIIFCACIÓN SISTEMA 
   LeerDatosNotificacion(id_empl: any) {
     var f = new Date();
     let notificacion = {
@@ -863,7 +866,7 @@ export class PermisosMultiplesComponent implements OnInit {
       id_hora_extra: null
     }
 
-    // MÉTODO PARA ENVÍO DE NOTIFICACIONES EN EL SISTEMA
+    // METODO PARA ENVÍO DE NOTIFICACIONES EN EL SISTEMA
     this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(resN => {
       this.NotifiRes = resN;
       notificacion.id = this.NotifiRes._id;
@@ -998,7 +1001,7 @@ export class PermisosMultiplesComponent implements OnInit {
   }
 
 
-  // MÉTODO PARA CREAR AUTORIZACIÓN DE SOLICITUD DE PERMISO
+  // METODO PARA CREAR AUTORIZACIÓN DE SOLICITUD DE PERMISO
   IngresarAutorizacion(id_permiso: number) {
     // ARREGLO DE DATOS PARA INGRESAR UNA AUTORIZACIÓN
     let newAutorizaciones = {

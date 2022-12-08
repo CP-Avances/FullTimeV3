@@ -11,12 +11,16 @@ class DepartamentoRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/', autorizaDepartamentoControlador_1.default.ListarAutorizaDepartamento);
-        this.router.post('/', autorizaDepartamentoControlador_1.default.CrearAutorizaDepartamento);
+        // METODO DE BUSQUEDA DE USUARIO QUE AUTORIZA
         this.router.get('/autoriza/:id_empleado', autorizaDepartamentoControlador_1.default.EncontrarAutorizacionUsuario);
-        this.router.get('/empleadosAutorizan/:id_depar', autorizaDepartamentoControlador_1.default.ObtenerQuienesAutorizan);
+        // METODO PARA REGISTRAR AUTORIZA
+        this.router.post('/', autorizaDepartamentoControlador_1.default.CrearAutorizaDepartamento);
+        // METODO PARA ACTUALIZAR REGISTRO
         this.router.put('/', autorizaDepartamentoControlador_1.default.ActualizarAutorizaDepartamento);
+        // METODO PARA ELIMINAR REGISTROS
         this.router.delete('/eliminar/:id', autorizaDepartamentoControlador_1.default.EliminarAutorizacionDepartamento);
+        this.router.get('/', autorizaDepartamentoControlador_1.default.ListarAutorizaDepartamento);
+        this.router.get('/empleadosAutorizan/:id_depar', autorizaDepartamentoControlador_1.default.ObtenerQuienesAutorizan);
     }
 }
 const AUTORIZA_DEPARTAMENTO_RUTAS = new DepartamentoRutas();

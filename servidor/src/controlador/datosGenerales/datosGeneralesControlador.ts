@@ -10,7 +10,8 @@ class DatosGeneralesControlador {
         const DATOS = await pool.query(
             `
             SELECT * FROM datos_actuales_empleado WHERE id = $1
-            `, [empleado_id]);
+            `
+            , [empleado_id]);
         if (DATOS.rowCount > 0) {
             return res.jsonp(DATOS.rows)
         }
@@ -18,6 +19,145 @@ class DatosGeneralesControlador {
             return res.status(404).jsonp({ text: 'error' });
         }
     }
+
+    /**
+     * METODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
+     * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DEL ESTADO DEL 
+     * EMPLEADO SI BUSCA EMPLEADOS ACTIVOS O INACTIVOS. 
+     * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
+     **/
+
+    public async DatosGenerales(req: Request, res: Response) {
+        let estado = req.params.estado;
+
+        // CONSULTA DE BUSQUEDA DE SUCURSALES
+        let suc = await pool.query(
+            `
+                SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+                ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
+                `
+        ).then(result => { return result.rows });
+
+        if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+        // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
+        let departamentos = await Promise.all(suc.map(async (dep: any) => {
+            dep.departamentos = await pool.query(
+                `
+                    SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
+                    WHERE d.id_sucursal = $1
+                    `
+                , [dep.id_suc]
+            ).then(result => {
+                return result.rows.filter(obj => {
+                    return obj.name_dep != 'Ninguno';
+                })
+            });
+            return dep;
+        }));
+
+        let depa = departamentos.filter(obj => {
+            return obj.departamentos.length > 0
+        });
+
+        if (depa.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+        // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
+        let lista = await Promise.all(depa.map(async (obj: any) => {
+            obj.departamentos = await Promise.all(obj.departamentos.map(async (empl: any) => {
+                if (estado === '1') {
+                    empl.empleado = await pool.query(
+                        `
+                            SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
+                                e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
+                                co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
+                                d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
+                                s.nombre AS sucursal, ca.hora_trabaja
+                            FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
+                                tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
+                            WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
+                                da.id = e.id) 
+                                AND tc.id = ca.cargo
+                                AND ca.id_departamento = $1
+                                AND ca.id_departamento = d.id
+                                AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
+                                da.id = e.id) 
+                                AND s.id = d.id_sucursal
+                                AND co.id_regimen = r.id AND e.estado = $2
+                                ORDER BY name_empleado ASC
+                            `,
+                        [empl.id_depa, estado])
+                        .then(result => { return result.rows });
+
+                } else {
+                    empl.empleado = await pool.query(
+                        `
+                            SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
+                                e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
+                                co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
+                                d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
+                                s.nombre AS sucursal, ca.fec_final, ca.hora_trabaja
+                            FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
+                                tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
+                            WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
+                                da.id = e.id) 
+                                AND tc.id = ca.cargo
+                                AND ca.id_departamento = $1
+                                AND ca.id_departamento = d.id
+                                AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
+                                da.id = e.id) 
+                                AND s.id = d.id_sucursal
+                                AND co.id_regimen = r.id AND e.estado = $2
+                                ORDER BY name_empleado ASC
+                            `,
+                        [empl.id_depa, estado])
+                        .then(result => { return result.rows });
+                }
+
+                return empl;
+            }));
+            return obj;
+        }))
+
+        if (lista.length === 0) return res.status(404)
+            .jsonp({ message: 'No se han encontrado registros.' });
+
+        let respuesta = lista.map(obj => {
+            obj.departamentos = obj.departamentos.filter((ele: any) => {
+                return ele.empleado.length > 0;
+            })
+            return obj;
+        }).filter(obj => {
+            return obj.departamentos.length > 0;
+        });
+
+        if (respuesta.length === 0) return res.status(404)
+            .jsonp({ message: 'No se han encontrado registros.' })
+
+        return res.status(200).jsonp(respuesta);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // METODO PARA BUSCAR JEFES
     public async BuscarJefes(req: Request, res: Response): Promise<Response> {
@@ -88,122 +228,7 @@ class DatosGeneralesControlador {
         }
     }
 
-    /**
-       * MÉTODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
-       * Realiza un array de sucursales con departamentos y empleados dependiendo del estado del 
-       * empleado si busca empleados activos o inactivos. 
-       * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
-       */
 
-    public async DatosGenerales(req: Request, res: Response) {
-        let estado = req.params.estado;
-
-        // CONSULTA DE BUSQUEDA DE SUCURSALES
-        let suc = await pool.query(
-            `
-            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
-            `
-        ).then(result => { return result.rows });
-
-        if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
-
-        // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
-        let departamentos = await Promise.all(suc.map(async (dep: any) => {
-            dep.departamentos = await pool.query(
-                `
-                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
-                WHERE d.id_sucursal = $1
-                `
-                , [dep.id_suc]
-            ).then(result => {
-                return result.rows.filter(obj => {
-                    return obj.name_dep != 'Ninguno';
-                })
-            });
-            return dep;
-        }));
-
-        let depa = departamentos.filter(obj => {
-            return obj.departamentos.length > 0
-        });
-
-        if (depa.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
-
-        // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
-        let lista = await Promise.all(depa.map(async (obj: any) => {
-            obj.departamentos = await Promise.all(obj.departamentos.map(async (empl: any) => {
-                if (estado === '1') {
-                    empl.empleado = await pool.query(
-                        `
-                        SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
-                            e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
-                            co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
-                            d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
-                            s.nombre AS sucursal, ca.hora_trabaja
-                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
-                            tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
-                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND tc.id = ca.cargo
-                            AND ca.id_departamento = $1
-                            AND ca.id_departamento = d.id
-                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND s.id = d.id_sucursal
-                            AND co.id_regimen = r.id AND e.estado = $2
-                            ORDER BY name_empleado ASC
-                        `,
-                        [empl.id_depa, estado])
-                        .then(result => { return result.rows });
-
-                } else {
-                    empl.empleado = await pool.query(
-                        `
-                        SELECT DISTINCT e.id, CONCAT(e.nombre, ' ' , e.apellido) name_empleado, e.codigo, 
-                            e.cedula, e.genero, e.correo, ca.id AS id_cargo, tc.cargo,
-                            co.id AS id_contrato, r.id AS id_regimen, r.descripcion AS regimen, 
-                            d.id AS id_departamento, d.nombre AS departamento, s.id AS id_sucursal, 
-                            s.nombre AS sucursal, ca.fec_final, ca.hora_trabaja
-                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
-                            tipo_cargo AS tc, cg_departamentos AS d, sucursales AS s
-                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND tc.id = ca.cargo
-                            AND ca.id_departamento = $1
-                            AND ca.id_departamento = d.id
-                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE 
-                            da.id = e.id) 
-                            AND s.id = d.id_sucursal
-                            AND co.id_regimen = r.id AND e.estado = $2
-                            ORDER BY name_empleado ASC
-                        `,
-                        [empl.id_depa, estado])
-                        .then(result => { return result.rows });
-                }
-
-                return empl;
-            }));
-            return obj;
-        }))
-
-        if (lista.length === 0) return res.status(404)
-            .jsonp({ message: 'No se han encontrado registros.' });
-
-        let respuesta = lista.map(obj => {
-            obj.departamentos = obj.departamentos.filter((ele: any) => {
-                return ele.empleado.length > 0;
-            })
-            return obj;
-        }).filter(obj => {
-            return obj.departamentos.length > 0;
-        });
-
-        if (respuesta.length === 0) return res.status(404)
-            .jsonp({ message: 'No se han encontrado registros.' })
-
-        return res.status(200).jsonp(respuesta);
-    }
 
     public async BuscarConfigEmpleado(req: Request, res: Response): Promise<Response> {
         try {
@@ -255,7 +280,7 @@ class DatosGeneralesControlador {
 
 
 
-    
+
 
     public async ListarDatosActualesEmpleado(req: Request, res: Response) {
         const DATOS = await pool.query('SELECT e_datos.id, e_datos.cedula, e_datos.apellido, e_datos.nombre, ' +

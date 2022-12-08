@@ -12,6 +12,7 @@ class DoumentosRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO PARA LISTAR FUNCIONES DEL SISTEMA
         this.router.get('/funcionalidad', funcionControlador_1.default.ConsultarFunciones);
         this.router.post('/', verificarToken_1.TokenValidation, funcionControlador_1.default.RegistrarFunciones);
         this.router.put('/funcion/:id', verificarToken_1.TokenValidation, funcionControlador_1.default.EditarFunciones);

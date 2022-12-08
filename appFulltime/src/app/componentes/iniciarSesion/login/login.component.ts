@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as moment from 'moment';
 moment.locale('es');
+
 import { LoginService } from '../../../servicios/login/login.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
@@ -16,19 +17,19 @@ import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
 export class LoginComponent implements OnInit {
 
+  intentos: number = 0;
   title = 'login';
   hide1 = true;
   url: string;
-  intentos: number = 0;
 
-  // Almacenamiento datos usuario ingresado
+  // ALMACENAMIENTO DATOS USUARIO INGRESADO
   datosUsuarioIngresado: any = [];
 
-  // Validaciones de campos de formulario
+  // VALIDACIONES DE CAMPOS DE FORMULARIO
   userMail = new FormControl('', Validators.required);
   pass = new FormControl('', Validators.required);
 
-  public validarCredencialesF = new FormGroup({
+  public formulario = new FormGroup({
     usuarioF: this.userMail,
     passwordF: this.pass
   });
@@ -39,14 +40,14 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService) {
-    this.validarCredencialesF.setValue({
+    this.formulario.setValue({
       usuarioF: '',
       passwordF: ''
     });
   }
 
-  latitud: number = -0.9847384783;
-  longitud: number = -0.893749384;
+  latitud: number = -0.1918213;
+  longitud: number = -78.4875258;
 
   private options = {
     enableHighAccuracy: false,
@@ -56,63 +57,62 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.url = this.router.url;
-    // console.log(this.url);
     this.Geolocalizar();
   }
 
+  // METODO QUE PERMITE ACCEDER A UBICACION DEL USUARIO
   Geolocalizar() {
     if (navigator.geolocation) {
+
       navigator.geolocation.getCurrentPosition(
         (objPosition) => {
-
           this.latitud = objPosition.coords.latitude;
           this.longitud = objPosition.coords.longitude;
-
-          // console.log(this.longitud, this.latitud);
-
         }, (objPositionError) => {
+
           switch (objPositionError.code) {
             case objPositionError.PERMISSION_DENIED:
-              console.log('No se ha permitido el acceso a la posición del usuario.');
+              // NO ES POSIBLE ACCEDER A LA POSICION DEL USUARIO
               break;
             case objPositionError.POSITION_UNAVAILABLE:
-              console.log('No se ha podido acceder a la información de su posición.');
+              // NO SE HA PODIDO ACCEDER A LA INFORMACIÓN DE SU POSICION
               break;
             case objPositionError.TIMEOUT:
-              console.log('El servicio ha tardado demasiado tiempo en responder.');
+              // EL SERVICIO HA TARDADO DEMASIADO TIEMPO EN RESPONDER
               break;
             default:
-              console.log('Error desconocido.');
+            // ERROR DESCONOCIDO
           }
         }, this.options);
     }
     else {
-      console.log('Su navegador no soporta la API de geolocalización.');
+      // EL NAVEGADOR NO SOPORTA LA API DE GEOLOCALIZACION
     }
   }
 
+  // MENSAJE DE ERROR AL INGRESAR INFORMACION
   ObtenerMensajeCampoUsuarioError() {
     if (this.userMail.hasError('required')) {
-      return 'Ingresar nombre de usuario';
+      return 'Ingresar nombre de usuario.';
     }
   }
 
   ObtenerMensajeCampoContraseniaError() {
     if (this.pass.hasError('required')) {
-      return 'Ingresar su contraseña';
+      return 'Ingresar su contraseña.';
     }
   }
 
-  ValidarUsuario(form) {
-
+  // VALIDACION DE INGRESO DE DATOS DE USUARIO - INTENTOS LIMITADOS
+  ValidarUsuario(form: any) {
+    var f = moment();
     if (form.usuarioF.trim().length === 0) return;
     if (form.passwordF.trim().length === 0) return;
 
     var local: boolean;
     this.intentos = this.intentos + 1;
-    var f = moment();
+
     if (localStorage.getItem('time_wait') != undefined) {
-      console.log('estorage', localStorage.getItem('time_wait'));
       var hora = localStorage.getItem('time_wait');
       if (f.format('HH:mm:ss') > hora) {
         localStorage.removeItem('time_wait');
@@ -130,53 +130,55 @@ export class LoginComponent implements OnInit {
       this.IniciarSesion(form);
     }
     else {
-      this.toastr.error('Intente más tarde', 'Ha excedido el número de intentos', {
+      this.toastr.error('Intentelo más tarde.', 'Ha excedido el número de intentos.', {
         timeOut: 3000,
       });
     }
   }
 
-  IniciarSesion(form) {
-    //Cifrado de contraseña
+  // METODO PARA INICIAR SESION
+  IniciarSesion(form: any) {
+    // CIFRADO DE CONTRASEÑA
     const md5 = new Md5();
     let clave = md5.appendStr(form.passwordF).end();
 
     let dataUsuario = {
       nombre_usuario: form.usuarioF,
       pass: clave,
-      latitud: this.latitud,
-      longitud: this.longitud
     };
-    // console.log(dataUsuario);
 
     if (this.latitud === undefined) {
       this.Geolocalizar();
-      return this.toastr.error('Primero permitir conocer la ubicación del dispositivo')
+      return this.toastr.error('Es necesario permitir el acceso a la ubicación del usuario.')
     }
 
-    // validacion del login
-    this.rest.postCredenciales(dataUsuario).subscribe(datos => {
-      // console.log('ingreso', datos)
-
+    // VALIDACION DEL LOGIN
+    this.rest.ValidarCredenciales(dataUsuario).subscribe(datos => {
       if (datos.message === 'error') {
         var f = moment();
         var espera = '00:01:00';
         if (this.intentos === 3) {
           var verificar = f.add(moment.duration(espera)).format('HH:mm:ss');
           localStorage.setItem('time_wait', verificar);
-          this.toastr.error('Intente más tarde', 'Ha exedido el número de intentos', {
+          this.toastr.error('Intentelo más tarde.', 'Ha exedido el número de intentos.', {
             timeOut: 3000,
           });
         }
         else {
-          this.toastr.error('Usuario o contraseña no son correctos', 'Oops!', {
+          this.toastr.error('Usuario o contraseña no son correctos.', 'Ups!!! algo ha salido mal.', {
             timeOut: 6000,
           })
         }
         this.IngresoSistema(form.usuarioF, 'Fallido', datos.text);
       }
-      else {
 
+      else if (datos.message === 'error_') {
+        this.toastr.error('Usuario no cumple con todos los requerimientos necesarios para acceder al sistema.', 'Oops!', {
+          timeOut: 6000,
+        })
+      }
+
+      else {
         localStorage.setItem('token', datos.token);
         localStorage.setItem('usuario', datos.usuario);
         localStorage.setItem('rol', datos.rol);
@@ -194,7 +196,7 @@ export class LoginComponent implements OnInit {
           timeOut: 6000,
         })
 
-        if (datos.rol === 1) { // Admin
+        if (datos.rol === 1) { // ADMIN
           if (!!localStorage.getItem("redireccionar")) {
             let redi = localStorage.getItem("redireccionar");
             this.router.navigate([redi], { relativeTo: this.route, skipLocationChange: false });
@@ -203,39 +205,31 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/home'])
           };
         }
-        if (datos.rol === 2) { //Empleado
+        if (datos.rol === 2) { // EMPLEADO
           this.router.navigate(['/estadisticas']);
         }
         this.IngresoSistema(form.usuarioF, 'Exitoso', datos.ip_adress);
+
       }
     }, err => {
-      console.log(err.error.message);
       this.toastr.error(err.error.message)
     })
   }
 
-
-  IngresoSistema(user, acceso: string, dir_ip) {
-    var h = new Date();
+  // METODO PARA AUDITAR INICIOS DE SESION
+  IngresoSistema(user: any, acceso: string, dir_ip: any) {
     var f = moment();
     var fecha = f.format('YYYY-MM-DD');
-    // Formato de hora actual
-    if (h.getMinutes() < 10) {
-      var time = h.getHours() + ':0' + h.getMinutes();
-    }
-    else {
-      var time = h.getHours() + ':' + h.getMinutes();
-    }
-
+    var time = f.format('HH:mm:ss');
     let dataAcceso = {
-      modulo: 'login',
+      ip_address: dir_ip,
       user_name: user,
+      modulo: 'login',
+      acceso: acceso,
       fecha: fecha,
       hora: time,
-      acceso: acceso,
-      ip_address: dir_ip
     }
-    this.restU.crearAccesosSistema(dataAcceso).subscribe(datos => { })
+    this.restU.CrearAccesosSistema(dataAcceso).subscribe(datos => { })
   }
 
 }

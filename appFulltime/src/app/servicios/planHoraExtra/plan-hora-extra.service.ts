@@ -61,7 +61,7 @@ export class PlanHoraExtraService {
   BuscarPlanEmpleados(id_plan_hora: number) {
     return this.http.get(`${environment.url}/planificacionHoraExtra/plan_empleado/${id_plan_hora}`);
   }
-  // MÉTODO PARA ELIMINAR PLANIFICACION DE HORA EXTRA
+  // METODO PARA ELIMINAR PLANIFICACION DE HORA EXTRA
   EliminarRegistro(id: number) {
     return this.http.delete(`${environment.url}/planificacionHoraExtra/eliminar/${id}`);
   }
