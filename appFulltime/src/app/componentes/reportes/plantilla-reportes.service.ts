@@ -11,7 +11,7 @@ export class PlantillaReportesService {
     private http: HttpClient,
   ) { }
 
-  // Método para obtener colores y logotipo empresa
+  // METODO para obtener colores y logotipo empresa
 
   private _imagenBase64: string;
   private _nameEmpresa: string;

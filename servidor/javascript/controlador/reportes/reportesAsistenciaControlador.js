@@ -100,7 +100,7 @@ class ReportesAsistenciaControlador {
         });
     }
     /**
-     * Función que calcula el tiempo de atraso según el timbre realizado por el o los empleados.
+     * FUNCION que calcula el tiempo de atraso según el timbre realizado por el o los empleados.
      * @returns Retorna un JSON con la informacion de los empleados atrasados en dias laborables.
      */
     ReporteAtrasosMultiple(req, res) {
@@ -157,7 +157,7 @@ class ReportesAsistenciaControlador {
         });
     }
     /**
-     * Función que devuelve los dias que el empleado falto a laborar según su horario.
+     * FUNCION que devuelve los dias que el empleado falto a laborar según su horario.
      * @returns Retorna un JSON con la informacion de los empleados que an faltado a laborar.
      */
     ReporteFaltasMultiple(req, res) {
@@ -231,7 +231,7 @@ class ReportesAsistenciaControlador {
         });
     }
     /**
-     * Función que compara el horario del empleado con los timbres que realiza en un dia laborar para poder calcular sus horas trabajadas.
+     * FUNCION que compara el horario del empleado con los timbres que realiza en un dia laborar para poder calcular sus horas trabajadas.
      * @returns Retorna empleados con calculos de las horas trabajadas si todos los timbres estan registrados. Aqui no van incluidas horas extras.
      */
     ReporteHorasTrabajaMultiple(req, res) {
@@ -282,7 +282,7 @@ class ReportesAsistenciaControlador {
         });
     }
     /**
-     * Función que realiza una semaforizacion segun los dias puntuales de cada uno de los empleados.
+     * FUNCION que realiza una semaforizacion segun los dias puntuales de cada uno de los empleados.
      * @returns Retorna los empleados y total de dias puntuales que a llegado segun un rango de fechas.
      */
     ReportePuntualidad(req, res) {

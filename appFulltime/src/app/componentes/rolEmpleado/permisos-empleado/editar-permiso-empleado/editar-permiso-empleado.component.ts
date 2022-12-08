@@ -1,4 +1,4 @@
-// IMPORTACIÓN LIBRERIAS 
+// IMPORTACION LIBRERIAS 
 import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
-// IMPORTACIÓN DE SERVICIOS 
+// IMPORTACION DE SERVICIOS 
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
@@ -142,7 +142,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -185,7 +185,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
       })
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL EMPLEADO 
+  // METODO PARA OBTENER DATOS DEL EMPLEADO 
   empleado: any = [];
   ObtenerEmpleado(idemploy: any) {
     this.empleado = [];
@@ -194,7 +194,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER DATOS DEL USUARIO
+  // METODO PARA OBTENER DATOS DEL USUARIO
   actuales: any = [];
   ObtenerDatos() {
     this.actuales = [];
@@ -203,7 +203,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA COMPARAR QUE TIPO DE SOLIICTUD REALIZÓ PERMISOS POR DIAS - HORAS - DIAS/HORAS 
+  // METODO PARA COMPARAR QUE TIPO DE SOLIICTUD REALIZÓ PERMISOS POR DIAS - HORAS - DIAS/HORAS 
   ComparacionSolicitud() {
     if (this.info.dataPermiso.dia > 0 && this.info.dataPermiso.hora_numero === '00:00:00') {
       this.PermisoForm.patchValue({ solicitarForm: 'Días' });
@@ -216,7 +216,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA IMPRIMIR EN EL FORMULARIO LA INFORMACIÓN DEL PERMISO SOLICITADO 
+  // METODO PARA IMPRIMIR EN EL FORMULARIO LA INFORMACIÓN DEL PERMISO SOLICITADO 
   MostrarDatos() {
     this.PermisoForm.patchValue({
       nombreCertificadoForm: this.info.dataPermiso.docu_nombre,
@@ -272,7 +272,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     console.log('cargar datos', this.dSalida, this.dIngreso)
   }
 
-  // MÉTODO PARA MOSTRAR LISTA DE PERMISOS DE ACUERDO AL ROL 
+  // METODO PARA MOSTRAR LISTA DE PERMISOS DE ACUERDO AL ROL 
   ObtenerTiposPermiso() {
     this.tipoPermisos = [];
     let rol = this.loginServise.getRol();
@@ -287,7 +287,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA CALCULAR DÍAS LIBRES 
+  // METODO PARA CALCULAR DÍAS LIBRES 
   ContarDiasLibres(dateFrom, dateTo) {
     var from = moment(dateFrom, 'DD/MM/YYY'),
       to = moment(dateTo, 'DD/MM/YYY'),
@@ -1034,7 +1034,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     var cont = 0;
     var correo_usuarios = '';
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
     let solicitud = this.validar.FormatearFecha(permiso.fec_creacion, this.formato_fecha, this.validar.dia_completo);
     let desde = this.validar.FormatearFecha(permiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
     let hasta = this.validar.FormatearFecha(permiso.fec_final, this.formato_fecha, this.validar.dia_completo);
@@ -1140,7 +1140,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
 
   EnviarNotificacion(permiso: any) {
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
     let desde = this.validar.FormatearFecha(permiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
     let hasta = this.validar.FormatearFecha(permiso.fec_final, this.formato_fecha, this.validar.dia_completo);
 

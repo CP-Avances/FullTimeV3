@@ -15,14 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FUNCIONES_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 class FuncionesControlador {
+    // METODO PARA LISTAR FUNCIONES DEL SISTEMA
     ConsultarFunciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const FUNCIONES = yield database_1.default.query('SELECT * FROM funciones');
+            const FUNCIONES = yield database_1.default.query(`
+            SELECT * FROM funciones
+            `);
             if (FUNCIONES.rowCount > 0) {
                 return res.jsonp(FUNCIONES.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }

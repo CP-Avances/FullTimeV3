@@ -35,7 +35,7 @@ export class TipoPermisosService {
     return this.http.put(`${environment.url}/tipoPermisos/editar/${id}`, data);
   }
 
-  DownloadXMLRest(data: any) {
+  CrearXML(data: any) {
     return this.http.post(`${environment.url}/tipoPermisos/xmlDownload`, data);
   }
 

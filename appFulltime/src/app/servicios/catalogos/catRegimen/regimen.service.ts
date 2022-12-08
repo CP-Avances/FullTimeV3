@@ -12,15 +12,14 @@ export class RegimenService {
     private http: HttpClient
   ) { }
 
+  /** ** *************************************************************************************** **
+   ** ** **                           CONSULTA REGIMEN LABORAL                                ** ** 
+   ** ** *************************************************************************************** **/
+
   // REGISTRAR NUEVO REGIMEN LABORAL
   CrearNuevoRegimen(datos: any) {
     return this.http.post(`${environment.url}/regimenLaboral`, datos).pipe(
       catchError(datos));
-  }
-
-  // LISTAR REGISTROS DE REGIMEN LABORAL
-  ConsultarRegimen() {
-    return this.http.get(`${environment.url}/regimenLaboral`);
   }
 
   // ACTUALIZAR REGISTRO DE REGIMEN LABORAL
@@ -28,23 +27,95 @@ export class RegimenService {
     return this.http.put(`${environment.url}/regimenLaboral`, datos);
   }
 
+  // LISTAR REGISTROS DE REGIMEN LABORAL
+  ConsultarNombresRegimen() {
+    return this.http.get(`${environment.url}/regimenLaboral/descripcion`);
+  }
 
+  // LISTAR REGISTROS DE REGIMEN LABORAL
+  ConsultarRegimen() {
+    return this.http.get(`${environment.url}/regimenLaboral`);
+  }
 
-
-  
+  // BUSCAR UN REGISTRO DE REGIMEN LABORAL
   ConsultarUnRegimen(id: number) {
     return this.http.get(`${environment.url}/regimenLaboral/${id}`);
   }
 
-
-
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/regimenLaboral/xmlDownload`, data);
-  }
-
+  // ELIMINAR REGISTRO DE REGIMEN LABORAL
   EliminarRegistro(id: number) {
     return this.http.delete(`${environment.url}/regimenLaboral/eliminar/${id}`);
   }
+
+  // BUSCAR REGISTRO DE REGIMEN LABORAL POR PAIS
+  ConsultarRegimenPais(nombre: string) {
+    return this.http.get(`${environment.url}/regimenLaboral/pais-regimen/${nombre}`);
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/regimenLaboral/xmlDownload`, data);
+  }
+
+  /** ** *************************************************************************************** **
+   ** ** **                        CONSULTA PERIODOS DE VACACIONES                            ** ** 
+   ** ** *************************************************************************************** **/
+
+  // REGISTRAR NUEVO PERIODO DE VACACIONES
+  CrearNuevoPeriodo(datos: any) {
+    return this.http.post(`${environment.url}/regimenLaboral/periodo-vacaciones`, datos).pipe(
+      catchError(datos));
+  }
+
+  // ACTUALIZAR REGISTRO PERIODO DE VACACIONES
+  ActualizarPeriodo(datos: any) {
+    return this.http.put(`${environment.url}/regimenLaboral/periodo-vacaciones`, datos);
+  }
+
+  // BUSCAR UN REGISTRO DE PERIODO DE VACACIONES
+  ConsultarUnPeriodo(id: number) {
+    return this.http.get(`${environment.url}/regimenLaboral/periodo-vacaciones/${id}`);
+  }
+
+  // ELIMINAR REGISTRO DE PERIODO DE VACACIONES
+  EliminarPeriodo(id: number) {
+    return this.http.delete(`${environment.url}/regimenLaboral/periodo-vacaciones/eliminar/${id}`);
+  }
+
+  /** ** *************************************************************************************** **
+   ** ** **                        CONSULTA ANTIGUEDAD DE VACACIONES                            ** ** 
+   ** ** *************************************************************************************** **/
+
+  // REGISTRAR NUEVA ANTIGUEDAD DE VACACIONES
+  CrearNuevaAntiguedad(datos: any) {
+    return this.http.post(`${environment.url}/regimenLaboral/antiguedad-vacaciones`, datos).pipe(
+      catchError(datos));
+  }
+
+  // ACTUALIZAR REGISTRO ANTIGUEDAD DE VACACIONES
+  ActualizarAntiguedad(datos: any) {
+    return this.http.put(`${environment.url}/regimenLaboral/antiguedad-vacaciones`, datos);
+  }
+
+  // BUSCAR UN REGISTRO DE ANTIGUEDAD DE VACACIONES
+  ConsultarAntiguedad(id: number) {
+    return this.http.get(`${environment.url}/regimenLaboral/antiguedad-vacaciones/${id}`);
+  }
+
+  // ELIMINAR REGISTRO DE ANTIGUEDAD DE VACACIONES
+  EliminarAntiguedad(id: number) {
+    return this.http.delete(`${environment.url}/regimenLaboral/antiguedad-vacaciones/eliminar/${id}`);
+  }
+
+
+
+
+
+
+
+
+
+  
 
   ConsultarRegimenSucursal(id: number) {
     return this.http.get(`${environment.url}/regimenLaboral/sucursal-regimen/${id}`);

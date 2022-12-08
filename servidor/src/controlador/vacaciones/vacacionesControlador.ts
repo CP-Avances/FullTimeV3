@@ -364,10 +364,10 @@ class VacacionesControlador {
   }
 
   /** ********************************************************************************************** **
-   **                MÉTODOS DE ENVIO DE CORREOS DE SOLICITUDES DE VACACIONES                        **
+   **                METODOS DE ENVIO DE CORREOS DE SOLICITUDES DE VACACIONES                        **
    ** ********************************************************************************************** **/
 
-  // MÉTODO DE ENVIO DE CORREO DESDE APLICACIÓN WEB
+  // METODO DE ENVIO DE CORREO DESDE APLICACIÓN WEB
   public async EnviarCorreoVacacion(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();
@@ -473,7 +473,7 @@ class VacacionesControlador {
     }
   }
 
-  // MÉTODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MOVIL
+  // METODO DE ENVIO DE CORREO ELECTRÓNICO MEDIANTE APLICACIÓN MOVIL
   public async EnviarCorreoVacacionesMovil(req: Request, res: Response): Promise<void> {
 
     var tiempo = fechaHora();

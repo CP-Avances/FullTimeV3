@@ -56,7 +56,7 @@ export class ReporteKardexComponent implements OnInit {
   constructor(
     private restEmpleado: EmpleadoService,
     private restKardex: KardexService,
-    private restEmpre: EmpresaService,
+    private empresa: EmpresaService,
     private toastr: ToastrService,
   ) { }
 
@@ -69,12 +69,12 @@ export class ReporteKardexComponent implements OnInit {
 
   ObtenerEmpleados() {
     this.empleados = [];
-    this.restEmpleado.getEmpleadosRest().subscribe(res => {
+    this.restEmpleado.ListarEmpleadosActivos().subscribe(res => {
       this.empleados = res;
     });
   }
 
-  // Método para ver la informacion del empleado 
+  // METODO para ver la informacion del empleado 
   urlImagen: string;
   nombreEmpresa: string;
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
@@ -82,18 +82,18 @@ export class ReporteKardexComponent implements OnInit {
     this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
       this.empleadoD = data;
     });
-    this.restKardex.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
+    this.empresa.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
       this.urlImagen = 'data:image/jpeg;base64,' + res.imagen;
       this.nombreEmpresa = res.nom_empresa;
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
   ObtenerColores() {
-    this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
+    this.empresa.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
       this.p_color = res[0].color_p;
       this.s_color = res[0].color_s;
       this.frase = res[0].marca_agua;

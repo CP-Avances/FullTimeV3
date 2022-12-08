@@ -14,6 +14,52 @@ export class EmpleadoUbicacionService {
   ) { }
 
   /** ***************************************************************************************** **
+   ** **              CONSULTAS DE COORDENADAS GENERALES DE UBICACION DE USUARIO             ** **
+   ** ***************************************************************************************** **/
+
+  // METODO PARA LISTAR COORDENADAS DE UN USUARIO
+  ListarCoordenadasUsuario(id_empl: number) {
+    return this.http.get(`${environment.url}/ubicacion/coordenadas-usuario/${id_empl}`);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  RegistrarCoordenadasUsuario(data: any) {
+    return this.http.post<any>(`${environment.url}/ubicacion/coordenadas-usuario`, data);
+  }
+
+
+
+  ListarCoordenadasUsuarioU(id_ubicacion: number) {
+    return this.http.get(`${environment.url}/ubicacion/coordenadas-usuarios/general/${id_ubicacion}`);
+  }
+
+  EliminarCoordenadasUsuario(id: number) {
+    return this.http.delete<any>(`${environment.url}/ubicacion/eliminar-coordenadas-usuario/${id}`);
+  }
+
+
+
+
+
+
+
+
+
+
+
+  /** ***************************************************************************************** **
    ** **             ACCESO A RUTAS DE COORDENADAS GENERALES DE UBICACIÓN                     ** **
    ** ***************************************************************************************** **/
 
@@ -45,24 +91,6 @@ export class EmpleadoUbicacionService {
     return this.http.delete<any>(`${environment.url}/ubicacion/eliminar/${id}`);
   }
 
-  /** ***************************************************************************************** **
-   ** *         ACCESO A RUTAS DE COORDENADAS GENERALES DE UBICACIÓN DE USUARIO              ** **
-   ** ***************************************************************************************** **/
 
-  RegistrarCoordenadasUsuario(data: any) {
-    return this.http.post<any>(`${environment.url}/ubicacion/coordenadas-usuario`, data);
-  }
-
-  ListarCoordenadasUsuario(id_empl: number) {
-    return this.http.get(`${environment.url}/ubicacion/coordenadas-usuario/${id_empl}`);
-  }
-
-  ListarCoordenadasUsuarioU(id_ubicacion: number) {
-    return this.http.get(`${environment.url}/ubicacion/coordenadas-usuarios/general/${id_ubicacion}`);
-  }
-
-  EliminarCoordenadasUsuario(id: number) {
-    return this.http.delete<any>(`${environment.url}/ubicacion/eliminar-coordenadas-usuario/${id}`);
-  }
 
 }

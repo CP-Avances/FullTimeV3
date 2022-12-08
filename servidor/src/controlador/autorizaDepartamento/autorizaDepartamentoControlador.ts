@@ -3,22 +3,7 @@ import pool from '../../database';
 
 class AutorizaDepartamentoControlador {
 
-    public async ListarAutorizaDepartamento(req: Request, res: Response) {
-        const AUTORIZA = await pool.query('SELECT * FROM depa_autorizaciones');
-        if (AUTORIZA.rowCount > 0) {
-            return res.jsonp(AUTORIZA.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
-    }
-
-    public async CrearAutorizaDepartamento(req: Request, res: Response): Promise<void> {
-        const { id_departamento, id_empl_cargo, estado } = req.body;
-        await pool.query('INSERT INTO depa_autorizaciones (id_departamento, id_empl_cargo, estado) VALUES ($1, $2, $3)', [id_departamento, id_empl_cargo, estado]);
-        res.jsonp({ message: 'Autorización se registró con éxito' });
-    }
-
+    // METODO PARA BUSCAR USUARIO AUTORIZA
     public async EncontrarAutorizacionUsuario(req: Request, res: Response) {
         const { id_empleado } = req.params;
         const AUTORIZA = await pool.query(
@@ -36,9 +21,65 @@ class AutorizaDepartamentoControlador {
             return res.jsonp(AUTORIZA.rows)
         }
         else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+    // METODO PARA REGISTRAR AUTORIZACION
+    public async CrearAutorizaDepartamento(req: Request, res: Response): Promise<void> {
+        const { id_departamento, id_empl_cargo, estado, id_empleado } = req.body;
+        await pool.query(
+            `
+            INSERT INTO depa_autorizaciones (id_departamento, id_empl_cargo, estado, id_empleado)
+            VALUES ($1, $2, $3, $4)
+            `
+            , [id_departamento, id_empl_cargo, estado, id_empleado]);
+        res.jsonp({ message: 'Registro guardado.' });
+    }
+
+    // METODO PARA ACTUALIZAR REGISTRO
+    public async ActualizarAutorizaDepartamento(req: Request, res: Response): Promise<void> {
+        const { id_departamento, id_empl_cargo, estado, id } = req.body;
+        await pool.query(
+            `
+            UPDATE depa_autorizaciones SET id_departamento = $1, id_empl_cargo = $2, estado = $3 
+            WHERE id = $4
+            `
+            , [id_departamento, id_empl_cargo, estado, id]);
+        res.jsonp({ message: 'Registro actualizado.' });
+    }
+
+    // METODO PARA ELIMINAR REGISTROS
+    public async EliminarAutorizacionDepartamento(req: Request, res: Response): Promise<void> {
+        const id = req.params.id;
+        await pool.query(
+            `
+            DELETE FROM depa_autorizaciones WHERE id = $1
+            `
+            , [id]);
+        res.jsonp({ message: 'Registro eliminado.' });
+    }
+
+
+
+
+
+
+
+
+    
+    public async ListarAutorizaDepartamento(req: Request, res: Response) {
+        const AUTORIZA = await pool.query('SELECT * FROM depa_autorizaciones');
+        if (AUTORIZA.rowCount > 0) {
+            return res.jsonp(AUTORIZA.rows)
+        }
+        else {
             return res.status(404).jsonp({ text: 'No se encuentran registros' });
         }
     }
+
+
+
 
     public async ObtenerQuienesAutorizan(req: Request, res: Response): Promise<any> {
         const { id_depar } = req.params;
@@ -51,17 +92,9 @@ class AutorizaDepartamentoControlador {
         }
     }
 
-    public async ActualizarAutorizaDepartamento(req: Request, res: Response): Promise<void> {
-        const { id_departamento, id_empl_cargo, estado, id } = req.body;
-        await pool.query('UPDATE depa_autorizaciones SET id_departamento = $1, id_empl_cargo = $2, estado = $3 WHERE id = $4', [id_departamento, id_empl_cargo, estado, id]);
-        res.jsonp({ message: 'Autorización se registró con éxito' });
-    }
 
-    public async EliminarAutorizacionDepartamento(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        await pool.query('DELETE FROM depa_autorizaciones WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
-    }
+
+
 
 }
 

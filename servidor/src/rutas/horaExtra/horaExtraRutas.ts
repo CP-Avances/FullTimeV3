@@ -30,7 +30,7 @@ class HorasExtrasPedidasRutas {
         this.router.get('/listar/solicitudes/empleado/:id_empleado', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ListarPedidosHE_Empleado);
         this.router.get('/solicitudes/autorizadas/empleado/:id_empleado', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ListarPedidosHEAutorizadas_Empleado);
 
-        // REPORTE CRITERIOS DE BÚSQUEDA MÚLTIPLES
+        // REPORTE CRITERIOS DE BUSQUEDA MÚLTIPLES
         this.router.put('/horas-planificadas/:desde/:hasta', [TokenValidation, ModuloHoraExtraValidation], HorasExtrasPedidasControlador.ReporteVacacionesMultiple);
 
 

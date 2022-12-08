@@ -122,10 +122,10 @@ export class VistaMenuComponent implements OnInit {
       });
   }
 
-  /** Función para eliminar registro seleccionado Planificación*/
+  /** FUNCION para eliminar registro seleccionado Planificación*/
   EliminarDetalle(id_detalle: number) {
     this.rest.EliminarDetalleMenu(id_detalle).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.BuscarDatosMenu(this.idMenu, this.formato_hora);
@@ -133,7 +133,7 @@ export class VistaMenuComponent implements OnInit {
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  /** FUNCION para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     console.log(datos);
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()

@@ -141,13 +141,13 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   // OBTENER LISTA DE EMPLEADOS
   ObtenerEmpleados() {
     this.empleados = [];
-    this.restEmpleado.getEmpleadosRest().subscribe(res => {
+    this.restEmpleado.ListarEmpleadosActivos().subscribe(res => {
       this.empleados = res;
       console.log(this.empleados);
     });
   }
 
-  // MÉTODO PARA VER LA INFORMACION DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
     this.empleadoD = [];
     this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -155,7 +155,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
     });
   }
 
-  // MÉTODO DE LA PAGINACIÓN
+  // METODO DE LA PAGINACIÓN
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
@@ -1089,7 +1089,7 @@ export class AsistenciaConsolidadoComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcelAsistencia(id_empleado: number) {
     this.asistencia = [];

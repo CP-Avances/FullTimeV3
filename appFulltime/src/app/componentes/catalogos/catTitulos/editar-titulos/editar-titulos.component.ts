@@ -21,7 +21,7 @@ export class EditarTitulosComponent implements OnInit {
 
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
-  public nuevoTituloForm = new FormGroup({
+  public formulario = new FormGroup({
     tituloNombreForm: this.nombre,
     tituloNivelForm: this.nivelF,
     nombreNivelForm: this.nombreNivel
@@ -29,10 +29,8 @@ export class EditarTitulosComponent implements OnInit {
 
   // ARREGLO DE NIVELES EXISTENTES
   HabilitarDescrip: boolean = true;
-  selectNivel: any;
   niveles: any = [];
   idNivel: any = [];
-  estilo: any;
 
   constructor(
     private ntitulo: NivelTitulosService,
@@ -44,64 +42,61 @@ export class EditarTitulosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.obtenerNivelesTitulo();
+    this.ObtenerNivelesTitulo();
     this.ImprimirDatos();
   }
 
-  obtenerNivelesTitulo() {
+  // METODO PARA LISTAR NIVELES
+  ObtenerNivelesTitulo() {
     this.niveles = [];
-    this.ntitulo.getNivelesTituloRest().subscribe(res => {
+    this.ntitulo.ListarNiveles().subscribe(res => {
       this.niveles = res;
       this.niveles[this.niveles.length] = { nombre: "OTRO" };
-      this.selectNivel = this.niveles[this.niveles.length - 1].nombre;
     });
   }
 
-  ActivarDesactivarNombre(form1) {
-    console.log('nivel', form1.tituloNivelForm);
-    if (form1.tituloNivelForm === undefined) {
-      this.nuevoTituloForm.patchValue({ nombreNivelForm: '' });
-      this.estilo = { 'visibility': 'visible' }; this.HabilitarDescrip = false;
-      this.toastr.info('Ingresar nombre de nivel de titulación', '', {
+  // METODO PARA ACTIVAR FORULARIO
+  ActivarDesactivarNombre(form: any) {
+    if (form.tituloNivelForm === undefined) {
+      this.formulario.patchValue({ nombreNivelForm: '' });
+      this.HabilitarDescrip = false;
+      this.toastr.info('Ingresar nombre de nivel de título.', '', {
         timeOut: 6000,
       });
     }
     else {
-      this.nuevoTituloForm.patchValue({ nombreNivelForm: '' });
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
+      this.formulario.patchValue({ nombreNivelForm: '' });
+      this.HabilitarDescrip = true;
     }
   }
 
-  GuardarNivel(form) {
-    let dataNivelTitulo = {
+  // METODO PARA GUARDAR NIVEL DE TITULO
+  GuardarNivel(form: any) {
+    let nivel = {
       nombre: form.nombreNivelForm,
     };
-    this.ntitulo.postNivelTituloRest(dataNivelTitulo).subscribe(response => {
-      this.ntitulo.BuscarNivelID().subscribe(datos => {
-        var idNivel = datos[0].max;
-        console.log('id_nivel', datos[0].max)
-        this.ActualizarTitulo(form, idNivel);
-      })
+    this.ntitulo.RegistrarNivel(nivel).subscribe(response => {
+      this.ActualizarTitulo(form, response.id);
     });
   }
 
-  ActualizarTitulo(form, idNivel) {
-    let dataTitulo = {
+  // METODO PARA ACTUALIZAR TITULO
+  ActualizarTitulo(form: any, idNivel: number) {
+    let titulo = {
       id: this.data.id,
       nombre: form.tituloNombreForm,
       id_nivel: idNivel,
     };
-    this.rest.ActualizarUnTitulo(dataTitulo).subscribe(response => {
-      this.toastr.success('Operación Exitosa', 'Título actualizado', {
+    this.rest.ActualizarUnTitulo(titulo).subscribe(response => {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
-      this.CerrarVentanaRegistroTitulo();
-    }, error => {
+      this.CerrarVentana();
     });
   }
 
-
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR REGISTRO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
     // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
@@ -123,6 +118,7 @@ export class EditarTitulosComponent implements OnInit {
     }
   }
 
+  // METODO PARA EMITIR MENSAJES DE ERROR
   ObtenerMensajeErrorNombre() {
     if (this.nombre.hasError('required')) {
       return 'Campo Obligatorio';
@@ -136,13 +132,14 @@ export class EditarTitulosComponent implements OnInit {
     }
   }
 
-  InsertarTitulo(form) {
+  // METODO PARA REGISTRAR DATOS
+  InsertarTitulo(form: any) {
     if (form.tituloNivelForm === undefined || form.tituloNivelForm === 'OTRO') {
       if (form.nombreNivelForm != '') {
         this.GuardarNivel(form);
       }
       else {
-        this.toastr.info('Ingrese un nombre de nivel o seleccione uno de la lista de niveles', '', {
+        this.toastr.info('Ingrese un nombre de nivel o seleccione uno de la lista de niveles.', '', {
           timeOut: 6000,
         });
       }
@@ -150,37 +147,31 @@ export class EditarTitulosComponent implements OnInit {
     else {
       this.ActualizarTitulo(form, form.tituloNivelForm);
     }
-
   }
 
+  // METODO PARA MOSTRAR DATOS EN FORMULARIO
   ImprimirDatos() {
     this.idNivel = [];
-    console.log("nivel_nombre", this.data.nivel);
     this.ntitulo.BuscarNivelNombre(this.data.nivel).subscribe(datos => {
       this.idNivel = datos;
-      this.nuevoTituloForm.patchValue({
+      this.formulario.patchValue({
         tituloNombreForm: this.data.nombre,
         tituloNivelForm: this.data.nivel
       })
-      this.selectNivel = this.idNivel[0].id;
-      console.log("nivel_id", this.idNivel[0].id, this.idNivel[0].nombre, "otro datos", this.selectNivel);
+      this.nivelF.setValue(this.idNivel[0].id)
     })
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.nuevoTituloForm.reset();
+    this.formulario.reset();
   }
 
-  CerrarVentanaRegistroTitulo() {
-    this.obtenerNivelesTitulo();
-    this.LimpiarCampos();
-    this.ImprimirDatos();
-    this.ventana.close();
-  }
-
-  Salir() {
+  // METODO PARA CERRAR VENTANA
+  CerrarVentana() {
     this.LimpiarCampos();
     this.ventana.close();
   }
+
 
 }

@@ -12,19 +12,52 @@ export class EmpleadoHorariosService {
     private http: HttpClient,
   ) { }
 
+
+  // METODO PARA BUSCAR HORARIO DEL USUARIO
+  BuscarHorarioUsuario(codigo: any) {
+    return this.http.get(`${environment.url}/empleadoHorario/horarioCodigo/${codigo}`);
+  }
+
+  // METODO PARA REGISTRAR HORARIO DE USUARIO
+  IngresarEmpleadoHorarios(datos: any) {
+    return this.http.post(`${environment.url}/empleadoHorario`, datos);
+  }
+
+  // METODO PARA VERIFICAR HORARIOS DUPLICADOS
+  VerificarDuplicidadHorarios(id_empl: number, datos: any) {
+    return this.http.post(`${environment.url}/empleadoHorario/validarFechas/${id_empl}`, datos);
+  }
+
+  // METODO PARA BUSCAR HORARIOS DE EMPLEADO EN UN RANGO DE FECHAS
+  VerificarHorariosExistentes(id_empl: number, datos: any) {
+    return this.http.post(`${environment.url}/empleadoHorario/horarios-existentes/${id_empl}`, datos);
+  }
+
+  // METODO PARA VERIFICAR HORARIOS DUPLICADOS ACTUALIZACION
+  VerificarDuplicidadHorariosEdicion(id: number, codigo: number, datos: any) {
+    return this.http.post(`${environment.url}/empleadoHorario/validarFechas/horarioEmpleado/${id}/empleado/${codigo}`, datos);
+  }
+
+  // METODO PARA BUSCAR HORARIOS DE EMPLEADO EN UN RANGO DE FECHAS ACTUALIZACION
+  VerificarHorariosExistentesEdicion(id_empl: number, datos: any) {
+    return this.http.post(`${environment.url}/empleadoHorario/horarios-existentes-edicion/${id_empl}`, datos);
+  }
+
+
+
+
+
+
+
+
   //Horarios Empleado
 
   ConsultarEmpleadoHorarios() {
     return this.http.get(`${environment.url}/empleadoHorario`);
   }
 
-  IngresarEmpleadoHorarios(datos: any) {
-    return this.http.post(`${environment.url}/empleadoHorario`, datos);
-  }
 
-  BuscarHorarioUsuario(codigo: any) {
-    return this.http.get(`${environment.url}/empleadoHorario/horarioCodigo/${codigo}`);
-  }
+
 
   CargaMultiple(formData) {
     return this.http.post(`${environment.url}/empleadoHorario/cargaMultiple`, formData)
@@ -46,23 +79,10 @@ export class EmpleadoHorariosService {
     return this.http.post(`${environment.url}/empleadoHorario/fechas_horario/${id_empleado}`, data)
   }
 
-  VerificarDuplicidadHorarios(id_empl: number, datos: any) {
-    return this.http.post(`${environment.url}/empleadoHorario/validarFechas/${id_empl}`, datos);
-  }
 
-  VerificarDuplicidadHorariosEdicion(id: number, codigo: number, datos: any) {
-    return this.http.post(`${environment.url}/empleadoHorario/validarFechas/horarioEmpleado/${id}/empleado/${codigo}`, datos);
-  }
 
-  // MÉTODO PARA BUSCAR HORARIOS DE EMPLEADO EN UN RANGO DE FECHAS
-  VerificarHorariosExistentes(id_empl: number, datos: any) {
-    return this.http.post(`${environment.url}/empleadoHorario/horarios-existentes/${id_empl}`, datos);
-  }
 
-  // MÉTODO PARA BUSCAR HORARIOS DE EMPLEADO EN UN RANGO DE FECHAS
-  VerificarHorariosExistentesEdicion(id_empl: number, datos: any) {
-    return this.http.post(`${environment.url}/empleadoHorario/horarios-existentes-edicion/${id_empl}`, datos);
-  }
+
 
   // Verificar datos de la plantilla de horario fijo
   VerificarDatos_EmpleadoHorario(formData: any, id: number) {

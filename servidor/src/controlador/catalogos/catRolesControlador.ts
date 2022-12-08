@@ -6,14 +6,69 @@ import fs from 'fs';
 
 class RolesControlador {
 
+  // METODO PARA LISTAR ROLES DEL SISTEMA
   public async ListarRoles(req: Request, res: Response) {
-    const ROL = await pool.query('SELECT id, nombre FROM cg_roles ORDER BY nombre ASC');
+    const ROL = await pool.query(
+      `
+      SELECT id, nombre FROM cg_roles ORDER BY nombre ASC
+      `
+    );
     if (ROL.rowCount > 0) {
       return res.jsonp(ROL.rows)
     } else {
       res.status(404).jsonp({ text: 'Registro no encontrado.' });
     }
   }
+
+  // METODO PARA ELIMINAR REGISTRO
+  public async EliminarRol(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    await pool.query(
+      `
+      DELETE FROM cg_roles WHERE id = $1
+      `
+      , [id]);
+    res.jsonp({ message: 'Registro eliminado.' });
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  public async FileXML(req: Request, res: Response): Promise<any> {
+    var xml = builder.create('root').ele(req.body).end({ pretty: true });
+    console.log(req.body.userName);
+    let filename = "Roles-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+    });
+    res.jsonp({ text: 'XML creado', name: filename });
+  }
+
+  // METODO PARA DESCARGAR ARCHIVO XML
+  public async downloadXML(req: Request, res: Response): Promise<any> {
+    const name = req.params.nameXML;
+    let filePath = `servidor\\xmlDownload\\${name}`
+    res.sendFile(__dirname.split("servidor")[0] + filePath);
+  }
+
+  // METODO PARA REGISTRAR ROL
+  public async CrearRol(req: Request, res: Response): Promise<void> {
+    const { nombre } = req.body;
+    await pool.query(
+      `
+      INSERT INTO cg_roles (nombre) VALUES ($1)
+      `
+      , [nombre]);
+    res.jsonp({ message: 'Registro guardado.' });
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   public async ListarRolesActualiza(req: Request, res: Response) {
     const id = req.params.id;
@@ -36,11 +91,6 @@ class RolesControlador {
     }
   }
 
-  public async CrearRol(req: Request, res: Response): Promise<void> {
-    const { nombre } = req.body;
-    await pool.query('INSERT INTO cg_roles (nombre) VALUES ($1)', [nombre]);
-    res.jsonp({ message: 'Rol guardado' });
-  }
 
   public async ActualizarRol(req: Request, res: Response): Promise<void> {
     const { nombre, id } = req.body;
@@ -48,30 +98,9 @@ class RolesControlador {
     res.jsonp({ message: 'Registro Actualizado' });
   }
 
-  public async EliminarRol(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    await pool.query('DELETE FROM cg_roles WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
-  }
 
-  public async FileXML(req: Request, res: Response): Promise<any> {
-    var xml = builder.create('root').ele(req.body).end({ pretty: true });
-    console.log(req.body.userName);
-    let filename = "Roles-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("Archivo guardado");
-    });
-    res.jsonp({ text: 'XML creado', name: filename });
-  }
 
-  public async downloadXML(req: Request, res: Response): Promise<any> {
-    const name = req.params.nameXML;
-    let filePath = `servidor\\xmlDownload\\${name}`
-    res.sendFile(__dirname.split("servidor")[0] + filePath);
-  }
+
 }
 
 const ROLES_CONTROLADOR = new RolesControlador();

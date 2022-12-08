@@ -12,6 +12,7 @@ import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.serv
 
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { EditarPlanHoraExtraComponent } from '../editar-plan-hora-extra/editar-plan-hora-extra.component';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
 export interface PlanificacionHE {
@@ -60,23 +61,37 @@ export class ListaPlanificacionesComponent implements OnInit {
 
   idEmpleadoLogueado: number; // VARIABLE PARA ALMACENAR ID DE EMPLEADO QUE INICIA SESIÓN
 
+  get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
+
   constructor(
     public restPlan: PlanHoraExtraService,
     public ventana: MatDialog,
     public aviso: RealTimeService,
     private parametro: ParametrosService,
     private toastr: ToastrService,
-    private validar: ValidacionesService
+    private validar: ValidacionesService,
+    private funciones: MainNavService
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
 
   fecha: any;
   ngOnInit(): void {
-    var f = moment();
-    this.fecha = f.format('YYYY-MM-DD');
-    this.BuscarParametro();
-    this.BuscarFecha();
+    if (this.habilitarHorasE === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Horas Extras. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      var f = moment();
+      this.fecha = f.format('YYYY-MM-DD');
+      this.BuscarParametro();
+      this.BuscarFecha();
+    }
   }
 
   ManejarPagina(e: PageEvent) {
@@ -84,7 +99,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA MOSTRAR FILAS DETERMINADAS EN TABLA DE EMPLEADOS CON PLANIFICACIÓN
+  // METODO PARA MOSTRAR FILAS DETERMINADAS EN TABLA DE EMPLEADOS CON PLANIFICACIÓN
   ManejarPaginaEmpleados(e: PageEvent) {
     this.tamanio_pagina_empleado = e.pageSize;
     this.numero_pagina_empleado = e.pageIndex + 1;
@@ -97,7 +112,7 @@ export class ListaPlanificacionesComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarFecha() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -145,7 +160,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE EMPLEADOS CON PLANIFICACIÓN
+  // METODO PARA BUSQUEDA DE DATOS DE EMPLEADOS CON PLANIFICACIÓN
   planEmpleados: any = []; // VARIABLE PARA GUARDAR DATOS DE EMPLEADOS CON PLANIFICACIÓN
   lista_empleados: boolean = false; // LISTA DE USUARIOS
   ObtenerEmpleadosPlanificacion(id: any, accion: any, lista_empleados: any, icono: any, editar: any, eliminar: any) {
@@ -159,7 +174,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       this.ver_eliminar = eliminar;
     }, error => {
       this.restPlan.EliminarRegistro(id).subscribe(res => {
-        this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro Eliminado.', {
+        this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro eliminado.', {
           timeOut: 6000,
         })
         this.BuscarFecha();
@@ -176,13 +191,13 @@ export class ListaPlanificacionesComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA CON ÍCONO EDITAR ACTIVO
+  // METODO PARA VER LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA CON ÍCONO EDITAR ACTIVO
   tipo_accion: string = '';
   HabilitarTablaEditar(id: any) {
     this.ObtenerEmpleadosPlanificacion(id, '1', true, false, true, false);
   }
 
-  // MÉTODO PARA VER LISTA DE EMPLEADOS CON PLANIIFCACIÓN SELECCIONADA CON ÍCONO ELIMINAR ACTIVO
+  // METODO PARA VER LISTA DE EMPLEADOS CON PLANIIFCACIÓN SELECCIONADA CON ÍCONO ELIMINAR ACTIVO
   HabilitarTablaEliminar(id: any) {
     this.ObtenerEmpleadosPlanificacion(id, '2', true, false, false, true);
   }
@@ -203,7 +218,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y EDITAR
+  // METODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y EDITAR
   EditarRegistrosMultiple() {
     let EmpleadosSeleccionados: any;
     EmpleadosSeleccionados = this.selectionUno.selected;
@@ -241,7 +256,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeletePlan(datos: any) {
     console.log('ver data seleccionada... ', datos)
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -252,7 +267,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanEmpleado(id_plan: number, id_empleado: number, datos: any) {
 
     // LECTURA DE DATOS DE USUARIO
@@ -269,7 +284,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.restPlan.EliminarPlanEmpleado(id_plan, id_empleado).subscribe(res => {
       this.NotificarPlanificacion(desde, hasta, h_inicio, h_fin, id_empleado);
       this.EnviarCorreo(datos, cuenta_correo, usuario, desde, hasta, h_inicio, h_fin);
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.botonSeleccion = false;
@@ -280,7 +295,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y ELIMINAR
+  // METODO PARA LEER TODOS LOS DATOS SELECCIONADOS Y ELIMINAR
   EliminarRegistrosMultiple() {
     let EmpleadosSeleccionados: any;
     EmpleadosSeleccionados = this.selectionUno.selected;
@@ -308,7 +323,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     }
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   contar: number = 0;
   contar_eliminados: number = 0;
   ConfirmarDeletePlanMultiple(datos: any) {
@@ -321,7 +336,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE PLANIFICACIÓN
   EliminarPlanMultiple(datos: any, id_plan: number) {
     var usuario = '';
 
@@ -362,7 +377,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA HABILITAR O DESHABILITAR EL BOTÓN EDITAR O ELIMINAR
+  // METODO PARA HABILITAR O DESHABILITAR EL BOTÓN EDITAR O ELIMINAR
   botonSeleccion: boolean = false;
   botonEditar: boolean = false;
   botonEliminar: boolean = false;
@@ -415,7 +430,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO PARA CERRAR TABLA DE LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA
+  // METODO PARA CERRAR TABLA DE LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA
   CerrarTabla() {
     this.lista_empleados = false;
     this.ver_icono = true;
@@ -428,7 +443,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     this.selectionUno.clear();
   }
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE HORAS EXTRAS
   NotificarPlanificacion(desde: any, hasta: any, h_inicio: any, h_fin: any, recibe: number) {
     let mensaje = {
       id_empl_envia: this.idEmpleadoLogueado,
@@ -443,7 +458,7 @@ export class ListaPlanificacionesComponent implements OnInit {
     });
   }
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE HORAS EXTRAS
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
@@ -462,7 +477,7 @@ export class ListaPlanificacionesComponent implements OnInit {
       fin: h_fin,
     }
 
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE HE
     this.restPlan.EnviarCorreoPlanificacion(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {

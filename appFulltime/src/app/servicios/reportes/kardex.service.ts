@@ -21,18 +21,6 @@ export class KardexService {
   ObtenerKardexVacacionDiasCalendarioByIdEmpleado(id_empleado: number, desde: string, hasta: string) {
     return this.http.get<any>(`${environment.url}/reportes/vacacion/${id_empleado}/${desde}/${hasta}`);
   }
-  
-  /**
-   * Método para llamar al logotipo de la empresa, este llega codificado en base64
-   * @param id_empresa ID de la empresa
-   */
-  LogoEmpresaImagenBase64(id_empresa: string) {
-    return this.http.get<any>(`${environment.url}/empresas/logo/codificado/${parseInt(id_empresa)}`);
-  }
-  
-  EditarLogoEmpresa(id_empresa: number, formData) {
-    return this.http.put<any>(`${environment.url}/empresas/logo/${id_empresa}/uploadImage`, formData);
-  }
 
   /**
    * Metodo para traer la informacion de datos consolidados

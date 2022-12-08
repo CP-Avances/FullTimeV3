@@ -322,7 +322,7 @@ export class TimbreVirtualComponent implements OnInit, OnDestroy {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -818,7 +818,7 @@ export class TimbreVirtualComponent implements OnInit, OnDestroy {
 
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel(tipo: string): void {
     switch (tipo) {

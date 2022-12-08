@@ -1,13 +1,22 @@
-.btn { background-color: rgb(80,87,97); color: white; }
+p {
+    font-size: x-small;
+}
 
-p { font-size: x-small; }
+button {
+    margin: 5px 10px 5px 10px;
+}
 
-td { padding-top: 10px; text-align: center; } 
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
-button {margin: 5px 10px 5px 10px;}
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-table { width: 100%; font-size: 14px;}
-
-
-
-  
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}

@@ -122,7 +122,7 @@ export class EditarTipoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE LA TABLA TIPO_ACCION_PERSONAL
+  // METODO PARA BUSQUEDA DE DATOS DE LA TABLA TIPO_ACCION_PERSONAL
   tipos_acciones: any = [];
   ObtenerTiposAccionPersonal() {
     this.tipos_acciones = [];
@@ -177,7 +177,7 @@ export class EditarTipoAccionComponent implements OnInit {
     this.selec3 = true;
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE LA TABLA TIPO_ACCION
+  // METODO PARA BUSQUEDA DE DATOS DE LA TABLA TIPO_ACCION
   tipos: any = [];
   ObtenerTiposAccion() {
     this.tipos = [];
@@ -187,7 +187,7 @@ export class EditarTipoAccionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA ACTIVAR FORMULARIO DE INGRESO DE UN NUEVO TIPO_ACCION
+  // METODO PARA ACTIVAR FORMULARIO DE INGRESO DE UN NUEVO TIPO_ACCION
   estiloT: any;
   IngresarTipoAccion(form) {
     if (form.tipoAccionForm === undefined) {
@@ -202,7 +202,7 @@ export class EditarTipoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA VER LA LISTA DE TIPOS_ACCION
+  // METODO PARA VER LA LISTA DE TIPOS_ACCION
   VerTiposAccion() {
     this.AccionesForm.patchValue({
       otroTipoForm: '',
@@ -211,7 +211,7 @@ export class EditarTipoAccionComponent implements OnInit {
     this.vistaTipo = true;
   }
 
-  // MÉTODO PARA INGRESAR NUEVO PROCESO PROPUESTO
+  // METODO PARA INGRESAR NUEVO PROCESO PROPUESTO
   IngresarNuevoTipo(form, datos: any) {
     if (form.otroTipoForm != '') {
       let tipo = {

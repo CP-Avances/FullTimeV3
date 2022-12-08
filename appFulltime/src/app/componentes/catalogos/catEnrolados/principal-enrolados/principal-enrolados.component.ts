@@ -81,7 +81,7 @@ export class PrincipalEnroladosComponent implements OnInit {
     this.ObtenerColores();
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -89,7 +89,7 @@ export class PrincipalEnroladosComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -97,7 +97,7 @@ export class PrincipalEnroladosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -142,18 +142,18 @@ export class PrincipalEnroladosComponent implements OnInit {
    * ELIMAR REGISTRO ENROLADO Y ENROLADOS-DISPOSITIVO 
    * **********************************************************************************/
 
-  /** Función para eliminar registro seleccionado */
+  /** FUNCION para eliminar registro seleccionado */
   Eliminar(id_enrolado: number) {
     //console.log("probando id", id_enrolado)
     this.rest.EliminarRegistro(id_enrolado).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.','', {
         timeOut: 6000,
       });
       this.getEnrolados();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  /** FUNCION para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos): void {
     this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -260,7 +260,7 @@ export class PrincipalEnroladosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-  *                                         MÉTODO PARA EXPORTAR A PDF
+  *                                         METODO PARA EXPORTAR A PDF
   ******************************************************************************************************/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -361,7 +361,7 @@ export class PrincipalEnroladosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.enrolados);
@@ -371,7 +371,7 @@ export class PrincipalEnroladosComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {
@@ -404,7 +404,7 @@ export class PrincipalEnroladosComponent implements OnInit {
       arregloEnrolados.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloEnrolados).subscribe(res => {
+    this.rest.CrearXML(arregloEnrolados).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/enrolados/download/` + this.data.name;

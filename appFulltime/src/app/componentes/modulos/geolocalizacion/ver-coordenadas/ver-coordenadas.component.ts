@@ -169,13 +169,13 @@ export class VerCoordenadasComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA MANEJAR PAGINACIÓN DE TABLAS
+  // METODO PARA MANEJAR PAGINACIÓN DE TABLAS
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1
     this.tamanio_pagina = e.pageSize;
   }
 
-  // MÉTODO PARA BUSCAR DATOS DE UBICACIÓN GEOGRÁFICA
+  // METODO PARA BUSCAR DATOS DE UBICACIÓN GEOGRÁFICA
   BuscarUbicacion(id: any) {
     this.coordenadas = [];
     this.restU.ListarUnaCoordenada(id).subscribe(data => {
@@ -183,7 +183,7 @@ export class VerCoordenadasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
+  // METODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
   ListarUsuarios(id: number) {
     this.datosUsuarios = [];
     this.restU.ListarCoordenadasUsuarioU(id).subscribe(datos => {
@@ -191,7 +191,7 @@ export class VerCoordenadasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA INGRESAR DETALLE DE PARÁMETRO
+  // METODO PARA INGRESAR DETALLE DE PARÁMETRO
   AbrirVentanaBusqueda(): void {
     if (this.asignar === true) {
       this.asignar = false;
@@ -203,7 +203,7 @@ export class VerCoordenadasComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA EDITAR PARÁMETRO
+  // METODO PARA EDITAR PARÁMETRO
   AbrirVentanaEditar(datos: any): void {
     this.ventana.open(EditarCoordenadasComponent,
       { width: '400px', data: { ubicacion: datos, actualizar: true } }).afterClosed().subscribe(item => {
@@ -212,10 +212,10 @@ export class VerCoordenadasComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   EliminarRegistro(id_emplu: number) {
     this.restU.EliminarCoordenadasUsuario(id_emplu).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.BuscarUbicacion(this.idUbicacion);
@@ -223,7 +223,7 @@ export class VerCoordenadasComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -619,7 +619,7 @@ export class VerCoordenadasComponent implements OnInit {
   }
 
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDeleteVarios() {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {

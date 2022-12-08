@@ -7,17 +7,17 @@
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
                     <div class="col-3"></div>
-                    <div class="col-6">
+                    <div class="col-6" style="text-align: center;">
+                        <!--  ************************* LOGO DE EMPRESA ******************************** -->
                         <figure>
                             <div *ngIf="imagen_default; else logoEmpresa">
                                 <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset=""
-                                    width="50%" height="50%">
+                                    width="30%" height="30%">
                             </div>
                             <ng-template #logoEmpresa>
                                 <div class="d-flex flex-wrap justify-content-center">
                                     <img src="{{logo}}" alt="logo de empresa" srcset="" width="50%" height="50%">
                                 </div>
-
                             </ng-template>
                             <br>
                             <a style="padding-top: 10px;" (click)="EditarLogo()" matSuffix matTooltipPosition="right"
@@ -29,6 +29,7 @@
                     <div class="col-3"></div>
                 </div>
                 <div class="row">
+                    <!--  ************************* INFORMACION EMPRESA ******************************** -->
                     <div class="col" id="verticalLine">
                         <div class="d-flex justify-content-around ">
                             <label id="datosF">INFORMACIÓN GENERAL</label>
@@ -46,15 +47,15 @@
                             <label>{{e.telefono}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Correo:</label>
+                            <label id="datosF">E-mail:</label>
                             <label>{{e.correo_empresa}}</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-around">
+                        <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Representante:</label>
                             <label>{{e.representante}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Tipo de Empresa:</label>
+                            <label id="datosF">Tipo de empresa:</label>
                             <label>{{e.tipo_empresa}}</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
@@ -63,74 +64,90 @@
                         </div>
                         <div *ngIf="e.num_partida != null && e.num_partida != ''"
                             class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Num. Partida Presupuestaria:</label>
+                            <label id="datosF">Número partida presupuestaria:</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-around">
+                        <div class="caja1 d-flex justify-content-start">
                             <label id="num">{{e.num_partida}}</label>
                         </div>
                         <div style="text-align: right;">
-                            <i id="editarF" (click)="EditarDatosEmpresa(e)" matSuffix matTooltipPosition="right"
+                            <i id="editarF" (click)="EditarDatosEmpresa()" matSuffix matTooltipPosition="right"
                                 matTooltip="Modificar datos de este registro." class="fas fa-edit">
                                 <p>Editar</p>
                             </i>
                         </div>
                     </div>
                     <br>
+                    <!--  ******************** INFORMACION AUTORIZACION SOLICITUDES ********************* -->
                     <div class="col" id="verticalLine">
                         <div class="d-flex justify-content-around text-center">
-                            <label id="datosF">AUTORIZAR</label>
+                            <label id="datosF">AUTORIZACIÓN SOLICITUDES</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start" *ngIf="!conCambios">
                             <label id="datosF">Hasta:</label>
-                            <label>{{e.dias_cambio}} días antes de la fecha</label>
+                            <label>{{e.dias_cambio}} días antes de la fecha de solicitud.</label>
                         </div>
                         <div class="d-flex justify-content-around text-center" *ngIf="!cambiosTodos">
-                            <label>Las solicitudes se autorizaran sin restriciones.</label>
+                            <label>Las solicitudes se autorizaran sin restricciones.</label>
                         </div>
                         <div class="d-flex justify-content-around text-center" *ngIf="!sinCambios">
-                            <label>Las solicitudes se autorizaran sin restriciones.</label>
+                            <label>Las solicitudes se autorizaran sin restricciones.</label>
                         </div>
                         <br>
+                        <!--  ************************* NIVELES DE SEGURIDAD ******************************** -->
                         <div class="d-flex justify-content-around text-center">
                             <label id="datosF">NIVEL DE SEGURIDAD</label>
                         </div>
                         <div class="caja1 d-flex justify-content-start">
                             <label id="datosF">Seguridad:</label>
                             <label *ngIf="e.seg_ninguna === true">Ninguna</label>
-                            <label *ngIf="e.seg_frase === true">Usar una Frase</label>
-                            <label *ngIf="e.seg_contrasena === true">Usar Contraseña</label>
+                            <label *ngIf="e.seg_frase === true">Usar una frase</label>
+                            <label *ngIf="e.seg_contrasena === true">Usar contraseña</label>
                         </div>
                         <div class="d-flex justify-content-around text-center">
                             <button mat-button type="submit" class="btn btn-sm"
-                                (click)="AbrirVentanaSeguridad(e)">Seguridad</button>
+                                (click)="AbrirVentanaSeguridad(e)">Configurar seguridad</button>
                         </div>
                     </div>
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col" id="verticalLine">
+                    <!--  ********************** CONFIGURAR COLORES DE EMPRESA ************************ -->
+                    <div class="col-md" id="verticalLine">
                         <div class="d-flex justify-content-around text-center">
                             <label id="datosF">COLORES EMPRESA</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Color Principal:</label>
-                            <input type="color" value="{{e.color_p}}" matSuffix
-                                matTooltip="Color Principal que se visualiza en cabeceras de reportes." disabled>
-                        </div>
-                        <div class="caja1 d-flex justify-content-start">
-                            <label id="datosF">Color Secundario:</label>
-                            <input type="color" value="{{e.color_s}}" matSuffix
-                                matTooltip="Color Secundario que se visualiza en campos importantes en reportes."
-                                disabled>
+                        <div class="row" style="padding-bottom: 15px;">
+                            <div class="col-md">
+                                <div class="caja2 d-flex justify-content-start">
+                                    <label id="datosF">Color principal:</label>
+                                </div>
+                                <div class="caja2 d-flex justify-content-center">
+                                    <input type="color" value="{{e.color_p}}" matSuffix
+                                        matTooltip="Color principal que se visualiza en cabeceras de reportes."
+                                        disabled>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="caja2 d-flex justify-content-start">
+                                    <label id="datosF">Color secundario:</label>
+                                </div>
+                                <div class="caja2 d-flex justify-content-center">
+                                    <input type="color" value="{{e.color_s}}" matSuffix
+                                        matTooltip="Color secundario que se visualiza en cabeceras de reportes."
+                                        disabled>
+                                </div>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-around text-center">
                             <button mat-button type="submit" class="btn btn-sm"
-                                (click)="AbrirVentanaReportes(e, 'colores')">Colores
-                                Empresa</button>
+                                (click)="AbrirVentanaReportes(e, 'colores')">
+                                Configurar colores
+                            </button>
                         </div>
                     </div>
                     <br>
-                    <div class="col" id="verticalLine">
+                    <!--  ************************* REGISTRAR MARCA DE AGUA ***************************** -->
+                    <div class="col-md" id="verticalLine">
                         <div class="d-flex justify-content-around text-center">
                             <label id="datosF">REPORTES</label>
                         </div>
@@ -141,12 +158,15 @@
                         </div>
                         <div class="d-flex justify-content-around text-center">
                             <button mat-button type="submit" class="btn btn-sm"
-                                (click)="AbrirVentanaReportes(e, 'frase')">Frase</button>
+                                (click)="AbrirVentanaReportes(e, 'frase')">
+                                Configurar frase
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             <hr>
+            <!--  ************************* TABLA LISTA DE ESTABLECIMIENTOS ******************************** -->
             <div class="container" style="padding-bottom: 50px; text-align: center;">
                 <div class="mat-elevation-z8" style="background: white;">
                     <div class="d-flex bd-highlight" id="titulo">
@@ -184,8 +204,7 @@
                                             <p>Editar</p>
                                         </i>
                                         <i class="far fa-trash-alt" (click)="ConfirmarDelete(ds)" id="t-eliminar"
-                                            matSuffix  matTooltipPosition="right"
-                                            matTooltip="Eliminar registro.">
+                                            matSuffix matTooltipPosition="right" matTooltip="Eliminar registro.">
                                             <p>Eliminar</p>
                                         </i>
                                     </td>

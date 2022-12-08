@@ -46,7 +46,7 @@ export class ListaPlanHoraExtraComponent implements OnInit {
   horas_extras_plan_observacion: any = [];
   selectionUno = new SelectionModel<HoraExtraPlanElemento>(true, []);
 
-  // Búsqueda
+  // BUSQUEDA
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
   filtroCedula: '';
@@ -414,14 +414,14 @@ export class ListaPlanHoraExtraComponent implements OnInit {
     this.AbrirAutorizaciones(EmpleadosSeleccionados, 'multiple');
   }
 
-  // Método para limpiar el campo cédula
+  // METODO para limpiar el campo cédula
   limpiarCampos() {
     this.cedula.reset();
     this.nombre.reset();
     this.filtroEmpleado = '';
   }
 
-  // Método para ingresar solo números
+  // METODO para ingresar solo números
   IngresarSoloNumeros(evt) {
     return this.validacionesService.IngresarSoloNumeros(evt)
   }

@@ -61,7 +61,7 @@ class EmpleadoProcesoControlador {
       `
       DELETE FROM empl_procesos WHERE id = $1
       `, [id]);
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
 }

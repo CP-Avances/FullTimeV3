@@ -26,7 +26,7 @@ class EmpleadoHorariosControlador {
         }
     }
 
-    // CREACIÓN DE HORARIO
+    // CREACION DE HORARIO
     public async CrearEmpleadoHorarios(req: Request, res: Response): Promise<void> {
         const { id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves,
             viernes, sabado, domingo, id_horarios, estado, codigo } = req.body;
@@ -38,8 +38,75 @@ class EmpleadoHorariosControlador {
             `
             , [id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves,
                 viernes, sabado, domingo, id_horarios, estado, codigo]);
-        res.jsonp({ message: 'El horario del empleado se registró con éxito' });
+        res.jsonp({ message: 'Registro guardado.' });
     }
+
+    // METODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA
+    public async VerificarHorariosExistentes(req: Request, res: Response): Promise<any> {
+        const { fechaInicio, fechaFinal } = req.body;
+        const { empl_id } = req.params;
+        const HORARIO = await pool.query(
+            `
+            SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final 
+            FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch 
+            WHERE ($1 BETWEEN fec_inicio AND fec_final
+                OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 
+                OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1 
+                AND eh.id_horarios = ch.id AND e.id = $3
+            `
+            , [fechaInicio, fechaFinal, empl_id]);
+        if (HORARIO.rowCount > 0) {
+            return res.jsonp(HORARIO.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+        }
+    }
+
+    // METODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA PROCESO EDICION
+    public async VerificarHorariosExistentesEdicion(req: Request, res: Response): Promise<any> {
+        const { fechaInicio, fechaFinal, id } = req.body;
+        const { empl_id } = req.params;
+        const HORARIO = await pool.query(
+            `
+            SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final
+            FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch
+            WHERE NOT eh.id = $4 AND ($1 BETWEEN fec_inicio AND fec_final
+                OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2
+                OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1
+                AND eh.id_horarios = ch.id AND e.id = $3
+            `
+            , [fechaInicio, fechaFinal, empl_id, id]);
+        if (HORARIO.rowCount > 0) {
+            return res.jsonp(HORARIO.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'Registros no encontrados' });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public async ListarEmpleadoHorarios(req: Request, res: Response) {
         const HORARIOS = await pool.query('SELECT * FROM empl_horarios WHERE estado = 1');
@@ -392,7 +459,7 @@ class EmpleadoHorariosControlador {
     public async EliminarRegistros(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM empl_horarios WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
     public async ObtenerHorariosEmpleadoFechas(req: Request, res: Response): Promise<any> { //Falta verificar q los estados esten con estado 1
@@ -428,43 +495,9 @@ class EmpleadoHorariosControlador {
         }
     }
 
-    // MÉTODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA
-    public async VerificarHorariosExistentes(req: Request, res: Response): Promise<any> {
-        const { fechaInicio, fechaFinal } = req.body;
-        const { empl_id } = req.params;
-        const HORARIO = await pool.query('SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final ' +
-            'FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch ' +
-            'WHERE ($1 BETWEEN fec_inicio AND fec_final ' +
-            'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
-            'OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1 ' +
-            'AND eh.id_horarios = ch.id AND e.id = $3',
-            [fechaInicio, fechaFinal, empl_id]);
-        if (HORARIO.rowCount > 0) {
-            return res.jsonp(HORARIO.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'Registros no encontrados' });
-        }
-    }
 
-    // MÉTODO PARA BUSCAR HORARIOS DEL EMPLEADO EN DETERMINADA FECHA PROCESO EDICIÓN
-    public async VerificarHorariosExistentesEdicion(req: Request, res: Response): Promise<any> {
-        const { fechaInicio, fechaFinal, id } = req.body;
-        const { empl_id } = req.params;
-        const HORARIO = await pool.query('SELECT ch.hora_trabajo, eh.fec_inicio, eh.fec_final ' +
-            'FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch ' +
-            'WHERE NOT eh.id = $4 AND ($1 BETWEEN fec_inicio AND fec_final ' +
-            'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
-            'OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1 ' +
-            'AND eh.id_horarios = ch.id AND e.id = $3',
-            [fechaInicio, fechaFinal, empl_id, id]);
-        if (HORARIO.rowCount > 0) {
-            return res.jsonp(HORARIO.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'Registros no encontrados' });
-        }
-    }
+
+
 
     public async VerificarFechasHorarioEdicion(req: Request, res: Response): Promise<any> {
         const id = req.params.id;

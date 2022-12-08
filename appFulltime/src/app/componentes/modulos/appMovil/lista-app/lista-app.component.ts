@@ -8,6 +8,7 @@ import { UpdateEstadoAppComponent } from '../update-estado-app/update-estado-app
 import { ITableEmpleados } from 'src/app/model/reportes.model';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 @Component({
   selector: 'app-lista-app',
@@ -35,18 +36,32 @@ export class ListaAppComponent implements OnInit {
 
   BooleanAppMap: any = { 'true': 'Si', 'false': 'No' };
 
+  get habilitarMovil(): boolean { return this.funciones.app_movil; }
+
   constructor(
     private usuariosService: UsuarioService,
     private toastr: ToastrService,
-    private validacionesService: ValidacionesService,
-    private dialog: MatDialog
+    private validar: ValidacionesService,
+    private dialog: MatDialog,
+    private funciones: MainNavService
   ) { }
 
   ngOnInit(): void {
-    this.ObtenerUsuariosAppMovil()
+    if (this.habilitarMovil === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Aplicación Móvil. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.ObtenerUsuariosAppMovil();
+    }
   }
 
-  // MÉTODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE TABLA
+  // METODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE TABLA
 
   habilitar: boolean = false;
   HabilitarSeleccion() {
@@ -115,11 +130,11 @@ export class ListaAppComponent implements OnInit {
   }
 
   IngresarSoloNumeros(evt) {
-    return this.validacionesService.IngresarSoloNumeros(evt)
+    return this.validar.IngresarSoloNumeros(evt)
   }
 
   IngresarSoloLetras(e) {
-    return this.validacionesService.IngresarSoloLetras(e);
+    return this.validar.IngresarSoloLetras(e);
   }
 
 

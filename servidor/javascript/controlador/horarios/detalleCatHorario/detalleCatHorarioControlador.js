@@ -17,28 +17,13 @@ const database_1 = __importDefault(require("../../../database"));
 const xlsx_1 = __importDefault(require("xlsx"));
 const fs_1 = __importDefault(require("fs"));
 class DetalleCatalogoHorarioControlador {
-    ListarDetalleHorarios(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const HORARIO = yield database_1.default.query('SELECT * FROM deta_horarios');
-            if (HORARIO.rowCount > 0) {
-                return res.jsonp(HORARIO.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    CrearDetalleHorarios(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { orden, hora, minu_espera, id_horario, tipo_accion } = req.body;
-            yield database_1.default.query('INSERT INTO deta_horarios (orden, hora, minu_espera, id_horario, tipo_accion) VALUES ($1, $2, $3, $4, $5)', [orden, hora, minu_espera, id_horario, tipo_accion]);
-            res.jsonp({ message: 'Detalle de Horario se registró con éxito' });
-        });
-    }
+    // METODO PARA BUSCAR DETALLE DE UN HORARIO
     ListarUnDetalleHorario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_horario } = req.params;
-            const HORARIO = yield database_1.default.query('SELECT * FROM deta_horarios WHERE id_horario = $1 ORDER BY orden ASC', [id_horario])
+            const HORARIO = yield database_1.default.query(`
+            SELECT * FROM deta_horarios WHERE id_horario = $1 ORDER BY orden ASC
+            `, [id_horario])
                 .then(result => {
                 if (result.rowCount === 0)
                     return [];
@@ -49,11 +34,11 @@ class DetalleCatalogoHorarioControlador {
                             o.tipo_accion = 'E';
                             break;
                         case 'S/A':
-                            o.tipo_accion_show = 'Inicio Alimentación';
+                            o.tipo_accion_show = 'Inicio alimentación';
                             o.tipo_accion = 'S/A';
                             break;
                         case 'E/A':
-                            o.tipo_accion_show = 'Fin Alimentación';
+                            o.tipo_accion_show = 'Fin alimentación';
                             o.tipo_accion = 'E/A';
                             break;
                         case 'S':
@@ -61,7 +46,7 @@ class DetalleCatalogoHorarioControlador {
                             o.tipo_accion = 'S';
                             break;
                         default:
-                            o.tipo_accion_show = 'codigo 99';
+                            o.tipo_accion_show = 'Codigo 99';
                             o.tipo_accion = 'codigo 99';
                             break;
                     }
@@ -70,6 +55,49 @@ class DetalleCatalogoHorarioControlador {
             });
             if (HORARIO.length > 0) {
                 return res.jsonp(HORARIO);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+            }
+        });
+    }
+    // METODO PARA ELIMINAR REGISTRO
+    EliminarRegistros(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            yield database_1.default.query(`
+            DELETE FROM deta_horarios WHERE id = $1
+            `, [id]);
+            res.jsonp({ message: 'Registro eliminado.' });
+        });
+    }
+    // METODO PARA REGISTRAR DETALLES
+    CrearDetalleHorarios(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { orden, hora, minu_espera, id_horario, tipo_accion } = req.body;
+            yield database_1.default.query(`
+            INSERT INTO deta_horarios (orden, hora, minu_espera, id_horario, tipo_accion) 
+            VALUES ($1, $2, $3, $4, $5)
+            `, [orden, hora, minu_espera, id_horario, tipo_accion]);
+            res.jsonp({ message: 'Registro guardado.' });
+        });
+    }
+    // METODO PARA ACTUALIZAR DETALLE DE HORARIO
+    ActualizarDetalleHorarios(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { orden, hora, minu_espera, id_horario, tipo_accion, id } = req.body;
+            yield database_1.default.query(`
+            UPDATE deta_horarios SET orden = $1, hora = $2, minu_espera = $3, id_horario = $4,
+            tipo_accion = $5 WHERE id = $6
+            `, [orden, hora, minu_espera, id_horario, tipo_accion, id]);
+            res.jsonp({ message: 'Registro actualizado.' });
+        });
+    }
+    ListarDetalleHorarios(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const HORARIO = yield database_1.default.query('SELECT * FROM deta_horarios');
+            if (HORARIO.rowCount > 0) {
+                return res.jsonp(HORARIO.rows);
             }
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
@@ -145,20 +173,6 @@ class DetalleCatalogoHorarioControlador {
                 }
             }));
             fs_1.default.unlinkSync(filePath);
-        });
-    }
-    ActualizarDetalleHorarios(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { orden, hora, minu_espera, id_horario, tipo_accion, id } = req.body;
-            yield database_1.default.query('UPDATE deta_horarios SET orden = $1, hora = $2, minu_espera = $3, id_horario = $4, tipo_accion = $5 WHERE id = $6', [orden, hora, minu_espera, id_horario, tipo_accion, id]);
-            res.jsonp({ message: 'Detalle de Horario se registró con éxito' });
-        });
-    }
-    EliminarRegistros(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield database_1.default.query('DELETE FROM deta_horarios WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
         });
     }
 }

@@ -15,6 +15,43 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PLAN_HORARIO_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../../database"));
 class PlanHorarioControlador {
+    // METODO PARA VERIFICAR FECHAS DE HORARIOS
+    VerificarFechasPlan(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { fechaInicio, fechaFinal } = req.body;
+            const codigo = req.params.codigo;
+            const PLAN = yield database_1.default.query(`
+            SELECT * FROM plan_horarios 
+            WHERE ($1 BETWEEN fec_inicio AND fec_final OR $2 BETWEEN fec_inicio AND fec_final 
+                OR fec_inicio BETWEEN $1 AND $2 OR fec_final BETWEEN $1 AND $2) AND codigo = $3
+            `, [fechaInicio, fechaFinal, codigo]);
+            if (PLAN.rowCount > 0) {
+                return res.jsonp(PLAN.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
+        });
+    }
+    // METODO PARA VERIFICAR FECHAS DE HORARIOS ACTUALIZACION
+    VerificarFechasPlanEdicion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { codigo } = req.params;
+            const { fechaInicio, fechaFinal } = req.body;
+            const PLAN = yield database_1.default.query(`
+            SELECT * FROM plan_horarios 
+            WHERE NOT id=$3 AND ($1 BETWEEN fec_inicio AND fec_final OR $2 BETWEEN fec_inicio AND fec_final
+                OR fec_inicio BETWEEN $1 AND $2 OR fec_final BETWEEN $1 AND $2) AND codigo = $4
+            `, [fechaInicio, fechaFinal, id, codigo]);
+            if (PLAN.rowCount > 0) {
+                return res.jsonp(PLAN.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
+        });
+    }
     ListarPlanHorario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const HORARIO = yield database_1.default.query('SELECT * FROM plan_horarios');
@@ -84,7 +121,7 @@ class PlanHorarioControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             yield database_1.default.query('DELETE FROM plan_horarios WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
+            res.jsonp({ message: 'Registro eliminado.' });
         });
     }
     ObtenerPlanificacionEmpleadoFechas(req, res) {
@@ -98,39 +135,6 @@ class PlanHorarioControlador {
                 'WHERE phd.id_plan_horario = ph.id) AS ph ON ' +
                 'dec.cargo_id = ph.id_cargo AND dec.codigo = $1 ' +
                 'AND ph.fecha_dia BETWEEN $2 AND $3', [id_empleado, fechaInicio, fechaFinal]);
-            if (PLAN.rowCount > 0) {
-                return res.jsonp(PLAN.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    VerificarFechasPlan(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { fechaInicio, fechaFinal } = req.body;
-            const codigo = req.params.codigo;
-            const PLAN = yield database_1.default.query('SELECT * FROM plan_horarios WHERE ($1 BETWEEN fec_inicio AND fec_final ' +
-                'OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2 ' +
-                'OR fec_final BETWEEN $1 AND $2) ' +
-                'AND codigo = $3', [fechaInicio, fechaFinal, codigo]);
-            if (PLAN.rowCount > 0) {
-                return res.jsonp(PLAN.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
-        });
-    }
-    VerificarFechasPlanEdicion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            const { codigo } = req.params;
-            const { fechaInicio, fechaFinal } = req.body;
-            const PLAN = yield database_1.default.query('SELECT * FROM plan_horarios WHERE NOT id=$3 AND ' +
-                '($1 BETWEEN fec_inicio AND fec_final OR $2 BETWEEN fec_inicio AND fec_final ' +
-                'OR fec_inicio BETWEEN $1 AND $2 OR fec_final BETWEEN $1 AND $2) ' +
-                'AND codigo = $4', [fechaInicio, fechaFinal, id, codigo]);
             if (PLAN.rowCount > 0) {
                 return res.jsonp(PLAN.rows);
             }

@@ -1,6 +1,7 @@
+import { TokenValidation } from '../../libs/verificarToken';
 import { Router } from 'express';
+
 import nacionalidadControlador from '../../controlador/nacionalidad/nacionalidadControlador';
-import { TokenValidation } from '../../libs/verificarToken'
 
 class NacionalidadRutas {
     public router: Router = Router();
@@ -10,7 +11,8 @@ class NacionalidadRutas {
     }
 
     configuracion(): void {
-        this.router.get('/', TokenValidation, nacionalidadControlador.list);
+        // METODO PARA LISTAR NACIONALIDADES
+        this.router.get('/', TokenValidation, nacionalidadControlador.ListarNacionalidades);
     }
 }
 

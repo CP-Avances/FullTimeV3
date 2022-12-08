@@ -68,7 +68,7 @@ export class EditarPeriodoVacacionesComponent implements OnInit {
     this.ImprimirDatos();
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {

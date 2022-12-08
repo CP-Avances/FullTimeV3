@@ -1,18 +1,15 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { CiudadService } from 'src/app/servicios/ciudad/ciudad.service'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
-import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
-import { CiudadFeriadosService } from 'src/app/servicios/ciudadFeriados/ciudad-feriados.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { DepartamentosService } from 'src/app/servicios/catalogos/catDepartamentos/departamentos.service';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
-import { ThemePalette } from '@angular/material/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { startWith, map } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
+import { ThemePalette } from '@angular/material/core';
+import { Observable } from 'rxjs';
+
+import { CiudadFeriadosService } from 'src/app/servicios/ciudadFeriados/ciudad-feriados.service';
+import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
+import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
 
 @Component({
   selector: 'app-registrar-sucursales',
@@ -22,75 +19,58 @@ import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
 
 export class RegistrarSucursalesComponent implements OnInit {
 
-  // Datos Provincias, Continentes, Países y Ciudades
-  empresas: any = [];
-  provincias: any = [];
-  seleccionarProvincia;
+  // DATOS PROVINCIAS, CONTINENTES, PAÍSES Y CIUDADES
   continentes: any = [];
-  seleccionarContinente;
+  provincias: any = [];
+  empresas: any = [];
+  ciudades: any = [];
   paises: any = [];
-  seleccionarPaises;
-  nombreCiudades: any = [];
-  seleccionarCiudad;
-  ultimoId: any = [];
 
   filteredOptPais: Observable<string[]>;
   filteredOptProv: Observable<string[]>;
   filteredOptCiud: Observable<string[]>;
 
-  nombre = new FormControl('', [Validators.required, Validators.minLength(4)]);
-  idCiudad = new FormControl('', [Validators.required]);
-  idProvinciaF = new FormControl('', [Validators.required]);
-  nombreContinenteF = new FormControl('', Validators.required);
-  nombrePaisF = new FormControl('', Validators.required);
+  ver_provincia: boolean = true;
+  ver_ciudad: boolean = true;
+  ver_pais: boolean = true;
+  sucursal: boolean = true;
 
-  public nuevaSucursalForm = new FormGroup({
-    sucursalNombreForm: this.nombre,
-    idCiudadForm: this.idCiudad,
-    idProvinciaForm: this.idProvinciaF,
+  nombreContinenteF = new FormControl('', Validators.required);
+  idProvinciaF = new FormControl('', [Validators.required]);
+  nombrePaisF = new FormControl('', Validators.required);
+  idCiudad = new FormControl('', [Validators.required]);
+  nombre = new FormControl('', [Validators.required, Validators.minLength(3)]);
+
+  public formulario = new FormGroup({
     nombreContinenteForm: this.nombreContinenteF,
+    sucursalNombreForm: this.nombre,
+    idProvinciaForm: this.idProvinciaF,
     nombrePaisForm: this.nombrePaisF,
+    idCiudadForm: this.idCiudad,
   });
 
   /**
-   * Variables progress spinner
+   * VARIABLES PROGRESS SPINNER
    */
+  habilitarprogress: boolean = false;
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'indeterminate';
   value = 10;
-  habilitarprogress: boolean = false;
 
   constructor(
-    public restCiudad: CiudadService,
-    public restSucursal: SucursalService,
     private restP: ProvinciaService,
     private restF: CiudadFeriadosService,
-    private restE: EmpresaService,
-    private restD: DepartamentosService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<RegistrarSucursalesComponent>,
+    public ventana: MatDialogRef<RegistrarSucursalesComponent>,
+    public restSucursal: SucursalService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
-    this.continentes = this.ObtenerContinentes();
-    this.filteredOptPais = this.nombrePaisF.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filterPais(value))
-      );
-    this.filteredOptProv = this.idProvinciaF.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filterProvincia(value))
-      );
-    this.filteredOptCiud = this.idCiudad.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filterCiudad(value))
-      );
+    this.ObtenerContinentes();
   }
 
+  // BUSQUEDA DE DATOS INGRESANDO LETRAS
   private _filterPais(value: string): string[] {
     if (value != null) {
       const filterValue = value.toLowerCase();
@@ -108,188 +88,180 @@ export class RegistrarSucursalesComponent implements OnInit {
   private _filterCiudad(value: string): string[] {
     if (value != null) {
       const filterValue = value.toLowerCase();
-      return this.nombreCiudades.filter(ciudades => ciudades.descripcion.toLowerCase().includes(filterValue));
+      return this.ciudades.filter(ciudades => ciudades.descripcion.toLowerCase().includes(filterValue));
     }
   }
 
+  // METODO DE BUSQUEDA DE CONTINENTES
   ObtenerContinentes() {
     this.continentes = [];
     this.restP.BuscarContinente().subscribe(datos => {
       this.continentes = datos;
-      this.continentes[this.continentes.length] = { continente: "Seleccionar" };
-      this.seleccionarContinente = this.continentes[this.continentes.length - 1].continente;
     });
   }
 
-  ObtenerPaises(continente) {
-    this.paises = [];
+  // METODO DE BUSQUEDA DE PAISES
+  ObtenerPaises(continente: any) {
+
+    this.LimpiarPais();
+    this.LimpiarCiudad();
+    this.LimpiarSucursal();
+    this.LimpiarProvincia();
+
     this.restP.BuscarPais(continente).subscribe(datos => {
       this.paises = datos;
-      this.seleccionarPaises = '';
+      this.ver_pais = false;
+      this.filteredOptPais = this.nombrePaisF.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filterPais(value))
+        );
     })
   }
 
-  FiltrarPaises(form) {
-    var nombreContinente = form.nombreContinenteForm;
-    if (nombreContinente === 'Seleccionar' || nombreContinente === '') {
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
-        timeOut: 6000,
-      })
-      this.paises = [];
-      this.provincias = [];
-      this.nombreCiudades = [];
-      this.seleccionarPaises = '';
-    }
-    else {
-      this.seleccionarPaises = this.ObtenerPaises(nombreContinente);
-    }
+  // METODO PARA CARGAR DATOS DE PAISES EN EL FORMULARIO
+  FiltrarPaises(form: any) {
+    this.ObtenerPaises(form.nombreContinenteForm);
   }
 
-  ObtenerProvincias(pais) {
-    this.provincias = [];
-    this.restP.BuscarUnaProvincia(pais).subscribe(datos => {
+  // METODO PARA BUSCAR PROVINCIAS
+  ObtenerProvincias(pais: any) {
+
+    this.LimpiarProvincia();
+    this.LimpiarSucursal();
+    this.LimpiarCiudad();
+
+    this.restP.BuscarProvinciaPais(pais).subscribe(datos => {
       this.provincias = datos;
-      this.seleccionarProvincia = '';
+      this.ver_provincia = false;
+      this.filteredOptProv = this.idProvinciaF.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filterProvincia(value))
+        );
     }, error => {
-      this.toastr.info('El País seleccionado no tiene Provincias, Departamentos o Estados registrados', '', {
+      this.toastr.info('El País seleccionado no tiene Provincias, Departamentos o Estados registrados.', '', {
         timeOut: 6000,
-      })
+      });
+      this.nombrePaisF.reset();
+      this.ver_provincia = true;
     })
   }
 
-  FiltrarProvincias(form) {
-    let idPais;
+  // METODO PARA CARGAR INFORMACION DE PROVINCIAS EN EL FORMULARIO
+  FiltrarProvincias(form: any) {
+    let idPais: number;
     this.paises.forEach(obj => {
       if (obj.nombre === form.nombrePaisForm) {
         idPais = obj.id
       }
     });
-    if (idPais === undefined) {
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
-        timeOut: 6000,
-      })
-      this.provincias = [];
-      this.seleccionarProvincia = '';
-    }
-    else {
-      this.seleccionarProvincia = this.ObtenerProvincias(idPais);
-    }
+    this.ObtenerProvincias(idPais);
   }
 
-  ObtenerCiudades(provincia) {
-    this.nombreCiudades = [];
+  // METODO PARA CONSULTAR CIUDADES
+  ObtenerCiudades(provincia: any) {
+
+    this.LimpiarCiudad();
+    this.LimpiarSucursal();
+
     this.restF.BuscarCiudadProvincia(provincia).subscribe(datos => {
-      this.nombreCiudades = datos;
-      this.seleccionarCiudad = '';
+      this.ciudades = datos;
+      this.ver_ciudad = false;
+      this.filteredOptCiud = this.idCiudad.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filterCiudad(value))
+        );
     }, error => {
-      this.toastr.info('Provincia, Departamento o Estado no tiene ciudades registradas', '', {
+      this.toastr.info('Provincia, Departamento o Estado no tiene ciudades registradas.', '', {
         timeOut: 6000,
-      })
+      });
+      this.idProvinciaF.reset();
+      this.ver_ciudad = true;
     })
   }
 
-  FiltrarCiudades(form) {
-    let nombreProvincia = form.idProvinciaForm;
-    if (nombreProvincia === 'Seleccionar') {
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
-        timeOut: 6000,
-      })
-      this.seleccionarCiudad = '';
-    }
-    else {
-      this.seleccionarCiudad = this.ObtenerCiudades(nombreProvincia);
-    }
+  // METODO PARA CARGAR CIUDADES EN EL FORMULARIO
+  FiltrarCiudades(form: any) {
+    this.ObtenerCiudades(form.idProvinciaForm);
   }
 
-  SeleccionarCiudad(form) {
-    var nombreCiudad = form.idCiudadForm;
-    if (nombreCiudad === undefined) {
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
-        timeOut: 6000,
-      })
-    }
+  // METODO PARA ACTIVAR REGISTRO DE ESTABLECIMIENTO
+  SeleccionarCiudad() {
+    this.sucursal = false;
   }
 
-  contador: number = 0;
-  listaSucursales: any = [];
-  InsertarSucursal(form) {
-    this.habilitarprogress = true;
-    this.contador = 0;
-    this.listaSucursales = [];
-    let idEmpr = localStorage.getItem('empresa');
-    let idCiud;
-    this.nombreCiudades.forEach(obj => {
-      if (obj.descripcion === form.idCiudadForm) {
-        idCiud = obj.id
+  // METODO PARA REGISTRAR ESTABLECIMIENTO
+  InsertarSucursal(form: any) {
+
+    // VALIDAR REGISTRO DE CIUDAD
+    let ciudad_id: number = 0;
+    this.ciudades.forEach(obj => {
+      if (obj.descripcion.toUpperCase() === form.idCiudadForm.toUpperCase()) {
+        ciudad_id = obj.id
       }
     });
-    let dataSucursal = {
-      nombre: form.sucursalNombreForm,
-      id_ciudad: idCiud,
-      id_empresa: idEmpr
-    };
-    this.restSucursal.VerSucursalesRegistro().subscribe(responseS => {
-      this.listaSucursales = responseS;
-      this.habilitarprogress = false;
-      console.log('sucursales lista', this.listaSucursales);
-      for (var i = 0; i <= this.listaSucursales.length - 1; i++) {
-        if (this.listaSucursales[i].nombre.toUpperCase() === form.sucursalNombreForm.toUpperCase()) {
-          console.log('nombre', this.listaSucursales[i].nombre.toUpperCase(), 'form', form.sucursalNombreForm.toUpperCase());
-          this.contador = 1;
-        }
+
+    // VALIDAR SI LA CIUDAD SELECCIONADA ES CORRECTA
+    if (ciudad_id != 0) {
+
+      this.habilitarprogress = true;
+      let buscar = {
+        nombre: form.sucursalNombreForm.toUpperCase()
       }
-      console.log('contador', this.contador)
-      if (this.contador === 1) {
-        this.toastr.error('El nombre de la Sucursal ya se encuentra registrado.', 'Operación Fallida', {
+      // VERIFICACION DE NOMBRES DUPLICADOS
+      this.restSucursal.BuscarNombreSucursal(buscar).subscribe(responseS => {
+        this.habilitarprogress = false;
+        this.toastr.warning('El nombre de establecimiento ya se encuentra registrado.', 'Ups!! algo salio mal.', {
           timeOut: 6000,
         });
-        this.habilitarprogress = false;
-      }
-      else {
-        this.restSucursal.postSucursalRest(dataSucursal).subscribe(response => {
-          this.toastr.success('Operación Exitosa', 'Sucursal guardada', {
+
+      }, vacio => {
+        let empresa_id = localStorage.getItem('empresa');
+        let sucursal = {
+          nombre: form.sucursalNombreForm,
+          id_ciudad: ciudad_id,
+          id_empresa: empresa_id
+        };
+        this.restSucursal.RegistrarSucursal(sucursal).subscribe(info => {
+          this.habilitarprogress = false;
+          this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
             timeOut: 6000,
           });
-          this.habilitarprogress = false;
-          this.LimpiarCampos();
-          //Obtener ultimo ID para registrar un departamento de nombre Ninguno -- útil para cada sucursal registrada
-          this.restSucursal.EncontrarUltimoId().subscribe(datos => {
-            this.ultimoId = datos;
-            console.log("id sucursal: ", this.ultimoId[0].max);
-            let datosDepartamentos = {
-              nombre: 'Ninguno',
-              nivel: 1,
-              depa_padre: null,
-              id_sucursal: this.ultimoId[0].max
-            };
-            console.log("insertar departamento: ", datosDepartamentos);
-            this.restD.postDepartamentoRest(datosDepartamentos).subscribe(response => {
-              this.ultimoId = [];
-              console.log('depa-guardado')
-            });
-          }, error => { });
-        }, error => { });
-      }
-    })
-  }
-
-  LimpiarCampos() {
-    this.nuevaSucursalForm.reset();
-    this.ObtenerContinentes();
-    this.paises = [];
-    this.provincias = [];
-    this.nombreCiudades = [];
-  }
-
-  CerrarVentanaRegistroSucursal() {
-    this.LimpiarCampos();
-    this.dialogRef.close({actualizar: true});
-  }
-
-  ObtenerMensajeErrorNombre() {
-    if (this.nombre.hasError('required')) {
-      return 'Campo Obligatorio';
+          this.ventana.close();
+        });
+      })
     }
+    else {
+      this.toastr.warning('Verificar registro de ciudad.', '', {
+        timeOut: 6000,
+      });
+    }
+  }
+
+  // METODOS PARA LIMPIAR FORMULARIO SEGUN SELECCION
+  LimpiarPais() {
+    this.paises = [];
+    this.ver_pais = true;
+    this.nombrePaisF.reset();
+  }
+
+  LimpiarProvincia() {
+    this.provincias = [];
+    this.idProvinciaF.reset();
+    this.ver_provincia = true;
+  }
+
+  LimpiarCiudad() {
+    this.ciudades = [];
+    this.idCiudad.reset();
+    this.ver_ciudad = true;
+  }
+
+  LimpiarSucursal() {
+    this.sucursal = true;
+    this.nombre.reset();
   }
 
 }

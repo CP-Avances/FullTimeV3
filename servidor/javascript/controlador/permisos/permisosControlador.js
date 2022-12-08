@@ -493,9 +493,9 @@ class PermisosControlador {
         });
     }
     /** ********************************************************************************************* **
-     ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * **
+     ** *         METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * **
      ** ********************************************************************************************* **/
-    // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO DESDE APLICACIÓN WEB
+    // METODO PARA ENVIAR CORREO ELECTRÓNICO DESDE APLICACIÓN WEB
     EnviarCorreoWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var tiempo = (0, settingsMail_1.fechaHora)();

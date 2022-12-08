@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 import { RegistroProvinciaComponent } from '../registro-provincia/registro-provincia.component';
-
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+
 import { ProvinciaService } from '../../../../servicios/catalogos/catProvincias/provincia.service'
 
 @Component({
@@ -18,76 +18,77 @@ import { ProvinciaService } from '../../../../servicios/catalogos/catProvincias/
 
 export class PrincipalProvinciaComponent implements OnInit {
 
-  // Almacenamiento de datos
+  // ALMACENAMIENTO DE DATOS
   provincias: any = [];
   filtroPais = '';
   filtroProvincia = '';
 
-  // Items de paginación de la tabla
+  // ITEMS DE PAGINACIÓN DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
 
   confirmacion = false;
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   paisF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
   provinciaF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
 
-  // Asignación de validaciones a inputs del formulario
-  public BuscarProvinciasForm = new FormGroup({
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     paisForm: this.paisF,
     provinciaForm: this.provinciaF,
   });
 
   constructor(
-    public rest: ProvinciaService,
-    public vistaRegistrarDatos: MatDialog,
     private toastr: ToastrService,
     private router: Router,
+    public rest: ProvinciaService,
+    public ventana: MatDialog,
   ) { }
 
   ngOnInit(): void {
     this.ListarProvincias();
   }
 
-
+  // EVENTOS DE PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  // METODO PARA BUSCAR PROVINCIAS
   ListarProvincias() {
     this.provincias = [];
-    this.rest.getProvinciasRest().subscribe(datos => {
+    this.rest.BuscarProvincias().subscribe(datos => {
       this.provincias = datos;
     })
   }
 
+  // METODO PARA REGISTRAR PROVINCIAS
   AbrirVentanaRegistrarProvincia() {
-    this.vistaRegistrarDatos.open(RegistroProvinciaComponent, { width: '400px' }).afterClosed().subscribe(item => {
+    this.ventana.open(RegistroProvinciaComponent, { width: '400px' }).afterClosed().subscribe(item => {
       this.ListarProvincias();
     });
   }
 
-  /* **********************************************************************************
-   * ELIMAR REGISTRO ENROLADO Y ENROLADOS-DISPOSITIVO 
-   * **********************************************************************************/
+  /** ******************************************************************************* **
+   ** **            ELIMAR REGISTRO ENROLADO Y ENROLADOS-DISPOSITIVO               ** **
+   ** ******************************************************************************* **/
 
-  /** Función para eliminar registro seleccionado */
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO
   Eliminar(id_prov: number) {
-    //console.log("probando id", id_prov)
     this.rest.EliminarProvincia(id_prov).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ListarProvincias();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -97,12 +98,13 @@ export class PrincipalProvinciaComponent implements OnInit {
       });
   }
 
-  IngresarSoloLetras(e) {
+  // METODO PARA REGISTRAR SOLO LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -119,24 +121,13 @@ export class PrincipalProvinciaComponent implements OnInit {
     }
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.BuscarProvinciasForm.setValue({
+    this.formulario.setValue({
       paisForm: '',
       provinciaForm: ''
     });
     this.ListarProvincias;
-  }
-
-  ObtenerMensajePaisLetras() {
-    if (this.paisF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
-  ObtenerMensajeProvinciaLetras() {
-    if (this.provinciaF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
   }
 
 }

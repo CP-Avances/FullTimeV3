@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { environment } from 'src/environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,6 +21,8 @@ import { MetodosComponent } from 'src/app/componentes/administracionGeneral/meto
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ProcesoService } from 'src/app/servicios/catalogos/catProcesos/proceso.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-principal-proceso',
@@ -45,6 +47,8 @@ export class PrincipalProcesoComponent implements OnInit {
   empleado: any = [];
   idEmpleado: number;
 
+  get habilitarAccion(): boolean { return this.funciones.accionesPersonal; }
+
   constructor(
     private rest: ProcesoService,
     public restE: EmpleadoService,
@@ -52,6 +56,8 @@ export class PrincipalProcesoComponent implements OnInit {
     public restEmpre: EmpresaService,
     public vistaRegistrarDatos: MatDialog,
     private router: Router,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -62,13 +68,24 @@ export class PrincipalProcesoComponent implements OnInit {
   pageSizeOptions = [5, 10, 20, 50];
 
   ngOnInit(): void {
-    this.getProcesos();
-    this.ObtenerEmpleados(this.idEmpleado);
-       this.ObtenerLogo();
-    this.ObtenerColores();
+    if (this.habilitarAccion === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Acciones de Personal. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.getProcesos();
+      this.ObtenerEmpleados(this.idEmpleado);
+      this.ObtenerLogo();
+      this.ObtenerColores();
+    }
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -76,7 +93,7 @@ export class PrincipalProcesoComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -84,7 +101,7 @@ export class PrincipalProcesoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -166,17 +183,17 @@ export class PrincipalProcesoComponent implements OnInit {
     //console.log(datosSeleccionados.fecha);
   }
 
-  /** Función para eliminar registro seleccionado */
+  /** FUNCION para eliminar registro seleccionado */
   Eliminar(id_proceso: number) {
     this.rest.deleteProcesoRest(id_proceso).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.getProcesos();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  /** FUNCION para confirmar si se elimina o no un registro */
   ConfirmarDelete(datos: any) {
     console.log(datos);
     this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
@@ -209,7 +226,7 @@ export class PrincipalProcesoComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                         MÉTODO PARA EXPORTAR A PDF
+   *                                         METODO PARA EXPORTAR A PDF
    ******************************************************************************************************/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -312,7 +329,7 @@ export class PrincipalProcesoComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.procesos);
@@ -322,7 +339,7 @@ export class PrincipalProcesoComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {
@@ -353,7 +370,7 @@ export class PrincipalProcesoComponent implements OnInit {
       arregloProcesos.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloProcesos).subscribe(res => {
+    this.rest.CrearXML(arregloProcesos).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/proceso/download/` + this.data.name;

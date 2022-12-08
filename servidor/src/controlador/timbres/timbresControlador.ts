@@ -3,6 +3,157 @@ import pool from '../../database';
 
 class TimbresControlador {
 
+    // METODO PARA LISTAR MARCACIONES
+    public async ObtenerTimbres(req: Request, res: Response): Promise<any> {
+        try {
+            const id = req.userIdEmpleado;
+            let timbres = await pool.query(
+                `
+                SELECT CAST(t.fec_hora_timbre AS VARCHAR), t.accion, t.tecl_funcion, t.observacion, 
+                    t.latitud, t.longitud, t.id_empleado, t.id_reloj, ubicacion, fec_hora_timbre_servidor,
+                    dispositivo_timbre 
+                FROM empleados AS e, timbres AS t 
+                WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
+                ORDER BY t.fec_hora_timbre DESC LIMIT 100
+                `
+                , [id]).then(result => {
+                    return result.rows
+                        .map(obj => {
+                            switch (obj.accion) {
+                                case 'EoS': obj.accion = 'Entrada o Salida'; break;
+                                case 'AES': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                                case 'PES': obj.accion = 'Entrada o Salida Permiso'; break;
+                                case 'E': obj.accion = 'Entrada o Salida'; break;
+                                case 'S': obj.accion = 'Entrada o Salida'; break;
+                                case 'E/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                                case 'S/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                                case 'E/P': obj.accion = 'Entrada o Salida Permiso'; break;
+                                case 'S/P': obj.accion = 'Entrada o Salida Permiso'; break;
+                                case 'HA': obj.accion = 'Horario Abierto'; break;
+                                default: obj.accion = 'codigo 99'; break;
+                            }
+                            return obj
+                        })
+                });
+
+            if (timbres.length === 0) return res.status(400).jsonp({ message: 'Ups!!! no existen registros.' });
+
+            let estado_cuenta = [{
+                timbres_PES: await pool.query(
+                    `
+                    SELECT count(*) 
+                    FROM empleados AS e, timbres AS t 
+                    WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
+                        AND t.accion in (\'PES\', \'E/P\', \'S/P\')
+                    `
+                    , [id]).then(result => { return result.rows[0].count }),
+
+                timbres_AES: await pool.query(
+                    `
+                    SELECT count(*) 
+                    FROM empleados AS e, timbres AS t 
+                    WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
+                    AND t.accion in (\'AES\', \'E/A\', \'S/A\')
+                    `
+                    , [id]).then(result => { return result.rows[0].count }),
+
+                timbres_EoS: await pool.query(
+                    `
+                    SELECT count(*) 
+                    FROM empleados AS e, timbres AS t 
+                    WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
+                        AND t.accion in (\'EoS\', \'E\', \'S\')
+                    `
+                    , [id]).then(result => { return result.rows[0].count }),
+
+                total_timbres: await pool.query(
+                    `
+                    SELECT count(*) 
+                    FROM empleados AS e, timbres AS t 
+                    WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado
+                    `
+                    , [id]).then(result => { return result.rows[0].count })
+            }]
+
+            return res.status(200).jsonp({
+                timbres: timbres,
+                cuenta: estado_cuenta,
+                info: await pool.query(
+                    `
+                    SELECT tc.cargo, ca.sueldo, ca.hora_trabaja, eh.fec_inicio, eh.fec_final 
+                    FROM empl_contratos AS co, empl_cargos AS ca, empl_horarios AS eh, tipo_cargo AS tc
+                    WHERE co.id_empleado = $1 AND ca.id_empl_contrato = co.id AND eh.id_empl_cargo = ca.id 
+                        AND tc.id = ca.cargo ORDER BY eh.fec_inicio DESC LIMIT 1
+                    `
+                    , [id]).then(result => {
+                        return result.rows
+                    }),
+            });
+        } catch (error) {
+            res.status(400).jsonp({ message: error })
+        }
+    }
+
+    // METODO DE REGISTRO DE TIMBRES PERSONALES
+    public async CrearTimbreWeb(req: Request, res: Response): Promise<any> {
+        try {
+            const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj,
+                ubicacion } = req.body;
+
+            let f = new Date();
+            const id_empleado = req.userIdEmpleado;
+
+            let code = await pool.query(
+                `
+                SELECT codigo FROM empleados WHERE id = $1
+                `
+                , [id_empleado]).then(result => { return result.rows });
+
+            if (code.length === 0) return { mensaje: 'El usuario no tiene un código asignado.' };
+
+            var codigo = parseInt(code[0].codigo);
+
+            const [timbre] = await pool.query(
+                `
+                INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, 
+                    id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id
+                `
+                , [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj, ubicacion])
+                .then(result => {
+                    return result.rows
+                }).catch(err => {
+                    return err
+                })
+
+            if (timbre) {
+                return res.status(200).jsonp({ message: 'Registro guardado.' });
+            }
+
+            return res.status(400).jsonp({ message: 'Ups!!! algo ha salido mal.' });
+
+        } catch (error) {
+            res.status(400).jsonp({ message: error });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // METODO DE BUSQUEDA DE AVISOS GENERALES POR EMPLEADO
     public async ObtenerAvisosColaborador(req: Request, res: Response) {
         const { id_empleado } = req.params
@@ -13,8 +164,8 @@ class TimbresControlador {
             descripcion, id_timbre, tipo, id_receives_empl
             FROM realtime_timbres WHERE id_receives_empl = $1 
             ORDER BY (visto is FALSE) DESC, id DESC LIMIT 20
-            `,
-            [id_empleado])
+            `
+            , [id_empleado])
             .then(async (result) => {
 
                 if (result.rowCount > 0) {
@@ -127,36 +278,7 @@ class TimbresControlador {
         return res.jsonp({ message: 'No seleccionó ningún timbre' });
     }
 
-    public async CrearTimbreWeb(req: Request, res: Response): Promise<any> {
-        try {
-            const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj, ubicacion } = req.body;
-            let f = new Date();
-            const id_empleado = req.userIdEmpleado;
-            let code = await pool.query('SELECT codigo FROM empleados WHERE id = $1', [id_empleado]).then(result => { return result.rows });
-            if (code.length === 0) return { mensaje: 'El empleado no tiene un codigo asignado.' };
-            var codigo = parseInt(code[0].codigo);
-            console.log(req.body, codigo)
 
-            const [timbre] = await pool.query('INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, ' +
-                'observacion, latitud, longitud, id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion) ' +
-                'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
-                [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj, ubicacion])
-                .then(result => {
-                    console.log(result.rows);
-                    return result.rows
-                }).catch(err => {
-                    console.log(err)
-                    // res.status(400).jsonp({message: err.toString});
-                    return err
-                })
-            if (timbre) {
-                return res.status(200).jsonp({ message: 'Timbre creado exitosamente' });
-            }
-            return res.status(400).jsonp({ message: 'El timbre no se ha insertado' });
-        } catch (error) {
-            res.status(400).jsonp({ message: error });
-        }
-    }
 
     public async CrearTimbreWebAdmin(req: Request, res: Response): Promise<any> {
         try {
@@ -207,54 +329,7 @@ class TimbresControlador {
         }
     }
 
-    public async ObtenerTimbres(req: Request, res: Response): Promise<any> {
-        try {
-            const id = req.userIdEmpleado;
-            let timbres = await pool.query('SELECT CAST(t.fec_hora_timbre AS VARCHAR), t.accion, t.tecl_funcion, t.observacion, t.latitud, t.longitud, t.id_empleado, t.id_reloj ' +
-                'FROM empleados AS e, timbres AS t WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado ORDER BY t.fec_hora_timbre DESC LIMIT 100', [id]).then(result => {
-                    return result.rows
-                        .map(obj => {
-                            switch (obj.accion) {
-                                case 'EoS': obj.accion = 'Entrada o Salida'; break;
-                                case 'AES': obj.accion = 'Entrada o Salida Almuerzo'; break;
-                                case 'PES': obj.accion = 'Entrada o Salida Permiso'; break;
-                                case 'E': obj.accion = 'Entrada o Salida'; break;
-                                case 'S': obj.accion = 'Entrada o Salida'; break;
-                                case 'E/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
-                                case 'S/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
-                                case 'E/P': obj.accion = 'Entrada o Salida Permiso'; break;
-                                case 'S/P': obj.accion = 'Entrada o Salida Permiso'; break;
-                                case 'HA': obj.accion = 'Horario Abierto'; break;
-                                default: obj.accion = 'codigo 99'; break;
-                            }
-                            return obj
-                        })
-                });
 
-
-            if (timbres.length === 0) return res.status(400).jsonp({ message: 'No hay timbres' });
-
-            let estado_cuenta = [{
-                timbres_PES: await pool.query('SELECT count(*) FROM empleados AS e, timbres AS t WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado AND t.accion in (\'PES\', \'E/P\', \'S/P\')  ', [id]).then(result => { return result.rows[0].count }),
-                timbres_AES: await pool.query('SELECT count(*) FROM empleados AS e, timbres AS t WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado AND t.accion in (\'AES\', \'E/A\', \'S/A\') ', [id]).then(result => { return result.rows[0].count }),
-                timbres_EoS: await pool.query('SELECT count(*) FROM empleados AS e, timbres AS t WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado AND t.accion in (\'EoS\', \'E\', \'S\') ', [id]).then(result => { return result.rows[0].count }),
-                total_timbres: await pool.query('SELECT count(*) FROM empleados AS e, timbres AS t WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado', [id]).then(result => { return result.rows[0].count })
-            }]
-
-            return res.status(200).jsonp({
-                timbres: timbres,
-                cuenta: estado_cuenta,
-                info: await pool.query('SELECT tc.cargo, ca.sueldo, ca.hora_trabaja, eh.fec_inicio, eh.fec_final FROM empl_contratos AS co, empl_cargos AS ca, empl_horarios AS eh, tipo_cargo AS tc ' +
-                    'WHERE co.id_empleado = $1 AND ca.id_empl_contrato = co.id AND eh.id_empl_cargo = ca.id AND tc.id = ca.cargo ORDER BY eh.fec_inicio DESC LIMIT 1', [id]).then(result => {
-                        console.log(result.rows);
-                        return result.rows
-                    }),
-            });
-        } catch (error) {
-            console.log(error);
-            res.status(400).jsonp({ message: error })
-        }
-    }
 
     public async ObtenerTimbresEmpleado(req: Request, res: Response): Promise<any> {
         try {

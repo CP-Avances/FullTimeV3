@@ -11,18 +11,18 @@ import { Validators, FormControl } from '@angular/forms';
 import { ITableEmpleados } from 'src/app/model/reportes.model';
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
 
-// SERVICIOS FILTROS DE BÚSQUEDA
+// SERVICIOS FILTROS DE BUSQUEDA
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 
 // IMPORTAR SERVICIOS
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 
 // IMPORTAR COMPONENTES
 import { RegistoEmpleadoHorarioComponent } from '../../empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
 import { HorariosMultiplesComponent } from '../horarios-multiples/horarios-multiples.component';
-import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 
 @Component({
   selector: 'app-horario-multiple-empleado',
@@ -36,7 +36,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
   empleados_sin_asignacion: any = [];
   no_asignados: boolean = false;
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS SIN HORARIO
+  // ITEMS DE PAGINACION DE LA TABLA EMPLEADOS SIN HORARIO
   numero_pagina_h: number = 1;
   tamanio_pagina_h: number = 5;
   pageSizeOptions_h = [5, 10, 20, 50];
@@ -69,14 +69,12 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
 
   public check: checkOptions[];
 
-
-
   constructor(
     public informacion: DatosGeneralesService, // SERVICIO DE DATOS INFORMATIVOS DE USUARIOS
     public restCargo: EmplCargosService,
     public restPerV: PeriodoVacacionesService, // SERVICIO DATOS PERIODO DE VACACIONES
     public restR: ReportesService,
-    public validar: ValidacionesService, // VARIABLE USADA PARA VALIDACIONES DE INGRESO DE LETRAS - NÚMEROS
+    public validar: ValidacionesService, // VARIABLE USADA PARA VALIDACIONES DE INGRESO DE LETRAS - NUMEROS
     private toastr: ToastrService, // VARIABLE PARA MANEJO DE NOTIFICACIONES
     private ventana: MatDialog, // VARIABLE PARA MANEJO DE VENTANAS
   ) {
@@ -88,6 +86,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.BuscarInformacion();
   }
 
+  // METODO PARA DESTRUIR PROCESOS
   ngOnDestroy() {
     this.restR.GuardarCheckOpcion(0);
     this.restR.DefaultFormCriterios();
@@ -95,6 +94,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.origen = [];
   }
 
+  // METODO PARA BUSCAR INFORMACION DE USUARIOS
   BuscarInformacion() {
     this.origen = [];
     this.informacion.ObtenerInformacion().subscribe((res: any[]) => {
@@ -133,10 +133,6 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
           })
         })
       })
-      console.log('SUCURSALES', this.sucursales);
-      console.log('DEPARTAMENTOS', this.departamentos);
-      console.log('EMPLEADOS', this.empleados);
-
     }, err => {
       this.toastr.error(err.error.message)
     })
@@ -150,12 +146,11 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.activar_seleccion = false;
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE BUSQUEDA
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
   opcion: number;
   activar_boton: boolean = false;
   activar_seleccion: boolean = true;
   BuscarPorTipo(e: MatRadioChange) {
-    console.log('CHECK ', e.value);
     this.opcion = e.value;
     this.activar_boton = true;
     switch (this.opcion) {
@@ -197,8 +192,8 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA FILTRAR DATOS DE BÚSQUEDA
-  Filtrar(e, orden: number) {
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
+  Filtrar(e: any, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;
       case 2: this.restR.setFiltroNombreDep(e); break;
@@ -221,17 +216,17 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
   selectionDep = new SelectionModel<ITableEmpleados>(true, []);
   selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
+  // ITEMS DE PAGINACION DE LA TABLA SUCURSAL
   pageSizeOptions_suc = [5, 10, 20, 50];
   tamanio_pagina_suc: number = 5;
   numero_pagina_suc: number = 1;
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA DEPARTAMENTO
+  // ITEMS DE PAGINACION DE LA TABLA DEPARTAMENTO
   pageSizeOptions_dep = [5, 10, 20, 50];
   tamanio_pagina_dep: number = 5;
   numero_pagina_dep: number = 1;
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
+  // ITEMS DE PAGINACION DE LA TABLA EMPLEADOS
   pageSizeOptions_emp = [5, 10, 20, 50];
   tamanio_pagina_emp: number = 5;
   numero_pagina_emp: number = 1;
@@ -244,27 +239,27 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
   get filtroCodigo() { return this.restR.filtroCodigo };
   get filtroCedula() { return this.restR.filtroCedula };
 
-  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
+  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACION INDIVIDUAL
   auto_individual: boolean = true;
 
   /** ************************************************************************************** **
    ** **                   METODOS DE SELECCION DE DATOS DE USUARIOS                      ** **
    ** ************************************************************************************** **/
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedSuc() {
     const numSelected = this.selectionSuc.selected.length;
     return numSelected === this.sucursales.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleSuc() {
     this.isAllSelectedSuc() ?
       this.selectionSuc.clear() :
       this.sucursales.forEach(row => this.selectionSuc.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelSuc(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedSuc() ? 'select' : 'deselect'} all`;
@@ -272,20 +267,20 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     return `${this.selectionSuc.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedDep() {
     const numSelected = this.selectionDep.selected.length;
     return numSelected === this.departamentos.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleDep() {
     this.isAllSelectedDep() ?
       this.selectionDep.clear() :
       this.departamentos.forEach(row => this.selectionDep.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelDep(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedDep() ? 'select' : 'deselect'} all`;
@@ -293,20 +288,20 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     return `${this.selectionDep.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedEmp() {
     const numSelected = this.selectionEmp.selected.length;
     return numSelected === this.empleados.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleEmp() {
     this.isAllSelectedEmp() ?
       this.selectionEmp.clear() :
       this.empleados.forEach(row => this.selectionEmp.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelEmp(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
@@ -327,6 +322,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     }
   }
 
+  // METODO PARA MOSTRAR DATOS DE SUCURSALES
   ModelarSucursal(id: number) {
     let usuarios: any = [];
     let respuesta = JSON.parse(this.origen)
@@ -358,6 +354,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.PlanificarMultiple(usuarios);
   }
 
+  // METODO PARA MOSTRAR DATOS DE DEPARTAMENTOS
   ModelarDepartamentos(id: number) {
     let usuarios: any = [];
     let respuesta = JSON.parse(this.origen)
@@ -390,6 +387,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.PlanificarMultiple(usuarios);
   }
 
+  // METODO PARA MOSTRAR DATOS DE EMPLEADOS
   ModelarEmpleados() {
     let respuesta: any = [];
     this.empleados.forEach((obj: any) => {
@@ -404,13 +402,12 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
 
 
   /** ************************************************************************************** **
-   ** **                     METODOS DE PLANIFICACIÓN DE HORARIOS                         ** ** 
+   ** **                     METODOS DE PLANIFICACION DE HORARIOS                         ** ** 
    ** ************************************************************************************** **/
 
-  // MÉTODO PARA ABRI VENTANA DE ASIGNACIÓN DE HORARIO
+  // METODO PARA ABRI VENTANA DE ASIGNACION DE HORARIO
   idCargo: any;
   PlanificarIndividual(usuario: any): void {
-    console.log('ver data seleccionada ... ', usuario)
     this.ventana.open(RegistoEmpleadoHorarioComponent,
       {
         width: '600px', data: {
@@ -436,10 +433,9 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA INGRESAR PLANIFICACIÓN DE HORARIOS A VARIOS EMPLEADOS
+  // METODO PARA INGRESAR PLANIFICACION DE HORARIOS A VARIOS EMPLEADOS
   Planificar(seleccionados: any) {
-    console.log('ver data seleccionada varias... ', seleccionados)
-    // VENTANA PARA INGRESAR DATOS DE HORARIOS MÚLTIPLES 
+    // VENTANA PARA INGRESAR DATOS DE HORARIOS MULTIPLES 
     this.ventana.open(HorariosMultiplesComponent,
       { width: '600px', data: { datos: seleccionados } })
       .afterClosed().subscribe(item => {
@@ -467,6 +463,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     }
   }
 
+  // METODO PARA MOSTRAR METODOS DE CONSULTAS
   MostrarLista() {
     if (this.opcion === 1) {
       this.nombre_suc.reset();
@@ -514,13 +511,13 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.activar_boton = false;
   }
 
-  // MÉTODO DE VALIDACIÓN DE INGRESO DE LETRAS Y NÚMEROS
-  IngresarSoloLetras(e) {
-    this.validar.IngresarSoloLetras(e);
+  // METODO DE VALIDACION DE INGRESO DE LETRAS Y NUMEROS
+  IngresarSoloLetras(e: any) {
+    return this.validar.IngresarSoloLetras(e);
   }
 
-  IngresarSoloNumeros(evt) {
-    this.validar.IngresarSoloNumeros(evt);
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
   CerrarTabla() {
@@ -528,7 +525,7 @@ export class HorarioMultipleEmpleadoComponent implements OnInit {
     this.empleados_sin_asignacion = [];
   }
 
-  // MÉTODO PARA MANEJO DE PÁGINAS EN TABLAS DE EMPLEADOS SIN ASIGNACIÓN
+  // METODO PARA MANEJO DE PAGINAS EN TABLAS DE EMPLEADOS SIN ASIGNACION
   ManejarPaginaH(e: PageEvent) {
     this.tamanio_pagina_h = e.pageSize;
     this.numero_pagina_h = e.pageIndex + 1;

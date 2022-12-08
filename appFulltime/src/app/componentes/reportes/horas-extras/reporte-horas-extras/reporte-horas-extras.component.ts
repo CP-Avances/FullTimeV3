@@ -88,7 +88,7 @@ export class ReporteHorasExtrasComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  // Método para ver la informacion del empleado 
+  // METODO para ver la informacion del empleado 
   ObtenerEmpleadoSolicitaKardex(idemploy: any) {
     this.empleadoD = [];
     this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe(data => {

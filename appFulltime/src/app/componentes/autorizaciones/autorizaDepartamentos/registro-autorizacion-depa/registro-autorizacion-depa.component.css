@@ -1,12 +1,31 @@
-.mat-radio-button ~ .mat-radio-button { margin-left: 20px; }
+.mat-radio-button~.mat-radio-button {
+    margin-left: 20px;
+}
 
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
+}
 
-mat-radio-group { width: 210px; padding: 15px 20px 15px 20x; margin-bottom: 10px;}
+mat-radio-group {
+    width: 210px;
+    padding: 15px 20px 15px 20x;
+    margin-bottom: 10px;
+}
 
-mat-form-field { width: 210px; padding: 10px 10px 0px 10px;}
+mat-form-field {
+    width: 210px;
+    padding: 10px 10px 0px 10px;
+}
 
-#nomEmple { font-size: 12px; }
+#letras {
+    font-size: 12px;
+}
+
+#fuente {
+    font-size: 14px;
+}
 
 .scrollbar {
     float: left;
@@ -20,5 +39,5 @@ mat-form-field { width: 210px; padding: 10px 10px 0px 10px;}
 
 .scrollbar-primary::-webkit-scrollbar {
     width: 12px;
-    background-color: #F5F5F5; 
+    background-color: #F5F5F5;
 }

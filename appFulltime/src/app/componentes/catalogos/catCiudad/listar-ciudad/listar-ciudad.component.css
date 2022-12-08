@@ -1,10 +1,24 @@
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; } 
+p {
+    font-size: x-small;
+}
 
-td { padding-top: 10px; text-align: center; }
+.far {
+    cursor: pointer;
+    color: red;
+}
 
-p { font-size: x-small; }
+table {
+    font-size: 14px;
+    width: 100%;
+}
 
-.far { color:red; cursor: pointer; }
+td {
+    padding-top: 10px;
+    text-align: center;
+}
 
-table { width: 100%; font-size: 14px;}
-
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
+}

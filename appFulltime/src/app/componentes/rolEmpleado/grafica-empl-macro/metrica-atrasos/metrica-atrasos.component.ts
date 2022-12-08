@@ -139,7 +139,7 @@ export class MetricaAtrasosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;

@@ -9,7 +9,7 @@
     <div *ngIf="avisos.message !== 'No se encuentran registros'">
         <div *ngFor="let n of avisos">
 
-            <!-- Forma de aviso para 'Te falta timbre de entrada' -->
+            <!-- FORMA DE AVISO PARA 'TE FALTA TIMBRE DE ENTRADA' -->
             <div *ngIf="n.visto == false && n.descripcion === 'Te falta timbre de entrada'"
                 style="background: rgb(201,79,78);">
                 <a mat-menu-item type="submit" class="noti_menu">
@@ -103,7 +103,7 @@
 
 
 
-            <!-- NOTIFICACIÓN DE SOLICITUD DE ALIMENTACION -->
+            <!-- NOTIFICACION DE SOLICITUD DE ALIMENTACION -->
             <div *ngIf="n.visto === false && n.tipo === 1" style="background: rgb(251, 212, 166)">
                 <a mat-menu-item type="submit" class="noti_menu">
                     <ul style="list-style: none; margin-left: -15%;" (click)="ActualizarVista(n)">

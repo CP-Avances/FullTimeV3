@@ -7,71 +7,68 @@ import * as L from 'leaflet';
   templateUrl: './empl-leaflet.component.html',
   styleUrls: ['./empl-leaflet.component.css']
 })
+
 export class EmplLeafletComponent implements OnInit {
 
   COORDS: any;
   MARKER: any;
 
-  // MÉTODO DE CONTROL DE MEMORIA
+  // METODO DE CONTROL DE MEMORIA
   private options = {
     enableHighAccuracy: false,
     maximumAge: 30000,
     timeout: 15000
   };
 
-  // VARIABLES DE ALMACENMAIENTO DE COORDENADAS
+  // VARIABLES DE ALMACENAMIENTO DE COORDENADAS
   latitud: number;
   longitud: number;
 
   constructor(
-    private view: MatDialogRef<EmplLeafletComponent>
+    private ventana: MatDialogRef<EmplLeafletComponent>
   ) { }
 
   ngOnInit(): void {
     this.Geolocalizar()
   }
 
+  // METODO PARA CAPTURAR LA UBICACION DEL USUARIO
   Geolocalizar() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (objPosition) => {
           this.latitud = objPosition.coords.latitude;
           this.longitud = objPosition.coords.longitude;
-          console.log(this.longitud, this.latitud);
-          this.cordenadas(this.latitud, this.longitud)
+          this.LeerCoordenadas(this.latitud, this.longitud)
         }, (objPositionError) => {
           switch (objPositionError.code) {
             case objPositionError.PERMISSION_DENIED:
-              console.log('No se ha permitido el acceso a la posición del usuario.');
+              console.log('ACCESO A LA POSICIÓN DEL USUARIO NO PERMITIDA.');
               break;
             case objPositionError.POSITION_UNAVAILABLE:
-              console.log('No se ha podido acceder a la información de su posición.');
+              console.log('NO SE HA PODIDO ACCEDER A LA INFORMACIÓN DE SU POSICIÓN.');
               break;
             case objPositionError.TIMEOUT:
-              console.log('El servicio ha tardado demasiado tiempo en responder.');
+              console.log('EL SERVICIO HA TARDADO DEMASIADO TIEMPO EN RESPONDER.');
               break;
             default:
-              console.log('Error desconocido.');
+              console.log('ERROR DESCONOCIDO.');
           }
         }, this.options);
     }
     else {
-      console.log('Su navegador no soporta la API de geolocalización.');
+      console.log('SU NAVEGADOR NO SOPORTA LA API DE GEOLOCALIZACIÓN.');
     }
   }
 
-  cordenadas(latitud: number, longitud: number) {
+  // METODO PARA LEER COORDENADAS
+  LeerCoordenadas(latitud: number, longitud: number) {
     const map = L.map('map-template', {
       center: [latitud, longitud],
       zoom: 13
     });
-
     map.locate({ enableHighAccuracy: true })
-
     map.on('click', (e: any) => {
-      console.log(e.latlng);
-      console.log(this.COORDS, '===', this.MARKER);
-
       const coords: any = [e.latlng.lat, e.latlng.lng];
       const marker = L.marker(coords);
       if (this.COORDS !== undefined) {
@@ -79,22 +76,22 @@ export class EmplLeafletComponent implements OnInit {
       } else {
         marker.setLatLng(coords);
       }
-      marker.bindPopup('Ubicación vivienda');
+      marker.bindPopup('Ubicación domicilio.');
       map.addLayer(marker)
       this.COORDS = e.latlng;
       this.MARKER = marker
     })
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>' }).addTo(map);
-
   }
 
+  // METODO PARA GUARDAR UBICACION
   GuardarLocalizacion() {
-    this.view.close({ message: true, latlng: this.COORDS })
+    this.ventana.close({ message: true, latlng: this.COORDS })
   }
 
+  // NETODO PARA CERRAR VENTANA DE REGISTRO
   Salir() {
-    this.view.close({ message: false })
+    this.ventana.close({ message: false })
   }
 
 }

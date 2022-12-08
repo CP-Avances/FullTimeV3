@@ -1,22 +1,6 @@
-.full-width {
-  width: 100%;
-}
-
-#accion {
-  font-size: 16px;
-}
-
 mat-icon {
   font-size: 20px;
   margin-right: 8px;
-}
-
-.acordeon {
-  margin-top: 10px;
-}
-
-.card-text {
-  margin-top: -10px;
 }
 
 .mat-mini-fab {
@@ -35,25 +19,13 @@ mat-tree {
   background: transparent;
 }
 
-.menus {
-  background-color: transparent
-}
-
 .example-tree-invisible {
   display: none;
 }
 
 .btn-sm {
-  margin-left: -30px;
+  margin-left: -35px;
   width: 100%;
-}
-
-.submenu.expanded {
-  transform: scaleY(1);
-}
-
-.color-icon {
-  color: rgb(189, 189, 189);
 }
 
 a.mat-menu-item {
@@ -65,25 +37,9 @@ a.mat-menu-item {
   color: rgb(232, 238, 243);
 }
 
-.menu-button.rotated {
-  transform: rotate(180deg);
-}
-
-mat-expansion-panel-header {
-  background: transparent;
-}
-
-.mat-list-item:hover {
-  background: rgb(26, 115, 199);
-}
-
 .mat-tree-node {
   margin-bottom: -17px;
   margin-top: -17px;
-}
-
-.header-expand {
-  background-color: rgb(255, 255, 255);
 }
 
 .divider {
@@ -92,18 +48,9 @@ mat-expansion-panel-header {
   width: 150%;
 }
 
-.item-menu {
-  font-size: 17px;
-  color: rgb(189, 189, 189);
-}
-
 .sidenav {
   background: rgb(255, 255, 255);
-  width: 250px;
-}
-
-a.mat-list-item.texcol:active {
-  background: rgb(26, 115, 199);
+  width: 260px;
 }
 
 #avatarImagen {
@@ -112,21 +59,19 @@ a.mat-list-item.texcol:active {
   width: 35px;
 }
 
-.texcol {
-  text-align: left;
-  font-size: 14px;
-  color: aliceblue;
-}
-
 #icono-menu {
   margin: 8px 0px 0px 0px;
   color: rgb(5, 162, 253);
 }
 
-.dos {
-  background: transparent;
-  text-align: left;
-  margin-top: 10px;
+#icono-menu_ {
+  font-size: 12px;
+  color: rgb(5, 162, 253);
+}
+
+#icono-menu_x {
+  font-size: 12px;
+  color: rgb(99, 105, 107);
 }
 
 .uno {
@@ -139,11 +84,6 @@ a.mat-list-item.texcol:active {
   text-decoration: none;
   padding-top: 5px;
   color: #000;
-}
-
-.menu-button {
-  transition: 300ms ease-in-out;
-  transform: rotate(0deg);
 }
 
 #icono-despliega {
@@ -193,37 +133,16 @@ a.mat-list-item.texcol:active {
   margin-top: 0;
 }
 
-#botones {
-  background-color: rgb(5, 162, 253);
-  margin: 10px 10px 10px 10px;
-  color: white;
-}
-
-.mat-expansion-panel-header.mat-expanded.selec10:hover {
-  background: rgba(112, 11, 228, 0.739);
-}
-
 .mostrar-noti:hover {
   background-color: rgb(255, 255, 255);
   text-decoration: none;
   color: rgb(31, 31, 31);
 }
 
-.mensaje-alerta {
-  background-color: rgb(110, 1, 1);
-  border-radius: 25px;
-  text-align: center;
-  margin: 15px;
-}
 
 a.mat-menu-item.noti_menu:hover {
   background: rgba(236, 236, 236, 0.643);
   color: rgba(17, 113, 192, 0.952);
-}
-
-.mat-expansion-panel-header.mat-expanded.selec10:focus {
-  border-radius: 25px;
-  background: rgba(112, 11, 228, 0.739);
 }
 
 #avatar {
@@ -236,26 +155,9 @@ a.mat-menu-item.noti_menu:hover {
 
 .material-tree-node {
   border-left: 3px solid rgb(5, 162, 253);
-  margin-left: 20px;
+  margin-left: 10px;
   background: transparent;
   width: 100%;
-}
-
-.mat-card-avatar {
-  border-radius: 50%;
-  flex-shrink: 0;
-  object-fit: cover;
-  margin-top: auto;
-  height: 40px;
-  width: 40px;
-}
-
-.submenu {
-  transform-origin: top;
-  padding-left: 30px;
-  overflow-y: hidden;
-  transition: transform 300ms ease;
-  transform: scaleY(0);
 }
 
 .degradado {

@@ -1,13 +1,22 @@
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
+}
 
-mat-form-field {width: 195px; padding: 10px 10px 0px 10px;}
+mat-form-field {
+    width: 225px;
+    padding: 10px 10px 0px 10px;
+}
 
-#selEmpre { font-size: 13px; }
+#letras {
+    font-size: 13px;
+}
 
 .scrollbar {
     float: left;
-    height: 390px;
     width: 100%;
+    height: 390px;
     background: #fff;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -16,7 +25,5 @@ mat-form-field {width: 195px; padding: 10px 10px 0px 10px;}
 
 .scrollbar-primary::-webkit-scrollbar {
     width: 12px;
-    background-color: #F5F5F5; 
+    background-color: #F5F5F5;
 }
-    
-  

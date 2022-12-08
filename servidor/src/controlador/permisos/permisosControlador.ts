@@ -541,10 +541,10 @@ class PermisosControlador {
     }
 
     /** ********************************************************************************************* **
-     ** *         MÉTODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * ** 
+     ** *         METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE SOLICITUDES DE PERMISOS                * ** 
      ** ********************************************************************************************* **/
 
-    // MÉTODO PARA ENVIAR CORREO ELECTRÓNICO DESDE APLICACIÓN WEB
+    // METODO PARA ENVIAR CORREO ELECTRÓNICO DESDE APLICACIÓN WEB
     public async EnviarCorreoWeb(req: Request, res: Response): Promise<void> {
 
         var tiempo = fechaHora();

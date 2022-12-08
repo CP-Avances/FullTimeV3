@@ -91,7 +91,7 @@ export class EditarPlanComidasComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarFecha() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -108,7 +108,7 @@ export class EditarPlanComidasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA CARGAR LA INFORMACIÓN DE LA PLANIFICACIÓN SELECCIONADA EN EL FORMULARIO
+  // METODO PARA CARGAR LA INFORMACIÓN DE LA PLANIFICACIÓN SELECCIONADA EN EL FORMULARIO
   leer_dato: any;
   CargarDatos() {
     if (this.data.modo === 'individual') {
@@ -139,7 +139,7 @@ export class EditarPlanComidasComponent implements OnInit {
     this.ObtenerDatosComidas(this.leer_dato);
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE SERVICIOS Y DETALLES DE MENÚ
+  // METODO PARA MOSTRAR DATOS DE SERVICIOS Y DETALLES DE MENÚ
   empleado_recibe: number; // ID DE EMPLEADO QUE RECIBE UNA NOTIFICACIÓN
   empleado_envia: number; // ID DE EMPLEADO QUE ENVIA UNA NOTIFICACIÓN
   ObtenerDatosComidas(lectura: any) {
@@ -164,7 +164,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA CONSULTAR DATOS DE SERVICIOS DE COMIDAS
+  // METODO PARA CONSULTAR DATOS DE SERVICIOS DE COMIDAS
   servicios: any = []; // VARIABLE PARA GUARDAR DATOS DE SERVICIOS
   ObtenerServicios() {
     this.servicios = [];
@@ -189,7 +189,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DETALLE DE MENÚS
+  // METODO PARA BUSQUEDA DE DETALLE DE MENÚS
   detalle: any = []; // VARIABLE PARA GUARDAR DATOS DE DETALLES DE MENÚ
   ObtenerDetalleMenu(form) {
     this.horaInicioF.reset();
@@ -209,7 +209,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleados = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -217,7 +217,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA REGISTRAR PLANIFICACIÓN
+  // METODO PARA REGISTRAR PLANIFICACIÓN
   fechasHorario: any = [];
   inicioDate: any;
   finDate: any;
@@ -240,10 +240,10 @@ export class EditarPlanComidasComponent implements OnInit {
   }
 
   /** *************************************************************************************************** *
-   *     MÉTODOS PARA REALIZAR ACTUALIZACIÓN DE UNA PLANIFICACIÓN DE FORMA INDIVIDUAL - FICHA EMPLEADO    *
+   *     METODOS PARA REALIZAR ACTUALIZACIÓN DE UNA PLANIFICACIÓN DE FORMA INDIVIDUAL - FICHA EMPLEADO    *
    ** *************************************************************************************************** *
    */
-  // MÉTODO PARA TOMAR LOS DATOS INGRESADOS EN EL FORMULARIO 
+  // METODO PARA TOMAR LOS DATOS INGRESADOS EN EL FORMULARIO 
   InsertarPlanificacionIndividual(form) {
     let datosPlanComida = {
       observacion: form.observacionForm,
@@ -259,7 +259,7 @@ export class EditarPlanComidasComponent implements OnInit {
     this.VerificarDuplicidadIndividual(form, datosPlanComida);
   }
 
-  // MÉTODO PARA VERIFICAR SI EL EMPLEADO YA TIENE UNA PLANIFICACIÓN REGISTRADA EN ESAS FECHAS
+  // METODO PARA VERIFICAR SI EL EMPLEADO YA TIENE UNA PLANIFICACIÓN REGISTRADA EN ESAS FECHAS
   VerificarDuplicidadIndividual(form, datosPlanComida) {
     let datosDuplicados = {
       id_plan_comida: this.data.solicitud.id,
@@ -276,7 +276,7 @@ export class EditarPlanComidasComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VERIFICAR SI EL EMPLEADO TIENE REGISTRADO UN HORARIO EN LAS FECHAS INGRESADAS
+  // METODO PARA VERIFICAR SI EL EMPLEADO TIENE REGISTRADO UN HORARIO EN LAS FECHAS INGRESADAS
   VerificarHorarioEmpleado(form, datosPlanComida) {
     let datosHorario = {
       fechaInicio: form.fechaInicioForm,
@@ -291,9 +291,9 @@ export class EditarPlanComidasComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA ACTUALIZAR UN PLANIFICACIÓN, ELIMINAR LA ANTERIOR Y CREAR UNA NUEVA
+  // METODO PARA ACTUALIZAR UN PLANIFICACIÓN, ELIMINAR LA ANTERIOR Y CREAR UNA NUEVA
   PlanificacionIndividual(form, datosPlanComida) {
-    // MÉTODO PARA ELIMINAR PLANIFICACIÓN ANTERIOR
+    // METODO PARA ELIMINAR PLANIFICACIÓN ANTERIOR
     this.restPlan.EliminarPlanComida(this.data.solicitud.id, this.data.solicitud.id_empleado)
       .subscribe(eliminar => {
         // CREACIÓN DE LA PLANIFICACIÓN PARA UN EMPLEADO
@@ -358,10 +358,10 @@ export class EditarPlanComidasComponent implements OnInit {
   }
 
   /** *************************************************************************************************** **
-   ** **     MÉTODOS PARA REALIZAR ACTUALIZACIÓN DE UNA PLANIFICACIÓN DE FORMA  MULTIPLE               ** **
+   ** **     METODOS PARA REALIZAR ACTUALIZACIÓN DE UNA PLANIFICACIÓN DE FORMA  MULTIPLE               ** **
    ** *************************************************************************************************** **/
 
-  // MÉTODO PARA TOMAR LOS DATOS INGRESADOS EN EL FORMULARIO 
+  // METODO PARA TOMAR LOS DATOS INGRESADOS EN EL FORMULARIO 
   InsertarPlanificacionMultiple(form) {
     let datosPlanComida = {
       observacion: form.observacionForm,
@@ -385,7 +385,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA VERIFICAR SI LOS EMPLEADOS TIENEN YA REGISTRADA UNA PLANIFICACIÓN
+  // METODO PARA VERIFICAR SI LOS EMPLEADOS TIENEN YA REGISTRADA UNA PLANIFICACIÓN
   empleados_conPlanificacion: any = [];
   empleados_sinPlanificacion: any = [];
   VerificarDuplicidadMultiple(form, datosPlanComida) {
@@ -415,7 +415,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VERIFICAR SI EL EMPLEADO TIENE FECHA DE HORARIO REGISTRADA
+  // METODO PARA VERIFICAR SI EL EMPLEADO TIENE FECHA DE HORARIO REGISTRADA
   empleados_conHorario: any = [];
   empleados_sinHorario: any = [];
   VerificarHorariosEmpleadosMultiples(form, datosPlanComida, sin_planificacion, con_planificacion) {
@@ -445,7 +445,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA MOSTRAR MENSAJES CUANDO NO SE REALIZAR PLANIFICACIÓN 
+  // METODO PARA MOSTRAR MENSAJES CUANDO NO SE REALIZAR PLANIFICACIÓN 
   IndicarMensajePlanificados(array_datos: any) {
     if (array_datos.length != 0) {
       if (array_datos.length === this.data.solicitud.length) {
@@ -466,7 +466,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA MOSTRAR MENSAJES CUANDO NO TIENEN HORARIOS
+  // METODO PARA MOSTRAR MENSAJES CUANDO NO TIENEN HORARIOS
   IndicarMensajeHorarios(array_datos: any, sin_planificacion) {
     if (array_datos.length != 0) {
       if (array_datos.length === sin_planificacion.length) {
@@ -487,7 +487,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA ELIMINAR TODAS LAS PLANIFICACIONES
+  // METODO PARA ELIMINAR TODAS LAS PLANIFICACIONES
   contar_eliminar: number = 0;
   EliminarPlanificacion(form: any, datosPlanComida: any, empleados_planificados: any) {
     if (empleados_planificados.length != 0) {
@@ -503,7 +503,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA PLANIFICAR MULTIPLES EMPLEADOS
+  // METODO PARA PLANIFICAR MULTIPLES EMPLEADOS
   PlanificarMultiple(form: any, datosPlanComida: any, empleados_planificados: any) {
     var usuario = '';
     this.inicioDate = moment(form.fechaInicioForm).format('MM-DD-YYYY');
@@ -583,7 +583,7 @@ export class EditarPlanComidasComponent implements OnInit {
    ** **               METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE ALIMENTACION                ** **
    ** ***************************************************************************************************** **/
 
-  // MÉTODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE CORREO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACION
   EnviarCorreo(datos: any, cuenta_correo: any, usuario: any, desde: any, hasta: any, h_inicio: any, h_fin: any) {
 
     // DATOS DE ESTRUCTURA DEL CORREO
@@ -604,7 +604,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
 
     console.log('DATOS A ENVIARSE POR CORREO', DataCorreo);
-    // MÉTODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
+    // METODO ENVIO DE CORREO DE PLANIFICACIÓN DE ALIMENTACION
     this.restPlan.EnviarCorreoPlan(DataCorreo).subscribe(res => {
       if (res.message === 'ok') {
         this.toastr.success('Correo de planificación enviado exitosamente.', '', {
@@ -628,7 +628,7 @@ export class EditarPlanComidasComponent implements OnInit {
   }
 
 
-  // MÉTODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
+  // METODO DE ENVIO DE NOTIFICACIONES DE PLANIFICACION DE SERVICIO DE ALIMENTACION
   NotificarPlanificacion(datos: any, desde: any, hasta: any, h_inicio: any, h_fin: any, id_empleado_recibe: number) {
     let mensaje = {
       id_comida: datos.id_comida,
@@ -650,7 +650,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE CORREOS
+  // METODO PARA BUSCAR PARÁMETRO DE CORREOS
   correos: number;
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREOS = 24
@@ -667,7 +667,7 @@ export class EditarPlanComidasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA CONTAR CORREOS A ENVIARSE
+  // METODO PARA CONTAR CORREOS A ENVIARSE
   cont_correo: number = 0;
   info_correo: string = '';
   ContarCorreos(data: any) {
@@ -684,7 +684,7 @@ export class EditarPlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA INGRESAR SOLO LETRAS EN EL CAMPO DEL FORMULARIO
+  // METODO PARA INGRESAR SOLO LETRAS EN EL CAMPO DEL FORMULARIO
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
@@ -707,7 +707,7 @@ export class EditarPlanComidasComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE CONTROL DE ERRORES
+  // METODO DE CONTROL DE ERRORES
   ObtenerMensajeErrorObservacion() {
     if (this.observacionF.hasError('pattern')) {
       return 'Ingrese información válida';
@@ -715,7 +715,7 @@ export class EditarPlanComidasComponent implements OnInit {
     return this.observacionF.hasError('required') ? 'Campo Obligatorio' : '';
   }
 
-  // MÉTODO PARA SALIR DE LA VENTANA
+  // METODO PARA SALIR DE LA VENTANA
   CerrarRegistroPlanificacion() {
     this.ventana.close();
   }

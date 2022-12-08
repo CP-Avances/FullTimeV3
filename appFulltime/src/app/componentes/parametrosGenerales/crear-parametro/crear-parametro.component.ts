@@ -6,7 +6,6 @@ import { FormControl, Validators, FormGroup } from '@angular/forms';
 
 // SECCIÓN SERVICIOS
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-crear-parametro',
@@ -17,23 +16,22 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 export class CrearParametroComponent implements OnInit {
 
   // CONTROL DE LOS CAMPOS DEL FORMULARIO
-  descripcion = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{4,48}")]);
+  descripcion = new FormControl('', Validators.required);
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
-  public ParametrosForm = new FormGroup({
+  public formulario = new FormGroup({
     descripcionForm: this.descripcion,
   });
 
   constructor(
     private rest: ParametrosService,
     private toastr: ToastrService,
-    public validar: ValidacionesService,
     public ventana: MatDialogRef<CrearParametroComponent>
   ) { }
 
   ngOnInit(): void { }
 
-  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  // METODO PARA REGISTRAR NUEVO PARÁMETRO
   GuardarDatos(form: any) {
     let datos = {
       descripcion: form.descripcionForm
@@ -47,22 +45,9 @@ export class CrearParametroComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA CERRAR VENTANA
+  // METODO PARA CERRAR VENTANA
   CerrarVentana() {
     this.ventana.close();
-  }
-
-  // MÉTODO PARA VALIDAR INGRESO SOLO LETRAS
-  IngresarSoloLetras(e) {
-    this.validar.IngresarSoloLetras(e);
-  }
-
-  // MÉTODO PARA VALIDAR INGRESO DE DESCRIPCIÓN
-  ObtenerErrorNombre() {
-    if (this.descripcion.hasError('required')) {
-      return 'Campo obligatorio.';
-    }
-    return this.descripcion.hasError('pattern') ? 'Ingresar una descripción válida.' : '';
   }
 
 }

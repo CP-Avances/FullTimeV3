@@ -37,17 +37,17 @@ export class VerParametroComponent implements OnInit {
   formato_hora: boolean = false;
   carga: boolean = false;
   kardex: boolean = false;
-  feriados: boolean = false;
-  recuperables: boolean = false;
   laboral_calendario: boolean = false;
+  limite_correo: boolean = false;
+  ubicacion: boolean = false;
 
   ingreso: number = 0;
 
   constructor(
     private toastr: ToastrService,
     public parametro: ParametrosService,
-    public router: Router,
     public ventana: MatDialog,
+    public router: Router,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -61,6 +61,14 @@ export class VerParametroComponent implements OnInit {
   }
 
   ActivarBoton() {
+    if (this.idParametro === '22') {
+      this.formato = true;
+      this.ubicacion = true;
+    }
+    if (this.idParametro === '24') {
+      this.formato = true;
+      this.limite_correo = true;
+    }
     if (this.idParametro === '25') {
       this.formato = false;
       this.formato_fecha = true;
@@ -77,27 +85,19 @@ export class VerParametroComponent implements OnInit {
       this.formato = false;
       this.kardex = true;
     }
-    if (this.idParametro === '29') {
-      this.formato = false;
-      this.feriados = true;
-    }
-    if (this.idParametro === '30') {
-      this.formato = false;
-      this.recuperables = true;
-    }
     if (this.idParametro === '31') {
       this.formato = false;
       this.laboral_calendario = true;
     }
   }
 
-  // MÉTODO PARA MANEJAR PAGINACIÓN DE TABLAS
+  // METODO PARA MANEJAR PAGINACIÓN DE TABLAS
   ManejarPagina(e: PageEvent) {
     this.numero_pagina = e.pageIndex + 1
     this.tamanio_pagina = e.pageSize;
   }
 
-  // MÉTODO PARA BUSCAR DATOS TIPO PARÁMETRO
+  // METODO PARA BUSCAR DATOS TIPO PARÁMETRO
   BuscarParametros(id: any) {
     this.parametros = [];
     this.parametro.ListarUnParametro(id).subscribe(data => {
@@ -106,7 +106,7 @@ export class VerParametroComponent implements OnInit {
   }
 
   id_detalle: number;
-  // MÉTODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
+  // METODO PARA BUSCAR DETALLES DE PARAMÉTRO GENERAL
   ListarDetalles(id: any) {
     this.datosDetalle = [];
     this.parametro.ListarDetalleParametros(id).subscribe(datos => {
@@ -114,13 +114,12 @@ export class VerParametroComponent implements OnInit {
       if (this.ingreso === 0) {
         this.seleccion = this.datosDetalle[0].descripcion;
         this.opcion_kardex = this.datosDetalle[0].descripcion;
-        this.opcion_feriados = this.datosDetalle[0].descripcion;
         this.opcion_laboral = this.datosDetalle[0].descripcion;
       }
     })
   }
 
-  // MÉTODO PARA INGRESAR DETALLE DE PARÁMETRO
+  // METODO PARA INGRESAR DETALLE DE PARÁMETRO
   AbrirVentanaDetalles(datos: any): void {
     this.ventana.open(CrearDetalleParametroComponent,
       { width: '400px', data: { parametros: datos, actualizar: true } })
@@ -130,7 +129,7 @@ export class VerParametroComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA EDITAR PARÁMETRO
+  // METODO PARA EDITAR PARÁMETRO
   AbrirVentanaEditar(datos: any): void {
     this.ventana.open(EditarParametroComponent,
       { width: '400px', data: { parametros: datos, actualizar: true } })
@@ -140,20 +139,20 @@ export class VerParametroComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA EDITAR DETALLE DE PARÁMETRO
+  // METODO PARA EDITAR DETALLE DE PARÁMETRO
   AbrirVentanaEditarDetalle(datos: any): void {
     this.ventana.open(EditarDetalleParametroComponent,
-      { width: '600px', data: { parametros: datos } }).
+      { width: '400px', data: { parametros: datos } }).
       afterClosed().subscribe(item => {
         this.BuscarParametros(this.idParametro);
         this.ListarDetalles(this.idParametro);
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO PLANIFICACIÓN
   EliminarDetalle(id_detalle: number) {
     this.parametro.EliminarDetalleParametro(id_detalle).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.LimpiarSeleccion();
@@ -162,7 +161,7 @@ export class VerParametroComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -223,30 +222,6 @@ export class VerParametroComponent implements OnInit {
   }
 
   /** ******************************************************************************************* **
-   ** **           CONSIDERAR FERIADOS DENTRO DE SOLICITUDES CON CARGO A VACACIONES            ** ** 
-   ** ******************************************************************************************* **/
-
-  opcion_feriados: any;
-  ConsiderarFeriados(event: MatRadioChange) {
-    this.opcion_feriados = event.value;
-    console.log('seleccion ... ', this.opcion_feriados)
-    this.RegistrarValores(this.opcion_feriados);
-  }
-
-
-  /** ******************************************************************************************* **
-   ** **    CONSIDERAR FECHAS DE RECUPERACION DENTRO DE SOLICITUDES CON CARGO A VACACIONES     ** ** 
-   ** ******************************************************************************************* **/
-
-  opcion_recuperar: any;
-  ConsiderarRecuperacion(event: MatRadioChange) {
-    this.opcion_recuperar = event.value;
-    console.log('seleccion ... ', this.opcion_recuperar)
-    this.RegistrarValores(this.opcion_recuperar);
-  }
-
-
-  /** ******************************************************************************************* **
    ** **           REGISTRAR O EDITAR DETALLE DE PARAMETRO LABORAL - CALENDARIO                ** ** 
    ** ******************************************************************************************* **/
 
@@ -272,7 +247,7 @@ export class VerParametroComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA REGISTRAR NUEVO PARÁMETRO
+  // METODO PARA REGISTRAR NUEVO PARÁMETRO
   CrearDetalle(detalle: string) {
     let datos = {
       id_tipo: this.idParametro,
@@ -312,8 +287,6 @@ export class VerParametroComponent implements OnInit {
   LimpiarSeleccion() {
     this.seleccion = '';
     this.opcion_kardex = '';
-    this.opcion_feriados = '';
-    this.opcion_recuperar = '';
     this.opcion_laboral = '';
   }
 

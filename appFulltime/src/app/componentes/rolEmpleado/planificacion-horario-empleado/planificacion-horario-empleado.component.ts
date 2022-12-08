@@ -89,7 +89,7 @@ export class PlanificacionHorarioEmpleadoComponent implements OnInit {
    formato_fecha: string = 'DD/MM/YYYY';
    formato_hora: string = 'HH:mm:ss';
  
-   // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+   // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
    BuscarParametro() {
      // id_tipo_parametro Formato fecha = 25
      this.parametro.ListarDetalleParametros(25).subscribe(
@@ -106,7 +106,7 @@ export class PlanificacionHorarioEmpleadoComponent implements OnInit {
    ** **             METODO DE PRESENTACION DE DATOS DE HORARIOS ROTATIVOS                  ** **
    ** **************************************************************************************** **/
 
-  // MÉTODO PARA IMPRIMIR DATOS DE LA HORARIOS ROTATIVOS 
+  // METODO PARA IMPRIMIR DATOS DE LA HORARIOS ROTATIVOS 
   horarioRotativo: any = [];
   ObtenerHorarioRotativo(codigo: number, formato_fecha: string) {
     this.horarioRotativo = [];
@@ -175,17 +175,17 @@ export class PlanificacionHorarioEmpleadoComponent implements OnInit {
     })
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO DE HORARIO ROTATIVO
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO DE HORARIO ROTATIVO
   EliminarHorarioRotativo(id_plan: number) {
     this.restPlanH.EliminarRegistro(id_plan).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ObtenerHorarioRotativo(this.datoActual.codigo, this.formato_fecha);
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO DE HORARIO ROTATIVO
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO DE HORARIO ROTATIVO
   ConfirmarHorarioRotativo(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {

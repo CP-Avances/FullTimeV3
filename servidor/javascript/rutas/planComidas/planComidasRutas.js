@@ -70,9 +70,9 @@ class DepartamentoRutas {
          ** ************************************************************************************************ **/
         // METODO DE ENVIO DE CORREO DE SOLICITUD DE SERVICIO DE ALIMENTACION
         this.router.post('/mail-noti/', verificarToken_1.TokenValidation, planComidasControlador_1.default.EnviarCorreoComidas);
-        // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIO DE ALIMENTACION APP WEB
+        // METODO DE ENVIO DE CORREO ELECTRONICO DE PLANIFICACION DE SERVICIO DE ALIMENTACION APP WEB
         this.router.post('/mail-plan-comida/', verificarToken_1.TokenValidation, planComidasControlador_1.default.EnviarCorreoPlanComidas);
-        // MÉTODO DE ENVIO DE CORREO ELECTRONICO DE SOLICITUD DE SERVICIO DE ALIMENTACION APP MOVIL
+        // METODO DE ENVIO DE CORREO ELECTRONICO DE SOLICITUD DE SERVICIO DE ALIMENTACION APP MOVIL
         this.router.post('/mail-noti-solicitud-comida-movil/:id_empresa', planComidasControlador_1.default.EnviarCorreoComidasMovil);
     }
 }

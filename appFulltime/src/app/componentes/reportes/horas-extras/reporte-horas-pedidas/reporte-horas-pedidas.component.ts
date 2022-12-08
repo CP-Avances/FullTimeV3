@@ -12,7 +12,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as xlsx from 'xlsx';
 import * as moment from 'moment';
 
-// IMPORTACIÓN DE SERVICIOS
+// IMPORTACION DE SERVICIOS
 import { HorasExtrasRealesService } from 'src/app/servicios/reportes/horasExtrasReales/horas-extras-reales.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { PedHoraExtraService } from 'src/app/servicios/horaExtra/ped-hora-extra.service';
@@ -31,7 +31,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
   // ARREGLO DATOS DEL EMPLEADO
   datosEmpleado: any = [];
 
-  // DATOS DEL FÓRMULARIO DE BÚSQUEDA
+  // DATOS DEL FÓRMULARIO DE BUSQUEDA
   departamentoF = new FormControl('', [Validators.minLength(2)]);
   regimenF = new FormControl('', [Validators.minLength(2)]);
   codigo = new FormControl('');
@@ -39,7 +39,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
   nombre = new FormControl('', [Validators.minLength(2)]);
   cargoF = new FormControl('', [Validators.minLength(2)]);
 
-  // DATOS DE FILTROS DE BÚSQUEDA
+  // DATOS DE FILTROS DE BUSQUEDA
   filtroDepartamento: '';
   filtroEmpleado = '';
   filtroRegimen: '';
@@ -80,7 +80,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     // this.VerPedidosHorasExtras();
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -88,7 +88,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -96,7 +96,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     });
   }
 
-  // Método para obtener colores de empresa
+  // METODO para obtener colores de empresa
   p_color: any;
   s_color: any;
   nombreEmpresa: any;
@@ -110,7 +110,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     });
   }
 
-  // Método para manejar evento de paginación
+  // METODO para manejar evento de paginación
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
@@ -125,7 +125,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     });
   }
 
-  // Método para limpiar registros de campos de búsqueda
+  // METODO para limpiar registros de campos de BUSQUEDA
   LimpiarCampos() {
     this.codigo.reset();
     this.cedula.reset();
@@ -136,17 +136,17 @@ export class ReporteHorasPedidasComponent implements OnInit {
     this.filtroEmpleado = '';
   }
 
-  // MÉTODO PARA INGRESAR SOLO LETRAS
+  // METODO PARA INGRESAR SOLO LETRAS
   IngresarSoloLetras(e) {
     this.validar.IngresarSoloLetras(e);
   }
 
-  // MÉTODO PARA INGRESAR SOLO NÚMEROS
+  // METODO PARA INGRESAR SOLO NÚMEROS
   IngresarSoloNumeros(evt) {
     this.validar.IngresarSoloNumeros(evt);
   }
 
-  // MÉTODO PARA OBTENER SOLICITUDES DE HORAS EXTRAS
+  // METODO PARA OBTENER SOLICITUDES DE HORAS EXTRAS
   solicitudHoras: any = [];
   VerPedidosHorasExtras(archivo: String, accion: any, forma: any) {
     console.log('entra 1')
@@ -165,7 +165,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER SOLICITUDES DE HORAS EXTRAS AUTORIZADAS
+  // METODO PARA OBTENER SOLICITUDES DE HORAS EXTRAS AUTORIZADAS
   horasAutorizadas: any = [];
   VerPedidosHorasAutorizadas(archivo: String, accion: any, forma: any) {
     console.log('entra 2')
@@ -634,7 +634,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
   DatosSolicitudEmpleado(id_seleccionado) {
     // INICIALIZACIÓN DE VARIBLES
     var ciudad, nombre, apellido, cedula, codigo, sucursal, departamento, cargo, regimen;
-    // BÚSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
+    // BUSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
     this.datosEmpleado.forEach(obj => {
       if (obj.id === id_seleccionado) {
         nombre = obj.nombre;
@@ -751,7 +751,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     this.contarRegistros = 0;
     // INICIALIZACIÓN DE VARIABLES
     var datosGenerales, mensaje: string;
-    // BÚSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
+    // BUSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
     this.datosEmpleado.forEach(obj => {
       if (obj.id === id_seleccionado) {
         datosGenerales = [{
@@ -865,7 +865,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
   DatosSolicitudAutorizaEmpleado(id_seleccionado) {
     // INICIALIZACIÓN DE VARIABLES
     var ciudad, nombre, apellido, cedula, codigo, sucursal, departamento, cargo, regimen;
-    // BÚSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
+    // BUSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
     this.datosEmpleado.forEach(obj => {
       if (obj.id === id_seleccionado) {
         nombre = obj.nombre;
@@ -978,7 +978,7 @@ export class ReporteHorasPedidasComponent implements OnInit {
     this.contarRegistros = 0;
     // INICIALIZACIÓN DE VARIABLES
     var datosGenerales: any;
-    // BÚSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
+    // BUSQUEDA DE LOS DATOS DEL EMPLEADO DEL CUAL SE OBTIENE EL REPORTE
     this.datosEmpleado.forEach(obj => {
       if (obj.id === id_seleccionado) {
         datosGenerales = [{

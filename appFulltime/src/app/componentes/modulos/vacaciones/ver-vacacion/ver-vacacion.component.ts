@@ -27,10 +27,10 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 
 export class VerVacacionComponent implements OnInit {
 
-  // VARIABLE DE BÚSQUEDA DE DATOS DE VACACIONES
+  // VARIABLE DE BUSQUEDA DE DATOS DE VACACIONES
   vacacion: any = [];
 
-  // VARIABLE DE BÚSQUEDA DE DATOS DE AUTORIZACIONES
+  // VARIABLE DE BUSQUEDA DE DATOS DE AUTORIZACIONES
   autorizacion: any = [];
   HabilitarAutorizacion: boolean = true;
 
@@ -73,7 +73,7 @@ export class VerVacacionComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     var f = moment();
     this.fechaActual = f.format('YYYY-MM-DD');
@@ -94,11 +94,11 @@ export class VerVacacionComponent implements OnInit {
   lectura: number = 1;
   cont: number;
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
+  // METODO DE BUSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
   BuscarDatos(formato_fecha: string) {
     this.vacacion = [];
 
-    // BÚSQUEDA DE DATOS DE VACACIONES
+    // BUSQUEDA DE DATOS DE VACACIONES
     this.restV.ObtenerUnaVacacion(parseInt(this.id_vacacion)).subscribe(res => {
       this.vacacion = res;
       console.log('ver data ... ', this.vacacion)
@@ -120,12 +120,12 @@ export class VerVacacionComponent implements OnInit {
     this.empleado_estado = [];
     this.lectura = 1;
 
-    // BÚSQUEDA DE DATOS DE AUTORIZACIÓN
+    // BUSQUEDA DE DATOS DE AUTORIZACIÓN
     this.restA.getUnaAutorizacionByVacacionRest(id).subscribe(res1 => {
       this.autorizacion = res1;
       console.log(this.autorizacion);
 
-      // MÉTODO PARA OBTENER EMPLEADOS Y ESTADOS
+      // METODO PARA OBTENER EMPLEADOS Y ESTADOS
       var autorizaciones = this.autorizacion[0].id_documento.split(',');
       autorizaciones.map((obj: string) => {
         this.lectura = this.lectura + 1;
@@ -151,7 +151,7 @@ export class VerVacacionComponent implements OnInit {
             estado: estado_auto
           }
           this.empleado_estado = this.empleado_estado.concat(data);
-          // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR MÉTODO DE INFORMACIÓN DE AUTORIZACIÓN
+          // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR METODO DE INFORMACIÓN DE AUTORIZACIÓN
           if (this.lectura === autorizaciones.length) {
             this.VerInformacionAutoriza(this.empleado_estado);
           }
@@ -165,7 +165,7 @@ export class VerVacacionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA VER LA INFORMACION DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -173,7 +173,7 @@ export class VerVacacionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -181,7 +181,7 @@ export class VerVacacionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -193,7 +193,7 @@ export class VerVacacionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVISÓ LA SOLICITUD 
+  // METODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVISÓ LA SOLICITUD 
   cadena_texto: string = ''; // VARIABLE PARA ALMACENAR TODOS LOS USUARIOS
   VerInformacionAutoriza(array: any) {
     array.map(empl => {
@@ -210,16 +210,16 @@ export class VerVacacionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
+  // METODO PARA VER LA INFORMACIÓN DE LA SOLICITUD 
   ObtenerSolicitud(id: any) {
     this.datoSolicitud = [];
-    // BÚSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
+    // BUSQUEDA DE DATOS DE SOLICITUD PARA MOSTRAR EN PDF
     this.restV.BuscarDatosSolicitud(id).subscribe(data => {
       this.datoSolicitud = data;
-      // BÚSQUEDA DE DATOS DE EMPRESA
+      // BUSQUEDA DE DATOS DE EMPRESA
       this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
         var fecha_inicio = moment(this.datoSolicitud[0].fec_inicio);
-        // MÉTODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
+        // METODO PARA VER DÍAS DISPONIBLES DE AUTORIZACIÓN
         console.log(fecha_inicio.diff(this.fechaActual, 'days'), ' dias de diferencia ' + res[0].dias_cambio);
         if (res[0].cambios === true) {
           if (res[0].cambios === 0) {
@@ -259,7 +259,7 @@ export class VerVacacionComponent implements OnInit {
   }
 
   /** **************************************************************************************************** * 
-   *                                         MÉTODO PARA EXPORTAR A PDF                                    *
+   *                                         METODO PARA EXPORTAR A PDF                                    *
    ** **************************************************************************************************** */
   GenerarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();

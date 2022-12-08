@@ -13,7 +13,7 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
 
-// SERVICIOS FILTROS DE BÚSQUEDA
+// SERVICIOS FILTROS DE BUSQUEDA
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
@@ -182,7 +182,7 @@ export class TimbreMultipleComponent implements OnInit {
     this.activar_seleccion = false;
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE BUSQUEDA
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
   opcion: number;
   activar_boton: boolean = false;
   activar_seleccion: boolean = true;
@@ -229,7 +229,7 @@ export class TimbreMultipleComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA FILTRAR DATOS DE BÚSQUEDA
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
   Filtrar(e, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;
@@ -401,7 +401,7 @@ export class TimbreMultipleComponent implements OnInit {
    ** **                         METODOS DE REGISTRO DE TIMBRES                           ** ** 
    ** ************************************************************************************** **/
 
-  // FUNCIÓN PARA CONFIRMAR CREACIÓN DE TIMBRE 
+  // FUNCION PARA CONFIRMAR CREACIÓN DE TIMBRE 
   ConfirmarTimbre(empleado: any) {
     this.restEmpresa.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(datos => {
       if (datos[0].seg_frase === true) {
@@ -427,7 +427,7 @@ export class TimbreMultipleComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA ABRIR VENTANA DE SEGURIDAD
+  // METODO PARA ABRIR VENTANA DE SEGURIDAD
   AbrirVentana(datos: any) {
     this.ventana.open(SeguridadComponent, { width: '350px' }).afterClosed()
       .subscribe((confirmado: string) => {
@@ -442,13 +442,13 @@ export class TimbreMultipleComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA INGRESAR TIMBRE DE UN USUARIO
+  // METODO PARA INGRESAR TIMBRE DE UN USUARIO
   RegistrarTibre(empleado: any) {
     this.ventana.open(CrearTimbreComponent, { width: '400px', data: empleado }).afterClosed().subscribe(dataT => {
       if (!dataT.close) {
         this.restTimbres.PostTimbreWebAdmin(dataT).subscribe(res => {
           this.toastr.success(res.message)
-          // MÉTODO PARA AUDITORIA DE TIMBRES
+          // METODO PARA AUDITORIA DE TIMBRES
           this.validar.Auditar('app-web', 'timbres', '', dataT, 'INSERT');
         }, err => {
           this.toastr.error(err)
@@ -471,7 +471,7 @@ export class TimbreMultipleComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA VERIFICAR TIPO DE SEGURIDAD EN EL SISTEMA
+  // METODO PARA VERIFICAR TIPO DE SEGURIDAD EN EL SISTEMA
   VerificarSeguridad(seleccionados: any) {
     this.restEmpresa.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(datos => {
       if (datos[0].seg_frase === true) {
@@ -496,7 +496,7 @@ export class TimbreMultipleComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA REGISTRAR VARIOS TIMBRES
+  // METODO PARA REGISTRAR VARIOS TIMBRES
   TimbrarVarios(seleccionados: any) {
     this.ventana.open(CrearTimbreComponent, { width: '400px', data: seleccionados })
       .afterClosed().subscribe(dataT => {

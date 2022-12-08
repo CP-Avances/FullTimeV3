@@ -12,43 +12,70 @@ export class DiscapacidadService {
 
   ) { }
 
-  // Catalogo de discapacidad
-  postDiscapacidadRest(data: any){
-    return this.http.post(`${environment.url}/discapacidad`, data);
-  }
-
-  getDiscapacidadUsuarioRest(id: number){
+  // METODO PARA BUSCAR DATOS DE UN USUARIO
+  BuscarDiscapacidadUsuario(id: number) {
     return this.http.get(`${environment.url}/discapacidad/${id}`);
   }
 
-  putDiscapacidadUsuarioRest(id: number, data: any){
+  // METODO PARA REGISTRAR DISCAPACIDAD
+  RegistroDiscapacidad(data: any) {
+    return this.http.post(`${environment.url}/discapacidad`, data);
+  }
+
+  // METODO PARA ACTUALIZACION DE REGISTRO
+  ActualizarDiscapacidad(id: number, data: any) {
     return this.http.put(`${environment.url}/discapacidad/${id}`, data);
   }
 
-  deleteDiscapacidadUsuarioRest(id: number){
+  // METODO PARA ELIMINAR REGISTRO
+  EliminarDiscapacidad(id: number) {
     return this.http.delete(`${environment.url}/discapacidad/eliminar/${id}`);
   }
 
-  // TIPO DE DISCAPACIDAD
 
-  InsertarTipoD(data: any){
-    return this.http.post(`${environment.url}/discapacidad/buscarTipo`, data);
+  /** *************************************************************************************** **
+   ** **                METODO PARA MANEJO DE DATOS DE TIPO DISCAPACIDAD                   ** ** 
+   ** *************************************************************************************** **/
+
+  // METODO PARA REGISTRAR TIPO DE DISCAPACIDAD
+  RegistrarTipo(data: any) {
+    return this.http.post<any>(`${environment.url}/discapacidad/buscarTipo`, data);
   }
 
-  BuscarTipoD(id: number){
-    return this.http.get(`${environment.url}/discapacidad/buscarTipo/tipo/${id}`);
-  }
-
-  ListarTiposD(){
+  // BUSCAR TIPO DE DISCAPACIDAD
+  ListarTipoDiscapacidad() {
     return this.http.get(`${environment.url}/discapacidad/buscarTipo/tipo`);
   }
 
-  ActualizarTipoD(id: number, data: any){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // TIPO DE DISCAPACIDAD
+
+
+
+  BuscarTipoD(id: number) {
+    return this.http.get(`${environment.url}/discapacidad/buscarTipo/tipo/${id}`);
+  }
+
+
+
+  ActualizarTipoD(id: number, data: any) {
     return this.http.put(`${environment.url}/discapacidad/buscarTipo/${id}`, data);
   }
 
-  ConsultarUltimoIdTD(){
-    return this.http.get(`${environment.url}/discapacidad/buscarTipo/ultimoId`);
-  }
+
 
 }

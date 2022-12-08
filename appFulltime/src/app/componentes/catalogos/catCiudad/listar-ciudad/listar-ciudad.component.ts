@@ -1,89 +1,88 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
 import { RegistrarCiudadComponent } from 'src/app/componentes/catalogos/catCiudad/registrar-ciudad/registrar-ciudad.component'
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+
 import { CiudadService } from 'src/app/servicios/ciudad/ciudad.service';
 
 @Component({
   selector: 'app-listar-ciudad',
   templateUrl: './listar-ciudad.component.html',
   styleUrls: ['./listar-ciudad.component.css'],
-  //encapsulation: ViewEncapsulation.None
 })
+
 export class ListarCiudadComponent implements OnInit {
 
-  // Almacenamiento de datos
+  // ALMACENAMIENTO DE DATOS
   datosCiudades: any = [];
   filtroCiudad = '';
   filtroProvincia = '';
 
-  // items de paginacion de la tabla
+  // ITEMS DE PAGINACION DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   ciudadF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
   provinciaF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
 
-  // Asignación de validaciones a inputs del formulario
-  public BuscarCiudadForm = new FormGroup({
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
     ciudadForm: this.ciudadF,
     provinciaForm: this.provinciaF,
   });
 
   constructor(
+    public ventana: MatDialog,
     public rest: CiudadService,
-    public vistaRegistrarDatos: MatDialog,
-    private toastr: ToastrService,
     private router: Router,
+    private toastr: ToastrService,
   ) { }
 
   ngOnInit(): void {
     this.ListarCiudades();
   }
 
+  // METODO QUE MANEJA PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  // METODO PARA LISTAR CIUDADES
   ListarCiudades() {
     this.datosCiudades = [];
-    this.rest.ConsultarNombreCiudades().subscribe(datos => {
+    this.rest.ListarNombreCiudadProvincia().subscribe(datos => {
       this.datosCiudades = datos;
     })
   }
 
+  // METODO PARA REGISTRAR CIUDAD
   AbrirVentanaRegistrarCiudad() {
-    this.vistaRegistrarDatos.open(RegistrarCiudadComponent, { width: '600px' }).afterClosed().subscribe(item => {
+    this.ventana.open(RegistrarCiudadComponent, { width: '600px' }).afterClosed().subscribe(item => {
       this.ListarCiudades();
     });
   }
 
-  /* **********************************************************************************
-   * ELIMAR REGISTRO ENROLADO Y ENROLADOS-DISPOSITIVO 
-   * **********************************************************************************/
-
-  /** Función para eliminar registro seleccionado */
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_ciu: number) {
-    //console.log("probando id", id_prov)
     this.rest.EliminarCiudad(id_ciu).subscribe(res => {
-      this.toastr.error('Registro eliminado','', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.ListarCiudades();
     });
   }
 
-  /** Función para confirmar si se elimina o no un registro */
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -93,12 +92,13 @@ export class ListarCiudadComponent implements OnInit {
       });
   }
 
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -115,24 +115,13 @@ export class ListarCiudadComponent implements OnInit {
     }
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.BuscarCiudadForm.setValue({
+    this.formulario.setValue({
       ciudadForm: '',
       provinciaForm: ''
     });
     this.ListarCiudades;
-  }
-
-  ObtenerMensajeCiudadLetras() {
-    if (this.ciudadF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
-  ObtenerMensajeProvinciaLetras() {
-    if (this.provinciaF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
   }
 
 }

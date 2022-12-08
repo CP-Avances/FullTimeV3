@@ -10,6 +10,7 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 export interface PermisosElemento {
   apellido: string;
@@ -58,16 +59,30 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   numero_pagina_autorizado: number = 1;
   pageSizeOptions_autorizado = [5, 10, 20, 50];
 
+  get habilitarPermiso(): boolean { return this.funciones.permisos; }
+
   constructor(
     private validar: ValidacionesService,
     private ventana: MatDialog,
     private restP: PermisosService,
+    private funciones: MainNavService,
     public parametro: ParametrosService,
     public restEmpleado: EmpleadoService,
   ) { }
 
   ngOnInit(): void {
-    this.BuscarParametro();
+    if (this.habilitarPermiso === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Permisos. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.BuscarParametro();
+    }
   }
 
   ManejarPagina(e: PageEvent) {
@@ -82,7 +97,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -132,13 +147,14 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         this.lista_permisos = true;
       }
     }, err => {
+      console.log('permisos ALL ', err.error)
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
 
   permisosTotales: any;
   EditarPermiso(id, id_empl) {
-    // MÉTODO PARA IMPRIMIR DATOS DEL PERMISO 
+    // METODO PARA IMPRIMIR DATOS DEL PERMISO 
     this.permisosTotales = [];
     this.restP.ObtenerUnPermisoEditar(id).subscribe(datos => {
       this.permisosTotales = datos;
@@ -149,6 +165,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         this.BuscarParametro();
       });
     }, err => {
+      console.log('permisos uno ', err.error)
       return this.validar.RedireccionarHomeAdmin(err.error)
     })
 

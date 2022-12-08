@@ -3,6 +3,12 @@
     width: 100%;
 }
 
-button {margin: 5px 10px 5px 10px;}
+button {
+    margin: 5px 10px 5px 10px;
+}
 
-.btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    color: white;
+}

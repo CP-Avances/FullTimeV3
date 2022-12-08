@@ -503,7 +503,7 @@ const ModelarAtrasos = function (obj, fec_inicio, fec_final) {
                 'WHERE eh.codigo = $1 AND h.id = eh.id_horarios AND dh.id_horario = h.id AND CAST(eh.fec_inicio AS VARCHAR) between $2 || \'%\' AND $3 || \'%\' ' +
                 'AND CAST(eh.fec_final AS VARCHAR) between $2 || \'%\' AND $3 || \'%\' AND dh.orden = 1 limit 1', [obj.id_empleado, fec_inicio, fec_final])
                 .then(res => { return res.rows; });
-            console.log('Array del resultado', array);
+            //  console.log('Array del resultado',array);
             if (array.length === 0) {
                 return {
                     fecha: obj.fec_hora_timbre,

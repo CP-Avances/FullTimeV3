@@ -87,7 +87,7 @@ class DocumentosControlador {
         let direccionCompleta = __dirname.split("servidor")[0] + filePath;
         fs.unlinkSync(direccionCompleta);
 
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
 

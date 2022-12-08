@@ -18,6 +18,8 @@ import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-ge
 
 import { ITableEmpleados } from 'src/app/model/reportes.model';
 import { PlanificacionComidasComponent } from '../planificacion-comidas/planificacion-comidas.component';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-plan-comidas',
@@ -52,6 +54,8 @@ export class PlanComidasComponent implements OnInit {
 
   public check: checkOptions[];
 
+  get habilitarComida(): boolean { return this.funciones.alimentacion; }
+
   constructor(
     public restD: DatosGeneralesService,
     public restR: ReportesService,
@@ -59,11 +63,24 @@ export class PlanComidasComponent implements OnInit {
     public ventana: MatDialog,
     public informacion: DatosGeneralesService,
     private toastr: ToastrService,
+    private funciones: MainNavService,
+    public validar: ValidacionesService,
   ) { }
 
   ngOnInit(): void {
-    this.check = this.restR.checkOptions(3);
-    this.BuscarInformacion();
+    if (this.habilitarComida === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Alimentación. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.check = this.restR.checkOptions(3);
+      this.BuscarInformacion();
+    }
   }
 
   ngOnDestroy() {
@@ -120,7 +137,7 @@ export class PlanComidasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE BUSQUEDA
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
   opcion: number;
   activar_boton: boolean = false;
   activar_seleccion: boolean = true;
@@ -167,7 +184,7 @@ export class PlanComidasComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA FILTRAR DATOS DE BÚSQUEDA
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
   Filtrar(e, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;

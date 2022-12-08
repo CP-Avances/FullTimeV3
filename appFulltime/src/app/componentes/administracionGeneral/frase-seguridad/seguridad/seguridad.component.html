@@ -3,11 +3,13 @@
     <span>Confirmar su contraseña</span>
     <form [formGroup]="formulario">
         <div class="nota">
-            <span>NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
-                Confirmar Contraseña.</span>
+            <span>
+                NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
+                Confirmar Contraseña.
+            </span>
         </div>
         <mat-form-field>
-            <mat-label>Contraseña Actual</mat-label>
+            <mat-label>Contraseña actual</mat-label>
             <input matInput placeholder="**************" [type]="hide1 ? 'password' : 'text'" maxlength="10"
                 oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                 formControlName="aPass" required>
@@ -34,11 +36,13 @@
     <span>Confirmar su frase</span>
     <form [formGroup]="fraseForm">
         <div class="nota">
-            <span>NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
-                Confirmar Frase.</span>
+            <span>
+                NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
+                Confirmar Frase.
+            </span>
         </div>
         <mat-form-field>
-            <mat-label>Ingresar Frase</mat-label>
+            <mat-label>Ingresar frase</mat-label>
             <textarea matInput #message maxlength="100" placeholder="Ingrese su frase de seguridad"
                 formControlName="aFrase" required></textarea>
             <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -49,8 +53,9 @@
         </mat-form-field>
         <br>
         <div class="caja1">
-            <button type="button" class="btn btn-link verde" (click)="RecuperarFrase()">Olvido su frase de
-                seguridad?</button>
+            <button type="button" class="btn btn-link verde" (click)="RecuperarFrase()">
+                Olvido su frase de seguridad?
+            </button>
         </div>
         <div style="text-align: center;">
             <button type="submit" class="btn btn_b" (click)="CompararFrase(fraseForm.value)"

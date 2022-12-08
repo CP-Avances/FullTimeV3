@@ -15,6 +15,8 @@ import { PermisosMultiplesComponent } from '../permisos-multiples/permisos-multi
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-permisos-multiples-empleados',
@@ -89,19 +91,34 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true;
 
+  get habilitarPermiso(): boolean { return this.funciones.permisos; }
+
   constructor(
     public informacion: DatosGeneralesService,
     public restPerV: PeriodoVacacionesService,
     public restR: ReportesService,
     private ventana: MatDialog,
     private toastr: ToastrService,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.check = this.restR.checkOptions(3);
-    this.BuscarInformacion();
+    if (this.habilitarPermiso === false) {
+      let mensaje = {
+        access: false,
+        message: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Permisos. \n
+        ¿Te gustaría activarlo? Comunícate con nosotros. \n`,
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.check = this.restR.checkOptions(3);
+      this.BuscarInformacion();
+    }
   }
 
   ngOnDestroy() {
@@ -165,7 +182,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.activar_seleccion = false;
   }
 
-  // MÉTODO PARA MOSTRAR DATOS DE BUSQUEDA
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
   opcion: number;
   activar_boton: boolean = false;
   activar_seleccion: boolean = true;
@@ -212,7 +229,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA FILTRAR DATOS DE BÚSQUEDA
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
   Filtrar(e, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;
@@ -399,7 +416,8 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
           this.LimpiarFormulario();
         });
     }, error => {
-      this.toastr.info('El empleado no tiene registrado Periodo de Vacaciones', 'Primero Registrar Periodo de Vacaciones', {
+      this.toastr.info('El empleado no tiene registrado Periodo de Vacaciones',
+        'Primero Registrar Periodo de Vacaciones', {
         timeOut: 6000,
       })
     });

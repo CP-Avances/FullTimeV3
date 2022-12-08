@@ -168,7 +168,7 @@ class AccionPersonalControlador {
     public async EliminarTipoAccionPersonal(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         await pool.query('DELETE FROM tipo_accion_personal WHERE id = $1', [id]);
-        res.jsonp({ message: 'Registro eliminado' });
+        res.jsonp({ message: 'Registro eliminado.' });
     }
 
     /** TABLA ACCION_PERSONAL_EMPLEADO */

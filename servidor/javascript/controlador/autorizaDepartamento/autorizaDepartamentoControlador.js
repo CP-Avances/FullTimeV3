@@ -15,24 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AUTORIZA_DEPARTAMENTO_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 class AutorizaDepartamentoControlador {
-    ListarAutorizaDepartamento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const AUTORIZA = yield database_1.default.query('SELECT * FROM depa_autorizaciones');
-            if (AUTORIZA.rowCount > 0) {
-                return res.jsonp(AUTORIZA.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    CrearAutorizaDepartamento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_departamento, id_empl_cargo, estado } = req.body;
-            yield database_1.default.query('INSERT INTO depa_autorizaciones (id_departamento, id_empl_cargo, estado) VALUES ($1, $2, $3)', [id_departamento, id_empl_cargo, estado]);
-            res.jsonp({ message: 'Autorización se registró con éxito' });
-        });
-    }
+    // METODO PARA BUSCAR USUARIO AUTORIZA
     EncontrarAutorizacionUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empleado } = req.params;
@@ -45,6 +28,49 @@ class AutorizaDepartamentoControlador {
             WHERE da.id_departamento = cd.id AND cd.id_sucursal = s.id AND ce.id = s.id_empresa
                 AND da.id_empleado = $1
             `, [id_empleado]);
+            if (AUTORIZA.rowCount > 0) {
+                return res.jsonp(AUTORIZA.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+            }
+        });
+    }
+    // METODO PARA REGISTRAR AUTORIZACION
+    CrearAutorizaDepartamento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_departamento, id_empl_cargo, estado, id_empleado } = req.body;
+            yield database_1.default.query(`
+            INSERT INTO depa_autorizaciones (id_departamento, id_empl_cargo, estado, id_empleado)
+            VALUES ($1, $2, $3, $4)
+            `, [id_departamento, id_empl_cargo, estado, id_empleado]);
+            res.jsonp({ message: 'Registro guardado.' });
+        });
+    }
+    // METODO PARA ACTUALIZAR REGISTRO
+    ActualizarAutorizaDepartamento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_departamento, id_empl_cargo, estado, id } = req.body;
+            yield database_1.default.query(`
+            UPDATE depa_autorizaciones SET id_departamento = $1, id_empl_cargo = $2, estado = $3 
+            WHERE id = $4
+            `, [id_departamento, id_empl_cargo, estado, id]);
+            res.jsonp({ message: 'Registro actualizado.' });
+        });
+    }
+    // METODO PARA ELIMINAR REGISTROS
+    EliminarAutorizacionDepartamento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            yield database_1.default.query(`
+            DELETE FROM depa_autorizaciones WHERE id = $1
+            `, [id]);
+            res.jsonp({ message: 'Registro eliminado.' });
+        });
+    }
+    ListarAutorizaDepartamento(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const AUTORIZA = yield database_1.default.query('SELECT * FROM depa_autorizaciones');
             if (AUTORIZA.rowCount > 0) {
                 return res.jsonp(AUTORIZA.rows);
             }
@@ -63,20 +89,6 @@ class AutorizaDepartamentoControlador {
             else {
                 return res.status(404).jsonp({ text: 'Registros no encontrados' });
             }
-        });
-    }
-    ActualizarAutorizaDepartamento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_departamento, id_empl_cargo, estado, id } = req.body;
-            yield database_1.default.query('UPDATE depa_autorizaciones SET id_departamento = $1, id_empl_cargo = $2, estado = $3 WHERE id = $4', [id_departamento, id_empl_cargo, estado, id]);
-            res.jsonp({ message: 'Autorización se registró con éxito' });
-        });
-    }
-    EliminarAutorizacionDepartamento(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield database_1.default.query('DELETE FROM depa_autorizaciones WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
         });
     }
 }

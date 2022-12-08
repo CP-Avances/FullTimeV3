@@ -11,26 +11,39 @@ export class CiudadService {
     private http: HttpClient,
   ) { }
 
-  // catalogo de departamentos
-
-  ConsultarNombreCiudades(){
-    return this.http.get(`${environment.url}/ciudades`);
+  // BUSCAR INFORMACION DE LA CIUDAD
+  BuscarInformacionCiudad(id_ciudad: number) {
+    return this.http.get(`${environment.url}/ciudades/informacion-ciudad/${id_ciudad}`);
   }
 
-  getUnaCiudadRest(id: number){
-    return this.http.get(`${environment.url}/ciudades/${id}`);
-  }
-
-  ConsultarCiudades(){
+  // BUSQUEDA DE CIUDADES
+  ConsultarCiudades() {
     return this.http.get(`${environment.url}/ciudades/listaCiudad`);
   }
 
-  postCiudades(data: any){ 
+  // BUSCAR CIUDADES POR PROVINCIA
+  BuscarCiudadProvincia(id_provincia: number) {
+    return this.http.get(`${environment.url}/ciudades/ciudad-provincia/${id_provincia}`);
+  }
+
+  // REGISTRAR CIUDAD
+  RegistrarCiudad(data: any) {
     return this.http.post(`${environment.url}/ciudades`, data);
   }
 
-  EliminarCiudad(id: number){
+  // BUSQUEDA DE NOMBRE CIUDADES - PROVINCIAS
+  ListarNombreCiudadProvincia() {
+    return this.http.get(`${environment.url}/ciudades`);
+  }
+
+  // METODO PARA ELIMINAR REGISTRO
+  EliminarCiudad(id: number) {
     return this.http.delete(`${environment.url}/ciudades/eliminar/${id}`);
+  }
+
+  // METODO PARA BUSCAR INFORMACION DE UNA CIUDAD
+  BuscarUnaCiudad(id: number) {
+    return this.http.get(`${environment.url}/ciudades/${id}`);
   }
 
 }

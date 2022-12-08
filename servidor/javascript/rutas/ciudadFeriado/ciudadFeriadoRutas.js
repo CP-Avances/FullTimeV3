@@ -12,12 +12,18 @@ class CiudadRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.post('/insertar', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.AsignarCiudadFeriado);
-        this.router.post('/buscar', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.ObtenerIdCiudades);
+        // METODO PARA BUSCAR CIUDADES - PROVINCIA POR NOMBRE
         this.router.get('/:nombre', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.FiltrarCiudadesProvincia);
+        // METODO PARA BUSCAR NOMBRES DE CIUDADES
         this.router.get('/nombresCiudades/:idferiado', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.EncontrarCiudadesFeriado);
-        this.router.put('/', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.ActualizarCiudadFeriado);
+        // METODO PARA ELIMINAR REGISTRO
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.EliminarCiudadFeriado);
+        // METODO PARA BUSCAR ID DE CIUDADES
+        this.router.post('/buscar', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.ObtenerIdCiudades);
+        // METODO PARA REGISTRAR ASIGNACION DE CIUDADES  
+        this.router.post('/insertar', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.AsignarCiudadFeriado);
+        // METODO PARA ACTUALIZAR REGISTRO
+        this.router.put('/', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.ActualizarCiudadFeriado);
         this.router.get('/ciudad/:id_ciudad', verificarToken_1.TokenValidation, ciudadFeriadoControlador_1.default.ObtenerFeriadosCiudad);
     }
 }

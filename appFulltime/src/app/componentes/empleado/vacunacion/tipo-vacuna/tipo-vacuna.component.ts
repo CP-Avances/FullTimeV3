@@ -1,7 +1,7 @@
 // IMPORTAR LIBRERIAS
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
 import { Component, OnInit } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 
 // IMPORTAR SERVICIOS
@@ -28,11 +28,12 @@ export class TipoVacunaComponent implements OnInit {
   nombreF = new FormControl('', Validators.required);
 
   // FORMULARIO DENTRO DE UN GRUPO
-  public vacunaForm = new FormGroup({
+  public formulario = new FormGroup({
     nombreForm: this.nombreF,
   });
 
-  GuardarTipoVacuna(form) {
+  // METODO PARA REGISTRAR TIPO DE VACUNA
+  GuardarTipoVacuna(form: any) {
     let tipoVacunas = {
       nombre: form.nombreForm,
     }
@@ -48,9 +49,10 @@ export class TipoVacunaComponent implements OnInit {
         });
         this.ventana.close();
       }
-    }, error => { });
+    });
   }
 
+  // METODO PARA CERRAR VENTANA
   CerrarVentana() {
     this.ventana.close();
   }

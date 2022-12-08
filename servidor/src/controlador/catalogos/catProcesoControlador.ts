@@ -48,7 +48,7 @@ class ProcesoControlador {
   public async EliminarProceso(req: Request, res: Response): Promise<void> {
     const id = req.params.id;
     await pool.query('DELETE FROM cg_procesos WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
+    res.jsonp({ message: 'Registro eliminado.' });
   }
 
   public async FileXML(req: Request, res: Response): Promise<any> {

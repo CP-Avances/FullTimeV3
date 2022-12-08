@@ -12,6 +12,10 @@ class PlanHorarioRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO PARA VERIFICAR FECHAS HORARIOS
+        this.router.post('/validarFechas/:codigo', verificarToken_1.TokenValidation, planHorarioControlador_1.default.VerificarFechasPlan);
+        // METODO PARA VERIFICAR FECHAS HORARIOS ACTUALIZACION
+        this.router.post('/validarFechas/horarioEmpleado/:id/empleado/:codigo', verificarToken_1.TokenValidation, planHorarioControlador_1.default.VerificarFechasPlanEdicion);
         // BUSQUEDA DE HORARIOS ROTATIVOS POR CODIGO DE USUARIO
         this.router.get('/rotativo/:codigo', verificarToken_1.TokenValidation, planHorarioControlador_1.default.BuscarHorarioRotativoCodigo);
         this.router.get('/', verificarToken_1.TokenValidation, planHorarioControlador_1.default.ListarPlanHorario);
@@ -21,8 +25,6 @@ class PlanHorarioRutas {
         this.router.put('/', verificarToken_1.TokenValidation, planHorarioControlador_1.default.ActualizarPlanHorario);
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, planHorarioControlador_1.default.EliminarRegistros);
         this.router.post('/fechas_plan/:id_empleado', verificarToken_1.TokenValidation, planHorarioControlador_1.default.ObtenerPlanificacionEmpleadoFechas);
-        this.router.post('/validarFechas/:codigo', verificarToken_1.TokenValidation, planHorarioControlador_1.default.VerificarFechasPlan);
-        this.router.post('/validarFechas/horarioEmpleado/:id/empleado/:codigo', verificarToken_1.TokenValidation, planHorarioControlador_1.default.VerificarFechasPlanEdicion);
     }
 }
 const PLAN_HORARIO_RUTAS = new PlanHorarioRutas();

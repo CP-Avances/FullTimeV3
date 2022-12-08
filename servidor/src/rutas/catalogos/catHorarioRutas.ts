@@ -38,21 +38,21 @@ class HorarioRutas {
         this.router.get('/documentos/:docs', HORARIO_CONTROLADOR.ObtenerDocumento);
         // BUSCAR HORARIOS SIN CONSIDERAR UNO EN ESPECIFICO (METODO DE EDICION)
         this.router.post('/buscar_horario/edicion', TokenValidation, HORARIO_CONTROLADOR.BuscarHorarioNombre_);
-
-
-
-
-        this.router.get('/:id', TokenValidation, HORARIO_CONTROLADOR.ObtenerUnHorario);
-
-        this.router.put('/update-horas-trabaja/:id', TokenValidation, HORARIO_CONTROLADOR.EditarHoraTrabajaByHorarioDetalle);
-        this.router.post('/xmlDownload/', TokenValidation, HORARIO_CONTROLADOR.FileXML);
-        this.router.get('/download/:nameXML', HORARIO_CONTROLADOR.downloadXML);
-
-        this.router.put('/editar/editarDocumento/:id', TokenValidation, HORARIO_CONTROLADOR.EditarDocumento);
+        // METODO PARA ELIMINAR REGISTRO
         this.router.delete('/eliminar/:id', TokenValidation, HORARIO_CONTROLADOR.EliminarRegistros);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, HORARIO_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', HORARIO_CONTROLADOR.downloadXML);
+        // METODO PARA BUSCAR DATOS DE UN HORARIO
+        this.router.get('/:id', TokenValidation, HORARIO_CONTROLADOR.ObtenerUnHorario);
+        // METODO PARA ACTUALIZAR HORAS TRABAJADAS
+        this.router.put('/update-horas-trabaja/:id', TokenValidation, HORARIO_CONTROLADOR.EditarHorasTrabaja);
 
 
-        // Verificar datos de la plantilla de catálogo horario y luego subir al sistema
+
+
+        // VERIFICAR DATOS DE LA PLANTILLA DE CATÁLOGO HORARIO Y LUEGO SUBIR AL SISTEMA
         this.router.post('/cargarHorario/verificarDatos/upload', [TokenValidation, multipartMiddleware], HORARIO_CONTROLADOR.VerificarDatos);
         this.router.post('/cargarHorario/verificarPlantilla/upload', [TokenValidation, multipartMiddleware], HORARIO_CONTROLADOR.VerificarPlantilla);
         this.router.post('/cargarHorario/upload', [TokenValidation, multipartMiddleware], HORARIO_CONTROLADOR.CargarHorarioPlantilla);

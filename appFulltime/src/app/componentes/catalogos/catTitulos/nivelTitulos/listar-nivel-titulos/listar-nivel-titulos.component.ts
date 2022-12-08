@@ -1,27 +1,27 @@
 // IMPORTAR LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, OnInit } from '@angular/core';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import pdfMake from 'pdfmake/build/pdfmake';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import * as FileSaver from 'file-saver';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import * as xlsx from 'xlsx';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import pdfMake from 'pdfmake/build/pdfmake';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // IMPORTAR COMPONENTES
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { EditarNivelTituloComponent } from '../editar-nivel-titulo/editar-nivel-titulo.component';
+import { RegistrarNivelTitulosComponent } from '../registrar-nivel-titulos/registrar-nivel-titulos.component';
 
 // IMPORTAR SERVICIOS
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulos.service';
 import { PlantillaReportesService } from 'src/app/componentes/reportes/plantilla-reportes.service';
-import { RegistrarNivelTitulosComponent } from '../registrar-nivel-titulos/registrar-nivel-titulos.component';
-import { EditarNivelTituloComponent } from '../editar-nivel-titulo/editar-nivel-titulo.component';
 
 
 @Component({
@@ -37,13 +37,13 @@ export class ListarNivelTitulosComponent implements OnInit {
   empleado: any = [];
 
   idEmpleado: number; // VARIABLE QUE ALMACENA ID DE EMPLEADO QUE INICIO SESIÓN
-  filtradoNombre = ''; // VARIABLE DE BÚSQUEDA DE DATOS
+  filtradoNombre = ''; // VARIABLE DE BUSQUEDA DE DATOS
 
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   nombreF = new FormControl('', [Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{2,48}")]);
 
   // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
-  public BuscarNivelTitulosForm = new FormGroup({
+  public formulario = new FormGroup({
     nombreForm: this.nombreF,
   });
 
@@ -52,19 +52,19 @@ export class ListarNivelTitulosComponent implements OnInit {
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
 
-  // MÉTODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
   get s_color(): string { return this.plantillaPDF.color_Secundary }
   get p_color(): string { return this.plantillaPDF.color_Primary }
   get frase(): string { return this.plantillaPDF.marca_Agua }
   get logo(): string { return this.plantillaPDF.logoBase64 }
 
   constructor(
-    private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
-    public restNivelTitulos: NivelTitulosService, // SERVICIO DATOS NIVELES DE TÍTULOS
-    public vistaRegistrarDatos: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
-    private toastr: ToastrService, // VARIABLE DE MENSAJES DE NOTIFICACIONES
+    public nivel: NivelTitulosService, // SERVICIO DATOS NIVELES DE TÍTULOS
     public restE: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    public ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
+    private toastr: ToastrService, // VARIABLE DE MENSAJES DE NOTIFICACIONES
     private router: Router, // VARIABLE DE MANEJO DE TUTAS URL
+    private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -74,13 +74,13 @@ export class ListarNivelTitulosComponent implements OnInit {
     this.ObtenerNiveles();
   }
 
-  // EVENTO PARA MOSTRAR NÚMERO DE FILAS DE TABLA
+  // EVENTO PARA MOSTRAR NUMERO DE FILAS DE TABLA
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -88,15 +88,15 @@ export class ListarNivelTitulosComponent implements OnInit {
     })
   }
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE NIVELES
+  // METODO DE BUSQUEDA DE DATOS DE NIVELES
   ObtenerNiveles() {
     this.nivelTitulos = [];
-    this.restNivelTitulos.getNivelesTituloRest().subscribe(res => {
+    this.nivel.ListarNiveles().subscribe(res => {
       this.nivelTitulos = res;
     });
   }
 
-  // ORDENAR LOS DATOS SEGÚN EL ID 
+  // ORDENAR LOS DATOS SEGUN EL ID 
   OrdenarDatos(array: any) {
     function compare(a: any, b: any) {
       if (a.id < b.id) {
@@ -110,26 +110,24 @@ export class ListarNivelTitulosComponent implements OnInit {
     array.sort(compare);
   }
 
+  // METODO PARA REGISTRAR NIVEL DE TITULO
   AbrirVentanaNivelTitulo(): void {
-    this.vistaRegistrarDatos.open(RegistrarNivelTitulosComponent, { width: '400px' }).afterClosed().subscribe(items => {
-      this.ObtenerNiveles();
-    });
+    this.ventana.open(RegistrarNivelTitulosComponent, { width: '400px' })
+      .afterClosed().subscribe(items => {
+        this.ObtenerNiveles();
+      });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.BuscarNivelTitulosForm.setValue({
+    this.formulario.setValue({
       nombreForm: ''
     });
     this.ObtenerNiveles();
   }
 
-  ObtenerMensajeErrorNombre() {
-    if (this.nombreF.hasError('pattern')) {
-      return 'Indispensable ingresar dos letras';
-    }
-  }
-
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
     // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
@@ -151,26 +149,27 @@ export class ListarNivelTitulosComponent implements OnInit {
     }
   }
 
+  // METODO PARA EDITAR NIVEL DE TITULO
   AbrirVentanaEditarTitulo(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarNivelTituloComponent, { width: '400px', data: datosSeleccionados }).afterClosed().subscribe(items => {
-      this.ObtenerNiveles();
-    });
+    this.ventana.open(EditarNivelTituloComponent, { width: '400px', data: datosSeleccionados })
+      .afterClosed().subscribe(items => {
+        this.ObtenerNiveles();
+      });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_nivel: number) {
-    this.restNivelTitulos.deleteNivelTituloRest(id_nivel).subscribe(res => {
-      this.toastr.error("Registro eliminado", '', {
+    this.nivel.EliminarNivel(id_nivel).subscribe(res => {
+      this.toastr.error("Registro eliminado.", '', {
         timeOut: 6000,
       });
       this.ObtenerNiveles();
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaRegistrarDatos.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -180,9 +179,9 @@ export class ListarNivelTitulosComponent implements OnInit {
       });
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS PDF
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                            PARA LA EXPORTACION DE ARCHIVOS PDF                              ** **
+   ** ************************************************************************************************* **/
 
   GenerarPdf(action = 'open') {
     this.OrdenarDatos(this.nivelTitulos);
@@ -269,9 +268,9 @@ export class ListarNivelTitulosComponent implements OnInit {
     };
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                              PARA LA EXPORTACION DE ARCHIVOS EXCEL                          ** **
+   ** ************************************************************************************************* **/
 
   ExportToExcel() {
     this.OrdenarDatos(this.nivelTitulos);
@@ -281,7 +280,7 @@ export class ListarNivelTitulosComponent implements OnInit {
         NIVEL: obj.nombre,
       }
     }));
-    // MÉTODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
     const header = Object.keys(this.nivelTitulos[0]); // NOMBRE DE CABECERAS DE COLUMNAS
     var wscols = [];
     for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
@@ -294,9 +293,9 @@ export class ListarNivelTitulosComponent implements OnInit {
     this.ObtenerNiveles();
   }
 
-  /* ****************************************************************************************************
-   *                               PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                              PARA LA EXPORTACION DE ARCHIVOS XML                            ** **
+   ** ************************************************************************************************* **/
   urlxml: string;
   data: any = [];
   ExportToXML() {
@@ -312,7 +311,7 @@ export class ListarNivelTitulosComponent implements OnInit {
       }
       arregloTitulos.push(objeto)
     });
-    this.restNivelTitulos.DownloadXMLRest(arregloTitulos).subscribe(res => {
+    this.nivel.CrearXML(arregloTitulos).subscribe(res => {
       this.data = res;
       this.urlxml = `${environment.url}/nivel-titulo/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
@@ -320,9 +319,9 @@ export class ListarNivelTitulosComponent implements OnInit {
     this.ObtenerNiveles();
   }
 
-  /* ***************************************************************************************************** 
-   *                                  MÉTODO PARA EXPORTAR A CSV 
-   * *****************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                 METODO PARA EXPORTAR A CSV                                   ** **
+   ** ************************************************************************************************** **/
 
   ExportToCVS() {
     this.OrdenarDatos(this.nivelTitulos);

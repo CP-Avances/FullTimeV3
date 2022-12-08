@@ -135,7 +135,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   formato_fecha: string = 'DD/MM/YYYY';
   formato_hora: string = 'HH:mm:ss';
 
-  // MÉTODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+  // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
   BuscarParametro() {
     // id_tipo_parametro Formato fecha = 25
     this.parametro.ListarDetalleParametros(25).subscribe(
@@ -156,7 +156,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
    ** **                     BUSCAR INFORMACION DEL USUARIO                              ** ** 
    ** ************************************************************************************* **/
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   empleado: any = [];
   ObtenerEmpleado() {
     this.empleado = [];
@@ -251,7 +251,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     return days;
   }
 
-  // MÉTODO PARA CONTAR DÍAS LIBRES Y DÍAS LABORABLES
+  // METODO PARA CONTAR DÍAS LIBRES Y DÍAS LABORABLES
 
   ImprimirDiaLibre(form, ingreso) {
     if (form.solicitarForm === 'Dias' || form.solicitarForm === 'Dias y Horas') {
@@ -264,7 +264,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     }
   }
 
-  // MÉTODO DE VALIDACIONES DE FECHA DE SALIDA
+  // METODO DE VALIDACIONES DE FECHA DE SALIDA
   dSalida: any;
   validarFechaSalida(event, form) {
 
@@ -355,12 +355,12 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
               fechaFinalForm: ''
             });
           } else {
-            // MÉTODO DE BÚSQUEDA DE HORAS DE TRABAJO
+            // METODO DE BUSQUEDA DE HORAS DE TRABAJO
             this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
               this.horasTrabajo = datos;
 
               console.log('ver horas trabajadas', this.horasTrabajo)
-              // MÉTODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
+              // METODO PARA VALIDAR TIPO DE SOLICITUD DE PERMISO
               this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);
 
               // SOLICITUD DE PERMISO POR DÍAS
@@ -605,7 +605,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   }
 
-  // MÉTODO PARA VALIDAR QUE SE INGRESE DÍAS - HORAS DE SOLICITUD DE PERMISOS
+  // METODO PARA VALIDAR QUE SE INGRESE DÍAS - HORAS DE SOLICITUD DE PERMISOS
   VerificarDiasHoras(form, hora_empleado) {
 
     // VALIDAR SOLICITUD DE PERMISO POR DÍAS
@@ -916,7 +916,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA QUITAR ARCHIVO SELECCIONADO
+  // METODO PARA QUITAR ARCHIVO SELECCIONADO
   HabilitarBtn: boolean = false;
   RetirarArchivo() {
     this.archivoSubido = [];
@@ -957,7 +957,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     var cont = 0;
     var correo_usuarios = '';
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
     let solicitud = this.validar.FormatearFecha(permiso.fec_creacion, this.formato_fecha, this.validar.dia_completo);
     let desde = this.validar.FormatearFecha(permiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
     let hasta = this.validar.FormatearFecha(permiso.fec_final, this.formato_fecha, this.validar.dia_completo);
@@ -1055,7 +1055,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   EnviarNotificacion(permiso: any) {
 
-    // MÉTODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
+    // METODO PARA OBTENER NOMBRE DEL DÍA EN EL CUAL SE REALIZA LA SOLICITUD DE PERMISO
     let desde = this.validar.FormatearFecha(permiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
     let hasta = this.validar.FormatearFecha(permiso.fec_final, this.formato_fecha, this.validar.dia_completo);
 

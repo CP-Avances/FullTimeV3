@@ -16,6 +16,8 @@ import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProc
 import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 import { AccionPersonalService } from 'src/app/servicios/accionPersonal/accion-personal.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-listar-pedido-accion',
@@ -29,16 +31,18 @@ export class ListarPedidoAccionComponent implements OnInit {
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
-  // DATOS FILTROS DE BÚSQUEDA
+  // DATOS FILTROS DE BUSQUEDA
   filtroCodigo: number;
   filtroCedula: '';
   filtroNombre: '';
   filtroApellido: '';
-  // DATOS DEL FORMULARIO DE BÚSQUEDA
+  // DATOS DEL FORMULARIO DE BUSQUEDA
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
   apellido = new FormControl('', [Validators.minLength(2)]);
+
+  get habilitarAccion(): boolean { return this.funciones.accionesPersonal; }
 
   constructor(
     public restEmpleadoProcesos: EmpleadoProcesosService, // SERVICIO DATOS PROCESOS DEL EMPLEADO
@@ -46,12 +50,25 @@ export class ListarPedidoAccionComponent implements OnInit {
     public restCargo: EmplCargosService, // SERVICIO DATOS DE CARGO
     public restEmpre: EmpresaService, // SERVICIO DATOS DE EMPRESA
     private toastr: ToastrService, // VARIABLE PARA MANEJO DE NOTIFICACIONES 
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
   ) { }
 
   ngOnInit(): void {
-    this.ObtenerLogo();
-    this.VerDatosAcciones();
-    this.ObtenerEmpresa();
+    if (this.habilitarAccion === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Acciones de Personal. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.ObtenerLogo();
+      this.VerDatosAcciones();
+      this.ObtenerEmpresa();
+    }
   }
 
   // EVENTO PARA MANEJAR LA PÁGINACIÓN
@@ -77,7 +94,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER DATOS DE COLORES DE LA EMPRESA
+  // METODO PARA OBTENER DATOS DE COLORES DE LA EMPRESA
   empresa: any = [];
   ObtenerEmpresa() {
     this.empresa = [];
@@ -126,7 +143,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     });
   }
 
-  /** MÉTODO PARA MOSTRAR DATOS DE LOS EMPLEADOS SELECCIONADOS EN EL PEDIDO */
+  /** METODO PARA MOSTRAR DATOS DE LOS EMPLEADOS SELECCIONADOS EN EL PEDIDO */
   BuscarPedidoEmpleado(pedido: any) {
     this.restAccion.BuscarDatosPedidoEmpleados(pedido[0].id_empleado).subscribe(datos1 => {
       this.empleado_1 = datos1;
@@ -134,7 +151,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     })
   }
 
-  /** MÉTODO PARA MOSTRAR LA INFORMACIÓN DE LOS PROCESOS DEL EMPLEADO */
+  /** METODO PARA MOSTRAR LA INFORMACIÓN DE LOS PROCESOS DEL EMPLEADO */
   ListarProcesosEmpleado(pedido: any) {
     this.restCargo.BuscarIDCargo(pedido[0].id_empleado).subscribe(datos => {
       this.idCargo = datos;
@@ -146,7 +163,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     });
   }
 
-  /** MÉTODO PARA BUSCAR PROCESOS QUE TIENE EL EMPLEADO DE ACUERDO AL CARGO */
+  /** METODO PARA BUSCAR PROCESOS QUE TIENE EL EMPLEADO DE ACUERDO AL CARGO */
   BuscarProcesosCargo(id_cargo: any, valor: any, contar: any) {
     // revisar 
     this.restEmpleadoProcesos.ObtenerProcesoUsuario(id_cargo[valor]['id']).subscribe(datos => {
@@ -180,7 +197,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     });
   }
 
-  /** MÉTODO PARA BUSCAR INFORMACIÓN DE LOS EMPLEADOS RESPONSABLES / FIRMAS */
+  /** METODO PARA BUSCAR INFORMACIÓN DE LOS EMPLEADOS RESPONSABLES / FIRMAS */
   BusquedaInformacion() {
     this.restAccion.BuscarDatosPedidoEmpleados(parseInt(this.datosPedido[0].firma_empl_uno)).subscribe(data2 => {
       this.empleado_2 = data2;
@@ -191,7 +208,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     });
   }
 
-  /** MÉTODO PARA VERIFICAR DATOS INGRESADO Y NO INGRESADO */
+  /** METODO PARA VERIFICAR DATOS INGRESADO Y NO INGRESADO */
   VerificarDatos() {
     if (this.datosPedido[0].proceso_propuesto === null && this.datosPedido[0].cargo_propuesto === null) {
       this.DefinirColor(this.datosPedido, '');
@@ -223,7 +240,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     }
   }
 
-  /** MÉTODO PARA DEFINIR COLORES DE TEXTO / IMPRIMIR ESPACIOS */
+  /** METODO PARA DEFINIR COLORES DE TEXTO / IMPRIMIR ESPACIOS */
   cargo_propuesto: string = '';
   proceso_propuesto: string = '';
   salario_propuesto: string = '';
@@ -256,7 +273,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     }
   }
 
-  /** MÉTODO PARA REALIZAR BÚSQUEDA DE PROCESOS QUE TIENEN REGISTRADOS EL EMPLEADO */
+  /** METODO PARA REALIZAR BUSQUEDA DE PROCESOS QUE TIENEN REGISTRADOS EL EMPLEADO */
   nombre_procesos_a: string = '';
   proceso_padre_a: string = '';
   EscribirProcesosActuales(array) {
@@ -280,7 +297,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     this.texto_color_proceso_actual = 'white';
   }
 
-  /** MÉTODO PARA IMPRIMIR PROCESOS PROPUESTOS */
+  /** METODO PARA IMPRIMIR PROCESOS PROPUESTOS */
   nombre_procesos_p: string = '';
   proceso_padre_p: string = '';
   EscribirProcesosPropuestos(array) {

@@ -1,16 +1,18 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+
 import { ValidacionesService } from '../../../../servicios/validaciones/validaciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { TituloService } from 'src/app/servicios/catalogos/catTitulos/titulo.service';
 
 @Component({
   selector: 'app-titulo-empleado',
   templateUrl: './titulo-empleado.component.html',
   styleUrls: ['./titulo-empleado.component.css'],
 })
+
 export class TituloEmpleadoComponent implements OnInit {
 
   cgTitulos: any = [];
@@ -19,7 +21,7 @@ export class TituloEmpleadoComponent implements OnInit {
   observa = new FormControl('', [Validators.required, Validators.maxLength(255)]);
   idTitulo = new FormControl('', [Validators.required])
 
-  public nuevoTituloEmpleadoForm = new FormGroup({
+  public formulario = new FormGroup({
     observacionForm: this.observa,
     idTituloForm: this.idTitulo
   });
@@ -28,48 +30,54 @@ export class TituloEmpleadoComponent implements OnInit {
     public restTitulo: TituloService,
     public restEmpleado: EmpleadoService,
     private toastr: ToastrService,
-    private validacionService: ValidacionesService,
+    private validar: ValidacionesService,
     private ventana: MatDialogRef<TituloEmpleadoComponent>,
     @Inject(MAT_DIALOG_DATA) public empleado: any
   ) { }
 
   ngOnInit(): void {
-    this.obtenerTitulos();
+    this.ObtenerTitulos();
   }
 
-  obtenerTitulos() {
-    this.restTitulo.getTituloRest().subscribe(data => {
+  // METODO PARA LISTAR TITULOS
+  ObtenerTitulos() {
+    this.restTitulo.ListarTitulos().subscribe(data => {
       this.cgTitulos = data;
     });
   }
 
-  insertarTituloEmpleado(form) {
-    let dataTituloEmpleado = {
+  // METODO PARA INSERTAR TITULOS
+  InsertarTituloEmpleado(form: any) {
+    let titulo = {
       observacion: form.observacionForm,
       id_empleado: this.empleado,
       id_titulo: form.idTituloForm,
     }
-    this.restEmpleado.postEmpleadoTitulos(dataTituloEmpleado).subscribe(data => {
-      this.toastr.success('Operacion Exitosa', 'Titulo asignado al empleado', {
+    this.restEmpleado.RegistrarTitulo(titulo).subscribe(data => {
+      this.toastr.success('Operacion Exitosa.', 'Registro guardado.', {
         timeOut: 6000,
       });
-      this.limpiarCampos();
+      this.LimpiarCampos();
       this.ventana.close(true)
     });
   }
 
-  IngresarSoloLetras(e) {
-    return this.validacionService.IngresarSoloLetras(e);
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
+    return this.validar.IngresarSoloLetras(e);
   }
 
-  limpiarCampos() {
-    this.nuevoTituloEmpleadoForm.reset();
+  // METODO PARA LIMPIAR CAMPOS DEL FORMULARIO
+  LimpiarCampos() {
+    this.formulario.reset();
   }
 
-  cerrarRegistro() {
+  // METODO PARA CERRAR VENTANA DE REGISTRO
+  CerrarRegistro() {
     this.ventana.close(false)
   }
 
+  // METODO PARA DIRIGIRSE A LA PAGINA DEL SENESCYT
   VerificarTitulo() {
     window.open("https://www.senescyt.gob.ec/web/guest/consultas", "_blank");
   }

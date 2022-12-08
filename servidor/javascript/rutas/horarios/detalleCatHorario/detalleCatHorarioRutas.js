@@ -16,12 +16,15 @@ class PermisosRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.ListarDetalleHorarios);
-        this.router.post('/', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.CrearDetalleHorarios);
+        // METODO PARA BUSCAR DETALLES DE UN HORARIO
         this.router.get('/:id_horario', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.ListarUnDetalleHorario);
-        this.router.put('/', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.ActualizarDetalleHorarios);
+        // METODO PARA ELIMINAR REGISTRO
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.EliminarRegistros);
-        // Verificar los datos de la plantilla de detalles de horario y subirlos al sistema
+        // METODO PARA REGISTRAR DETALLES
+        this.router.post('/', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.CrearDetalleHorarios);
+        // METODO PARA ACTUALIZAR REGISTRO
+        this.router.put('/', verificarToken_1.TokenValidation, detalleCatHorarioControlador_1.default.ActualizarDetalleHorarios);
+        // VERIFICAR LOS DATOS DE LA PLANTILLA DE DETALLES DE HORARIO Y SUBIRLOS AL SISTEMA
         this.router.post('/verificarDatos/upload', [verificarToken_1.TokenValidation, multipartMiddleware], detalleCatHorarioControlador_1.default.VerificarDatosDetalles);
         this.router.post('/upload', [verificarToken_1.TokenValidation, multipartMiddleware], detalleCatHorarioControlador_1.default.CrearDetallePlantilla);
     }

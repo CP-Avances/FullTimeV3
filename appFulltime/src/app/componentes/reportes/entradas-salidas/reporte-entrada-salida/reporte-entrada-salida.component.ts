@@ -45,7 +45,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
   // Arreglo datos del empleado
   datosEmpleado: any = [];
 
-  // Datos del Formulario de búsqueda
+  // Datos del Formulario de BUSQUEDA
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
@@ -63,7 +63,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     finalForm: this.fechaFinalF,
   });
 
-  // Datos de filtros de búsqueda
+  // Datos de filtros de BUSQUEDA
   filtroCodigo: number;
   filtroCedula: '';
   filtroEmpleado = '';
@@ -105,7 +105,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     this.ObtenerColores();
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -114,7 +114,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -122,7 +122,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -158,14 +158,14 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     });
   }
 
-  // Método para controlar ingreso de periodo de fechas 
+  // METODO para controlar ingreso de periodo de fechas 
   fechasPeriodo: any = [];
   inicioDate: any;
   finDate: any
   ciudadFeriados: any = [];
   VerEntradasSalidasEmpleado(id_seleccionado, form, archivo) {
     if (form.inicioForm === '' || form.finalForm === '') {
-      this.toastr.info('Ingresar fechas de periodo de búsqueda.', 'VERIFICAR DATOS DE FECHA', {
+      this.toastr.info('Ingresar fechas de periodo de BUSQUEDA.', 'VERIFICAR DATOS DE FECHA', {
         timeOut: 6000,
       })
     }
@@ -235,7 +235,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     })
   }
 
-  // Método para obtener timbres de entradas y salidas del empleado de acuerdo al horario
+  // METODO para obtener timbres de entradas y salidas del empleado de acuerdo al horario
   entradaSalidaHorario: Array<EntradasSalidas> = [];
   entradaSalidaPlanificacion: Array<EntradasSalidas> = [];
   totalEntradasSalidas: Array<EntradasSalidas> = [];
@@ -256,7 +256,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     });
   }
 
-  // Método para obtener timbres de entradas y salidas del empleado de acuerdo a la planificación
+  // METODO para obtener timbres de entradas y salidas del empleado de acuerdo a la planificación
   VerEntradasSalidasPlanificacion(entradas_salida_horario: any, id_seleccionado: number, archivo: string, datos_fechas, form, fechasTotales: any) {
     this.restR.ObtenerEntradaSalidaPlanificacion(id_seleccionado, datos_fechas).subscribe((dataP: Array<EntradasSalidas>) => {
       this.entradaSalidaPlanificacion = dataP;
@@ -310,11 +310,11 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     this.empleadoHorario = [];
     this.empleadoPlan = [];
 
-    // Búsqueda de la lista de los horarios del empleado
+    // BUSQUEDA de la lista de los horarios del empleado
     this.restHorario.ObtenerHorariosFechasEmpleado(id_seleccionado, fechas).subscribe(data => {
       this.empleadoHorario = data;
       console.log('horario', this.empleadoHorario);
-      // Búsqueda de la lista de las planificaciones del empleado
+      // BUSQUEDA de la lista de las planificaciones del empleado
       this.restPlan.ObtenerPlanHorarioEmpleadoFechas(id_seleccionado, fechas).subscribe(dataP => {
         this.empleadoPlan = dataP;
         console.log('plan', this.empleadoPlan);
@@ -327,7 +327,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
       })
 
     }, error => {
-      // Búsqueda de la lista de las planificaciones del empleado
+      // BUSQUEDA de la lista de las planificaciones del empleado
       this.restPlan.ObtenerPlanHorarioEmpleadoFechas(id_seleccionado, fechas).subscribe(dataP => {
         this.empleadoPlan = dataP;
         console.log('plan', this.empleadoPlan);
@@ -350,18 +350,18 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     }
   }
 
-  // Método para ingresar solo letras
+  // METODO para ingresar solo letras
   IngresarSoloLetras(e) {
     return this.validacionesService.IngresarSoloLetras(e);
   }
 
-  // Método para ingresar solo números
+  // METODO para ingresar solo números
   IngresarSoloNumeros(evt) {
     return this.validacionesService.IngresarSoloNumeros(evt);
 
   }
 
-  // Método para limpiar campos de búsqueda
+  // METODO para limpiar campos de BUSQUEDA
   LimpiarCampos() {
     this.codigo.reset();
     this.cedula.reset();
@@ -372,7 +372,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
     this.filtroEmpleado = '';
   }
 
-  // Método para limpiar campos de fecha
+  // METODO para limpiar campos de fecha
   LimpiarFechas() {
     this.fechaInicialF.reset();
     this.fechaFinalF.reset();
@@ -689,7 +689,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
 
 //console.log('ver fecha map ', obj + ' ' + dayFecha + ' ' + day);
 
-            // Búsqueda de los datos
+            // BUSQUEDA de los datos
             this.totalEntradasSalidas.forEach(element => {
               fecha_timbre = moment(element.fec_hora_timbre).format('DD/MM/YYYY');
               // TIMBRE EXISTENTE - ESTADO Y HORA DEL TIMBRE
@@ -897,7 +897,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
   presentarDatosEmpleado(id_seleccionado, form) {
     // Inicialización de varibles
     var ciudad, nombre, apellido, cedula, codigo, sucursal, departamento, cargo, regimen;
-    // Búsqueda de los datos del empleado del cual se obtiene el reporte
+    // BUSQUEDA de los datos del empleado del cual se obtiene el reporte
     this.datosEmpleado.forEach(obj => {
       if (obj.codigo === id_seleccionado) {
         nombre = obj.nombre;
@@ -1001,7 +1001,7 @@ export class ReporteEntradaSalidaComponent implements OnInit {
       dayFecha = obj.split(' ')[1];
       day = obj.split(' ')[0].charAt(0).toUpperCase() + obj.split(' ')[0].slice(1);
 
-      // Búsqueda de los datos
+      // BUSQUEDA de los datos
       this.totalEntradasSalidas.forEach(element => {
         fecha_timbre = moment(element.fec_hora_timbre).format('DD/MM/YYYY');
         // TIMBRE EXISTENTE - ESTADO Y HORA DEL TIMBRE

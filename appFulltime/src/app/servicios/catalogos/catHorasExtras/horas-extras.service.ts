@@ -25,7 +25,7 @@ export class HorasExtrasService {
     return this.http.delete(`${environment.url}/horasExtras/eliminar/${id}`);
   }
 
-  DownloadXMLRest(data: any) {
+  CrearXML(data: any) {
     return this.http.post(`${environment.url}/horasExtras/xmlDownload`, data);
   }
 

@@ -1,10 +1,10 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
 
-// IMPORTACIÓN DE SERVICIOS
+// IMPORTACION DE SERVICIOS
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
 import { Router } from '@angular/router';
@@ -44,7 +44,7 @@ export class CambiarFraseComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // MÉTODO PARA COMPARAR FRASE ACTUAL CON LA INGRESADA POR EL USUARIO
+  // METODO PARA COMPARAR FRASE ACTUAL CON LA INGRESADA POR EL USUARIO
   CompararFrase(form) {
     this.datosUser = [];
     this.restUser.BuscarDatosUser(parseInt(this.usuario)).subscribe(data => {
@@ -60,12 +60,12 @@ export class CambiarFraseComponent implements OnInit {
     }, error => { });
   }
 
-  // MÉTODO PARA CERRAR REGISTRO
+  // METODO PARA CERRAR REGISTRO
   CerrarRegistro() {
     this.ventana.close();
   }
 
-  // MÉTODO PARA GUARDAR NUEVA FRASE
+  // METODO PARA GUARDAR NUEVA FRASE
   IngresarFrase(form: any) {
     let data = {
       frase: form.nFrase,

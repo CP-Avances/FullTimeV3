@@ -17,10 +17,54 @@ const database_1 = __importDefault(require("../../database"));
 const fs_1 = __importDefault(require("fs"));
 const builder = require('xmlbuilder');
 class TituloControlador {
-    list(req, res) {
+    // METODO PARA LISTAR TITULOS
+    ListarTitulos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const titulo = yield database_1.default.query('SELECT ct.id, ct.nombre, nt.nombre as nivel FROM cg_titulos AS ct, nivel_titulo AS nt WHERE ct.id_nivel = nt.id ORDER BY ct.nombre ASC');
+            const titulo = yield database_1.default.query(`
+      SELECT ct.id, ct.nombre, nt.nombre as nivel 
+      FROM cg_titulos AS ct, nivel_titulo AS nt 
+      WHERE ct.id_nivel = nt.id 
+      ORDER BY ct.nombre ASC
+      `);
             res.jsonp(titulo.rows);
+        });
+    }
+    // METODO PARA ELIMINAR REGISTROS
+    EliminarRegistros(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            yield database_1.default.query(`
+      DELETE FROM cg_titulos WHERE id = $1
+      `, [id]);
+            res.jsonp({ message: 'Registro eliminado.' });
+        });
+    }
+    // METODO PARA CREAR ARCHIVO XML
+    FileXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            let filename = "Titulos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+            });
+            res.jsonp({ text: 'XML creado', name: filename });
+        });
+    }
+    // METODO PARA DECARGAR ARCHIVO XML
+    downloadXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.nameXML;
+            let filePath = `servidor\\xmlDownload\\${name}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
+    // METODO PARA ACTUALIZAR REGISTRO
+    ActualizarTitulo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { nombre, id_nivel, id } = req.body;
+            yield database_1.default.query(`
+      UPDATE cg_titulos SET nombre = $1, id_nivel = $2 WHERE id = $3
+      `, [nombre, id_nivel, id]);
+            res.jsonp({ message: 'Registro actualizado.' });
         });
     }
     getOne(req, res) {
@@ -39,41 +83,6 @@ class TituloControlador {
             yield database_1.default.query('INSERT INTO cg_titulos ( nombre, id_nivel ) VALUES ($1, $2)', [nombre, id_nivel]);
             console.log(req.body);
             res.jsonp({ message: 'Título guardado' });
-        });
-    }
-    ActualizarTitulo(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { nombre, id_nivel, id } = req.body;
-            yield database_1.default.query('UPDATE cg_titulos SET nombre = $1, id_nivel = $2 WHERE id = $3', [nombre, id_nivel, id]);
-            res.jsonp({ message: 'Título actualizado exitosamente' });
-        });
-    }
-    EliminarRegistros(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id;
-            yield database_1.default.query('DELETE FROM cg_titulos WHERE id = $1', [id]);
-            res.jsonp({ message: 'Registro eliminado' });
-        });
-    }
-    FileXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var xml = builder.create('root').ele(req.body).end({ pretty: true });
-            console.log(req.body.userName);
-            let filename = "Titulos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log("Archivo guardado");
-            });
-            res.jsonp({ text: 'XML creado', name: filename });
-        });
-    }
-    downloadXML(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownload\\${name}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
 }

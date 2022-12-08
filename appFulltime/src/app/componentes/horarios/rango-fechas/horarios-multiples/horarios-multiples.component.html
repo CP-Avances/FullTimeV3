@@ -4,7 +4,7 @@
         ASIGNAR HORARIO</span>
 </div>
 <!-- Formulario Completo -->
-<form [formGroup]="EmpleadoHorarioForm">
+<form [formGroup]="formulario">
     <mat-card-content>
         <div class="container" style="text-align: center;">
             <div class="nota">
@@ -41,7 +41,7 @@
                             help_outline</mat-icon>
                         <mat-select [formControl]="horarioF" required>
                             <mat-option *ngFor="let h of vista_horarios" [value]="h.id" id="letra"
-                                (click)=VerificarIngresoFechas(EmpleadoHorarioForm.value)>
+                                (click)=VerificarIngresoFechas(formulario.value)>
                                 {{h.nombre}}
                             </mat-option>
                         </mat-select>
@@ -82,7 +82,7 @@
     </mat-card-content>
 </form>
 <div style="text-align: center;">
-    <button type="submit" class="btn btn-sm" (click)="VerificarDuplicidad(EmpleadoHorarioForm.value)"
-        [disabled]="!EmpleadoHorarioForm.valid">Guardar</button>
-    <button type="submit" class="btn btn-sm" (click)="CerrarVentanaEmpleadoHorario()">Salir</button>
+    <button type="submit" class="btn btn-sm" (click)="VerificarDuplicidad(formulario.value)"
+        [disabled]="!formulario.valid">Guardar</button>
+    <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
 </div>

@@ -26,13 +26,13 @@ import { SalidasAntesService } from 'src/app/servicios/reportes/salidas-antes/sa
 
 export class SalidasAntesComponent implements OnInit, OnDestroy {
 
-  // CRITERIOS DE BÚSQUEDA POR FECHAS
+  // CRITERIOS DE BUSQUEDA POR FECHAS
   get rangoFechas() { return this.reporteService.rangoFechas };
 
-  // SELECCIÓN DE BÚSQUEDA DE DATOS SEGÚN OPCIÓN 
+  // SELECCIÓN DE BUSQUEDA DE DATOS SEGÚN OPCIÓN 
   get opcion() { return this.reporteService.opcion };
 
-  // CRITERIOS DE BÚSQUEDA SEGÚN OPCIÓN SELECCIONADA
+  // CRITERIOS DE BUSQUEDA SEGÚN OPCIÓN SELECCIONADA
   get bool() { return this.reporteService.criteriosBusqueda };
 
   // VARIABLES DE ALMACENAMIENTO DE DATOS
@@ -335,7 +335,7 @@ export class SalidasAntesComponent implements OnInit, OnDestroy {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -732,7 +732,7 @@ export class SalidasAntesComponent implements OnInit, OnDestroy {
 
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel(tipo: string): void {
     switch (tipo) {

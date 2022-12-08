@@ -20,6 +20,7 @@ export class CorreoEmpresaComponent implements OnInit {
   hide1 = true;
   hide = true;
 
+  // DATOS DE FORMULARIO CONFIGURACION DE CORREO
   emailF = new FormControl('', [Validators.email]);
   puertoF = new FormControl('');
   servidorF = new FormControl('');
@@ -61,7 +62,8 @@ export class CorreoEmpresaComponent implements OnInit {
     })
   }
 
-  GuardarConfiguracion(form) {
+  // METODO PARA GUARDAR DATOS DE CORREO
+  GuardarConfiguracion(form: any) {
     this.habilitarprogress = true;
     let data = {
       correo: form.email || this.data.correo,
@@ -74,10 +76,10 @@ export class CorreoEmpresaComponent implements OnInit {
       this.toastr.success(res.message)
       this.ventana.close({ actualizar: true })
     })
-
   }
 
-  ValidacionContrasenia(e) {
+  // METODO PARA VALIDAR CONTRASEÑA INGRESADA
+  ValidacionContrasenia(e: any) {
     let especiales = [9, 13, 16, 17, 18, 19, 20, 27, 33, 32, 34, 35, 36, 37, 38, 39, 40, 44, 45, 46];
     let tecla_especial = false;
     for (var i in especiales) {
@@ -110,7 +112,8 @@ export class CorreoEmpresaComponent implements OnInit {
     }
   }
 
-  ValidacionConfirmarContrasenia(e) {
+  // METODO PARA VALIDAR CONFIRMACION DE CONTRASEÑA
+  ValidacionConfirmarContrasenia(e: any) {
     let especiales = [9, 13, 16, 17, 18, 19, 20, 27, 33, 32, 34, 35, 36, 37, 38, 39, 40, 44, 45, 46];
     let tecla_especial = false
 
@@ -140,6 +143,7 @@ export class CorreoEmpresaComponent implements OnInit {
     }
   }
 
+  // METODO PARA VALIDAR QUE LAS CONTRASEÑAS SEAN IGUALES
   CompararContrasenia() {
     if (this.contrasenia === this.confirmar_contrasenia
       && this.contrasenia != '' && this.confirmar_contrasenia != '') {
@@ -151,6 +155,7 @@ export class CorreoEmpresaComponent implements OnInit {
     }
   }
 
+  // MENSAJE DE ERROR EN CONTRASEÑAS
   ObtenerErrorPasswordConfirm() {
     if (this.contrasenia != this.confirmar_contrasenia) {
       return 'Las contraseña no son iguales';
@@ -159,8 +164,8 @@ export class CorreoEmpresaComponent implements OnInit {
     return '';
   }
 
-  // MÉTODO PARA VALIDAR INGRESO DE NÚMEROS
-  IngresarSoloNumeros(evt) {
+  // METODO PARA VALIDAR INGRESO DE NÚMEROS
+  IngresarSoloNumeros(evt: any) {
     if (window.event) {
       var keynum = evt.keyCode;
     }

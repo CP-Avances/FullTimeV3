@@ -14,8 +14,8 @@ mat-radio-group {
 }
 
 .btn {
-    margin-left: 15px;
     background-color: rgb(80, 87, 97);
+    margin-left: 15px;
     color: white;
 }
 
@@ -24,7 +24,7 @@ mat-radio-group {
 }
 
 #respaldo {
-    font-size: 14px;
+    font-size: 13px;
     display: inline-block;
 }
 
@@ -33,48 +33,48 @@ mat-radio-group {
 }
 
 [type="file"] {
-    height: 0;
     overflow: hidden;
+    height: 0;
     width: 0;
 }
 
 [type="file"]+label {
-    background: #f15d22;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-    display: inline-block;
-    font-family: "Poppins", sans-serif;
-    font-size: inherit;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    outline: none;
-    padding: 1rem 50px;
-    position: relative;
     -webkit-transition: all 0.3s;
-    transition: all 0.3s;
     vertical-align: middle;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    background: #f15d22;
+    transition: all 0.3s;
+    font-size: inherit;
+    position: relative;
+    display: inline-block;
+    padding: 1rem 50px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
 }
 
 [type="file"]+label.btn-2 {
-    background-color: #93a3c7;
+    background-color: rgb(150, 243, 141);
     overflow: hidden;
 }
 
 [type="file"]+label.btn-2::before {
-    color: #fff;
-    content: "\f382";
-    font-family: "Font Awesome 5 Pro";
-    font-size: 90%;
-    height: 100%;
-    right: 130%;
-    line-height: 3.3;
-    position: absolute;
-    top: 0px;
-    margin-left: 5px;
     -webkit-transition: all 0.3s;
+    font-family: "Font Awesome 5 Pro";
+    line-height: 3.3;
+    margin-left: 5px;
     transition: all 0.3s;
+    font-size: 100%;
+    position: absolute;
+    content: "\f382";
+    height: 100%;
+    color: #fff;
+    right: 130%;
+    top: 0px;
 }
 
 [type="file"]+label.btn-2:hover {

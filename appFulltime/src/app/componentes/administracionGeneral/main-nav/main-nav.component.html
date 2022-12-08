@@ -8,21 +8,40 @@
       <img src="../../../assets/imagenes/logo/logoAdmin.png" id="logo">
     </div>
 
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree" *ngIf="!mensaje">
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
         <li class="material-tree-node" *ngIf="!barraInicial; else showItemsMenu">
           <ul>
-            <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
+            <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}" *ngIf="node.color === true"
               (click)="manejarEstadoActivo(node.name);" [routerLink]="[node.url]"
-              style="text-align: left; color: rgb(17, 167, 236); font-size: 12px;">{{node.name}}</a>
+              style="text-align: left; font-size: 12px; color: rgb(17, 167, 236);">
+              <mat-icon mat-list-icon id="icono-menu_">done</mat-icon>
+              {{node.name}}
+            </a>
+            <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
+              *ngIf="node.color === false && node.activo === false" (click)="manejarEstadoActivo(node.name);"
+              [routerLink]="[node.url]" style="text-align: left; font-size: 12px; color: rgb(99, 105, 107);">
+              <mat-icon mat-list-icon id="icono-menu_x">phonelink_off</mat-icon>
+              {{node.name}}
+            </a>
           </ul>
         </li>
         <ng-template #showItemsMenu>
           <li class="material-tree-node">
             <ul>
               <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
+                *ngIf="node.color === true" (click)="manejarEstadoActivo(node.name); drawer.toggle()"
+                [routerLink]="[node.url]" style="text-align: left; font-size: 12px; color: rgb(17, 167, 236);">
+                <mat-icon mat-list-icon id="icono-menu_">done</mat-icon>
+                {{node.name}}
+              </a>
+              <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
+                *ngIf="node.color === false && node.activo === false"
                 (click)="manejarEstadoActivo(node.name); drawer.toggle()" [routerLink]="[node.url]"
-                style="text-align: left; color: rgb(17, 167, 236); font-size: 12px;">{{node.name}}</a>
+                style="text-align: left; font-size: 12px; color: rgb(99, 105, 107);">
+                <mat-icon mat-list-icon id="icono-menu_x">phonelink_off</mat-icon>
+                {{node.name}}
+              </a>
             </ul>
           </li>
         </ng-template>
@@ -71,7 +90,8 @@
         </p>
       </mat-card-content>
       <mat-card-actions style="text-align: center;">
-        <a mat-raised-button href="https://casapazmino.com.ec" target="_blank">Ir Casa Pazmiño
+        <a mat-raised-button href="https://casapazmino.com.ec" target="_blank">
+          Ir Casa Pazmiño
           <mat-icon>public</mat-icon>
         </a>
       </mat-card-actions>
@@ -81,7 +101,7 @@
 
   <mat-sidenav-content class="degradado">
     <mat-toolbar>
-      <!-- Nav para pantallas grandes -->
+      <!-- NAV PARA PANTALLAS GRANDES -->
       <mat-toolbar-row *ngIf="!barraInicial; else ShowNavbar" class="d-flex justify-content-between">
         <div>
           <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
@@ -97,25 +117,25 @@
         <div>
           <span class="example-spacer"></span>
 
-          <!-- Botón Home -->
+          <!-- BOTON HOME -->
           <button mat-mini-fab style="margin-left: 10px; margin-right: 10px;" (click)="irHome()">
             <mat-icon id="iconos-navegador" style="margin-left: 8px;" matSuffix matTooltipPosition="right"
               matTooltip="Ir inicio">home</mat-icon>
           </button>
 
-          <!-- Botón Avisos -->
+          <!-- BOTON AVISOS -->
           <app-button-avisos></app-button-avisos>
 
-          <!-- Botón notificación -->
+          <!-- BOTON NOTIFICACION -->
           <app-button-notificacion></app-button-notificacion>
 
-          <!-- Botón Configuraciones DE TODO -->
+          <!-- BOTON CONFIGURACIONES DE TODO -->
           <app-button-opciones></app-button-opciones>
         </div>
 
       </mat-toolbar-row>
 
-      <!-- Nav para celulares o pantalla pequeña -->
+      <!-- NAV PARA CELULARES O PANTALLA PEQUEÑA -->
       <ng-template #ShowNavbar>
 
         <mat-toolbar-row class="d-flex justify-content-between">
@@ -128,13 +148,13 @@
 
           <div>
             <span class="example-spacer"></span>
-            <!-- Botón Home -->
+            <!-- BOTON HOME -->
             <button mat-mini-fab style="margin: 0 10px" (click)="irHome()">
               <mat-icon id="iconos-navegador" style="margin-left: 8px;" matSuffix matTooltipPosition="right"
                 matTooltip="Ir inicio">home</mat-icon>
             </button>
 
-            <!-- Botón Configuraciones DE TODO -->
+            <!-- BOTON CONFIGURACIONES DE TODO -->
             <app-button-opciones></app-button-opciones>
           </div>
 
@@ -143,10 +163,10 @@
 
         <mat-toolbar-row class="d-flex justify-content-start">
 
-          <!-- Botón Avisos -->
+          <!-- BOTON AVISOS -->
           <app-button-avisos></app-button-avisos>
 
-          <!-- Botón notificación -->
+          <!-- BOTON NOTIFICACION -->
           <app-button-notificacion></app-button-notificacion>
 
           <app-search></app-search>
@@ -157,20 +177,8 @@
     </mat-toolbar>
 
     <div class="container">
-      <div class="row" *ngIf="mensaje; else showInfoWeb">
-        <div class="col mensaje-alerta">
-          <span style="color: white; font-size: 20px;">Primero debe agregar un logotipo y los colores del reporte para
-            descargar en PDFs</span>
-          <a type="buttom" class="btn btn-sm" id="botones" (click)="IrInfoEmpresa()">Configuración</a>
-        </div>
-      </div>
-      <ng-template #showInfoWeb>
-        <router-outlet></router-outlet>
-      </ng-template>
-
+      <router-outlet></router-outlet>
     </div>
-
-    <!-- <app-footer></app-footer> -->
 
   </mat-sidenav-content>
 

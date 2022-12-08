@@ -16,12 +16,12 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // Librería para generar reportes en formato EXCEL
 import * as xlsx from 'xlsx';
 
-// Importación de servicios
+// IMPORTACION de servicios
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { HorasExtrasRealesService } from 'src/app/servicios/reportes/horasExtrasReales/horas-extras-reales.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-// Importación de componentes
+// IMPORTACION de componentes
 import { ConfigurarAtrasosComponent } from 'src/app/componentes/reportes/configuracion-reportes/configurar-atrasos/configurar-atrasos.component';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { HorarioTimbre } from 'src/app/model/timbres.model';
@@ -46,7 +46,7 @@ export class ReporteAtrasosComponent implements OnInit {
   // Arreglo datos del empleado
   datosEmpleado: any = [];
 
-  // Datos del Fórmulario de búsqueda
+  // Datos del Fórmulario de BUSQUEDA
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
@@ -64,7 +64,7 @@ export class ReporteAtrasosComponent implements OnInit {
     finalForm: this.fechaFinalF,
   });
 
-  // Datos de filtros de búsqueda
+  // Datos de filtros de BUSQUEDA
   filtroCodigo: number;
   filtroCedula: '';
   filtroEmpleado = '';
@@ -101,7 +101,7 @@ export class ReporteAtrasosComponent implements OnInit {
     this.ObtenerColores();
   }
 
-  // Método para ver la información del empleado 
+  // METODO para ver la información del empleado 
   ObtenerEmpleadoLogueado(idemploy: any) {
     this.empleadoLogueado = [];
     this.rest.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -109,7 +109,7 @@ export class ReporteAtrasosComponent implements OnInit {
     })
   }
 
-  // Método para obtener el logo de la empresa
+  // METODO para obtener el logo de la empresa
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -117,7 +117,7 @@ export class ReporteAtrasosComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -129,7 +129,7 @@ export class ReporteAtrasosComponent implements OnInit {
     });
   }
 
-  // Método para manejar evento de paginación
+  // METODO para manejar evento de paginación
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
@@ -144,7 +144,7 @@ export class ReporteAtrasosComponent implements OnInit {
     });
   }
 
-  // Método para verificar ingreso correcto de periodo de fechas
+  // METODO para verificar ingreso correcto de periodo de fechas
   confirmado: boolean;
   ConfigurarAtrasos(id_seleccionado: any, form, archivo: string) {
     if (form.inicioForm === '' || form.finalForm === '') {
@@ -158,7 +158,7 @@ export class ReporteAtrasosComponent implements OnInit {
           fechaInicio: form.inicioForm,
           fechaFinal: form.finalForm
         }
-        /** Método para seleccionar forma de cálculo de atrasos*/
+        /** METODO para seleccionar forma de cálculo de atrasos*/
         this.vistaConfigurarAtraso.open(ConfigurarAtrasosComponent, { width: '450px' }).afterClosed()
           .subscribe((seleccion: string) => {
             if (seleccion === 'con') {
@@ -182,7 +182,7 @@ export class ReporteAtrasosComponent implements OnInit {
     }
   }
 
-  // Método para obtener los atrasos del empleado de acuerdo al horario del empleado
+  // METODO para obtener los atrasos del empleado de acuerdo al horario del empleado
   atrasosHorario: Array<HorarioTimbre> = [];
   atrasosPlanificacion: Array<HorarioTimbre> = [];
   totalAtrasos: Array<HorarioTimbre> = [];
@@ -198,7 +198,7 @@ export class ReporteAtrasosComponent implements OnInit {
     });
   }
 
-  // Método para obtener los atrasos del empleado de acuerdo a la planificación de horario del empleado
+  // METODO para obtener los atrasos del empleado de acuerdo a la planificación de horario del empleado
   VerAtrasosPlanificacion(atrasos_horario: Array<HorarioTimbre>, id_seleccionado: number, archivo: string, datos_fechas, form, confirmado) {
     this.restR.ObtenerTimbresAtrasosPlanificacion(id_seleccionado, datos_fechas).subscribe((dataP: Array<HorarioTimbre>) => {
       this.atrasosPlanificacion = dataP;
@@ -234,7 +234,7 @@ export class ReporteAtrasosComponent implements OnInit {
     })
   }
 
-  // Método para generar los archivos de descarga
+  // METODO para generar los archivos de descarga
   GenerarArchivos(id_seleccionado: number, archivo: string, form, confirmado) {
     if (archivo === 'pdf') {
       this.generarPdf('open', id_seleccionado, form, confirmado);
@@ -244,7 +244,7 @@ export class ReporteAtrasosComponent implements OnInit {
     }
   }
 
-  // Método para ingresar solo letras
+  // METODO para ingresar solo letras
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
@@ -267,7 +267,7 @@ export class ReporteAtrasosComponent implements OnInit {
     }
   }
 
-  // Método para ingresar solo números
+  // METODO para ingresar solo números
   IngresarSoloNumeros(evt) {
     if (window.event) {
       var keynum = evt.keyCode;
@@ -287,7 +287,7 @@ export class ReporteAtrasosComponent implements OnInit {
     }
   }
 
-  // Método para limpiar registros de campos de búsqueda
+  // METODO para limpiar registros de campos de BUSQUEDA
   LimpiarCampos() {
     this.codigo.reset();
     this.cedula.reset();
@@ -298,7 +298,7 @@ export class ReporteAtrasosComponent implements OnInit {
     this.filtroEmpleado = '';
   }
 
-  // Método para limpiar campos de fecha 
+  // METODO para limpiar campos de fecha 
   LimpiarFechas() {
     this.fechaInicialF.reset();
     this.fechaFinalF.reset();
@@ -435,7 +435,7 @@ export class ReporteAtrasosComponent implements OnInit {
     var tHoras = 0, tMinutos = 0, tSegudos = 0, formatoHorasEntero, minutosEscrito;
     var t1 = new Date();
     var t2 = new Date();
-    // Búsqueda de los datos del empleado del cual se obtiene el reporte
+    // BUSQUEDA de los datos del empleado del cual se obtiene el reporte
     this.datosEmpleado.forEach(obj => {
       if (obj.codigo === id_seleccionado) {
         nombre = obj.nombre;
@@ -797,7 +797,7 @@ export class ReporteAtrasosComponent implements OnInit {
   presentarDatosEmpleado(id_seleccionado, form) {
     // Inicialización de varibles
     var ciudad, nombre, apellido, cedula, codigo, sucursal, departamento, cargo, regimen;
-    // Búsqueda de los datos del empleado del cual se obtiene el reporte
+    // BUSQUEDA de los datos del empleado del cual se obtiene el reporte
     this.datosEmpleado.forEach(obj => {
       if (obj.codigo === id_seleccionado) {
         nombre = obj.nombre;
@@ -952,7 +952,7 @@ export class ReporteAtrasosComponent implements OnInit {
       formatoDiasDecimal = formatoDiasDecimal + parseFloat(diasDecimal.toFixed(3));
     });
 
-    // Búsqueda de los datos del empleado del cual se obtiene el reporte
+    // BUSQUEDA de los datos del empleado del cual se obtiene el reporte
     this.datosEmpleado.forEach(obj => {
       if (obj.codigo === id_seleccionado) {
         datosGenerales = [{

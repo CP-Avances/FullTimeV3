@@ -6,7 +6,7 @@
                     <div class="col d-flex align-items-center justify-content-center">    
                         <mat-card class="mat-elevation-z8">
                             <img src="../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
-                            <form [formGroup]="validarCredencialesF">
+                            <form [formGroup]="formulario">
                                 <mat-form-field>
                                     <mat-label>Ingresa tu Usuario</mat-label>
                                     <input matInput 
@@ -19,7 +19,7 @@
                                 <mat-form-field>
                                     <mat-label>Ingresa tu Contraseña</mat-label>
                                     <input matInput 
-                                        (keyup.enter)="hide1 = true; ValidarUsuario(validarCredencialesF.value)"
+                                        (keyup.enter)="hide1 = true; ValidarUsuario(formulario.value)"
                                         [formControl]="pass"
                                         [type]="hide1 ? 'password' : 'text'" 
                                         required>
@@ -33,12 +33,8 @@
                                 <a [routerLink]="['/olvidar-contrasenia']" class="verde">Olvidó su contraseña?</a>
                             </div>
                             <div style="margin: auto;">
-                                <button type="submit" class="btn btn-lg btn-block" (click)="ValidarUsuario(validarCredencialesF.value)"
-                                    [disabled]="!validarCredencialesF.valid">Ingresar</button>
-                            </div>
-                            <div class="caja2">
-                                <span>Aún no registrado?</span>
-                                <a href="#" class="verde">Solicitar registro</a>
+                                <button type="submit" class="btn btn-lg btn-block" (click)="ValidarUsuario(formulario.value)"
+                                    [disabled]="!formulario.valid">Ingresar</button>
                             </div>
                         </mat-card>                            
                     </div>

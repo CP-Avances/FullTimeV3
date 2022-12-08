@@ -41,6 +41,7 @@ export class ConfiguracionComponent implements OnInit {
     this.CargarDatosEmpresa();
   }
 
+  // OBTENER DATOS DE EMPRESA
   CargarDatosEmpresa() {
     this.datosEmpresa = [];
     this.restE.ConsultarDatosEmpresa(parseInt(this.idEmpresa)).subscribe(datos => {
@@ -54,22 +55,33 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
+  // BUSQUEDA DE LOGO DE CABECERA DE CORREO
   ObtenerCabeceraCorreo() {
     this.restE.ObtenerCabeceraCorreo(this.idEmpresa).subscribe(res => {
-      if (res.imagen === 0) { this.imagen_default_c = true };
-      this.cabecera = 'data:image/jpeg;base64,' + res.imagen;
-      this.imagen_default_c = false;
+      if (res.imagen === 0) {
+        this.imagen_default_c = true
+      }
+      else {
+        this.cabecera = 'data:image/jpeg;base64,' + res.imagen;
+        this.imagen_default_c = false;
+      }
     })
   }
 
+  // BUSQUEDA DE LOGO DE PIE DE FIRMA
   ObtenerPieCorreo() {
     this.restE.ObtenerPieCorreo(this.idEmpresa).subscribe(res => {
-      if (res.imagen === 0) { this.imagen_default_p = true };
-      this.pie = 'data:image/jpeg;base64,' + res.imagen;
-      this.imagen_default_p = false;
+      if (res.imagen === 0) {
+        this.imagen_default_p = true
+      }
+      else {
+        this.pie = 'data:image/jpeg;base64,' + res.imagen;
+        this.imagen_default_p = false;
+      }
     })
   }
 
+  // METODO PARA EDITAR LOGO
   EditarLogo(pagina: String) {
     this.ventana.open(LogosComponent, {
       width: '500px',
@@ -81,7 +93,8 @@ export class ConfiguracionComponent implements OnInit {
       })
   }
 
-  ConfigurarCorreoElectronico(info_empresa) {
+  // METODO PARA CONFIGURAR CORREO ELECTRONICO
+  ConfigurarCorreoElectronico(info_empresa: any) {
     this.ventana.open(CorreoEmpresaComponent, { width: '400px', data: info_empresa }).afterClosed()
       .subscribe(res => {
         this.CargarDatosEmpresa();

@@ -17,7 +17,7 @@ p {
 
 #datosF {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 15px;
     padding-right: 5px;
 }
 
@@ -43,6 +43,10 @@ td {
 .caja1 {
     padding: 0px 15px 0px 15px;
     width: 300px;
+}
+
+.caja2 {
+    padding: 0px 15px 0px 15px;
 }
 
 #logo {
@@ -84,4 +88,23 @@ figure:hover>a {
     opacity: 1;
     visibility: visible;
     cursor: pointer;
+}
+
+.mat-radio-button~.mat-radio-button {
+    margin-left: 50px;
+}
+
+mat-radio-group {
+    padding: 20px 20px 20px 20x;
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+}
+
+#icono {
+    color: rgba(8, 10, 124, 0.828);
 }

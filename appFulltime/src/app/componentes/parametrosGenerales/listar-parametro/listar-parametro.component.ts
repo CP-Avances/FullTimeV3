@@ -6,11 +6,11 @@ import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import * as xlsx from 'xlsx';
+import * as moment from 'moment';
 import * as FileSaver from 'file-saver';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -51,11 +51,10 @@ export class ListarParametroComponent implements OnInit {
   });
 
   constructor(
-    private rest: TipoPermisosService,
-
     public restE: EmpleadoService,
-    public restEmpre: EmpresaService,
     public ventana: MatDialog,
+    public restEmpre: EmpresaService,
+    private rest: TipoPermisosService,
     private restP: ParametrosService,
     private toastr: ToastrService,
     private router: Router,
@@ -65,13 +64,13 @@ export class ListarParametroComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ObtenerParametros();
     this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerLogo();
+    this.ObtenerParametros();
     this.ObtenerColores();
+    this.ObtenerLogo();
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -79,7 +78,7 @@ export class ListarParametroComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -87,7 +86,7 @@ export class ListarParametroComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -105,16 +104,16 @@ export class ListarParametroComponent implements OnInit {
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  // MÉTODO PARA LISTAR PARÁMETROS
+  // METODO PARA LISTAR PARÁMETROS
   parametros: any = [];
   ObtenerParametros() {
     this.parametros = [];
     this.restP.ListarParametros().subscribe(datos => {
       this.parametros = datos;
-    }, error => { });
+    });
   }
 
-  // MÉTODO PARA LIMPIAR CAMPO DE BÚSQUEDA
+  // METODO PARA LIMPIAR CAMPO DE BUSQUEDA
   LimpiarCampos() {
     this.formulario.setValue({
       descripcionForm: '',
@@ -122,7 +121,7 @@ export class ListarParametroComponent implements OnInit {
     this.ObtenerParametros();
   }
 
-  // MÉTODO PARA ABRIR VENTANA CREACIÓN DE REGISTRO
+  // METODO PARA ABRIR VENTANA CREACIÓN DE REGISTRO
   CrearParametro(): void {
     this.ventana.open(CrearParametroComponent,
       { width: '400px' }).afterClosed().subscribe(item => {
@@ -130,7 +129,7 @@ export class ListarParametroComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA ABRIR VENTANA EDICIÓN DE REGISTRO
+  // METODO PARA ABRIR VENTANA EDICIÓN DE REGISTRO
   AbrirEditar(datos: any): void {
     this.ventana.open(EditarParametroComponent,
       { width: '400px', data: { parametros: datos, actualizar: false } }).afterClosed().subscribe(item => {
@@ -138,7 +137,7 @@ export class ListarParametroComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id: number) {
     this.restP.EliminarTipoParametro(id).subscribe(res => {
       if (res.message === 'false') {
@@ -147,7 +146,7 @@ export class ListarParametroComponent implements OnInit {
         });
       }
       else {
-        this.toastr.warning('Registro eliminado', '', {
+        this.toastr.warning('Registro eliminado.', '', {
           timeOut: 6000,
         });
         this.ObtenerParametros();
@@ -155,21 +154,23 @@ export class ListarParametroComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
-          this.Eliminar(datos.id);          
+          this.Eliminar(datos.id);
         } else {
           this.router.navigate(['/parametros']);
         }
       });
   }
 
-  /****************************************************************************************************** 
- *                                         MÉTODO PARA EXPORTAR A PDF
- ******************************************************************************************************/
+
+  // revisar
+  /** ************************************************************************************************** ** 
+   ** **                                 METODO PARA EXPORTAR A PDF                                   ** **
+   ** ************************************************************************************************** **/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
 
@@ -292,7 +293,7 @@ export class ListarParametroComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                       MÉTODO PARA EXPORTAR A EXCEL
+   *                                       METODO PARA EXPORTAR A EXCEL
    ******************************************************************************************************/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.parametros);
@@ -302,7 +303,7 @@ export class ListarParametroComponent implements OnInit {
   }
 
   /****************************************************************************************************** 
-   *                                        MÉTODO PARA EXPORTAR A CSV 
+   *                                        METODO PARA EXPORTAR A CSV 
    ******************************************************************************************************/
 
   exportToCVS() {
@@ -349,7 +350,7 @@ export class ListarParametroComponent implements OnInit {
       arregloTipoPermisos.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arregloTipoPermisos).subscribe(res => {
+    this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/departamento/download/` + this.data.name;

@@ -1,6 +1,7 @@
 // SECCIÓN LIBRERIAS
 import { EstadoHorarioPeriVacacion } from '../../../libs/MetodosHorario'
 import { Request, Response } from 'express';
+import { QueryResult } from 'pg';
 import { Md5 } from 'ts-md5';
 import excel from 'xlsx';
 import pool from '../../../database';
@@ -9,7 +10,131 @@ const builder = require('xmlbuilder');
 
 class EmpleadoControlador {
 
-  // BÚSQUEDA DE UN SOLO EMPLEADO
+  /** ** ********************************************************************************************* ** 
+   ** ** **                        MANEJO DE CODIGOS DE USUARIOS                                    ** ** 
+   ** ** ********************************************************************************************* **/
+
+  // BUSQUEDA DE CODIGO DEL EMPLEADO
+  public async ObtenerCodigo(req: Request, res: Response): Promise<any> {
+    const VALOR = await pool.query(
+      `
+      SELECT * FROM codigo
+      `
+    );
+    if (VALOR.rowCount > 0) {
+      return res.jsonp(VALOR.rows)
+    }
+    else {
+      return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+    }
+  }
+
+  // CREAR CODIGO DE EMPLEADO
+  public async CrearCodigo(req: Request, res: Response) {
+    const { id, valor, automatico, manual } = req.body;
+    await pool.query(
+      `
+      INSERT INTO codigo (id, valor, automatico, manual) VALUES ($1, $2, $3, $4)
+      `
+      , [id, valor, automatico, manual]);
+    res.jsonp({ message: 'Registro guardado.' });
+  }
+
+  // BUSQUEDA DEL ULTIMO CODIGO REGISTRADO EN EL SISTEMA
+  public async ObtenerMAXCodigo(req: Request, res: Response): Promise<any> {
+    const VALOR = await pool.query(
+      `
+      SELECT MAX(codigo) AS codigo FROM empleados
+      `
+    );
+    if (VALOR.rowCount > 0) {
+      return res.jsonp(VALOR.rows)
+    }
+    else {
+      return res.status(404).jsonp({ text: 'Registros no encontrados.' });
+    }
+  }
+
+  // METODO PARA ACTUALIZAR INFORMACION DE CODIGOS
+  public async ActualizarCodigoTotal(req: Request, res: Response) {
+    const { valor, automatico, manual, id } = req.body;
+    await pool.query(
+      `
+      UPDATE codigo SET valor = $1, automatico = $2, manual = $3 WHERE id = $4
+      `
+      , [valor, automatico, manual, id]);
+    res.jsonp({ message: 'Registro actualizado.' });
+  }
+
+  // METODO PARA ACTUALIZAR CODIGO DE EMPLEADO
+  public async ActualizarCodigo(req: Request, res: Response) {
+    const { valor, id } = req.body;
+    await pool.query(
+      `
+      UPDATE codigo SET valor = $1 WHERE id = $2
+      `
+      , [valor, id]);
+    res.jsonp({ message: 'Registro actualizado.' });
+  }
+
+
+  /** ** ********************************************************************************************* ** 
+   ** ** **                         MANEJO DE DATOS DE EMPLEADO                                     ** ** 
+   ** ** ********************************************************************************************* **/
+
+  // INGRESAR REGISTRO DE EMPLEADO EN BASE DE DATOS
+  public async InsertarEmpleado(req: Request, res: Response) {
+    try {
+      const { cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado,
+        domicilio, telefono, id_nacionalidad, codigo } = req.body;
+
+      const response: QueryResult = await pool.query(
+        `
+        INSERT INTO empleados ( cedula, apellido, nombre, esta_civil, genero, correo, 
+        fec_nacimiento, estado, domicilio, telefono, id_nacionalidad, codigo) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *
+        `
+        , [cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado, domicilio,
+          telefono, id_nacionalidad, codigo]);
+
+      const [empleado] = response.rows;
+
+      if (empleado) {
+        return res.status(200).jsonp(empleado)
+      }
+      else {
+        return res.status(404).jsonp({ message: 'Empleado guardado.' })
+      }
+    }
+    catch (error) {
+      return res.jsonp({ message: 'error' });
+    }
+  }
+
+  // ACTUALIZAR INFORMACION EL EMPLEADO
+  public async EditarEmpleado(req: Request, res: Response) {
+    try {
+      const id = req.params.id;
+      const { cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado,
+        domicilio, telefono, id_nacionalidad, codigo } = req.body;
+
+      await pool.query(
+        `
+        UPDATE empleados SET cedula = $2, apellido = $3, nombre = $4, esta_civil = $5, 
+        genero = $6, correo = $7, fec_nacimiento = $8, estado = $9, domicilio = $10, 
+        telefono = $11, id_nacionalidad = $12, codigo = $13 WHERE id = $1 
+        `
+        , [id, cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado,
+          domicilio, telefono, id_nacionalidad, codigo]);
+
+      res.jsonp({ message: 'Empleado Actualizado' });
+    }
+    catch (error) {
+      return res.jsonp({ message: 'error' });
+    }
+  }
+
+  // BUSQUEDA DE UN SOLO EMPLEADO
   public async BuscarEmpleado(req: Request, res: Response): Promise<any> {
     const { id } = req.params;
     const EMPLEADO = await pool.query(
@@ -21,16 +146,16 @@ class EmpleadoControlador {
       return res.jsonp(EMPLEADO.rows)
     }
     else {
-      return res.status(404).jsonp({ text: 'El empleado no ha sido encontrado' });
+      return res.status(404).jsonp({ text: 'Registro no encontrado.' });
     }
   }
 
-  // BÚSQUEDA DE INFORMACION ESPECIFICA DE EMPLEADOS
+  // BUSQUEDA DE INFORMACION ESPECIFICA DE EMPLEADOS
   public async ListarBusquedaEmpleados(req: Request, res: Response): Promise<any> {
     const empleado = await pool.query(
       `
-        SELECT id, nombre, apellido FROM empleados ORDER BY apellido
-        `
+      SELECT id, nombre, apellido FROM empleados ORDER BY apellido
+      `
     ).then(result => {
       return result.rows.map(obj => {
         return {
@@ -43,19 +168,277 @@ class EmpleadoControlador {
     res.jsonp(empleado);
   }
 
-
-
-
-
-
-
   // LISTAR EMPLEADOS ACTIVOS EN EL SISTEMA
   public async Listar(req: Request, res: Response) {
-    const empleado = await pool.query('SELECT * FROM empleados WHERE estado = 1 ORDER BY id');
+    const empleado = await pool.query(
+      `
+      SELECT * FROM empleados WHERE estado = 1 ORDER BY id
+      `
+    );
     res.jsonp(empleado.rows);
   }
 
-  // BÚSQUEDA DE DATOS DE EMPLEADO INGRESANDO EL NOMBRE
+  // METODO QUE LISTA EMPLEADOS INHABILITADOS
+  public async ListarEmpleadosDesactivados(req: Request, res: Response) {
+    const empleado = await pool.query(
+      `
+      SELECT * FROM empleados WHERE estado = 2 ORDER BY id
+      `
+    );
+    res.jsonp(empleado.rows);
+  }
+
+  // CREAR INFORMACION DEL EMPLEADO EN FORMATO XML
+  public async FileXML(req: Request, res: Response): Promise<any> {
+    var xml = builder.create('root').ele(req.body).end({ pretty: true });
+    let filename = "Empleado-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+    });
+    res.jsonp({ text: 'XML creado', name: filename });
+  }
+
+  // DESCARGAR INFORMACION DEL EMPLEADO EN FORMATO XML
+  public async downloadXML(req: Request, res: Response): Promise<any> {
+    const name = req.params.nameXML;
+    let filePath = `servidor\\xmlDownload\\${name}`
+    res.sendFile(__dirname.split("servidor")[0] + filePath);
+  }
+
+  // METODO PARA INHABILITAR USUARIOS EN EL SISTEMA
+  public async DesactivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {
+    const arrayIdsEmpleados = req.body;
+
+    if (arrayIdsEmpleados.length > 0) {
+      arrayIdsEmpleados.forEach(async (obj: number) => {
+
+        // 2 => DESACTIVADO O INACTIVO
+        await pool.query(
+          `
+          UPDATE empleados SET estado = 2 WHERE id = $1
+          `
+          , [obj])
+          .then(result => { });
+
+        // FALSE => YA NO TIENE ACCESO
+        await pool.query(
+          `
+          UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1
+          `
+          , [obj])
+          .then(result => { });
+      });
+
+      return res.jsonp({ message: 'Usuarios inhabilitados exitosamente.' });
+    }
+
+    return res.jsonp({ message: 'Upss!!! ocurrio un error.' });
+  }
+
+  // METODO PARA HABILITAR EMPLEADOS
+  public async ActivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {
+    const arrayIdsEmpleados = req.body;
+
+    if (arrayIdsEmpleados.length > 0) {
+      arrayIdsEmpleados.forEach(async (obj: number) => {
+        // 1 => ACTIVADO
+        await pool.query(
+          `
+          UPDATE empleados SET estado = 1 WHERE id = $1
+          `
+          , [obj])
+          .then(result => { });
+
+        // TRUE => TIENE ACCESO
+        await pool.query(
+          `
+          UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1
+          `
+          , [obj])
+          .then(result => { });
+      });
+
+      return res.jsonp({ message: 'Usuarios habilitados exitosamente.' });
+    }
+    return res.jsonp({ message: 'Upss!!! ocurrio un error.' });
+  }
+
+  // METODO PARA HABILITAR TODA LA INFORMACION DEL EMPLEADO
+  public async ReactivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {
+    const arrayIdsEmpleados = req.body;
+    if (arrayIdsEmpleados.length > 0) {
+      arrayIdsEmpleados.forEach(async (obj: number) => {
+        // 1 => ACTIVADO
+        await pool.query(
+          `
+          UPDATE empleados SET estado = 1 WHERE id = $1
+          `
+          , [obj])
+          .then(result => { });
+
+        // TRUE => TIENE ACCESO
+        await pool.query(
+          `
+          UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1
+          `
+          , [obj])
+          .then(result => { });
+        // REVISAR
+        //EstadoHorarioPeriVacacion(obj);
+      });
+
+      return res.jsonp({ message: 'Usuarios habilitados exitosamente.' });
+    }
+    return res.jsonp({ message: 'Upps!!! ocurrio un error.' });
+  }
+
+  // CARGAR IMAGEN DE EMPLEADO
+  public async CrearImagenEmpleado(req: Request, res: Response): Promise<void> {
+    let list: any = req.files;
+    let imagen = list.image[0].path.split("\\")[1];
+    let id = req.params.id_empleado
+
+    const unEmpleado = await pool.query(
+      `
+      SELECT * FROM empleados WHERE id = $1
+      `
+      , [id]);
+    if (unEmpleado.rowCount > 0) {
+      unEmpleado.rows.map(async (obj) => {
+        if (obj.imagen != null) {
+          try {
+            // ELIMINAR IMAGEN DE SERVIDOR
+            let filePath = `servidor\\imagenesEmpleados\\${obj.imagen}`;
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs.unlinkSync(direccionCompleta);
+
+            await pool.query(
+              `
+              UPDATE empleados SET imagen = $2 Where id = $1
+              `
+              , [id, imagen]);
+            res.jsonp({ message: 'Imagen Actualizada.' });
+          } catch (error) {
+            await pool.query(
+              `
+              UPDATE empleados SET imagen = $2 Where id = $1
+              `
+              , [id, imagen]);
+            res.jsonp({ message: 'Imagen Actualizada.' });
+          }
+        } else {
+          await pool.query(
+            `
+            UPDATE empleados SET imagen = $2 Where id = $1
+            `
+            , [id, imagen]);
+          res.jsonp({ message: 'Imagen Actualizada.' });
+        }
+      });
+    }
+  }
+
+  // METODO PARA TOMAR DATOS DE LA UBICACION DEL DOMICILIO DEL EMPLEADO
+  public async GeolocalizacionCrokis(req: Request, res: Response): Promise<any> {
+    let id = req.params.id
+    let { lat, lng } = req.body
+    console.log(lat, lng, id);
+    try {
+      await pool.query(
+        `
+        UPDATE empleados SET latitud = $1, longitud = $2 WHERE id = $3
+        `
+        , [lat, lng, id])
+        .then(result => { })
+      res.status(200).jsonp({ message: 'Registro actualizado.' });
+    } catch (error) {
+      res.status(400).jsonp({ message: error });
+    }
+  }
+
+  /** **************************************************************************************** **
+   ** **                       MANEJO DE DATOS DE TITULO PROFESIONAL                        ** ** 
+   ** **************************************************************************************** **/
+
+  // BUSQUEDA DE TITULOS PROFESIONALES DEL EMPLEADO
+  public async ObtenerTitulosEmpleado(req: Request, res: Response): Promise<any> {
+    const { id_empleado } = req.params;
+    const unEmpleadoTitulo = await pool.query(
+      `
+        SELECT et.id, et.observacion As observaciones, et.id_titulo, 
+          et.id_empleado, ct.nombre, nt.nombre as nivel
+        FROM empl_titulos AS et, cg_titulos AS ct, nivel_titulo AS nt
+        WHERE et.id_empleado = $1 and et.id_titulo = ct.id and ct.id_nivel = nt.id ORDER BY id
+        `
+      , [id_empleado]);
+    if (unEmpleadoTitulo.rowCount > 0) {
+      return res.jsonp(unEmpleadoTitulo.rows)
+    }
+    else {
+      res.status(404).jsonp({ text: 'No se encuentran registros.' });
+    }
+  }
+
+  // INGRESAR TITULO PROFESIONAL DEL EMPLEADO
+  public async CrearEmpleadoTitulos(req: Request, res: Response): Promise<void> {
+    const { observacion, id_empleado, id_titulo } = req.body;
+    await pool.query(
+      `
+      INSERT INTO empl_titulos (observacion, id_empleado, id_titulo) VALUES ($1, $2, $3)
+      `
+      , [observacion, id_empleado, id_titulo]);
+    res.jsonp({ message: 'Registro guardado.' });
+  }
+
+  // ACTUALIZAR TITULO PROFESIONAL DEL EMPLEADO
+  public async EditarTituloEmpleado(req: Request, res: Response): Promise<void> {
+    const id = req.params.id_empleado_titulo;
+    const { observacion, id_titulo } = req.body;
+    await pool.query(
+      `
+      UPDATE empl_titulos SET observacion = $1, id_titulo = $2 WHERE id = $3
+      `
+      , [observacion, id_titulo, id]);
+    res.jsonp({ message: 'Registro actualizado.' });
+  }
+
+  // METODO PARA ELIMINAR TITULO PROFESIONAL DEL EMPLEADO
+  public async EliminarTituloEmpleado(req: Request, res: Response): Promise<void> {
+    const id = req.params.id_empleado_titulo;
+    await pool.query(
+      `
+      DELETE FROM empl_titulos WHERE id = $1
+      `
+      , [id]);
+    res.jsonp({ message: 'Registro eliminado.' });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // BUSQUEDA DE DATOS DE EMPLEADO INGRESANDO EL NOMBRE
   public async BuscarEmpleadoNombre(req: Request, res: Response): Promise<any> {
     const { informacion } = req.body;
     const EMPLEADO = await pool.query('SELECT * FROM empleados WHERE ' +
@@ -70,142 +453,39 @@ class EmpleadoControlador {
 
 
 
-  // BÚSQUEDA DE IMAGEN DE EMPLEADO
+  // BUSQUEDA DE IMAGEN DE EMPLEADO
   public async BuscarImagen(req: Request, res: Response): Promise<any> {
     const imagen = req.params.imagen;
     let filePath = `servidor\\imagenesEmpleados\\${imagen}`
     res.sendFile(__dirname.split("servidor")[0] + filePath);
   }
 
-  // INGRESAR REGISTRO DE EMPLEADO EN BASE DE DATOS
-  public async InsertarEmpleado(req: Request, res: Response) {
-    try {
-      const { cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado, mail_alternativo,
-        domicilio, telefono, id_nacionalidad, codigo } = req.body;
-      await pool.query('INSERT INTO empleados ( cedula, apellido, nombre, esta_civil, genero, correo, ' +
-        'fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
-        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', [cedula, apellido, nombre, esta_civil,
-        genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo]);
-      const oneEmpley = await pool.query('SELECT id, codigo FROM empleados WHERE cedula = $1', [cedula]);
-      const idEmployGuardado = oneEmpley.rows[0].id;
-      const codigoEmployGuardado = oneEmpley.rows[0].codigo;
-      res.jsonp({ message: 'Empleado guardado', id: idEmployGuardado, codigo: codigoEmployGuardado });
-    }
-    catch (error) {
-      return res.jsonp({ message: 'error' });
-    }
-  }
 
-  // ACTUALIZAR INFORMACIÓN EL EMPLEADO
-  public async EditarEmpleado(req: Request, res: Response) {
-    try {
-      const id = req.params.id;
-      const { cedula, apellido, nombre, esta_civil, genero, correo, fec_nacimiento, estado, mail_alternativo,
-        domicilio, telefono, id_nacionalidad, codigo } = req.body;
-      await pool.query('UPDATE empleados SET cedula = $2, apellido = $3, nombre = $4, esta_civil = $5, ' +
-        'genero = $6, correo = $7, fec_nacimiento = $8, estado = $9, mail_alternativo = $10, domicilio = $11, ' +
-        'telefono = $12, id_nacionalidad = $13, codigo = $14 WHERE id = $1 ', [id, cedula, apellido, nombre,
-        esta_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono,
-        id_nacionalidad, codigo]);
-      res.jsonp({ message: 'Empleado Actualizado' });
-    }
-    catch (error) {
-      return res.jsonp({ message: 'error' });
-    }
-  }
 
-  // CARGAR IMAGEN DE EMPLEADO
-  public async CrearImagenEmpleado(req: Request, res: Response): Promise<void> {
-    let list: any = req.files;
-    let imagen = list.image[0].path.split("\\")[1];
-    let id = req.params.id_empleado
 
-    const unEmpleado = await pool.query('SELECT * FROM empleados WHERE id = $1', [id]);
-    if (unEmpleado.rowCount > 0) {
-      unEmpleado.rows.map(async (obj) => {
-        if (obj.imagen != null) {
-          try {
-            console.log(obj.imagen);
-            let filePath = `servidor\\imagenesEmpleados\\${obj.imagen}`;
-            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
-            fs.unlinkSync(direccionCompleta);
-            await pool.query('UPDATE empleados SET imagen = $2 Where id = $1 ', [id, imagen]);
-            res.jsonp({ message: 'Imagen Actualizada.' });
-          } catch (error) {
-            await pool.query('UPDATE empleados SET imagen = $2 Where id = $1 ', [id, imagen]);
-            res.jsonp({ message: 'Imagen Actualizada.' });
-          }
-        } else {
-          await pool.query('UPDATE empleados SET imagen = $2 Where id = $1 ', [id, imagen]);
-          res.jsonp({ message: 'Imagen Actualizada.' });
-        }
-      });
-    }
-  }
 
-  // INGRESAR TÍTULO PROFESIONAL DEL EMPLEADO
-  public async CrearEmpleadoTitulos(req: Request, res: Response): Promise<void> {
-    const { observacion, id_empleado, id_titulo } = req.body;
-    await pool.query('INSERT INTO empl_titulos ( observacion, id_empleado, id_titulo ) VALUES ($1, $2, $3)',
-      [observacion, id_empleado, id_titulo]);
-    res.jsonp({ message: 'Titulo del empleado Guardado' });
-  }
 
-  // ACTUALIZAR TÍTULO PROFESIONAL DEL EMPLEADO
-  public async EditarTituloEmpleado(req: Request, res: Response): Promise<void> {
-    const id = req.params.id_empleado_titulo;
-    const { observacion, id_titulo } = req.body;
-    await pool.query('UPDATE empl_titulos SET observacion = $1, id_titulo = $2 WHERE id = $3 ',
-      [observacion, id_titulo, id]);
-    res.jsonp({ message: 'Titulo del empleado Actualizado' });
-  }
 
-  // MÉTODO PARA ELIMINAR TÍTULO PROFESIONAL DEL EMPLEADO
-  public async EliminarTituloEmpleado(req: Request, res: Response): Promise<void> {
-    const id = req.params.id_empleado_titulo;
-    await pool.query('DELETE FROM empl_titulos WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
-  }
 
-  // BÚSQUEDA DE TÍTULOS PROFESIONALES DEL EMPLEADO
-  public async ObtenerTitulosEmpleado(req: Request, res: Response): Promise<any> {
-    const { id_empleado } = req.params;
-    const unEmpleadoTitulo = await pool.query('SELECT et.id, et.observacion As observaciones, et.id_titulo, ' +
-      'et.id_empleado, ct.nombre, nt.nombre as nivel ' +
-      'FROM empl_titulos AS et, cg_titulos AS ct, nivel_titulo AS nt ' +
-      'WHERE et.id_empleado = $1 and et.id_titulo = ct.id and ct.id_nivel = nt.id ORDER BY id',
-      [id_empleado]);
-    if (unEmpleadoTitulo.rowCount > 0) {
-      return res.jsonp(unEmpleadoTitulo.rows)
-    }
-    else {
-      res.status(404).jsonp({ text: 'El empleado no tiene titulos asignados' });
-    }
 
-  }
 
-  // CREAR INFORMACIÓN DEL EMPLEADO EN FORMATO XML
-  public async FileXML(req: Request, res: Response): Promise<any> {
-    var xml = builder.create('root').ele(req.body).end({ pretty: true });
-    console.log(req.body.userName);
-    let filename = "Empleado-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("Archivo guardado");
-    });
-    res.jsonp({ text: 'XML creado', name: filename });
-  }
 
-  // DESCARGAR INFORMACIÓN DEL EMPLEADO EN FORMATO XML
-  public async downloadXML(req: Request, res: Response): Promise<any> {
-    const name = req.params.nameXML;
-    let filePath = `servidor\\xmlDownload\\${name}`
-    res.sendFile(__dirname.split("servidor")[0] + filePath);
-  }
 
-  // BÚSQUEDA INFORMACIÓN DEPARTAMENTOS EMPLEADO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // BUSQUEDA INFORMACIÓN DEPARTAMENTOS EMPLEADO
   public async ObtenerDepartamentoEmpleado(req: Request, res: Response): Promise<any> {
     const { id_emple, id_cargo } = req.body;
     const DEPARTAMENTO = await pool.query('SELECT *FROM VistaDepartamentoEmpleado WHERE id_emple = $1 AND ' +
@@ -218,147 +498,28 @@ class EmpleadoControlador {
     }
   }
 
-  // CREAR CÓDIGO DE EMPLEADO
-  public async CrearCodigo(req: Request, res: Response) {
-    const { id, valor, automatico, manual } = req.body;
-    await pool.query('INSERT INTO codigo ( id, valor, automatico, manual) VALUES ($1, $2, $3, $4)',
-      [id, valor, automatico, manual]);
-    res.jsonp({ message: 'Codigo guardado' });
-  }
-
-  // MÉTODO PARA ACTUALIZAR INFORMACIÓN DE CODIGOS
-  public async ActualizarCodigoTotal(req: Request, res: Response) {
-    const { valor, automatico, manual, id } = req.body;
-    await pool.query('UPDATE codigo SET valor = $1, automatico = $2, manual = $3 WHERE id = $4',
-      [valor, automatico, manual, id]);
-    res.jsonp({ message: 'Codigo guardado' });
-  }
-
-  // MÉTODO PARA ACTUALIZAR CÓDIGO DE EMPLEADO
-  public async ActualizarCodigo(req: Request, res: Response) {
-    const { valor, id } = req.body;
-    await pool.query('UPDATE codigo SET valor = $1 WHERE id = $2', [valor, id]);
-    res.jsonp({ message: 'Codigo actualizado' });
-  }
-
-  // BÚSQUEDA DE CÓDIGO DEL EMPLEADO
-  public async ObtenerCodigo(req: Request, res: Response): Promise<any> {
-    const VALOR = await pool.query('SELECT *FROM codigo');
-    if (VALOR.rowCount > 0) {
-      return res.jsonp(VALOR.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Registros no encontrados' });
-    }
-  }
-
-  // BÚSQUEDA DEL ÚLTIMO CÓDIGO REGISTRADO EN EL SISTEMA
-  public async ObtenerMAXCodigo(req: Request, res: Response): Promise<any> {
-    const VALOR = await pool.query('SELECT MAX(codigo) AS codigo FROM empleados');
-    if (VALOR.rowCount > 0) {
-      return res.jsonp(VALOR.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'Registros no encontrados' });
-    }
-  }
 
 
 
-  // MÉTODO PARA INHABILITAR USUARIOS EN EL SISTEMA
-  public async DesactivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {
-    const arrayIdsEmpleados = req.body;
-    console.log(arrayIdsEmpleados);
 
-    if (arrayIdsEmpleados.length > 0) {
-      arrayIdsEmpleados.forEach(async (obj: number) => {
-        await pool.query('UPDATE empleados SET estado = 2 WHERE id = $1', [obj]) // 2 => DESACTIVADO O INACTIVO
-          .then(result => {
-            console.log(result.command, 'EMPLEADO ====>', obj);
-          });
-        await pool.query('UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1',
-          [obj]) // FALSE => YA NO TIENE ACCESO
-          .then(result => {
-            console.log(result.command, 'USUARIO ====>', obj);
-          });
-      });
-      return res.jsonp({ message: 'Todos los usuarios han sido inhabilitados.' });
-    }
-    return res.jsonp({ message: 'Upss !!! ocurrio un error.' });
-  }
 
-  // MÉTODO QUE LISTA EMPLEADOS INHABILITADOS
-  public async ListarEmpleadosDesactivados(req: Request, res: Response) {
-    const empleado = await pool.query('SELECT * FROM empleados WHERE estado = 2 ORDER BY id');
 
-    res.jsonp(empleado.rows);
-  }
 
-  // MÉTODO PARA HABILITAR EMPLEADOS
-  public async ActivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {
-    const arrayIdsEmpleados = req.body;
-    console.log(arrayIdsEmpleados);
 
-    if (arrayIdsEmpleados.length > 0) {
-      arrayIdsEmpleados.forEach(async (obj: number) => {
-        await pool.query('UPDATE empleados SET estado = 1 WHERE id = $1', [obj]) // 1 => ACTIVADO 
-          .then(result => {
-            console.log(result.command, 'EMPLEADO ====>', obj);
-          });
-        await pool.query('UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1',
-          [obj]) // TRUE => TIENE ACCESO
-          .then(result => {
-            console.log(result.command, 'USUARIO ====>', obj);
-          });
-      });
 
-      return res.jsonp({ message: 'Todos los usuarios han sido habilitados.' });
-    }
-    return res.jsonp({ message: 'Upss !!! ocurrio un error.' });
-  }
 
-  // MÉTODO PARA HABILITAR TODA LA INFORMACIÓN DEL EMPLEADO
-  public async ReactivarMultiplesEmpleados(req: Request, res: Response): Promise<any> {
-    const arrayIdsEmpleados = req.body;
-    console.log(arrayIdsEmpleados);
 
-    if (arrayIdsEmpleados.length > 0) {
-      arrayIdsEmpleados.forEach(async (obj: number) => {
 
-        await pool.query('UPDATE empleados SET estado = 1 WHERE id = $1', [obj]) // 1 => ACTIVADO 
-          .then(result => {
-            console.log(result.command, 'EMPLEADO ====>', obj);
-          });
-        await pool.query('UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1',
-          [obj]) // TRUE => TIENE ACCESO
-          .then(result => {
-            console.log(result.command, 'USUARIO ====>', obj);
-          });
-        EstadoHorarioPeriVacacion(obj);
-      });
 
-      return res.jsonp({ message: 'Todos los usuarios seleccionados han sido habilitados.' });
-    }
-    return res.jsonp({ message: 'Upps !!! osurrio un error.' });
-  }
 
-  // MÉTODO PARA TOMAR DATOS DE LA UBICACIÓN DEL DOMICILIO DEL EMPLEADO
-  public async GeolocalizacionCrokis(req: Request, res: Response): Promise<any> {
-    let id = req.params.id
-    let { lat, lng } = req.body
-    console.log(lat, lng, id);
-    try {
-      await pool.query('UPDATE empleados SET latitud = $1, longitud = $2 WHERE id = $3', [lat, lng, id])
-        .then(result => {
-          console.log(result.command);
-        })
-      res.status(200).jsonp({ message: 'Geolocalizacion actualizada' });
-    } catch (error) {
-      res.status(400).jsonp({ message: error });
-    }
-  }
 
-  // MÉTODO PARA INGRESAR DATOS DE UBICACIÓN DEL USUARIO
+
+
+
+
+
+
+  // METODO PARA INGRESAR DATOS DE UBICACIÓN DEL USUARIO
   public async IngresarGelocalizacion(req: Request, res: Response): Promise<any> {
     let id = req.params.id;
     let codigo = req.params.codigo;
@@ -377,7 +538,7 @@ class EmpleadoControlador {
     }
   }
 
-  // MÉTODO PARA ACTUALIZAR DATOS DE UBICACIÓN DE DOMICILIO DEL USUARIO
+  // METODO PARA ACTUALIZAR DATOS DE UBICACIÓN DE DOMICILIO DEL USUARIO
   public async ActualizarDomicilio(req: Request, res: Response): Promise<any> {
     let id = req.params.id
     let { lat, lng } = req.body
@@ -396,7 +557,7 @@ class EmpleadoControlador {
     }
   }
 
-  // MÉTODO PARA ACTUALIZAR DATOS DE UBICACIÓN DE TRABAJO DEL USUARIO
+  // METODO PARA ACTUALIZAR DATOS DE UBICACIÓN DE TRABAJO DEL USUARIO
   public async ActualizarTrabajo(req: Request, res: Response): Promise<any> {
     let id = req.params.id
     let { lat, lng } = req.body
@@ -415,7 +576,7 @@ class EmpleadoControlador {
     }
   }
 
-  // MÉTODO PARA BUSCAR DATOS DE COORDENADAS
+  // METODO PARA BUSCAR DATOS DE COORDENADAS
   public async BuscarCoordenadas(req: Request, res: Response): Promise<any> {
     const { id } = req.params;
     const UBICACION = await pool.query('SELECT longitud, latitud FROM empleados WHERE id = $1', [id]);
@@ -427,7 +588,7 @@ class EmpleadoControlador {
     }
   }
 
-  // MÉTODO PARA ACTUALIZAR DATOS DE UBICACIÓN DEL USUARIO
+  // METODO PARA ACTUALIZAR DATOS DE UBICACIÓN DEL USUARIO
   public async ActualizarGeolocalizacion(req: Request, res: Response): Promise<any> {
     let id = req.params.id;
     let { h_lat, h_lng, t_lat, t_lng } = req.body;
@@ -727,7 +888,7 @@ class EmpleadoControlador {
     fs.unlinkSync(filePath);
   }
 
-  /** MÉTODOS PARA VERIFICAR PLANTILLA CON CÓDIGO INGRESADO DE FORMA MANUAL */
+  /** METODOS PARA VERIFICAR PLANTILLA CON CÓDIGO INGRESADO DE FORMA MANUAL */
   public async VerificarPlantilla_Manual(req: Request, res: Response): Promise<void> {
     let list: any = req.files;
     let cadena = list.uploads[0].path;
@@ -1001,6 +1162,20 @@ class EmpleadoControlador {
     });
     fs.unlinkSync(filePath);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

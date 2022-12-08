@@ -151,32 +151,79 @@ class HorarioControlador {
     }
   }
 
+  // METODO PARA ELIMINAR REGISTROS
+  public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    await pool.query(
+      `
+      DELETE FROM cg_horarios WHERE id = $1
+      `
+      , [id]);
+    res.jsonp({ message: 'Registro eliminado.' });
+  }
 
+  // METODO PARA CREAR ARCHIVO XML
+  public async FileXML(req: Request, res: Response): Promise<any> {
+    var xml = builder.create('root').ele(req.body).end({ pretty: true });
+    let filename = "Horarios-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+    });
+    res.jsonp({ text: 'XML creado', name: filename });
+  }
 
+  // METODO PARA DESCARGAR ARCHIVO XML
+  public async downloadXML(req: Request, res: Response): Promise<any> {
+    const name = req.params.nameXML;
+    let filePath = `servidor\\xmlDownload\\${name}`
+    res.sendFile(__dirname.split("servidor")[0] + filePath);
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // METODO PARA BUSCAR DATOS DE UN HORARIO
   public async ObtenerUnHorario(req: Request, res: Response): Promise<any> {
     const { id } = req.params;
-    const UN_HORARIO = await pool.query('SELECT * FROM cg_horarios WHERE id = $1', [id]);
+    const UN_HORARIO = await pool.query(
+      `
+      SELECT * FROM cg_horarios WHERE id = $1
+      `
+      , [id]);
     if (UN_HORARIO.rowCount > 0) {
       return res.jsonp(UN_HORARIO.rows)
     }
     else {
-      res.status(404).jsonp({ text: 'No se encuentran registros' });
+      res.status(404).jsonp({ text: 'No se encuentran registros.' });
     }
   }
+
+  // METODO PARA EDITAR HORAS TRABAJADAS
+  public async EditarHorasTrabaja(req: Request, res: Response): Promise<any> {
+    const id = req.params.id;
+    const { hora_trabajo } = req.body;
+    try {
+      const respuesta = await pool.query(
+        `
+        UPDATE cg_horarios SET hora_trabajo = $1 WHERE id = $2 RETURNING *
+        `
+        , [hora_trabajo, id])
+        .then(result => { return result.rows })
+
+      if (respuesta.length === 0) return res.status(400).jsonp({ message: 'No Actualizado.' });
+
+      return res.status(200).jsonp(respuesta)
+
+    } catch (error) {
+      return res.status(400).jsonp({ message: error });
+    }
+  }
+
+  // METODO PARA BUSCAR DOCUMENTO
+  public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
+    const docs = req.params.docs;
+    let filePath = `servidor\\horarios\\${docs}`
+    res.sendFile(__dirname.split("servidor")[0] + filePath);
+  }
+
+
+
 
 
 
@@ -203,6 +250,8 @@ class HorarioControlador {
     });
     fs.unlinkSync(filePath);
   }
+
+
 
   /** Verificar si existen datos duplicados dentro del sistema */
   public async VerificarDatos(req: Request, res: Response) {
@@ -291,70 +340,6 @@ class HorarioControlador {
     }
     fs.unlinkSync(filePath);
   }
-
-
-
-  public async EditarHoraTrabajaByHorarioDetalle(req: Request, res: Response): Promise<any> {
-    const id = req.params.id;
-    const { hora_trabajo } = req.body;
-    try {
-      const respuesta = await pool.query('UPDATE cg_horarios SET hora_trabajo = $1 WHERE id = $2 RETURNING *', [hora_trabajo, id])
-        .then(result => { return result.rows })
-      if (respuesta.length === 0) return res.status(400).jsonp({ message: 'No Actualizado' });
-
-      return res.status(200).jsonp(respuesta)
-    } catch (error) {
-      return res.status(400).jsonp({ message: error });
-    }
-  }
-
-  public async FileXML(req: Request, res: Response): Promise<any> {
-    var xml = builder.create('root').ele(req.body).end({ pretty: true });
-    console.log(req.body.userName);
-    let filename = "Horarios-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("Archivo guardado");
-    });
-    res.jsonp({ text: 'XML creado', name: filename });
-  }
-
-  public async downloadXML(req: Request, res: Response): Promise<any> {
-    const name = req.params.nameXML;
-    let filePath = `servidor\\xmlDownload\\${name}`
-    res.sendFile(__dirname.split("servidor")[0] + filePath);
-  }
-
-  public async ObtenerDocumento(req: Request, res: Response): Promise<any> {
-    const docs = req.params.docs;
-    let filePath = `servidor\\horarios\\${docs}`
-    res.sendFile(__dirname.split("servidor")[0] + filePath);
-  }
-
-
-
-
-
-
-  public async EditarDocumento(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    const { documento } = req.body;
-    await pool.query('UPDATE cg_horarios SET documento = $1 WHERE id = $2', [documento, id]);
-
-    res.jsonp({ message: 'Tipo Permiso Actualizado' });
-  }
-
-  public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    await pool.query('DELETE FROM cg_horarios WHERE id = $1', [id]);
-    res.jsonp({ message: 'Registro eliminado' });
-  }
-
-
-
-
 
 }
 

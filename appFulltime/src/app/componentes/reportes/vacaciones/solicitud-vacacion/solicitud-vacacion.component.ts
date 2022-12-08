@@ -24,13 +24,13 @@ import { VacacionesService } from 'src/app/servicios/vacaciones/vacaciones.servi
 })
 export class SolicitudVacacionComponent implements OnInit, OnDestroy {
 
-  // CRITERIOS DE BÚSQUEDA POR FECHAS
+  // CRITERIOS DE BUSQUEDA POR FECHAS
   get rangoFechas() { return this.reporteService.rangoFechas };
 
-  // MÉTODO QUE INDICA OPCIONES DE BÚSQUEDA SELECCIONADOS
+  // METODO QUE INDICA OPCIONES DE BUSQUEDA SELECCIONADOS
   get bool() { return this.reporteService.criteriosBusqueda };
 
-  // VARIABLE QUE INDICA NÚMERO DE OPCIONES DE BÚSQUEDA
+  // VARIABLE QUE INDICA NÚMERO DE OPCIONES DE BUSQUEDA
   get opcion() { return this.reporteService.opcion };
 
   // VARIABLES DE ALMACENAMIENTO DE RESULTADOS
@@ -42,7 +42,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
   // VARIABLE DE ALMACENAMIENTO DE DATOS DE PDF
   data_pdf: any = [];
 
-  // VARIABLES DE ALMACENAMIENTO DE DATOS SELECCIONADOS EN LA BÚSQUEDA
+  // VARIABLES DE ALMACENAMIENTO DE DATOS SELECCIONADOS EN LA BUSQUEDA
   selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
   selectionDep = new SelectionModel<ITableEmpleados>(true, []);
   selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
@@ -62,21 +62,21 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
   tamanio_pagina_emp: number = 5;
   pageSizeOptions_emp = [5, 10, 20, 50];
 
-  // MÉTODOS PARA BÚSQUEDA DE DATOS POR FILTROS SUCURSAL
+  // METODOS PARA BUSQUEDA DE DATOS POR FILTROS SUCURSAL
   get filtroNombreSuc() { return this.reporteService.filtroNombreSuc }
 
-  // MÉTODOS PARA BÚSQUEDA DE DATOS POR FILTROS DEPARTAMENTO
+  // METODOS PARA BUSQUEDA DE DATOS POR FILTROS DEPARTAMENTO
   get filtroNombreDep() { return this.reporteService.filtroNombreDep }
 
-  // MÉTODOS PARA BÚSQUEDA DE DATOS POR FILTROS EMPLEADO
+  // METODOS PARA BUSQUEDA DE DATOS POR FILTROS EMPLEADO
   get filtroCodigo() { return this.reporteService.filtroCodigo };
   get filtroCedula() { return this.reporteService.filtroCedula };
   get filtroNombreEmp() { return this.reporteService.filtroNombreEmp };
 
   constructor(
-    private R_asistencias: ReportesAsistenciasService, // SERVICIO BÚSQUEDA DE DATOS DE DEPARTAMENTOS
+    private R_asistencias: ReportesAsistenciasService, // SERVICIO BUSQUEDA DE DATOS DE DEPARTAMENTOS
     private validacionService: ValidacionesService, // VARIABLE DE VALIDACIONES DE INGRESO DE LETRAS O NÚMEROS
-    private reporteService: ReportesService, // SERVICIO DATOS DE BÚSQUEDA GENERALES DE REPORTE
+    private reporteService: ReportesService, // SERVICIO DATOS DE BUSQUEDA GENERALES DE REPORTE
     private restEmpre: EmpresaService, // SERVICIO DATOS GENERALES DE EMPRESA
     private R_vacacion: VacacionesService, // SERVICIO DATOS PARA REPORTE DE VACUNAS
     private toastr: ToastrService, // VARIABLE DE MANEJO DE NOTIFICACIONES
@@ -88,11 +88,11 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     sessionStorage.removeItem('reporte_vacunas_multiples');
-    // BÚSQUEDA DE DEPARTAMENTOS
+    // BUSQUEDA DE DEPARTAMENTOS
     this.R_asistencias.Departamentos().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_vacunas_multiples', JSON.stringify(res))
 
-      // BÚSQUEDA DE SUCURSALES
+      // BUSQUEDA DE SUCURSALES
       this.sucursales = res.map(obj => {
         return {
           id: obj.id_suc,
@@ -100,7 +100,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
         }
       });
 
-      // BÚSQUEDA DE DEPARTAMENTOS
+      // BUSQUEDA DE DEPARTAMENTOS
       res.forEach(obj => {
         obj.departamentos.forEach(ele => {
           this.departamentos.push({
@@ -110,7 +110,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
         })
       })
 
-      // BÚSQUEDA DE DEPARTAMENTO - EMPLEADOS
+      // BUSQUEDA DE DEPARTAMENTO - EMPLEADOS
       res.forEach(obj => {
         obj.departamentos.forEach(ele => {
           ele.empleado.forEach(r => {
@@ -249,7 +249,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -473,7 +473,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
   }
 
   /** ************************************************************************************************** * 
-   ** *                                     MÉTODO PARA EXPORTAR A EXCEL                                 *
+   ** *                                     METODO PARA EXPORTAR A EXCEL                                 *
    ** ************************************************************************************************** */
   exportToExcel(tipo: string): void {
     switch (tipo) {
@@ -576,7 +576,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // MÉTODO DE CONTROL DE PAGINACIÓN
+  // METODO DE CONTROL DE PAGINACIÓN
   ManejarPagina(e: PageEvent) {
     if (this.bool.bool_suc === true) {
       this.tamanio_pagina_suc = e.pageSize;
@@ -590,7 +590,7 @@ export class SolicitudVacacionComponent implements OnInit, OnDestroy {
     }
   }
 
-  // MÉTODO PARA INGRESAR DATOS DE LETRAS O NÚMEROS
+  // METODO PARA INGRESAR DATOS DE LETRAS O NÚMEROS
   IngresarSoloLetras(e) {
     return this.validacionService.IngresarSoloLetras(e)
   }

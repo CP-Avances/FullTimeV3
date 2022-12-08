@@ -1,11 +1,14 @@
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
+import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 import * as moment from 'moment';
 
 import { RegimenService } from 'src/app/servicios/catalogos/catRegimen/regimen.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 
 @Component({
   selector: 'app-editar-contrato',
@@ -18,7 +21,7 @@ export class EditarContratoComponent implements OnInit {
   idSelectContrato: number;
   idEmpleado: number;
 
-  // DATOS RÉGIMEN
+  // DATOS REGIMEN
   regimenLaboral: any = [];
   seleccionarRegimen: any;
 
@@ -27,24 +30,29 @@ export class EditarContratoComponent implements OnInit {
   habilitarSeleccion: boolean = true;
   habilitarContrato: boolean = false;
 
+  // BUSQUEDA DE PAISES AL INGRESAR INFORMACION
+  filtro: Observable<string[]>;
+
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   controlVacacionesF = new FormControl('', Validators.required);
   controlAsistenciaF = new FormControl('', Validators.required);
   fechaIngresoF = new FormControl('', Validators.required);
   fechaSalidaF = new FormControl('');
   archivoForm = new FormControl('');
+  nombrePaisF = new FormControl('');
   idRegimenF = new FormControl('', Validators.required);
   documentoF = new FormControl('');
   contratoF = new FormControl('', Validators.minLength(3));
   seleccion = new FormControl('');
   tipoF = new FormControl('');
 
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
   public ContratoForm = new FormGroup({
     controlVacacionesForm: this.controlVacacionesF,
     controlAsistenciaForm: this.controlAsistenciaF,
     fechaIngresoForm: this.fechaIngresoF,
     fechaSalidaForm: this.fechaSalidaF,
+    nombrePaisForm: this.nombrePaisF,
     idRegimenForm: this.idRegimenF,
     documentoForm: this.documentoF,
     contratoForm: this.contratoF,
@@ -52,33 +60,90 @@ export class EditarContratoComponent implements OnInit {
   });
 
   constructor(
-    private restRegimen: RegimenService,
+    public pais: ProvinciaService,
     private rest: EmpleadoService,
     private toastr: ToastrService,
     private ventana: MatDialogRef<EditarContratoComponent>,
+    private restRegimen: RegimenService,
     @Inject(MAT_DIALOG_DATA) public contrato: any
   ) { }
 
   ngOnInit(): void {
-    console.log(this.contrato);
     this.idSelectContrato = this.contrato.id;
     this.idEmpleado = this.contrato.id_empleado;
-    this.ObtenerRegimen();
+    this.ObtenerPaises();
     this.ObtenerEmpleados();
     this.ObtenerTipoContratos();
     this.tipoContrato[this.tipoContrato.length] = { descripcion: "OTRO" };
   }
 
-  // BUSQUEDA DE LISTA DE REGIMEN LABORAL
-  ObtenerRegimen() {
-    this.regimenLaboral = [];
-    this.restRegimen.ConsultarRegimen().subscribe(datos => {
-      this.regimenLaboral = datos;
-      this.ImprimirDatos();
+  // APLICAR FILTROS DE BUSQUEDA DE PAISES
+  private _filter(value: string): string[] {
+    if (value != null) {
+      const filterValue = value.toLowerCase();
+      return this.paises.filter(pais => pais.nombre.toLowerCase().includes(filterValue));
+    }
+  }
+
+  // BUSQUEDA DE LISTA DE PAISES
+  paises: any = [];
+  ObtenerPaises() {
+    this.paises = [];
+    this.pais.BuscarPais('AMERICA').subscribe(datos => {
+      this.paises = datos;
+      this.filtro = this.nombrePaisF.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filter(value))
+        );
+      this.BuscarRegimenPais();
     })
   }
 
-  // MÉTODO PARA OBTENER TIPOS DE CONTRATOS MODALIDAD LABORAL
+  // BUSQUEDA DE LISTA DE REGIMEN LABORAL
+  regimen: any = [];
+  BuscarRegimenPais() {
+    var pais_ = '';
+    this.regimen = [];
+    this.restRegimen.ConsultarUnRegimen(this.contrato.id_regimen).subscribe(datos => {
+      this.regimen = datos;
+      // OBTENER NOMBRE DEL PAIS REGISTRADO
+      this.paises.forEach(obj => {
+        if (obj.id === this.regimen.id_pais) {
+          pais_ = obj.nombre;
+          this.nombrePaisF.setValue(obj.nombre);
+        }
+      });
+      this.BuscarRegimen(pais_);
+    })
+  }
+
+  // METODO PARA BUSCAR DATOS DE REGIMEN LABORAL
+  BuscarRegimen(pais: string) {
+    this.regimenLaboral = [];
+    this.restRegimen.ConsultarRegimenPais(pais).subscribe(datos_ => {
+      this.regimenLaboral = datos_;
+      this.idRegimenF.setValue(this.contrato.id_regimen);
+      this.ImprimirDatos();
+    });
+  }
+
+  // BUSQUEDA DE REGIMEN LABORAL
+  ObtenerRegimen(form: any) {
+    var pais = form.nombrePaisForm;
+    this.regimenLaboral = [];
+    this.restRegimen.ConsultarRegimenPais(pais).subscribe(datos => {
+      this.regimenLaboral = datos;
+      console.log('ver id de regimen', this.regimenLaboral)
+    }, error => {
+      this.toastr.info('Pais seleccionado no tiene registros de Régimen Laboral.', '', {
+        timeOut: 6000,
+      });
+      this.nombrePaisF.reset();
+    })
+  }
+
+  // METODO PARA OBTENER TIPOS DE CONTRATOS MODALIDAD LABORAL
   tipoContrato: any = [];
   ObtenerTipoContratos() {
     this.tipoContrato = [];
@@ -123,14 +188,13 @@ export class EditarContratoComponent implements OnInit {
 
   // METODO PARA MOSTRAR DATOS DEL FORMULARIO
   ImprimirDatos() {
-    const { id_regimen, fec_ingreso, fec_salida, vaca_controla, asis_controla, doc_nombre,
+    const { fec_ingreso, fec_salida, vaca_controla, asis_controla,
       id_tipo_contrato } = this.contrato;
     this.ContratoForm.patchValue({
       controlVacacionesForm: vaca_controla,
       controlAsistenciaForm: asis_controla,
       fechaIngresoForm: fec_ingreso,
       fechaSalidaForm: fec_salida,
-      idRegimenForm: id_regimen,
       tipoForm: id_tipo_contrato
     });
   }
@@ -225,7 +289,6 @@ export class EditarContratoComponent implements OnInit {
       else {
         this.VerificarInformacion(datos, form);
       }
-
     }, error => {
       this.VerificarInformacion(datos, form);
     });
@@ -234,11 +297,11 @@ export class EditarContratoComponent implements OnInit {
   // GUARDAR DATOS DE CONTRATO
   GuardarDatos(datos: any) {
     this.rest.ActualizarContratoEmpleado(this.idSelectContrato, datos).subscribe(response => {
-      this.toastr.success('Operación Exitosa', 'Datos de Contrato actualizado', {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
     }, error => {
-      this.toastr.error('Operación Fallida', 'Datos de Contrato no pudieron ser actualizados', {
+      this.toastr.error('Operación Fallida', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       })
     });
@@ -296,7 +359,6 @@ export class EditarContratoComponent implements OnInit {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
       if (this.archivoSubido[0].size <= 2e+6) {
         this.ContratoForm.patchValue({ documentoForm: name });
         this.HabilitarBtn = true;

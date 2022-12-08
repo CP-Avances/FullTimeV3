@@ -1,4 +1,4 @@
-// IMPORTACIÓN DE LIBRERIAS
+// IMPORTACION DE LIBRERIAS
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -22,6 +22,7 @@ import { HorasExtrasService } from 'src/app/servicios/catalogos/catHorasExtras/h
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 
 @Component({
@@ -51,6 +52,8 @@ export class ListaHorasExtrasComponent implements OnInit {
     nombreForm: this.nombreF,
   });
 
+  get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
+
   constructor(
     private rest: HorasExtrasService,
     private toastr: ToastrService,
@@ -60,15 +63,27 @@ export class ListaHorasExtrasComponent implements OnInit {
     public ventana: MatDialog,
     public restEmpre: EmpresaService,
     public parametro: ParametrosService,
+    private funciones: MainNavService
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    this.BuscarHora();
-    this.ObtenerLogo();
-    this.ObtenerColores();
-    this.ObtenerEmpleados(this.idEmpleado);
+    if (this.habilitarHorasE === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Horas Extras. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      this.BuscarHora();
+      this.ObtenerLogo();
+      this.ObtenerColores();
+      this.ObtenerEmpleados(this.idEmpleado);
+    }
   }
 
 
@@ -90,7 +105,7 @@ export class ListaHorasExtrasComponent implements OnInit {
       });
   }
 
-  // MÉTODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -98,7 +113,7 @@ export class ListaHorasExtrasComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA OBTENER EL LOGO DE LA EMPRESA
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -106,7 +121,7 @@ export class ListaHorasExtrasComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
   p_color: any;
   s_color: any;
   frase: any;
@@ -174,10 +189,10 @@ export class ListaHorasExtrasComponent implements OnInit {
       });
   }
 
-  // FUNCIÓN PARA ELIMINAR REGISTRO SELECCIONADO 
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_permiso: number) {
     this.rest.EliminarRegistro(id_permiso).subscribe(res => {
-      this.toastr.error('Registro eliminado', '', {
+      this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
       });
       this.BuscarHora();
@@ -186,7 +201,7 @@ export class ListaHorasExtrasComponent implements OnInit {
     });
   }
 
-  // FUNCIÓN PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
     this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
@@ -199,7 +214,7 @@ export class ListaHorasExtrasComponent implements OnInit {
   }
 
   /** ******************************************************************************************** ** 
-   ** **                           MÉTODO PARA EXPORTAR A PDF                                   ** **
+   ** **                           METODO PARA EXPORTAR A PDF                                   ** **
    ** ******************************************************************************************** **/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
@@ -313,7 +328,7 @@ export class ListaHorasExtrasComponent implements OnInit {
   }
 
   /** ********************************************************************************************** ** 
-   ** **                                  MÉTODO PARA EXPORTAR A EXCEL                            ** **
+   ** **                                  METODO PARA EXPORTAR A EXCEL                            ** **
    ** ********************************************************************************************** **/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
@@ -323,7 +338,7 @@ export class ListaHorasExtrasComponent implements OnInit {
   }
 
   /** ********************************************************************************************** ** 
-   ** **                                   MÉTODO PARA EXPORTAR A CSV                             ** **
+   ** **                                   METODO PARA EXPORTAR A CSV                             ** **
    ** ********************************************************************************************** **/
 
   exportToCVS() {
@@ -360,7 +375,7 @@ export class ListaHorasExtrasComponent implements OnInit {
       arreglohorasExtras.push(objeto)
     });
 
-    this.rest.DownloadXMLRest(arreglohorasExtras).subscribe(res => {
+    this.rest.CrearXML(arreglohorasExtras).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
       this.urlxml = `${environment.url}/horasExtras/download/` + this.data.name;

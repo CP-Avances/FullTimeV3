@@ -11,38 +11,55 @@ export class NivelTitulosService {
     private http: HttpClient
   ) { }
 
+  // METODO PARA LISTAR NIVEL DE TITULO PROFESIONAL
+  ListarNiveles() {
+    return this.http.get<any>(`${environment.url}/nivel-titulo/`);
+  }
+
+  // ELIMIAR REGISTRO
+  EliminarNivel(id: number) {
+    return this.http.delete(`${environment.url}/nivel-titulo/eliminar/${id}`);
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/nivel-titulo/xmlDownload`, data);
+  }
+
+  // METODO PARA REGISTRAR NIVEL DE TITULO
+  RegistrarNivel(data: any) {
+    return this.http.post<any>(`${environment.url}/nivel-titulo`, data);
+  }
+
+  // METODO PARA ACTUALIZAR REGISTRO DE NIVEL
+  ActualizarNivelTitulo(datos: any) {
+    return this.http.put(`${environment.url}/nivel-titulo`, datos);
+  }
+
+  // METODO PARA BUSCAR NIVEL POR SU NOMBRE
+  BuscarNivelNombre(nombre: string) {
+    return this.http.get<any>(`${environment.url}/nivel-titulo/buscar/${nombre}`);
+  }
+
+
+
+
+
+
+
+
+
   // Niveles de titulos
   getOneNivelTituloRest(id: number) {
     return this.http.get<any>(`${environment.url}/nivel-titulo/${id}`);
   }
 
-  getNivelesTituloRest() {
-    return this.http.get<any>(`${environment.url}/nivel-titulo/`);
-  }
 
-  postNivelTituloRest(data: any) {
-    console.log(data);
-    return this.http.post(`${environment.url}/nivel-titulo`, data);
-  }
 
-  deleteNivelTituloRest(id: number) {
-    return this.http.delete(`${environment.url}/nivel-titulo/eliminar/${id}`);
-  }
 
-  BuscarNivelNombre(nombre: string) {
-    return this.http.get<any>(`${environment.url}/nivel-titulo/buscar/${nombre}`);
-  }
 
-  ActualizarNivelTitulo(datos: any) {
-    return this.http.put(`${environment.url}/nivel-titulo`, datos);
-  }
 
-  BuscarNivelID() {
-    return this.http.get<any>(`${environment.url}/nivel-titulo/nivel/datos/`);
-  }
 
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/nivel-titulo/xmlDownload`, data);
-  }
+
 
 }

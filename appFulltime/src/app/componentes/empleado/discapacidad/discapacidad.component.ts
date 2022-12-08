@@ -4,6 +4,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { DiscapacidadService } from 'src/app/servicios/discapacidad/discapacidad.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-discapacidad',
@@ -18,18 +19,15 @@ export class DiscapacidadComponent implements OnInit {
 
   userDiscapacidad: any = [];
   tipoDiscapacidad: any = [];
-  ultimoId: any = [];
-  unTipo: any = [];
 
   HabilitarDescrip: boolean = true;
-  estilo: any;
 
   porcentaje = new FormControl('', [Validators.required, Validators.maxLength(6)]);
   nombreF = new FormControl('', [Validators.minLength(5)])
   carnet = new FormControl('', [Validators.required, Validators.maxLength(8)]);
   tipo = new FormControl('', [Validators.maxLength(10)])
 
-  public nuevoCarnetForm = new FormGroup({
+  public formulario = new FormGroup({
     porcentajeForm: this.porcentaje,
     carnetForm: this.carnet,
     nombreForm: this.nombreF,
@@ -40,23 +38,23 @@ export class DiscapacidadComponent implements OnInit {
     private rest: DiscapacidadService,
     private toastr: ToastrService,
     private ventana: MatDialogRef<DiscapacidadComponent>,
+    private validar: ValidacionesService,
     @Inject(MAT_DIALOG_DATA) public datos: any
   ) { }
 
   ngOnInit(): void {
     this.editar = this.datos.metodo;
     this.idEmploy = this.datos.idEmpleado;
-    console.log(this.datos)
-    this.LimpiarCampos();
     this.EditarFormulario();
     this.ObtenerTiposDiscapacidad();
     this.tipoDiscapacidad[this.tipoDiscapacidad.length] = { nombre: "OTRO" };
   }
 
+  // METODO PARA EDITAR FORMULARIO
   texto: string = 'REGISTRAR'
   EditarFormulario() {
     if (this.editar == 'editar') {
-      this.rest.getDiscapacidadUsuarioRest(parseInt(this.idEmploy)).subscribe(data => {
+      this.rest.BuscarDiscapacidadUsuario(parseInt(this.idEmploy)).subscribe(data => {
         this.userDiscapacidad = data;
         this.carnet.setValue(this.userDiscapacidad[0].carn_conadis);
         this.porcentaje.setValue(this.userDiscapacidad[0].porcentaje);
@@ -66,7 +64,8 @@ export class DiscapacidadComponent implements OnInit {
     }
   }
 
-  insertarCarnet(form) {
+  // METODO PARA GUARDAR DATOS DE DISCAPACIDAD
+  InsertarCarnet(form: any) {
     if (this.editar != 'editar') {
       this.GuardarDiscapacidad(form);
     }
@@ -75,193 +74,158 @@ export class DiscapacidadComponent implements OnInit {
     }
   }
 
-  GuardarDiscapacidad(form1) {
-    if (form1.tipoForm === undefined) {
-      if (form1.nombreForm != '') {
-        this.GuardarTipoRegistro(form1);
+  // METODO PARA REGISTRAR DISCAPACIDAD EN BASE DE DATOS
+  GuardarDiscapacidad(form: any) {
+    if (form.tipoForm === undefined) {
+      if (form.nombreForm != '') {
+        this.GuardarTipoRegistro(form);
       }
       else {
-        this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad', '', {
+        this.toastr.info('Ingresar tipo de discapacidad.', '', {
           timeOut: 6000,
         })
       }
     }
     else {
-      if (form1.tipoForm === null) {
-        console.log('probando2', form1.tipoForm)
-        this.toastr.info('Se le indica que debe seleccionar un tipo de discapacidad', '', {
+      if (form.tipoForm === null) {
+        this.toastr.info('Favor seleccionar tipo de discapacidad.', '', {
           timeOut: 6000,
         })
       }
       else {
-        this.RegistarDatos(form1, form1.tipoForm);
+        this.RegistarDatos(form, form.tipoForm);
       }
-
     }
   }
 
-  CambiarDiscapacidad(form1) {
-    if (form1.tipoForm === undefined) {
-      if (form1.nombreForm != '') {
-        this.GuardarTipoActualizacion(form1);
+  // METODO PARA ACTUALIZAR DATOS EN BASE DE DATOS
+  CambiarDiscapacidad(form: any) {
+    if (form.tipoForm === undefined) {
+      if (form.nombreForm != '') {
+        this.GuardarTipoActualizacion(form);
       }
       else {
-        this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad', '', {
+        this.toastr.info('Ingresar tipo de discapacidad.', '', {
           timeOut: 6000,
         })
       }
     }
     else {
-      this.ActualizarDatos(form1, form1.tipoForm);
+      this.ActualizarDatos(form, form.tipoForm);
     }
   }
 
-  RegistarDatos(form, idTipoD) {
-    let dataCarnet = {
-      id_empleado: parseInt(this.idEmploy),
+  // METODO PARA CAPTURAR DATOS 
+  RegistarDatos(form: any, idTipoD: number) {
+    let carnet = {
       carn_conadis: form.carnetForm,
+      id_empleado: parseInt(this.idEmploy),
       porcentaje: form.porcentajeForm,
       tipo: idTipoD,
     }
-    this.rest.postDiscapacidadRest(dataCarnet).subscribe(response => {
-      this.toastr.success('Operacion Exitosa', 'Discapacidad guardada', {
+    this.rest.RegistroDiscapacidad(carnet).subscribe(response => {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
       this.LimpiarCampos();
       this.texto = 'REGISTRAR';
-      this.cerrarRegistro();
+      this.CerrarRegistro();
     });
   }
 
-  ActualizarDatos(form, idTipoD) {
-    let dataUpdate = {
+  // METODO PARA CAPTURAR DATOS PARA ACTUALIZACION
+  ActualizarDatos(form: any, idTipoD: any) {
+    let carnet = {
       carn_conadis: form.carnetForm,
       porcentaje: form.porcentajeForm,
       tipo: idTipoD,
     }
-    this.rest.putDiscapacidadUsuarioRest(parseInt(this.idEmploy), dataUpdate).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Discapacidad Actualiza', {
+    this.rest.ActualizarDiscapacidad(parseInt(this.idEmploy), carnet).subscribe(res => {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
-      this.cerrarRegistro();
+      this.CerrarRegistro();
     });
   }
 
-  GuardarTipoActualizacion(form) {
-    let datosTD = {
+  // METODO PARA REGISTRAR TIPO DE DISCAPACIDAD - METODO ACTUALIZACION
+  GuardarTipoActualizacion(form: any) {
+    let tipo = {
       nombre: form.nombreForm,
     }
-    this.rest.InsertarTipoD(datosTD).subscribe(response => {
-      console.log(response)
-      this.rest.ConsultarUltimoIdTD().subscribe(data => {
-        this.ultimoId = data;
-        this.ultimoId[0].max;
-        this.ActualizarDatos(form, this.ultimoId[0].max);
-      });
+    this.rest.RegistrarTipo(tipo).subscribe(response => {
+      this.ActualizarDatos(form, response.id);
     });
   }
 
-  GuardarTipoRegistro(form) {
-    let datosTD = {
+  // METODO PARA REGISTRO DE TIPO DE DISCAPACIDAD - METODO REGISTRO
+  GuardarTipoRegistro(form: any) {
+    let tipo = {
       nombre: form.nombreForm,
     }
-    this.rest.InsertarTipoD(datosTD).subscribe(response => {
-      console.log(response)
-      this.rest.ConsultarUltimoIdTD().subscribe(data => {
-        this.ultimoId = data;
-        this.ultimoId[0].max;
-        this.RegistarDatos(form, this.ultimoId[0].max);
-      });
+    this.rest.RegistrarTipo(tipo).subscribe(response => {
+      this.RegistarDatos(form, response.id);
     });
   }
 
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA VALIDAR SOLO INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
+    return this.validar.IngresarSoloLetras(e);
   }
 
-  IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA VALIDAR SOLO INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
-  obtenerMensajeErrorCarnet() {
+  // MENSAJES DE ERROR
+  ObtenerMensajeErrorCarnet() {
     if (this.carnet.hasError('required')) {
-      return 'Debe ingresar N° de carnet';
+      return 'Debe ingresar N° de carnet.';
     }
-    return this.carnet.hasError('maxLength') ? 'ingresar hasta 7 caracteres' : '';
+    return this.carnet.hasError('maxLength') ? 'Ingresar hasta 7 caracteres.' : '';
   }
 
+  // METODO PARA VALIDAR PORCENTAJES
   formatLabel(value: number) {
     return value + '%';
   }
 
-
+  // METODO PARA LIMPIAR FORMULARIOS
   LimpiarCampos() {
-    this.nuevoCarnetForm.reset();
+    this.formulario.reset();
   }
 
-  cerrarRegistro() {
+  // METODO PARA CERRAR VENTANA DE REGISTROS
+  CerrarRegistro() {
     this.ventana.close();
   }
 
-
   // TIPO DE DESCAPACIDAD 
-  seleccionarTipo;
+  seleccionarTipo: any;
   ObtenerTiposDiscapacidad() {
-    this.rest.ListarTiposD().subscribe(data => {
+    this.rest.ListarTipoDiscapacidad().subscribe(data => {
       this.tipoDiscapacidad = data;
       this.tipoDiscapacidad[this.tipoDiscapacidad.length] = { nombre: "OTRO" };
     });
   }
 
-  ActivarDesactivarNombre(form1) {
-    console.log('probando', form1.tipoForm)
-    if (form1.tipoForm === undefined) {
-      this.nuevoCarnetForm.patchValue({
+  // METODO PARA MOSTRAR U OCULTAR REGISTRO DE TIPO DE DISCAPACIDAD
+  ActivarDesactivarNombre(form: any) {
+    if (form.tipoForm === undefined) {
+      this.formulario.patchValue({
         nombreForm: '',
       });
-      this.estilo = { 'visibility': 'visible' }; this.HabilitarDescrip = false;
-      this.toastr.info('Ingresar nombre del nuevo Tipo de Discapacidad', 'Etiqueta Nuevo Tipo activa', {
-        timeOut: 6000,
+      this.HabilitarDescrip = false;
+      this.toastr.info('Ingresar tipo de discapacidad.', '', {
+        timeOut: 4000,
       })
     }
     else {
-      this.nuevoCarnetForm.patchValue({
+      this.formulario.patchValue({
         nombreForm: '',
       });
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
+      this.HabilitarDescrip = true;
     }
   }
 

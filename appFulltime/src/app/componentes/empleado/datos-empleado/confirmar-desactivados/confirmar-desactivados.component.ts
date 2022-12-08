@@ -1,6 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 
 @Component({
@@ -8,6 +9,7 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
   templateUrl: './confirmar-desactivados.component.html',
   styleUrls: ['./confirmar-desactivados.component.css']
 })
+
 export class ConfirmarDesactivadosComponent implements OnInit {
 
   ids: any = [];
@@ -18,59 +20,61 @@ export class ConfirmarDesactivadosComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
     private restE: EmpleadoService,
-    public dialogRef: MatDialogRef<ConfirmarDesactivadosComponent>,
+    public ventana: MatDialogRef<ConfirmarDesactivadosComponent>,
     @Inject(MAT_DIALOG_DATA) public Empleados: any,
   ) { }
 
   ngOnInit(): void {
-    console.log(this.Empleados);
     this.ids = this.Empleados.lista.map(obj => {
       return obj.id
     });
     this.Opcion();
   }
 
-  Opcion(){
+  // METODO PARA ACTIVAR - INACTIVAR - REACTIVAR USUARIO
+  Opcion() {
+    // INACTIVAR EMPLEADOS
     if (this.Empleados.opcion === 1) {
       this.contenidoDeshabilitar = true;
-      console.log('DESACTIVAR EMPLEADO');
+
+      // ACTIVAR EMPLEADOS
     } else if (this.Empleados.opcion === 2) {
       this.contenidoHabilitar = true;
-      console.log('ACTIVAR EMPLEADO');
+
+      // REACTIVAR EMPLEADOS
     } else if (this.Empleados.opcion === 3) {
       this.contenidoReactivar = true;
-      console.log('REACTIVAR EMPLEADO');
     }
   }
 
-  ConfirmarListaEmpleados(){
+  // METODO PARA GUARDAR CAMBIOS EN BASE DE DATOS
+  ConfirmarListaEmpleados() {
+    // INACTIVAR EMPLEADOS
     if (this.Empleados.opcion === 1) {
-      console.log('DESACTIVAR EMPLEADO');
       this.restE.DesactivarVariosUsuarios(this.ids).subscribe(res => {
-        console.log(res);
-        this.toastr.success(res.message,'', {
+        this.toastr.success(res.message, '', {
           timeOut: 6000,
         })
       });
-      this.dialogRef.close(true);
+      this.ventana.close(true);
+
+      // ACTIVAR EMPLEADOS
     } else if (this.Empleados.opcion === 2) {
-      console.log('ACTIVAR EMPLEADO');
       this.restE.ActivarVariosUsuarios(this.ids).subscribe(res => {
-        console.log(res);
-        this.toastr.success(res.message,'', {
+        this.toastr.success(res.message, '', {
           timeOut: 6000,
         })
       });
-      this.dialogRef.close(true);
+      this.ventana.close(true);
+
+      // REACTIVAR EMPLEADOS
     } else if (this.Empleados.opcion === 3) {
-      console.log('ACTIVAR EMPLEADO');
       this.restE.ReActivarVariosUsuarios(this.ids).subscribe(res => {
-        console.log(res);
-        this.toastr.success(res.message,'', {
+        this.toastr.success(res.message, '', {
           timeOut: 6000,
         })
       });
-      this.dialogRef.close(true);
+      this.ventana.close(true);
     }
   }
 }

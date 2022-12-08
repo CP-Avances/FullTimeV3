@@ -16,11 +16,22 @@ class EmpleadoHorariosRutas {
     }
 
     configuracion(): void {
+
         // METODO DE BUSQUEDA DE HORARIOS DE UN USUARIO
         this.router.get('/horarioCodigo/:codigo', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ListarHorarioUsuario);
+        // METODO PARA REGISTRAR HORARIO DE USUARIO
+        this.router.post('/', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.CrearEmpleadoHorarios);
+        // METODO PARA BUSCAR HORARIOS EXISTENTES DEL USUARIO EN FECHAS DETERMINADAS
+        this.router.post('/horarios-existentes/:empl_id', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.VerificarHorariosExistentes);
+        // METODO PARA BUSCAR HORARIOS EXISTENTES DEL USUARIO EN FECHAS DETERMINADAS ACTUALIZACION
+        this.router.post('/horarios-existentes-edicion/:empl_id', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.VerificarHorariosExistentesEdicion);
+
+
+
+
 
         this.router.get('/', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ListarEmpleadoHorarios);
-        this.router.post('/', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.CrearEmpleadoHorarios);
+
 
         this.router.post('/cargaMultiple', [TokenValidation, multipartMiddleware], EMPLEADO_HORARIOS_CONTROLADOR.CargarMultiplesHorariosEmpleadosPlantilla);
         this.router.post('/horas', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ObtenerNumeroHoras);
@@ -32,8 +43,6 @@ class EmpleadoHorariosRutas {
 
         this.router.post('/busqueda-horarios/:codigo', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.BuscarHorariosFechas);
 
-        this.router.post('/horarios-existentes/:empl_id', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.VerificarHorariosExistentes);
-        this.router.post('/horarios-existentes-edicion/:empl_id', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.VerificarHorariosExistentesEdicion);
 
         // Verificar datos de la plantilla del horario de un empleado
         this.router.post('/revisarData/:id', [TokenValidation, multipartMiddleware], EMPLEADO_HORARIOS_CONTROLADOR.VerificarDatos_PlantillaEmpleado_Horario);

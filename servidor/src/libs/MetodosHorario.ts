@@ -84,7 +84,7 @@ function DiasByEstado(horario: any, rango: any) {
 }
 
 /**
- * Método para devolver la fecha y el estado de cada uno de los dias de ese horario
+ * METODO para devolver la fecha y el estado de cada uno de los dias de ese horario
  * @param fechaIterada Fecha asignada por el ciclo for 
  * @param horario es el ultimo horario del empleado.
  */

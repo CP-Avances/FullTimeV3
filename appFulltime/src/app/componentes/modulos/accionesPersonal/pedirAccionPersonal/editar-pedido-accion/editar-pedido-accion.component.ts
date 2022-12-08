@@ -1,4 +1,4 @@
-/** IMPORTACIÓN DE LIBRERIAS */
+/** IMPORTACION DE LIBRERIAS */
 import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
@@ -7,7 +7,7 @@ import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import * as moment from 'moment';
-/** IMPORTACIÓN DE SERVICIOS */
+/** IMPORTACION DE SERVICIOS */
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { AccionPersonalService } from 'src/app/servicios/accionPersonal/accion-personal.service';
@@ -122,7 +122,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     this.AccionPersonalForm.patchValue({
       fechaForm: this.FechaActual
     });
-    // INVOCACIÓN A LOS MÉTODOS PARA CARGAR DATOS
+    // INVOCACIÓN A LOS METODOS PARA CARGAR DATOS
     this.ObtenerTiposAccion();
     this.ObtenerEmpleados();
     this.ObtenerDecretos();
@@ -134,7 +134,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     this.decretos[this.decretos.length] = { descripcion: "OTRO" };
     this.cargos[this.cargos.length] = { descripcion: "OTRO" };
 
-    // MÉTODO PARA AUTOCOMPLETADO EN BÚSQUEDA DE NOMBRES
+    // METODO PARA AUTOCOMPLETADO EN BUSQUEDA DE NOMBRES
     this.filtroNombre = this.idEmpleadoF.valueChanges
       .pipe(
         startWith(''),
@@ -152,7 +152,7 @@ export class EditarPedidoAccionComponent implements OnInit {
       );
   }
 
-  // MÉTODO PARA BÚSQUEDA DE NOMBRES SEGÚN LO INGRESADO POR EL USUARIO
+  // METODO PARA BUSQUEDA DE NOMBRES SEGÚN LO INGRESADO POR EL USUARIO
   private _filtrarEmpleado(value: string): string[] {
     if (value != null) {
       const filterValue = value.toUpperCase();
@@ -193,7 +193,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // BÚSQUEDA DE DATOS DE EMPRESA
+  // BUSQUEDA DE DATOS DE EMPRESA
   empresa: any = [];
   MostrarDatos() {
     this.empresa = [];
@@ -205,7 +205,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     });
   }
 
-  // BÚSQUEDA DE DATOS DE LA TABLA CG_PROCESOS
+  // BUSQUEDA DE DATOS DE LA TABLA CG_PROCESOS
   procesos: any = [];
   ObtenerProcesos() {
     this.procesos = [];
@@ -214,7 +214,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // BÚSQUEDA DE DATOS DE LA TABLA DECRETOS_ACUERDOS_RESOL
+  // BUSQUEDA DE DATOS DE LA TABLA DECRETOS_ACUERDOS_RESOL
   decretos: any = [];
   ObtenerDecretos() {
     this.decretos = [];
@@ -224,7 +224,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA ACTIVAR FORMULARIO NOMBRE DE OTRA OPCIÓN
+  // METODO PARA ACTIVAR FORMULARIO NOMBRE DE OTRA OPCIÓN
   estilo: any;
   IngresarOtro(form) {
     if (form.tipoDecretoForm === undefined) {
@@ -239,7 +239,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA VER LISTA DE DECRETOS
+  // METODO PARA VER LISTA DE DECRETOS
   VerDecretos() {
     this.AccionPersonalForm.patchValue({
       otroDrecretoForm: '',
@@ -248,7 +248,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     this.vistaAcuerdo = true;
   }
 
-  // MÉTODO DE BÚSQUEDA DE DATOS DE LA TABLA TIPO_ACCIONES
+  // METODO DE BUSQUEDA DE DATOS DE LA TABLA TIPO_ACCIONES
   tipos_accion: any = [];
   ObtenerTiposAccion() {
     this.tipos_accion = [];
@@ -257,7 +257,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA BÚSQUEDA DE DATOS DE LA TABLA CARGO_PROPUESTO
+  // METODO PARA BUSQUEDA DE DATOS DE LA TABLA CARGO_PROPUESTO
   cargos: any = [];
   ObtenerCargos() {
     this.cargos = [];
@@ -267,7 +267,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA ACTIVAR FORMULARIO DE INGRESO DE UN NUEVO TIPO DE CARGO PROPUESTO
+  // METODO PARA ACTIVAR FORMULARIO DE INGRESO DE UN NUEVO TIPO DE CARGO PROPUESTO
   estiloC: any;
   IngresarCargo(form) {
     if (form.tipoCargoForm === undefined) {
@@ -282,7 +282,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA VER LISTA DE CARGOS PROPUESTO
+  // METODO PARA VER LISTA DE CARGOS PROPUESTO
   VerCargos() {
     this.AccionPersonalForm.patchValue({
       otroCargoForm: '',
@@ -292,7 +292,7 @@ export class EditarPedidoAccionComponent implements OnInit {
   }
 
 
-  // MÉTODO PARA OBTENER LISTA DE EMPLEADOS
+  // METODO PARA OBTENER LISTA DE EMPLEADOS
   ObtenerEmpleados() {
     this.empleados = [];
     this.restE.BuscarListaEmpleados().subscribe(data => {
@@ -304,7 +304,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA REALIZAR EL REGISTRO DE ACCIÓN DE PERSONAL
+  // METODO PARA REALIZAR EL REGISTRO DE ACCIÓN DE PERSONAL
   InsertarAccionPersonal(form) {
     // CAMBIO EL APELLIDO Y NOMBRE DE LOS EMPLEADOS SELECCIONADOS A LETRAS MAYÚSCULAS
     let datos1 = {
@@ -316,13 +316,13 @@ export class EditarPedidoAccionComponent implements OnInit {
     let datos3 = {
       informacion: (form.idEmpleadoGForm).toUpperCase()
     }
-    // BÚSQUEDA DE LOS DATOS DEL EMPLEADO QUE REALIZA EL PEDIDO DE ACCIÓN DE PERSONAL
+    // BUSQUEDA DE LOS DATOS DEL EMPLEADO QUE REALIZA EL PEDIDO DE ACCIÓN DE PERSONAL
     this.restE.BuscarEmpleadoNombre(datos1).subscribe(empl1 => {
       var idEmpl_pedido = empl1[0].id;
-      // BÚSQUEDA DE LOS DATOS DEL EMPLEADO QUE REALIZA LA PRIMERA FIRMA
+      // BUSQUEDA DE LOS DATOS DEL EMPLEADO QUE REALIZA LA PRIMERA FIRMA
       this.restE.BuscarEmpleadoNombre(datos2).subscribe(empl2 => {
         var idEmpl_firmaH = empl2[0].id;
-        // BÚSQUEDA DE LOS DATOS DEL EMPLEADO QUE REALIZA LA SEGUNDA FIRMA
+        // BUSQUEDA DE LOS DATOS DEL EMPLEADO QUE REALIZA LA SEGUNDA FIRMA
         this.restE.BuscarEmpleadoNombre(datos3).subscribe(empl3 => {
           var idEmpl_firmaG = empl3[0].id;
           // INICIALIZAMOS EL ARRAY CON TODOS LOS DATOS DEL PEDIDO
@@ -367,7 +367,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     })
   }
 
-  // MÉTODO PARA VERIFICAR LAS POSIBLES OPCIONES DE INGRESOS EN EL FORMULARIO
+  // METODO PARA VERIFICAR LAS POSIBLES OPCIONES DE INGRESOS EN EL FORMULARIO
   ValidacionesIngresos(form, datosAccion) {
     // INGRESO DE DATOS DE ACUERDO A LO INGRESADO POR EL USUARIO
     if (form.tipoDecretoForm != undefined &&
@@ -396,7 +396,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA GUARDAR LOS DATOS DEL PEDIDO DE ACCIONES DE PERSONAL
+  // METODO PARA GUARDAR LOS DATOS DEL PEDIDO DE ACCIONES DE PERSONAL
   GuardarDatos(datosAccion: any) {
     // CAMBIAR VALOR A NULL LOS CAMPOS CON FORMATO INTEGER QUE NO SON INGRESADOS
     if (datosAccion.decre_acue_resol === '' || datosAccion.decre_acue_resol === null) {
@@ -420,7 +420,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     });
   }
 
-  // MÉTODO PARA INGRESAR NUEVO TIPO DE DECRETO - ACUERDO - RESOLUCION
+  // METODO PARA INGRESAR NUEVO TIPO DE DECRETO - ACUERDO - RESOLUCION
   IngresarNuevoDecreto(form, datos: any, opcion: string) {
     if (form.otroDecretoForm != '') {
       let acuerdo = {
@@ -453,7 +453,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA INGRESAR NUEVO CARGO PROPUESTO
+  // METODO PARA INGRESAR NUEVO CARGO PROPUESTO
   IngresarNuevoCargo(form, datos: any, opcion: string) {
     if (form.otroCargoForm != '') {
       let cargo = {
@@ -501,7 +501,7 @@ export class EditarPedidoAccionComponent implements OnInit {
      });
    }*/
 
-  // MÉTODOS PARA MOSTRAR MENSAJES DE ADVERTENCIA DE ERRORES AL USUARIO
+  // METODOS PARA MOSTRAR MENSAJES DE ADVERTENCIA DE ERRORES AL USUARIO
   ObtenerMensajeErrorDescripcion() {
     if (this.descripcionF.hasError('pattern')) {
       return 'Ingrese información válida';
@@ -545,7 +545,7 @@ export class EditarPedidoAccionComponent implements OnInit {
       })
     }*/
 
-  // MÉTODO PARA INGRESAR SOLO LETRAS
+  // METODO PARA INGRESAR SOLO LETRAS
   IngresarSoloLetras(e) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
@@ -568,7 +568,7 @@ export class EditarPedidoAccionComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA INGRESAR SOLO NÚMEROS
+  // METODO PARA INGRESAR SOLO NÚMEROS
   IngresarSoloNumeros(evt) {
     if (window.event) {
       var keynum = evt.keyCode;

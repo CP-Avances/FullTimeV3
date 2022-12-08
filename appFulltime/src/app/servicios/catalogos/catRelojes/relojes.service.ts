@@ -11,36 +11,64 @@ export class RelojesService {
     private http: HttpClient
   ) { }
 
-  // Invocación del método post para crear nuevo reloj
+  // METODO PARA LISTAR DISPOSITIVOS
+  ConsultarRelojes() {
+    return this.http.get(`${environment.url}/relojes`);
+  }
+
+  // METODO PARA ELIMINAR REGISTRO
+  EliminarRegistro(id: number) {
+    return this.http.delete(`${environment.url}/relojes/eliminar/${id}`);
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/relojes/xmlDownload`, data);
+  }
+
+  // METODO PARA REGISTRAR DISPOSITIVO
   CrearNuevoReloj(datos: any) {
     return this.http.post<any>(`${environment.url}/relojes`, datos);
   }
 
-  ConsultarRelojes() {
-    return this.http.get(`${environment.url}/relojes`);
+  // METODO PARA ACTUALIZAR REGISTRO
+  ActualizarDispositivo(datos: any) {
+    return this.http.put<any>(`${environment.url}/relojes`, datos);
   }
+
+  // METODO PARA CONSULTAR DATOS GENERALES DE DISPOSITIVO
+  ConsultarDatosId(id: number) {
+    return this.http.get(`${environment.url}/relojes/datosReloj/${id}`);
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   ConsultarUnReloj(id: number) {
     return this.http.get(`${environment.url}/relojes/${id}`);
   }
 
-  ActualizarDispositivo(datos: any) {
-    return this.http.put<any>(`${environment.url}/relojes`, datos);
-  }
 
-  DownloadXMLRest(data: any) {
-    return this.http.post(`${environment.url}/relojes/xmlDownload`, data);
-  }
 
-  EliminarRegistro(id: number) {
-    return this.http.delete(`${environment.url}/relojes/eliminar/${id}`);
-  }
 
-  ConsultarDatosId(id: number) {
-    return this.http.get(`${environment.url}/relojes/datosReloj/${id}`);
-  }
 
-  // Métodos para verificar datos de plantilla antes de registralos en el sistema
+
+
+
+
+
+
+
+
+  // METODOs para verificar datos de plantilla antes de registralos en el sistema
   subirArchivoExcel(formData) {
     return this.http.post<any>(`${environment.url}/relojes/plantillaExcel/`, formData);
   }

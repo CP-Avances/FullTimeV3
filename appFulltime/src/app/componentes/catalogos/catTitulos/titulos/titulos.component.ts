@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -11,71 +11,71 @@ import { NivelTitulosService } from 'src/app/servicios/nivelTitulos/nivel-titulo
   templateUrl: './titulos.component.html',
   styleUrls: ['./titulos.component.css'],
 })
+
 export class TitulosComponent implements OnInit {
 
-  // Control de los campos del formulario
+  // CONTROL DE LOS CAMPOS DEL FORMULARIO
+  nombreNivel = new FormControl('', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}"))
   nombre = new FormControl('', [Validators.required, Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}")]);
   nivel = new FormControl('');
-  nombreNivel = new FormControl('', Validators.pattern("[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]{3,48}"))
 
-  // asignar los campos en un formulario en grupo
-  public nuevoTituloForm = new FormGroup({
+  // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
+  public formulario = new FormGroup({
     tituloNombreForm: this.nombre,
     tituloNivelForm: this.nivel,
     nombreNivelForm: this.nombreNivel
   });
 
-  // Arreglo de niveles existentes
+  // ARREGLO DE NIVELES EXISTENTES
   niveles: any = [];
 
   HabilitarDescrip: boolean = true;
-  estilo: any;
 
-  seleccionarNivel;
 
   constructor(
     private rest: TituloService,
-    private restNivelTitulo: NivelTitulosService,
+    private nivel_: NivelTitulosService,
     private toastr: ToastrService,
-    public dialogRef: MatDialogRef<TitulosComponent>,
+    public ventana: MatDialogRef<TitulosComponent>,
   ) {
   }
 
   ngOnInit(): void {
-    this.obtenerNivelesTitulo();
+    this.ObtenerNivelesTitulo();
     this.niveles[this.niveles.length] = { nombre: "OTRO" };
   }
 
-  obtenerNivelesTitulo() {
+  // METODO PARA LISTAR NIVELES DE TITULO
+  ObtenerNivelesTitulo() {
     this.niveles = [];
-    this.restNivelTitulo.getNivelesTituloRest().subscribe(res => {
+    this.nivel_.ListarNiveles().subscribe(res => {
       this.niveles = res;
       this.niveles[this.niveles.length] = { nombre: "OTRO" };
-      this.seleccionarNivel = this.niveles[this.niveles.length - 1].nombre;
     });
   }
 
-  ActivarDesactivarNombre(form1) {
-    console.log('nivel', form1.tituloNivelForm);
-    if (form1.tituloNivelForm === undefined) {
-      this.nuevoTituloForm.patchValue({ nombreNivelForm: '' });
-      this.estilo = { 'visibility': 'visible' }; this.HabilitarDescrip = false;
-      this.toastr.info('Ingresar nombre de nivel de titulación','', {
+  // METODO PARA ACTIVAR FORMULARIO
+  ActivarDesactivarNombre(form: any) {
+    if (form.tituloNivelForm === undefined) {
+      this.formulario.patchValue({ nombreNivelForm: '' });
+      this.HabilitarDescrip = false;
+      this.toastr.info('Ingresar nombre de nivel de título.', '', {
         timeOut: 6000,
       });
     }
     else {
-      this.nuevoTituloForm.patchValue({ nombreNivelForm: '' });
-      this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
+      this.formulario.patchValue({ nombreNivelForm: '' });
+      this.HabilitarDescrip = true;
     }
   }
 
-  IngresarSoloLetras(e) {
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     let key = e.keyCode || e.which;
     let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
+    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
     let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
+    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTo.
     let especiales = [8, 37, 39, 46, 6, 13];
     let tecla_especial = false
     for (var i in especiales) {
@@ -92,6 +92,7 @@ export class TitulosComponent implements OnInit {
     }
   }
 
+  // METODO PARA EMITIR MENSAJES DE ERROR
   ObtenerMensajeErrorNombre() {
     if (this.nombre.hasError('required')) {
       return 'Campo Obligatorio';
@@ -105,14 +106,15 @@ export class TitulosComponent implements OnInit {
     }
   }
 
-  InsertarTitulo(form) {
+  // METODO PARA REGISTRAR TITULO
+  InsertarTitulo(form: any) {
     if (form.tituloNivelForm === undefined || form.tituloNivelForm === 'OTRO') {
       if (form.nombreNivelForm != '') {
         this.GuardarNivel(form);
 
       }
       else {
-        this.toastr.info('Ingrese un nombre de nivel o seleccione uno de la lista de niveles','', {
+        this.toastr.info('Ingrese un nombre de nivel o seleccione uno de la lista de niveles.', '', {
           timeOut: 6000,
         });
       }
@@ -122,42 +124,39 @@ export class TitulosComponent implements OnInit {
     }
   }
 
-  GuardarNivel(form) {
-    let dataNivelTitulo = {
+  // METODO PARA REGISTRAR NIVEL DE TITULO
+  GuardarNivel(form: any) {
+    let nivel = {
       nombre: form.nombreNivelForm,
     };
-    this.restNivelTitulo.postNivelTituloRest(dataNivelTitulo).subscribe(response => {
-      this.restNivelTitulo.BuscarNivelID().subscribe(datos => {
-        var idNivel = datos[0].max;
-        console.log('id_nivel', datos[0].max)
-        this.GuardarTitulo(form, idNivel);
-      })
-    });
+    this.nivel_.RegistrarNivel(nivel).subscribe(response => {
+      this.GuardarTitulo(form, response.id);
+    })
   }
 
-  GuardarTitulo(form, idNivel) {
-    let dataTitulo = {
+  // METODO PARA GUARDAR TITULO
+  GuardarTitulo(form: any, idNivel: number) {
+    let titulo = {
       nombre: form.tituloNombreForm,
       id_nivel: idNivel,
     };
-    this.rest.postTituloRest(dataTitulo).subscribe(response => {
-      this.toastr.success('Operación Exitosa', 'Título guardado', {
+    this.rest.RegistrarTitulo(titulo).subscribe(response => {
+      this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
         timeOut: 6000,
       });
-      this.LimpiarCampos();
-    }, error => {
+      this.CerrarVentana();
     });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
-    this.nuevoTituloForm.reset();
-    this.obtenerNivelesTitulo();
-    this.estilo = { 'visibility': 'hidden' }; this.HabilitarDescrip = true;
+    this.formulario.reset();
   }
 
-  CerrarVentanaRegistroTitulo() {
+  // METODO PARA CERRAR VENTANA
+  CerrarVentana() {
     this.LimpiarCampos();
-    this.dialogRef.close();
+    this.ventana.close();
   }
 
 }
