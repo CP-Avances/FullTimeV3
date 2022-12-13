@@ -9,12 +9,15 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class UpdateEstadoAppComponent implements OnInit {
 
   BooleanAppMap: any = {'true': 'Si', 'false': 'No'};
+  usuarios: any = [];
   
   constructor(
     public dialogRef: MatDialogRef<UpdateEstadoAppComponent>,
     @Inject(MAT_DIALOG_DATA) public empleados: any
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {  
+    this.usuarios = this.empleados;
+  }
 
 }

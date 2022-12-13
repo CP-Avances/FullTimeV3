@@ -5,7 +5,8 @@
 </div>
 <mat-dialog-content class="mat-typography">
     <div class="nota">
-        <span>NOTA: Los siguientes usuarios cambiaran su acceso a la App de reloj virtual.</span>
+        <span *ngIf="usuarios.length > 1" >NOTA: Los siguientes usuarios cambiaran su acceso a la App de reloj virtual.</span>
+        <span *ngIf="usuarios.length < 2" >NOTA: El siguiente usuario cambiaran su acceso a la App de reloj virtual.</span>
     </div>
     <mat-list>
         <mat-list-item *ngFor="let e of empleados">

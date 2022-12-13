@@ -17,21 +17,35 @@ import { MainNavService } from 'src/app/componentes/administracionGeneral/main-n
 })
 export class ListaAppComponent implements OnInit {
 
-  usersAppMovil: any = [];
+  usersAppMovil_habilitados: any = [];
+  usersAppMovil_deshabilitados: any = [];
 
   selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
+  selectionEmpDeshab = new SelectionModel<ITableEmpleados>(true, []);
+
 
   filtroCodigo: number;
   filtroCedula: '';
   filtroNombre: '';
 
+  filtroCodigodes: number;
+  filtroCedulades: '';
+  filtroNombredes: '';
+
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
 
+  codigodes = new FormControl('');
+  cedulades = new FormControl('', [Validators.minLength(2)]);
+  nombredes = new FormControl('', [Validators.minLength(2)]);
+
   // Items de paginación de la tabla
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
+  tamanio_paginades: number = 5;
+  numero_paginades: number = 1;
+
   pageSizeOptions = [5, 10, 20, 50];
 
   BooleanAppMap: any = { 'true': 'Si', 'false': 'No' };
@@ -44,7 +58,7 @@ export class ListaAppComponent implements OnInit {
     private validar: ValidacionesService,
     private dialog: MatDialog,
     private funciones: MainNavService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (this.habilitarMovil === false) {
@@ -61,30 +75,52 @@ export class ListaAppComponent implements OnInit {
     }
   }
 
-  // METODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE TABLA
-
+  // METODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE LAS TABLAS
   habilitar: boolean = false;
-  HabilitarSeleccion() {
-    if (this.habilitar === false) {
+  deshabilitar: boolean = false;
+  HabilitarSeleccion_habilitados() {
+    if(this.habilitar === false){
       this.habilitar = true;
-    } else if (this.habilitar === true) {
+    }else{
       this.habilitar = false;
+      this.selectionEmp.clear();
+    }
+  }
+  HabilitarSeleccion_deshabilitados() {
+    if(this,this.deshabilitar === false){
+      this.deshabilitar = true;
+    }else{
+      this.deshabilitar = false;
+      this.selectionEmpDeshab.clear();
     }
   }
 
+
   ObtenerUsuariosAppMovil() {
     this.usuariosService.getUsersAppMovil().subscribe(res => {
-      // console.log(res);
-      this.usersAppMovil = res
+      let usuariosHabilitados = [];
+      let usuariosDeshabilitados = [];
+      res.forEach(usuario => {
+        if(usuario.app_habilita === true){
+          usuariosHabilitados.push(usuario);
+        }else{
+          usuariosDeshabilitados.push(usuario);
+        }
+      });
+
+      this.usersAppMovil_habilitados = usuariosHabilitados;
+      this.usersAppMovil_deshabilitados = usuariosDeshabilitados;
+      
     }, err => {
       console.log(err);
       this.toastr.error(err.error.message)
     })
   }
 
-  openDialogUpdateAppMovil() {
+  openDialogUpdateAppMovilHabilitados() {
+    this.selectionEmpDeshab.clear();
+    this.deshabilitar = false;
     if (this.selectionEmp.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
-
     this.dialog.open(UpdateEstadoAppComponent, { data: this.selectionEmp.selected }).afterClosed().subscribe(result => {
       console.log(result);
       if (result) {
@@ -93,6 +129,8 @@ export class ListaAppComponent implements OnInit {
           this.toastr.success(res.message)
           this.ObtenerUsuariosAppMovil();
           this.selectionEmp.clear();
+          this.habilitar = false;
+          this.numero_pagina = 1;
         }, err => {
           console.log(err);
           this.toastr.error(err.error.message)
@@ -100,34 +138,82 @@ export class ListaAppComponent implements OnInit {
       }
 
     })
-
   }
 
-  ManejarPagina(e: PageEvent) {
+  openDialogUpdateAppMovilDeshabilitados() {
+    this.selectionEmp.clear();
+    this.habilitar = false;
+    if (this.selectionEmpDeshab.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
+    this.dialog.open(UpdateEstadoAppComponent, { data: this.selectionEmpDeshab.selected }).afterClosed().subscribe(result => {
+      console.log(result);
+      if (result) {
+        this.usuariosService.updateUsersAppMovil(result).subscribe(res => {
+          console.log(res);
+          this.toastr.success(res.message)
+          this.ObtenerUsuariosAppMovil();
+          this.selectionEmpDeshab.clear();
+          this.deshabilitar = false;
+          this.numero_paginades = 1;
+        }, err => {
+          console.log(err);
+          this.toastr.error(err.error.message)
+        })
+      }
+
+    })
+  }
+
+
+  ManejarPaginaHabilitados(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  ManejarPaginaDeshabilitados(a: PageEvent) {
+    this.tamanio_paginades = a.pageSize;
+    this.numero_paginades = a.pageIndex + 1;
+  }
+
   /** Si el número de elementos seleccionados coincide con el número total de filas. */
-  isAllSelectedEmp() {
+  isAllSelectedEmpHabilitados() {
     const numSelected = this.selectionEmp.selected.length;
-    return numSelected === this.usersAppMovil.length
+    return numSelected === this.usersAppMovil_habilitados.length
+  }
+
+  isAllSelectedEmpDeshabilitados() {
+    const numSelectedDes = this.selectionEmpDeshab.selected.length;
+    return numSelectedDes === this.usersAppMovil_deshabilitados.length
   }
 
   /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
-  masterToggleEmp() {
-    this.isAllSelectedEmp() ?
+  masterToggleEmphabilitado() {
+    this.isAllSelectedEmpHabilitados()?
       this.selectionEmp.clear() :
-      this.usersAppMovil.forEach(row => this.selectionEmp.select(row));
+      this.usersAppMovil_habilitados.forEach(row => this.selectionEmp.select(row));
   }
 
+  masterToggleEmpdeshabilitado() {
+    this.isAllSelectedEmpDeshabilitados()?
+      this.selectionEmpDeshab.clear() :
+      this.usersAppMovil_deshabilitados.forEach(row => this.selectionEmpDeshab.select(row));
+  }
+
+
   /** La etiqueta de la casilla de verificación en la fila pasada*/
-  checkboxLabelEmp(row?: ITableEmpleados): string {
+  checkboxLabelEmphabilitados(row?: ITableEmpleados): string {
     if (!row) {
-      return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelectedEmpHabilitados() ? 'select' : 'deselect'} all`;
     }
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
+
+  checkboxLabelEmpdeshabilitados(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedEmpDeshabilitados() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionEmpDeshab.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
 
   IngresarSoloNumeros(evt) {
     return this.validar.IngresarSoloNumeros(evt)

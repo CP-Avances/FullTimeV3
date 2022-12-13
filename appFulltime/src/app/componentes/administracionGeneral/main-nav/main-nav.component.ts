@@ -434,6 +434,7 @@ export class MainNavComponent implements OnInit {
         subtitulo: false,
         children: [
           { name: 'Dispositivos', url: '/listarRelojes', color: true },
+          { name: 'Timbre Web', url: '/timbre-web', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
           { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
           { name: 'Timbres Múltiples', url: '/timbres-multiples', color: true },
           { name: 'Administrar Timbres', url: '/timbres-admin', color: true },
