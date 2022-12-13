@@ -25,7 +25,7 @@ class LoginControlador {
     // VARIABLE USADO PARA BUSQUEDA DE LICENCIA
     let caducidad_licencia: Date = new Date();
 
-    // OBTENCIÓN DE DIRECCIÓN IP
+    // OBTENCION DE DIRECCION IP
     var requestIp = require('request-ip');
     var clientIp = requestIp.getClientIp(req);
     if (clientIp != null && clientIp != '' && clientIp != undefined) {

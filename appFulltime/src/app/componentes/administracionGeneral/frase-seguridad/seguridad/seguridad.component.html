@@ -17,13 +17,16 @@
                 [attr.aria-pressed]="hide1">
                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                     matTooltip="Ocultar o mostrar la contraseña ingresada.">
-                    {{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    {{hide1 ? 'visibility_off' : 'visibility'}}
+                </mat-icon>
             </button>
         </mat-form-field>
         <br>
         <div style="text-align: center;">
             <button type="submit" class="btn btn_b" (click)="CompararContrasenia(formulario.value)"
-                [disabled]="!formulario.valid">Confirmar Contraseña</button>
+                [disabled]="!formulario.valid">
+                Confirmar Contraseña
+            </button>
         </div>
         <br>
         <div style="text-align: center;">

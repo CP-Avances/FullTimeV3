@@ -83,10 +83,25 @@ class EmpleadoRutas {
         this.router.delete('/eliminar/titulo/:id_empleado_titulo', TokenValidation, EMPLEADO_CONTROLADOR.EliminarTituloEmpleado);
 
 
+        /** ********************************************************************************************* **
+         ** **               CONSULTAS DE GEOLOCALIZACION DEL USUARIO                                  ** ** 
+         ** ********************************************************************************************* **/
+
+        // METODO PARA CONSULTAR COORDENADAS DEL DOMICILIO DEL USUARIO
+        this.router.get('/ubicacion/:id', TokenValidation, EMPLEADO_CONTROLADOR.BuscarCoordenadas);
 
 
 
 
+
+
+
+
+
+
+
+
+        
 
         this.router.post('/buscar/informacion', TokenValidation, EMPLEADO_CONTROLADOR.BuscarEmpleadoNombre);
 
@@ -133,7 +148,7 @@ class EmpleadoRutas {
 
         // METODOS PARA CONTROL DE MARCACIONES DENTRO DE UNA UBICACIÓN GEOGRÁFICA 
         this.router.post('/geolocalizacion-domicilio/:id/:codigo', TokenValidation, EMPLEADO_CONTROLADOR.IngresarGelocalizacion);
-        this.router.get('/ubicacion/:id', TokenValidation, EMPLEADO_CONTROLADOR.BuscarCoordenadas);
+
         this.router.put('/geolocalizacion-trabajo/:id', TokenValidation, EMPLEADO_CONTROLADOR.ActualizarTrabajo);
         this.router.put('/geolocalizacion-nuevo-domicilio/:id', TokenValidation, EMPLEADO_CONTROLADOR.ActualizarDomicilio);
         this.router.put('/actualizar-geolocalizacion/:id', TokenValidation, EMPLEADO_CONTROLADOR.ActualizarGeolocalizacion);

@@ -123,7 +123,7 @@ export class VerCoordenadasComponent implements OnInit {
 
 
     sessionStorage.removeItem('reporte_timbres_multiple');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_timbres_multiple', JSON.stringify(res))
 
       res.forEach(obj => {

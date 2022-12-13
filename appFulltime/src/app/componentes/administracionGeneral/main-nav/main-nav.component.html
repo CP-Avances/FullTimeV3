@@ -54,10 +54,12 @@
             style="width: 100%; background: rgb(255, 255, 255)">
             <div class="tree-titulos d-flex bd-highlight">
               <div class="bd-highlight">
-                <mat-icon mat-list-icon id="icono-menu">{{node.icono}}</mat-icon>
+                <mat-icon mat-list-icon id="icono-subtitulo" *ngIf="node.subtitulo === true">{{node.icono}}</mat-icon>
+                <mat-icon mat-list-icon id="icono-menu" *ngIf="node.subtitulo === false">{{node.icono}}</mat-icon>
               </div>
               <div class="bd-highlight">
-                <h5 class="name-uno">{{node.name}}</h5>
+                <h5 class="subtitulo" *ngIf="node.subtitulo === true">{{node.name}}</h5>
+                <h5 class="name-uno" *ngIf="node.subtitulo === false">{{node.name}}</h5>
               </div>
               <div class="ml-auto bd-highlight">
                 <mat-icon class="mat-icon-rtl-mirror" id="icono-despliega">

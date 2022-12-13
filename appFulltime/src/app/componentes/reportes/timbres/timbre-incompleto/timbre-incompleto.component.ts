@@ -91,7 +91,7 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     sessionStorage.removeItem('reporte_timbres_incompleto');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_timbres_incompleto', JSON.stringify(res))
       // DATOS DE SUCURSALES
       this.sucursales = res.map(obj => {

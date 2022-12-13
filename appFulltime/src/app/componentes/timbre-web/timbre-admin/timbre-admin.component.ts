@@ -8,8 +8,8 @@ import { PageEvent } from '@angular/material/paginator';
 // IMPORTACION DE SERVICIOS
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
+import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
 
 @Component({
   selector: 'app-timbre-admin',
@@ -36,7 +36,7 @@ export class TimbreAdminComponent implements OnInit {
   filtroCedula: '';
   filtroCargo: '';
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA DE LISTA DE EMPLEADOS
+  // ITEMS DE PAGINACION DE LA TABLA DE LISTA DE EMPLEADOS
   numero_pagina_e: number = 1;
   tamanio_pagina_e: number = 5;
   pageSizeOptions_e = [5, 10, 20, 50];
@@ -55,9 +55,9 @@ export class TimbreAdminComponent implements OnInit {
   filtroFechaTimbre = '';
 
   constructor(
-    private toastr: ToastrService, // VARIABLE MANEJO DE NOTIFICACIONES
-    private validar: ValidacionesService, // SERVICIO CONTROL DE VALIDACONES
     private restTimbres: TimbresService, // SERVICIO DATOS DE TIMBRES
+    private validar: ValidacionesService, // SERVICIO CONTROL DE VALIDACONES
+    private toastr: ToastrService, // VARIABLE MANEJO DE NOTIFICACIONES
     public restD: DatosGeneralesService, // SERVICIO DATOS GENERALES
     public parametro: ParametrosService,
 
@@ -93,7 +93,7 @@ export class TimbreAdminComponent implements OnInit {
       });
   }
 
-  // EVENTO PARA MANEJAR LA PÁGINACIÓN DE TABLA DE EMPLEADOS
+  // EVENTO PARA MANEJAR LA PAGINACION DE TABLA DE EMPLEADOS
   ManejarPaginaE(e: PageEvent) {
     this.tamanio_pagina_e = e.pageSize;
     this.numero_pagina_e = e.pageIndex + 1;
@@ -104,11 +104,10 @@ export class TimbreAdminComponent implements OnInit {
     this.datosEmpleado = [];
     this.restD.ListarInformacionActual().subscribe(data => {
       this.datosEmpleado = data;
-      console.log('datos_actuales', this.datosEmpleado)
     });
   }
 
-  // EVENTO PARA MANEJAR LA PÁGINACIÓN DE TABLA DE TIMBRES
+  // EVENTO PARA MANEJAR LA PAGINACION DE TABLA DE TIMBRES
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
@@ -138,20 +137,21 @@ export class TimbreAdminComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  // METODO PARA VER UBICACIÓN DE TIMBRE
-  abrirMapa(latitud, longitud) {
-    if (!latitud || !longitud) return this.toastr.warning('Timbre seleccionado no posee registro de coordenadas de ubicación.')
+  // METODO PARA VER UBICACION DE TIMBRE
+  AbrirMapa(latitud: string, longitud: string) {
+    if (!latitud || !longitud) return this.toastr.warning(
+      'Timbre seleccionado no posee registro de coordenadas de ubicación.')
     const rutaMapa = "https://www.google.com/maps/search/+" + latitud + "+" + longitud;
     window.open(rutaMapa);
   }
 
-  // METODO DE VALIDACIÓN DE INGRESO DE SOLO LETRAS
-  IngresarSoloLetras(e) {
+  // METODO DE VALIDACION DE INGRESO DE SOLO LETRAS
+  IngresarSoloLetras(e: any) {
     return this.validar.IngresarSoloLetras(e)
   }
 
-  // METODO DE VALIDACIÓN DE INGRESO DE SOLO NÚMEROS
-  IngresarSoloNumeros(evt) {
+  // METODO DE VALIDACION DE INGRESO DE SOLO NUMEROS
+  IngresarSoloNumeros(evt: any) {
     return this.validar.IngresarSoloNumeros(evt)
   }
 

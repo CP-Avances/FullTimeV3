@@ -22,8 +22,8 @@ class TimbresControlador {
                 const id = req.userIdEmpleado;
                 let timbres = yield database_1.default.query(`
                 SELECT CAST(t.fec_hora_timbre AS VARCHAR), t.accion, t.tecl_funcion, t.observacion, 
-                    t.latitud, t.longitud, t.id_empleado, t.id_reloj, ubicacion, fec_hora_timbre_servidor,
-                    dispositivo_timbre 
+                    t.latitud, t.longitud, t.id_empleado, t.id_reloj, ubicacion, 
+                    CAST(fec_hora_timbre_servidor AS VARCHAR), dispositivo_timbre 
                 FROM empleados AS e, timbres AS t 
                 WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
                 ORDER BY t.fec_hora_timbre DESC LIMIT 100
@@ -35,7 +35,7 @@ class TimbresControlador {
                                 obj.accion = 'Entrada o Salida';
                                 break;
                             case 'AES':
-                                obj.accion = 'Entrada o Salida Almuerzo';
+                                obj.accion = 'Entrada o Salida Alimentación';
                                 break;
                             case 'PES':
                                 obj.accion = 'Entrada o Salida Permiso';
@@ -47,10 +47,10 @@ class TimbresControlador {
                                 obj.accion = 'Entrada o Salida';
                                 break;
                             case 'E/A':
-                                obj.accion = 'Entrada o Salida Almuerzo';
+                                obj.accion = 'Entrada o Salida Alimentación';
                                 break;
                             case 'S/A':
-                                obj.accion = 'Entrada o Salida Almuerzo';
+                                obj.accion = 'Entrada o Salida Alimentación';
                                 break;
                             case 'E/P':
                                 obj.accion = 'Entrada o Salida Permiso';
@@ -117,6 +117,13 @@ class TimbresControlador {
     CrearTimbreWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                // OBTENCION DE DIRECCION IP
+                var ip_cliente = '';
+                var requestIp = require('request-ip');
+                var clientIp = requestIp.getClientIp(req);
+                if (clientIp != null && clientIp != '' && clientIp != undefined) {
+                    ip_cliente = clientIp.split(':')[3];
+                }
                 const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj, ubicacion } = req.body;
                 let f = new Date();
                 const id_empleado = req.userIdEmpleado;
@@ -128,9 +135,10 @@ class TimbresControlador {
                 var codigo = parseInt(code[0].codigo);
                 const [timbre] = yield database_1.default.query(`
                 INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, 
-                    id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion)
-                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id
-                `, [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj, ubicacion])
+                    id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion, dispositivo_timbre)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id
+                `, [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo,
+                    f.toLocaleString(), id_reloj, ubicacion, ip_cliente])
                     .then(result => {
                     return result.rows;
                 }).catch(err => {
@@ -140,6 +148,42 @@ class TimbresControlador {
                     return res.status(200).jsonp({ message: 'Registro guardado.' });
                 }
                 return res.status(400).jsonp({ message: 'Ups!!! algo ha salido mal.' });
+            }
+            catch (error) {
+                res.status(400).jsonp({ message: error });
+            }
+        });
+    }
+    // METODO PARA REGISTRAR TIMBRES ADMINISTRADOR
+    CrearTimbreWebAdmin(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // OBTENCION DE DIRECCION IP
+                var ip_cliente = '';
+                var requestIp = require('request-ip');
+                var clientIp = requestIp.getClientIp(req);
+                if (clientIp != null && clientIp != '' && clientIp != undefined) {
+                    ip_cliente = clientIp.split(':')[3];
+                }
+                const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_empleado, id_reloj } = req.body;
+                let f = new Date();
+                let code = yield database_1.default.query(`
+                SELECT codigo FROM empleados WHERE id = $1
+                `, [id_empleado]).then(result => { return result.rows; });
+                if (code.length === 0)
+                    return { mensaje: 'El usuario no tiene un código asignado.' };
+                var codigo = parseInt(code[0].codigo);
+                yield database_1.default.query(`
+                INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, 
+                    longitud, id_empleado, id_reloj, dispositivo_timbre, fec_hora_timbre_servidor) 
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                `, [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo,
+                    id_reloj, ip_cliente, f.toLocaleString()])
+                    .then(result => {
+                    res.status(200).jsonp({ message: 'Registro guardado.' });
+                }).catch(err => {
+                    res.status(400).jsonp({ message: err });
+                });
             }
             catch (error) {
                 res.status(400).jsonp({ message: error });
@@ -257,27 +301,6 @@ class TimbresControlador {
                 return res.jsonp({ message: 'Todos las notificaciones han sido eliminadas' });
             }
             return res.jsonp({ message: 'No seleccionó ningún timbre' });
-        });
-    }
-    CrearTimbreWebAdmin(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_empleado, id_reloj } = req.body;
-                console.log(req.body);
-                let code = yield database_1.default.query('SELECT codigo FROM empleados WHERE id = $1', [id_empleado]).then(result => { return result.rows; });
-                if (code.length === 0)
-                    return { mensaje: 'El empleado no tiene un codigo asignado.' };
-                var codigo = parseInt(code[0].codigo);
-                yield database_1.default.query('INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_empleado, id_reloj) VALUES($1, $2, $3, $4, $5, $6, $7, $8)', [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, id_reloj])
-                    .then(result => {
-                    res.status(200).jsonp({ message: 'Timbre guardado' });
-                }).catch(err => {
-                    res.status(400).jsonp({ message: err });
-                });
-            }
-            catch (error) {
-                res.status(400).jsonp({ message: error });
-            }
         });
     }
     ObtenerUltimoTimbreEmpleado(req, res) {

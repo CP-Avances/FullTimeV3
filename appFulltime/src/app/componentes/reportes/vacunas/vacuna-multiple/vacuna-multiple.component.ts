@@ -87,7 +87,7 @@ export class VacunaMultipleComponent implements OnInit, OnDestroy {
 
     sessionStorage.removeItem('reporte_vacunas_multiples');
     // BUSQUEDA DE DEPARTAMENTOS
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_vacunas_multiples', JSON.stringify(res))
 
       // BUSQUEDA DE SUCURSALES

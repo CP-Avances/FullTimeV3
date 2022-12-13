@@ -566,7 +566,7 @@ export class ListaEmpleadosComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
                 { text: 'Código', style: 'tableHeader' },
@@ -575,7 +575,6 @@ export class ListaEmpleadosComponent implements OnInit {
                 { text: 'Cedula', style: 'tableHeader' },
                 { text: 'Fecha Nacimiento', style: 'tableHeader' },
                 { text: 'Correo', style: 'tableHeader' },
-                { text: 'Correo Alternativo', style: 'tableHeader' },
                 { text: 'Género', style: 'tableHeader' },
                 { text: 'Estado Civil', style: 'tableHeader' },
                 { text: 'Domicilio', style: 'tableHeader' },
@@ -600,7 +599,6 @@ export class ListaEmpleadosComponent implements OnInit {
                   { text: obj.cedula, style: 'itemsTableD' },
                   { text: obj.fec_nacimiento.split("T")[0], style: 'itemsTableD' },
                   { text: obj.correo, style: 'itemsTableD' },
-                  { text: obj.mail_alternativo, style: 'itemsTableD' },
                   { text: genero, style: 'itemsTableD' },
                   { text: estadoCivil, style: 'itemsTableD' },
                   { text: obj.domicilio, style: 'itemsTableD' },
@@ -651,7 +649,6 @@ export class ListaEmpleadosComponent implements OnInit {
         GENERO: this.GeneroSelect[obj.genero - 1],
         CORREO: obj.correo,
         ESTADO: this.EstadoSelect[obj.estado - 1],
-        CORREO_ALTERNATIVO: obj.mail_alternativo,
         DOMICILIO: obj.domicilio,
         TELEFONO: obj.telefono,
         NACIONALIDAD: nacionalidad,
@@ -704,7 +701,6 @@ export class ListaEmpleadosComponent implements OnInit {
           "correo": obj.correo,
           "fechaNacimiento": obj.fec_nacimiento.split("T")[0],
           "estado": estado,
-          "correoAlternativo": obj.mail_alternativo,
           "domicilio": obj.domicilio,
           "telefono": obj.telefono,
           "nacionalidad": nacionalidad,

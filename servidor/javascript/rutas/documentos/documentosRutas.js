@@ -16,14 +16,23 @@ class DoumentosRutas {
         this.configuracion();
     }
     configuracion() {
-        this.router.get('/lista-carpetas/:nom_carpeta', documentosControlador_1.default.ListarArchivosCarpeta);
-        this.router.get('/download/files/:nom_carpeta/:filename', documentosControlador_1.default.DownLoadFile);
-        this.router.get('/carpetas/', documentosControlador_1.default.Carpetas);
-        this.router.get('/lista-contratos/:nom_carpeta', documentosControlador_1.default.ListarCarpetaContratos);
-        this.router.get('/lista-permisos/:nom_carpeta', documentosControlador_1.default.ListarCarpetaPermisos);
-        this.router.get('/lista-horarios/:nom_carpeta', documentosControlador_1.default.ListarCarpetaHorarios);
-        this.router.get('/documentacion/:nom_carpeta', documentosControlador_1.default.ListarCarpetaDocumentos);
+        // METODO PARA REGISTRAR DOCUMENTOS
         this.router.post('/registrar/:doc_nombre', verificarToken_1.TokenValidation, multipartMiddleware, documentosControlador_1.default.CrearDocumento);
+        // METODO PARA LISTAR CARPETAS
+        this.router.get('/carpetas/', documentosControlador_1.default.Carpetas);
+        // METODO PARA LISTAR ARCHIVOS DE CARPETAS
+        this.router.get('/lista-carpetas/:nom_carpeta', documentosControlador_1.default.ListarArchivosCarpeta);
+        // METODO PARA LISTAR DOCUMENTOS DE DOCUMENTACION
+        this.router.get('/documentacion/:nom_carpeta', documentosControlador_1.default.ListarCarpetaDocumentos);
+        // METODO PARA LISTAR DOCUMENTOS DE CONTRATOS
+        this.router.get('/lista-contratos/:nom_carpeta', documentosControlador_1.default.ListarCarpetaContratos);
+        // METODO PARA LISTAR DOCUMENTOS DE PERMISOS
+        this.router.get('/lista-permisos/:nom_carpeta', documentosControlador_1.default.ListarCarpetaPermisos);
+        // METODO PARA LISTAR DOCUMENTOS DE HORARIOS
+        this.router.get('/lista-horarios/:nom_carpeta', documentosControlador_1.default.ListarCarpetaHorarios);
+        // METODO PARA DESCARGAR ARCHIVOS
+        this.router.get('/download/files/:nom_carpeta/:filename', documentosControlador_1.default.DownLoadFile);
+        // METODO PARA ELIMINAR ARCHIVOS
         this.router.delete('/eliminar/:id/:documento', verificarToken_1.TokenValidation, documentosControlador_1.default.EliminarRegistros);
     }
 }

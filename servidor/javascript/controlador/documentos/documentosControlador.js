@@ -27,17 +27,17 @@ class DocumentosControlador {
         ];
         res.status(200).jsonp(carpetas);
     }
-    ListarArchivosCarpeta(req, res) {
+    // METODO PARA LISTAR DOCUMENTOS 
+    ListarCarpetaDocumentos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
-            res.status(200).jsonp(yield (0, listarArchivos_1.listaCarpetas)(nombre));
+            res.status(200).jsonp(yield (0, listarArchivos_1.ListarDocumentos)(nombre));
         });
     }
     // METODO PARA LISTAR ARCHIVOS DE LA CARPETA CONTRATOS
     ListarCarpetaContratos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
-            console.log('ver contratos.. ', yield (0, listarArchivos_1.ListarContratos)(nombre));
             res.status(200).jsonp(yield (0, listarArchivos_1.ListarContratos)(nombre));
         });
     }
@@ -45,7 +45,6 @@ class DocumentosControlador {
     ListarCarpetaPermisos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
-            console.log('ver permisos.. ', yield (0, listarArchivos_1.ListarPermisos)(nombre));
             res.status(200).jsonp(yield (0, listarArchivos_1.ListarPermisos)(nombre));
         });
     }
@@ -53,8 +52,14 @@ class DocumentosControlador {
     ListarCarpetaHorarios(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let nombre = req.params.nom_carpeta;
-            console.log('ver horarios.. ', yield (0, listarArchivos_1.ListarHorarios)(nombre));
             res.status(200).jsonp(yield (0, listarArchivos_1.ListarHorarios)(nombre));
+        });
+    }
+    // METODO LISTAR ARCHIVOS DE CARPETAS
+    ListarArchivosCarpeta(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let nombre = req.params.nom_carpeta;
+            res.status(200).jsonp(yield (0, listarArchivos_1.listaCarpetas)(nombre));
         });
     }
     // METODO PARA DESCARGAR ARCHIVOS
@@ -66,9 +71,19 @@ class DocumentosControlador {
             res.status(200).sendFile(path);
         });
     }
-    /** **************************************************************************************** **
-     ** **                MANEJO DE DOCUMENTOS BASE DE DATOS Y SERVIDOR                       ** **
-     ** **************************************************************************************** **/
+    // METODO PARA ELIMINAR REGISTROS DE DOCUMENTACION
+    EliminarRegistros(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { id, documento } = req.params;
+            yield database_1.default.query(`
+                DELETE FROM documentacion WHERE id = $1
+                `, [id]);
+            let filePath = `servidor\\documentacion\\${documento}`;
+            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+            fs_1.default.unlinkSync(direccionCompleta);
+            res.jsonp({ message: 'Registro eliminado.' });
+        });
+    }
     // METODO PARA REGISTRAR UN DOCUMENTO
     CrearDocumento(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -79,27 +94,7 @@ class DocumentosControlador {
             yield database_1.default.query(`
             INSERT INTO documentacion (documento, doc_nombre) VALUES ($1, $2)
             `, [documento, doc_nombre]);
-            res.jsonp({ message: 'Documento cargado' });
-        });
-    }
-    // METODO PARA LISTAR DOCUMENTOS 
-    ListarCarpetaDocumentos(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let nombre = req.params.nom_carpeta;
-            res.status(200).jsonp(yield (0, listarArchivos_1.ListarDocumentos)(nombre));
-        });
-    }
-    // METODO PARA ELIMINAR REGISTROS DE DOCUMENTACION
-    EliminarRegistros(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let { id, documento } = req.params;
-            yield database_1.default.query(`
-            DELETE FROM documentacion WHERE id = $1
-            `, [id]);
-            let filePath = `servidor\\documentacion\\${documento}`;
-            let direccionCompleta = __dirname.split("servidor")[0] + filePath;
-            fs_1.default.unlinkSync(direccionCompleta);
-            res.jsonp({ message: 'Registro eliminado.' });
+            res.jsonp({ message: 'Registro guardado.' });
         });
     }
 }

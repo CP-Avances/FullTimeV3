@@ -12,16 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const database_1 = __importDefault(require("../../database"));
 const SubMetodosGraficas_1 = require("../../libs/SubMetodosGraficas");
 const MetodosHorario_1 = require("../../libs/MetodosHorario");
 const moment_1 = __importDefault(require("moment"));
+const database_1 = __importDefault(require("../../database"));
 class ReportesAsistenciaControlador {
     /**
-     * Realiza un array de sucursales con departamentos y empleados dependiendo del estado del empleado si busca empleados activos o inactivos.
+     * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DEL ESTADO DEL EMPLEADO
+     * SI BUSCA EMPLEADOS ACTIVOS O INACTIVOS.
      * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
      */
-    DatosGenerales(req, res) {
+    // METODO PARA BUSCAR DATOS DE USUARIO
+    DatosGeneralesUsuarios(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let estado = req.params.estado;
             // CONSULTA DE BUSQUEDA DE SUCURSALES
@@ -52,32 +54,36 @@ class ReportesAsistenciaControlador {
             let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 obj.departamentos = yield Promise.all(obj.departamentos.map((ele) => __awaiter(this, void 0, void 0, function* () {
                     if (estado === '1') {
-                        ele.empleado = yield database_1.default.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \' , apellido) ' +
-                            'name_empleado, e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail, ' +
-                            'cn.comunicado_noti ' +
-                            'FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e, ' +
-                            'config_noti AS cn ' +
-                            'WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE ' +
-                            'codigo = e.codigo) ' +
-                            'AND ca.id_departamento = $1 ' +
-                            'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
-                            'codigo = e.codigo) ' +
-                            'AND e.id = cn.id_empleado ' +
-                            'AND co.id_regimen = r.id AND e.estado = $2', [ele.id_depa, estado])
+                        ele.empleado = yield database_1.default.query(`
+                        SELECT DISTINCT e.id, CONCAT(nombre, \' \' , apellido)
+                            name_empleado, e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail,
+                            cn.comunicado_noti 
+                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
+                            config_noti AS cn 
+                        WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE
+                            codigo = e.codigo) 
+                            AND ca.id_departamento = $1 
+                            AND co.id = (SELECT MAX(id_contrato) AS contrato_id 
+                                FROM datos_contrato_actual WHERE codigo = e.codigo) 
+                            AND e.id = cn.id_empleado 
+                            AND co.id_regimen = r.id AND e.estado = $2
+                        `, [ele.id_depa, estado])
                             .then(result => { return result.rows; });
                     }
                     else {
-                        ele.empleado = yield database_1.default.query('SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) ' +
-                            'name_empleado, e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail, ' +
-                            'cn.comunicado_noti, ca.fec_final ' +
-                            'FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e, ' +
-                            'config_noti AS cn ' +
-                            'WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE ' +
-                            'codigo = e.codigo) AND ca.id_departamento = $1 ' +
-                            'AND co.id = (SELECT MAX(id_contrato) AS contrato_id FROM datos_contrato_actual WHERE ' +
-                            'codigo = e.codigo) ' +
-                            'AND e.id = cn.id_empleado ' +
-                            'AND co.id_regimen = r.id AND e.estado = $2', [ele.id_depa, estado])
+                        ele.empleado = yield database_1.default.query(`
+                        SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) name_empleado, 
+                            e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail,
+                            cn.comunicado_noti, ca.fec_final 
+                        FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
+                            config_noti AS cn 
+                        WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo 
+                            WHERE codigo = e.codigo) AND ca.id_departamento = $1 
+                            AND co.id = (SELECT MAX(id_contrato) AS contrato_id 
+                                FROM datos_contrato_actual WHERE codigo = e.codigo) 
+                            AND e.id = cn.id_empleado 
+                            AND co.id_regimen = r.id AND e.estado = $2
+                        `, [ele.id_depa, estado])
                             .then(result => { return result.rows; });
                     }
                     return ele;
@@ -85,7 +91,7 @@ class ReportesAsistenciaControlador {
                 return obj;
             })));
             if (lista.length === 0)
-                return res.status(404).jsonp({ message: 'No tiene empleados asignados a los departamentos' });
+                return res.status(404).jsonp({ message: 'No se ha encontrado registros de usuarios.' });
             let respuesta = lista.map(obj => {
                 obj.departamentos = obj.departamentos.filter((ele) => {
                     return ele.empleado.length > 0;
@@ -95,7 +101,8 @@ class ReportesAsistenciaControlador {
                 return obj.departamentos.length > 0;
             });
             if (respuesta.length === 0)
-                return res.status(404).jsonp({ message: 'No tiene departamentos con empleados' });
+                return res.status(404)
+                    .jsonp({ message: 'Usuarios no han configurado recepción de notificaciones.' });
             return res.status(200).jsonp(respuesta);
         });
     }

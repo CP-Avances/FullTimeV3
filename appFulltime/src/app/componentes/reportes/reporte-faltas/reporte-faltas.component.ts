@@ -67,7 +67,7 @@ export class ReporteFaltasComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     sessionStorage.removeItem('reporte_faltas');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       console.log('RESPUESTA:', res);
       
       sessionStorage.setItem('reporte_faltas', JSON.stringify(res))

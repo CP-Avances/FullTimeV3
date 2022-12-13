@@ -73,6 +73,11 @@ class EmpleadoRutas {
         this.router.put('/:id_empleado_titulo/titulo', verificarToken_1.TokenValidation, empleadoControlador_1.default.EditarTituloEmpleado);
         // METODO PARA ELIMINAR TITULO 
         this.router.delete('/eliminar/titulo/:id_empleado_titulo', verificarToken_1.TokenValidation, empleadoControlador_1.default.EliminarTituloEmpleado);
+        /** ********************************************************************************************* **
+         ** **               CONSULTAS DE GEOLOCALIZACION DEL USUARIO                                  ** **
+         ** ********************************************************************************************* **/
+        // METODO PARA CONSULTAR COORDENADAS DEL DOMICILIO DEL USUARIO
+        this.router.get('/ubicacion/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.BuscarCoordenadas);
         this.router.post('/buscar/informacion', verificarToken_1.TokenValidation, empleadoControlador_1.default.BuscarEmpleadoNombre);
         // INFORMACIÓN TÍTULO PROFESIONALES
         this.router.post('/buscarDepartamento', verificarToken_1.TokenValidation, empleadoControlador_1.default.ObtenerDepartamentoEmpleado);
@@ -89,7 +94,6 @@ class EmpleadoRutas {
         // HABILITACIÓN Y DESHABILITACIÓN DE USUARIOS
         // METODOS PARA CONTROL DE MARCACIONES DENTRO DE UNA UBICACIÓN GEOGRÁFICA 
         this.router.post('/geolocalizacion-domicilio/:id/:codigo', verificarToken_1.TokenValidation, empleadoControlador_1.default.IngresarGelocalizacion);
-        this.router.get('/ubicacion/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.BuscarCoordenadas);
         this.router.put('/geolocalizacion-trabajo/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.ActualizarTrabajo);
         this.router.put('/geolocalizacion-nuevo-domicilio/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.ActualizarDomicilio);
         this.router.put('/actualizar-geolocalizacion/:id', verificarToken_1.TokenValidation, empleadoControlador_1.default.ActualizarGeolocalizacion);

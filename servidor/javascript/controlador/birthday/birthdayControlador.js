@@ -16,13 +16,7 @@ exports.BIRTHDAY_CONTROLADOR = void 0;
 const database_1 = __importDefault(require("../../database"));
 const fs_1 = __importDefault(require("fs"));
 class BirthdayControlador {
-    getImagen(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const imagen = req.params.imagen;
-            let filePath = `servidor\\cumpleanios\\${imagen}`;
-            res.sendFile(__dirname.split("servidor")[0] + filePath);
-        });
-    }
+    // METODO PARA CONSULTAR MENSAJE DE CUMPLEAÑOS
     MensajeEmpresa(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empresa } = req.params;
@@ -33,10 +27,11 @@ class BirthdayControlador {
                 return res.jsonp(DAY.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }
+    // METODO PARA REGISTRAR MENSAJE DE CUMPLEAÑOS
     CrearMensajeBirthday(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_empresa, titulo, link, mensaje } = req.body;
@@ -47,9 +42,10 @@ class BirthdayControlador {
             SELECT id FROM message_birthday WHERE id_empresa = $1
             `, [id_empresa]);
             const idMessageGuardado = oneMessage.rows[0].id;
-            res.jsonp([{ message: 'Mensaje de cumpleaños empresarial guardado.', id: idMessageGuardado }]);
+            res.jsonp([{ message: 'Registro guardado.', id: idMessageGuardado }]);
         });
     }
+    // METODO PARA CARGAR MENSAJE DE CUMPLEAÑOS
     CrearImagenEmpleado(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
@@ -68,23 +64,30 @@ class BirthdayControlador {
                             yield database_1.default.query(`
                             UPDATE message_birthday SET img = $2 WHERE id = $1
                             `, [id, imagen]);
-                            res.jsonp({ message: 'Imagen Actualizada' });
+                            res.jsonp({ message: 'Imagen Actualizada.' });
                         }
                         catch (error) {
                             yield database_1.default.query(`
                             UPDATE message_birthday SET img = $2 WHERE id = $1
                             `, [id, imagen]);
-                            res.jsonp({ message: 'Imagen Actualizada' });
+                            res.jsonp({ message: 'Imagen Actualizada.' });
                         }
                     }
                     else {
                         yield database_1.default.query(`
                         UPDATE message_birthday SET img = $2 WHERE id = $1
                         `, [id, imagen]);
-                        res.jsonp({ message: 'Imagen Actualizada' });
+                        res.jsonp({ message: 'Imagen Actualizada.' });
                     }
                 }));
             }
+        });
+    }
+    getImagen(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imagen = req.params.imagen;
+            let filePath = `servidor\\cumpleanios\\${imagen}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
     EditarMensajeBirthday(req, res) {

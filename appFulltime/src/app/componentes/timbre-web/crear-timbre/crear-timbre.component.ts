@@ -1,26 +1,18 @@
 // IMPORTAR LIBRERIAS
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 
 // IMPORTAR SERVICIOS
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-crear-timbre',
   templateUrl: './crear-timbre.component.html',
   styleUrls: ['./crear-timbre.component.css'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'es' },
-  ]
 })
 
 export class CrearTimbreComponent implements OnInit {
@@ -43,14 +35,14 @@ export class CrearTimbreComponent implements OnInit {
   accion: any = [
     { value: 'E', name: 'Entrada' },
     { value: 'S', name: 'Salida' },
-    { value: 'S/A', name: 'Inicio Comida' },
-    { value: 'E/A', name: 'Fin Comida' },
+    { value: 'S/A', name: 'Inicio Alimentación' },
+    { value: 'E/A', name: 'Fin Alimentación' },
     { value: 'S/P', name: 'Inicio Permiso' },
     { value: 'E/P', name: 'Fin Permiso' },
   ]
 
   // AGREGAR CAMPOS DE FORMULARIO A UN GRUPO
-  public TimbreForm = new FormGroup({
+  public formulario = new FormGroup({
     horaForm: this.HoraF,
     fechaForm: this.FechaF,
     accionForm: this.accionF,
@@ -66,22 +58,20 @@ export class CrearTimbreComponent implements OnInit {
 
   constructor(
     public ventana: MatDialogRef<CrearTimbreComponent>, // VARIABLE MANEJO DE VENTANAS
-    @Inject(MAT_DIALOG_DATA) public data: any, // MANEJO DE DATOS ENTRE VENTANAS
-    private restEmpleado: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    private toastr: ToastrService, // VARIABLE MANEJO DE NOTIFICACIONES
     private validar: ValidacionesService, // VARIABLE DE CONTROL DE VALIDACIÓN
     private restTimbres: TimbresService, // SERVICIO DATOS DE TIMBRES
-    private toastr: ToastrService, // VARIABLE MANEJO DE NOTIFICACIONES
+    private restEmpleado: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
+    @Inject(MAT_DIALOG_DATA) public data: any, // MANEJO DE DATOS ENTRE VENTANAS
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
 
   ngOnInit(): void {
-    console.log('data de timbres ... ', this.data, ' length .. ', this.data.length)
     if (this.data.length === undefined) {
       this.nombre = this.data.name_empleado;
     }
     this.VerDatosEmpleado(this.idEmpleadoLogueado);
-    console.log(this.data);
     this.Geolocalizar();
   }
 
@@ -101,92 +91,85 @@ export class CrearTimbreComponent implements OnInit {
         (objPosition) => {
           this.latitud = objPosition.coords.latitude;
           this.longitud = objPosition.coords.longitude;
-          console.log(this.longitud, this.latitud);
         }, (objPositionError) => {
           switch (objPositionError.code) {
             case objPositionError.PERMISSION_DENIED:
-              console.log('No se ha permitido acceder a posición del usuario.');
+              console.log('NO SE HA PERMITIDO ACCEDER A POSICIÓN DEL USUARIO.');
               break;
             case objPositionError.POSITION_UNAVAILABLE:
-              console.log('No se ha podido acceder a información de su posición.');
+              console.log('NO SE HA PODIDO ACCEDER A INFORMACIÓN DE SU POSICIÓN.');
               break;
             case objPositionError.TIMEOUT:
-              console.log('El servicio ha tardado demasiado tiempo en responder.');
+              console.log('EL SERVICIO HA TARDADO DEMASIADO TIEMPO EN RESPONDER.');
               break;
             default:
-              console.log('Error desconocido.');
+              console.log('ERROR DESCONOCIDO.');
           }
         }, this.options);
     }
     else {
-      console.log('Su navegador no soporta API de geolocalización.');
+      console.log('SU NAVEGADOR NO SOPORTA API DE GEOLOCALIZACIÓN.');
     }
   }
 
   // METODO DE INGRESO DE ACCIONES DEL TIMBRE
   TeclaFuncion(opcion: string) {
-    console.log(opcion);
     if (opcion == 'E') {
       return 0;
-    } else if (opcion == 'S') {
+    }
+    else if (opcion == 'S') {
       return 1
-    } else if (opcion == 'S/A') {
+    }
+    else if (opcion == 'S/A') {
       return 2
-    } else if (opcion == 'E/A') {
+    }
+    else if (opcion == 'E/A') {
       return 3
-    } else if (opcion == 'S/P') {
+    }
+    else if (opcion == 'S/P') {
       return 4
-    } else if (opcion == 'E/P') {
+    }
+    else if (opcion == 'E/P') {
       return 5
     }
   }
-
 
   // VARIABLE DE ALMACENAMIENTO DE DATOS
   data_nueva: any = [];
 
   // METODO DE INGRESO DE TIMBRES
   contador: number = 0;
-  insertarTimbre(form1) {
-    console.log(form1.fechaForm.toJSON());
+  InsertarTimbre(form: any) {
+
+    let timbre = {
+      fec_hora_timbre: form.fechaForm.toJSON().split('T')[0] + 'T' + form.horaForm + ':00',
+      tecl_funcion: this.TeclaFuncion(form.accionForm),
+      observacion: 'Timbre creado por Admin. ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido,
+      id_empleado: '',
+      id_reloj: 98,
+      longitud: this.longitud,
+      latitud: this.latitud,
+      accion: form.accionForm,
+    }
+
     if (this.data.length === undefined) {
-      let dataTimbre = {
-        fec_hora_timbre: form1.fechaForm.toJSON().split('T')[0] + 'T' + form1.horaForm + ':00',
-        accion: form1.accionForm,
-        tecl_funcion: this.TeclaFuncion(form1.accionForm),
-        observacion: 'Timbre creado por Admin. ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido,
-        latitud: this.latitud,
-        longitud: this.longitud,
-        id_empleado: this.data.id,
-        id_reloj: 98,
-      }
-      this.ventana.close(dataTimbre)
+      timbre.id_empleado = this.data.id;
+      this.ventana.close(timbre);
     }
     else {
-      console.log('entra')
       this.contador = 0;
       this.data.map(obj => {
-        let dataTimbre = {
-          fec_hora_timbre: form1.fechaForm.toJSON().split('T')[0] + 'T' + form1.horaForm + ':00',
-          accion: form1.accionForm,
-          tecl_funcion: this.TeclaFuncion(form1.accionForm),
-          observacion: 'Timbre creado por Admin. ' + this.empleadoUno[0].nombre + ' ' + this.empleadoUno[0].apellido,
-          latitud: this.latitud,
-          longitud: this.longitud,
-          id_empleado: obj.id,
-          id_reloj: 98,
-        }
+        timbre.id_empleado = obj.id;
         // LIMPIAR VARIABLE Y ALMACENAR DATOS
         this.data_nueva = [];
-        this.data_nueva = dataTimbre;
-        // METODO DE INSERCIÓN DE TIMBRES
-        this.restTimbres.PostTimbreWebAdmin(dataTimbre).subscribe(res => {
+        this.data_nueva = timbre;
+        // METODO DE INSERCIoN DE TIMBRES
+        this.restTimbres.RegistrarTimbreAdmin(timbre).subscribe(res => {
           // METODO PARA AUDITAR TIMBRES
           this.data_nueva.id_empleado = obj.id;
           this.validar.Auditar('app-web', 'timbres', '', this.data_nueva, 'INSERT');
           this.contador = this.contador + 1;
           if (this.contador === this.data.length) {
-            console.log(res, this.contador);
             this.ventana.close();
             this.toastr.success('Operación Exitosa.', 'Se registro un total de ' + this.data.length + ' timbres exitosamente.', {
               timeOut: 6000,

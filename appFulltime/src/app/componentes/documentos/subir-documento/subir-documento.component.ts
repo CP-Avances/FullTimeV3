@@ -17,7 +17,7 @@ export class SubirDocumentoComponent implements OnInit {
   documentoF = new FormControl('', Validators.required);
   archivoForm = new FormControl('');
 
-  public GuardarDocumentoForm = new FormGroup({
+  public formulario = new FormGroup({
     documentoForm: this.documentoF
   });
 
@@ -43,7 +43,7 @@ export class SubirDocumentoComponent implements OnInit {
 
   // LIMPIAR EL NOMBRE DEL ARCHIVO SELECCIONADO
   LimpiarNombreArchivo() {
-    this.GuardarDocumentoForm.patchValue({
+    this.formulario.patchValue({
       documentoForm: '',
     });
   }
@@ -54,16 +54,16 @@ export class SubirDocumentoComponent implements OnInit {
    ** *********************************************************************************** **/
 
   // SELECCIONAR UN ARCHIVO
-  fileChange(element) {
+  fileChange(element: any) {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
       if (this.archivoSubido[0].size <= 2e+6) {
-        this.GuardarDocumentoForm.patchValue({ documentoForm: name });
+        this.formulario.patchValue({ documentoForm: name });
       }
       else {
-        this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
+        this.toastr.info(
+          'El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
           timeOut: 6000,
         });
       };
@@ -77,7 +77,7 @@ export class SubirDocumentoComponent implements OnInit {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.rest.CrearArchivo(formData, form.documentoForm).subscribe(res => {
-      this.toastr.success('Operación Exitosa', 'Documento cargado exitosamente.', {
+      this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
         timeOut: 6000,
       });
       this.archivoForm.reset();

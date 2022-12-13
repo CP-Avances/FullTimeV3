@@ -11,10 +11,20 @@ export class ReportesAsistenciasService {
     private http: HttpClient
   ) { }
 
-  Departamentos() {
+  // METODO PARA MOSTRAR DATOS DE USUARIOS CON CONFIGURACION DE NOTIFICACION
+  DatosGeneralesUsuarios() {
     const estado = 1; // 1 = activo 
     return this.http.get<any>(`${environment.url}/reportes-asistencias/datos_generales/${estado}`);
   }
+
+
+
+
+
+
+
+
+
 
   DepartamentosByEmplDesactivados() {
     const estado = 2; // 2 = desactivo 

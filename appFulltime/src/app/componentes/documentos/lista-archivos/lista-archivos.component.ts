@@ -33,7 +33,6 @@ export class ListaArchivosComponent implements OnInit {
   // METODO PARA MOSTRAR ARCHIVOS DE CARPETAS
   MostrarArchivos() {
     this.route.params.subscribe(obj => {
-      console.log(obj);
       this.Dirname = obj.filename
       this.ObtenerArchivos(obj.filename)
     })
@@ -50,31 +49,26 @@ export class ListaArchivosComponent implements OnInit {
     this.archivos = [];
     if (this.Dirname === 'documentacion') {
       this.rest.ListarDocumentacion(nombre_carpeta).subscribe(res => {
-        console.log(res);
         this.archivos = res
       })
     }
     else if (this.Dirname === 'contratos') {
       this.rest.ListarContratos(nombre_carpeta).subscribe(res => {
-        console.log(res);
         this.archivos = res
       })
     }
     else if (this.Dirname === 'permisos') {
       this.rest.ListarPermisos(nombre_carpeta).subscribe(res => {
-        console.log(res);
         this.archivos = res
       })
     }
     else if (this.Dirname === 'horarios') {
       this.rest.ListarHorarios(nombre_carpeta).subscribe(res => {
-        console.log(res);
         this.archivos = res
       })
     }
     else {
       this.rest.ListarArchivosDeCarpeta(nombre_carpeta).subscribe(res => {
-        console.log(res);
         this.archivos = res
       })
     }
@@ -82,28 +76,24 @@ export class ListaArchivosComponent implements OnInit {
 
   // METODO PARA DESCARGAR ARCHIVOS
   DescargarArchivo(filename: string) {
-    console.log('llego');
     this.rest.DownloadFile(this.Dirname, filename).subscribe(res => {
-      console.log(res);
     })
   }
 
   // METODO PARA ELIMINAR ARCHIVOS
   EliminarArchivo(filename: string, id: number) {
-    console.log('llego');
     this.rest.EliminarRegistro(id, filename).subscribe(res => {
-      console.log(res);
       this.MostrarArchivos();
     })
 
   }
 
+  // METODO PARA REGISTRAR ARCHIVOS
   AbrirVentanaRegistrar(): void {
     this.ventana.open(SubirDocumentoComponent, { width: '400px' })
       .afterClosed().subscribe(item => {
         this.MostrarArchivos();
         this.rest.ListarDocumentacion('documentacion').subscribe(res => {
-          console.log(res);
           this.archivos = res
         })
       });

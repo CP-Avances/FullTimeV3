@@ -413,6 +413,25 @@ class EmpleadoControlador {
   }
 
 
+  /** ******************************************************************************************* **
+   ** **               CONSULTAS DE COORDENADAS DE UBICACION DEL USUARIO                       ** ** 
+   ** ******************************************************************************************* **/
+
+  // METODO PARA BUSCAR DATOS DE COORDENADAS DE DOMICILIO
+  public async BuscarCoordenadas(req: Request, res: Response): Promise<any> {
+    const { id } = req.params;
+    const UBICACION = await pool.query(
+      `
+      SELECT longitud, latitud FROM empleados WHERE id = $1
+      `
+      , [id]);
+    if (UBICACION.rowCount > 0) {
+      return res.jsonp(UBICACION.rows)
+    }
+    else {
+      return res.status(404).jsonp({ text: 'No se ha encontrado registros.' });
+    }
+  }
 
 
 
@@ -576,17 +595,6 @@ class EmpleadoControlador {
     }
   }
 
-  // METODO PARA BUSCAR DATOS DE COORDENADAS
-  public async BuscarCoordenadas(req: Request, res: Response): Promise<any> {
-    const { id } = req.params;
-    const UBICACION = await pool.query('SELECT longitud, latitud FROM empleados WHERE id = $1', [id]);
-    if (UBICACION.rowCount > 0) {
-      return res.jsonp(UBICACION.rows)
-    }
-    else {
-      return res.status(404).jsonp({ text: 'No se ha encontrado registros.' });
-    }
-  }
 
   // METODO PARA ACTUALIZAR DATOS DE UBICACIÓN DEL USUARIO
   public async ActualizarGeolocalizacion(req: Request, res: Response): Promise<any> {
@@ -633,7 +641,7 @@ class EmpleadoControlador {
 
     plantilla.forEach(async (data: any) => {
       // Datos que se leen de la plantilla ingresada
-      const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio,
+      const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, domicilio,
         telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
 
       //Verificar que la cédula no se encuentre registrada
@@ -687,7 +695,7 @@ class EmpleadoControlador {
         contarCodigo = contarCodigo + 1;
       }
 
-      //Verificar que los datos no esten vacios a excepción del dato mail_alternativo
+      //Verificar que los datos no esten vacios
       if (cedula != undefined && estado_civil != undefined && genero != undefined && correo != undefined &&
         fec_nacimiento != undefined && estado != undefined && domicilio != undefined && telefono != undefined &&
         nacionalidad != undefined && usuario != undefined && estado_user != undefined && rol != undefined &&
@@ -732,7 +740,7 @@ class EmpleadoControlador {
     //Leer la plantilla para llenar un array con los datos cedula y usuario para verificar que no sean duplicados
     plantilla.forEach(async (data: any) => {
       // Datos que se leen de la plantilla ingresada
-      const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio,
+      const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, domicilio,
         telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
       let datos_array = {
         cedula: cedula,
@@ -812,7 +820,7 @@ class EmpleadoControlador {
       const contrasena = md5.appendStr(data.contrasena).end();
 
       // Datos que se leen de la plantilla ingresada
-      const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono,
+      const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono,
         nacionalidad, usuario, estado_user, rol, app_habilita } = data;
 
       //Obtener id del estado_civil
@@ -863,10 +871,10 @@ class EmpleadoControlador {
 
       // Registro de nuevo empleado
       await pool.query('INSERT INTO empleados (cedula, apellido, nombre, esta_civil, genero, correo, ' +
-        'fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
-        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', [cedula, apellidoE, nombreE,
+        'fec_nacimiento, estado, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
+        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', [cedula, apellidoE, nombreE,
         id_estado_civil, id_genero, correo, fec_nacimiento, id_estado,
-        mail_alternativo, domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
+        domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
 
       // Obtener el id del empleado ingresado
       const oneEmpley = await pool.query('SELECT id FROM empleados WHERE cedula = $1', [cedula]);
@@ -910,7 +918,7 @@ class EmpleadoControlador {
 
     plantilla.forEach(async (data: any) => {
       // Datos que se leen de la plantilla ingresada
-      const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio,
+      const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, domicilio,
         telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
 
       //Verificar que la cédula no se encuentre registrada
@@ -962,7 +970,7 @@ class EmpleadoControlador {
         contarNacionalidad = contarNacionalidad + 1;
       }
 
-      //Verificar que los datos no esten vacios a excepción del dato mail_alternativo
+      //Verificar que los datos no esten vacios
       if (cedula != undefined && estado_civil != undefined && genero != undefined && correo != undefined &&
         fec_nacimiento != undefined && estado != undefined && domicilio != undefined && telefono != undefined &&
         nacionalidad != undefined && usuario != undefined && estado_user != undefined && rol != undefined &&
@@ -1008,7 +1016,7 @@ class EmpleadoControlador {
     //Leer la plantilla para llenar un array con los datos cedula y usuario para verificar que no sean duplicados
     plantilla.forEach(async (data: any) => {
       // Datos que se leen de la plantilla ingresada
-      const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio,
+      const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, domicilio,
         telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
       let datos_array = {
         cedula: cedula,
@@ -1091,7 +1099,7 @@ class EmpleadoControlador {
       const contrasena = md5.appendStr(data.contrasena).end();
 
       // Datos que se leen de la plantilla ingresada
-      const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio,
+      const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, domicilio,
         telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
 
       //Obtener id del estado_civil
@@ -1139,10 +1147,10 @@ class EmpleadoControlador {
 
       // Registro de nuevo empleado
       await pool.query('INSERT INTO empleados ( cedula, apellido, nombre, esta_civil, genero, correo, ' +
-        'fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
-        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', [cedula, apellidoE, nombreE,
+        'fec_nacimiento, estado, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
+        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', [cedula, apellidoE, nombreE,
         id_estado_civil, id_genero, correo, fec_nacimiento, id_estado,
-        mail_alternativo, domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
+         domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
 
       // Obtener el id del empleado ingresado
       const oneEmpley = await pool.query('SELECT id FROM empleados WHERE cedula = $1', [cedula]);

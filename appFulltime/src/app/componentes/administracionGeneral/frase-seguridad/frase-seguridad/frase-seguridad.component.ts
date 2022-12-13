@@ -18,6 +18,7 @@ export class FraseSeguridadComponent implements OnInit {
   usuario: string;
   ActualFrase = new FormControl('', Validators.maxLength(100));
 
+  // VARIABLES DE FORMULARIO
   public formulario = new FormGroup({
     aFrase: this.ActualFrase
   });
@@ -49,6 +50,7 @@ export class FraseSeguridadComponent implements OnInit {
     this.CerrarRegistro();
   }
 
+  // METODO PARA CERRAR VENTANA
   CerrarRegistro() {
     this.ventana.close(false);
   }

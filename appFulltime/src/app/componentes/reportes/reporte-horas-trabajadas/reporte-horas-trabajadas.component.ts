@@ -64,7 +64,7 @@ export class ReporteHorasTrabajadasComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     sessionStorage.removeItem('reporte_horas_trab');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_horas_trab', JSON.stringify(res))
       this.sucursales = res.map(obj => {
         return {
