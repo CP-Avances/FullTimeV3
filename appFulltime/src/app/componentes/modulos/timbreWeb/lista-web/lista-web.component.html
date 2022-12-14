@@ -28,7 +28,7 @@
                         <th scope="col">Empleado</th>
                         <th scope="col">Cédula</th>
                         <th scope="col">Usuario</th>
-                        <th scope="col">Uso Timbre Web</th>
+                        <th scope="col">Timbre Web</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -111,7 +111,7 @@
                         <th scope="col">Empleado</th>
                         <th scope="col">Cédula</th>
                         <th scope="col">Usuario</th>
-                        <th scope="col">Uso Timbre Web</th>
+                        <th scope="col">Timbre Web</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,7 +144,7 @@
                         <td></td>
                     </tr>
                     <tr
-                        *ngFor="let u of usersAppWeb_deshabilitados | emplCodigo: filtroCodigodes | emplNombre: filtroNombredes | emplCedula: filtroCedulades | paginate:tamanio_paginades:this.numero_paginades">
+                        *ngFor="let u of usersAppWeb_deshabilitados | emplCodigo: filtroCodigodes | emplNombre: filtroNombredes | emplCedula: filtroCedulades | paginate:tamanio_paginades:numero_paginades">
                         <td>
                             <mat-checkbox *ngIf="deshabilitar" (click)="$event.stopPropagation()"
                                 (change)="$event ? selectionEmpDeshab.toggle(u) : null" [checked]="selectionEmpDeshab.isSelected(u)"
