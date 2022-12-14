@@ -74,6 +74,14 @@ export class UsuarioService {
     return this.http.put<any>(`${environment.url}/usuarios/lista-app-movil/`, data);
   }
 
+  getUserTimbreWeb(){
+    return this.http.get<any>(`${environment.url}/usuarios/lista-web`);
+  }
+
+  updateUsersTimbreWeb(data: any) {
+    return this.http.put<any>(`${environment.url}/usuarios/lista-web/`, data);
+  }
+
   BuscarUsersNoEnrolados() {
     return this.http.get(`${environment.url}/usuarios/noEnrolados`);
   }

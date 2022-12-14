@@ -146,6 +146,45 @@ class UsuarioControlador {
             }
         });
     }
+    usersEmpleadosWebHabilita(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const USUARIOS = yield database_1.default.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, u.web_habilita, u.id AS userId ' +
+                    'FROM usuarios AS u, empleados AS e WHERE e.id = u.id_empleado ORDER BY nombre')
+                    .then(result => { return result.rows; });
+                if (USUARIOS.length === 0)
+                    return res.status(404).jsonp({ message: 'No se encuentran registros' });
+                return res.status(200).jsonp(USUARIOS);
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
+    updateUsersEmpleadosWebHabilita(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(req.body);
+                const array = req.body;
+                if (array.length === 0)
+                    return res.status(400).jsonp({ message: 'No llego datos para actualizar' });
+                const nuevo = yield Promise.all(array.map((o) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        const [result] = yield database_1.default.query('UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id', [!o.web_habilita, o.userid])
+                            .then(result => { return result.rows; });
+                        return result;
+                    }
+                    catch (error) {
+                        return { error: error.toString() };
+                    }
+                })));
+                return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo });
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
     getIdByUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { usuario } = req.params;

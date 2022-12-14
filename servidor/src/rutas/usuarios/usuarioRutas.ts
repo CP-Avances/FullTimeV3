@@ -38,6 +38,8 @@ class UsuarioRutas {
         this.router.get('/', TokenValidation, USUARIO_CONTROLADOR.list);
         this.router.get('/lista-app-movil/', TokenValidation, USUARIO_CONTROLADOR.usersEmpleados);
         this.router.put('/lista-app-movil/', TokenValidation, USUARIO_CONTROLADOR.updateUsersEmpleados);
+        this.router.get('/lista-web/', TokenValidation, USUARIO_CONTROLADOR.usersEmpleadosWebHabilita);
+        this.router.put('/lista-web/', TokenValidation, USUARIO_CONTROLADOR.updateUsersEmpleadosWebHabilita);
         this.router.get('/busqueda/:usuario', TokenValidation, USUARIO_CONTROLADOR.getIdByUsuario);
 
         this.router.get('/noEnrolados', TokenValidation, USUARIO_CONTROLADOR.ListarUsuriosNoEnrolados);

@@ -297,6 +297,8 @@ import { EditarSolicitudComidaComponent } from './componentes/modulos/alimentaci
 import { ListarPlanificacionComponent } from './componentes/modulos/alimentacion/listar-planificacion/listar-planificacion.component';
 import { ListaAppComponent } from './componentes/modulos/appMovil/lista-app/lista-app.component';
 import { UpdateEstadoAppComponent } from './componentes/modulos/appMovil/update-estado-app/update-estado-app.component';
+import { ListaWebComponent } from './componentes/modulos/timbreWeb/lista-web/lista-web.component';
+import { UpdateEstadoWebComponent } from './componentes/modulos/timbreWeb/update-estado-web/update-estado-web.component';
 import { PlanificacionComidasComponent } from './componentes/modulos/alimentacion/planificacion-comidas/planificacion-comidas.component';
 import { MainNavComponent } from './componentes/administracionGeneral/main-nav/main-nav.component';
 import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
@@ -543,6 +545,8 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     PlanificacionComidasComponent,
     ListaAppComponent,
     UpdateEstadoAppComponent,
+    ListaWebComponent,
+    UpdateEstadoWebComponent,
     OlvidarFraseComponent,
     TipoVacunaComponent,
     CrearParametroComponent,

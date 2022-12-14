@@ -1,5 +1,170 @@
 <div class="container" style="padding-bottom: 50px; text-align: center; padding-top: 20px;">
 
-    <h3>Esta en timbre web</h3>
+    <!-- Tabla que habilita los Usuarios seleccionados-->
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <mat-icon (click)="HabilitarSeleccion_habilitados()" class="flex-shrink-1 bd-highlight" matSuffix
+            matTooltipPosition="right" matTooltip="Habilitar selección múltiple." id="SelectCheck">
+            library_add_check</mat-icon>
+            <span class="w-100 bd-highlight">
+                LISTA DE USUARIOS HABILITADOS</span>
+            <button class="btn btn-sm btn-primary" style="float: right; margin-right: 10px; font-size: 70%;"
+                (click)="openDialogUpdateAppWeblHabilitados()" >
+               Deshabilitar</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th>
+                            <mat-checkbox *ngIf="habilitar" (change)="$event ? masterToggleEmphabilitado() : null"
+                                [checked]="selectionEmp.hasValue() && isAllSelectedEmpHabilitados()"
+                                [indeterminate]="selectionEmp.hasValue() && !isAllSelectedEmpHabilitados()"
+                                [aria-label]="checkboxLabelEmphabilitados()">
+                            </mat-checkbox>
+                        </th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Empleado</th>
+                        <th scope="col">Cédula</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Timbre Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field class="input-tables codigo">
+                                <input matInput placeholder="" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                                    (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-tables nombre">
+                                <input matInput placeholder="" [(ngModel)]="filtroNombre" [formControl]="nombre"
+                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                                <mat-error *ngIf="nombre.invalid">Indispensable ingresar dos letras
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-tables cedula">
+                                <input matInput placeholder="" [(ngModel)]="filtroCedula" maxlength="10"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
+                                <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr
+                        *ngFor="let u of usersAppWeb_habilitados | emplCodigo: filtroCodigo | emplNombre: filtroNombre | emplCedula: filtroCedula | paginate:tamanio_pagina:numero_pagina">
+                        <td>
+                            <mat-checkbox *ngIf="habilitar" (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionEmp.toggle(u) : null" [checked]="selectionEmp.isSelected(u)"
+                                [aria-label]="checkboxLabelEmphabilitados(u)">
+                            </mat-checkbox>
+                        </td>
+                        <td scope="row">{{u.codigo}}</td>
+                        <td>{{u.nombre}}</td>
+                        <td>{{u.cedula}}</td>
+                        <td>{{u.usuario}}</td>
+                        <td>{{u.web_habilita.toString() | i18nSelect: BooleanAppMap}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator id="pagina" [length]="usersAppWeb_habilitados.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaHabilitados($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+
+    <br><br>
+
+    <!-- Tabla que deshabilita los Usuarios seleccionados-->
+    <div class="mat-elevation-z8" style="background: white;">
+        <div class="d-flex bd-highlight" id="titulo">
+            <mat-icon (click)="HabilitarSeleccion_deshabilitados()" class="flex-shrink-1 bd-highlight" matSuffix
+                matTooltipPosition="right" matTooltip="Habilitar selección múltiple." id="SelectCheck">
+                library_add_check</mat-icon>
+            <span class="w-100 bd-highlight">
+                LISTA DE USUARIOS DESHABILITADOS</span>
+            <button class="btn btn-sm btn-primary" style="float: right; margin-right: 10px; font-size: 70%;"
+                (click)="openDialogUpdateAppWebDeshabilitados()">
+               Habilitar </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr style="text-align: center;">
+                        <th>
+                            <mat-checkbox *ngIf="deshabilitar" (change)="$event ? masterToggleEmpdeshabilitado() : null"
+                                [checked]="selectionEmpDeshab.hasValue() && isAllSelectedEmpDeshabilitados()"
+                                [indeterminate]="selectionEmpDeshab.hasValue() && !isAllSelectedEmpDeshabilitados()"
+                                [aria-label]="checkboxLabelEmpdeshabilitados()">
+                            </mat-checkbox>
+                        </th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Empleado</th>
+                        <th scope="col">Cédula</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Uso Timbre Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <mat-form-field class="input-tables codigo">
+                                <input matInput placeholder="" [(ngModel)]="filtroCodigodes" [formControl]="codigodes"
+                                    (keypress)="IngresarSoloNumeros($event)">
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-tables nombre">
+                                <input matInput placeholder="" [(ngModel)]="filtroNombredes" [formControl]="nombredes"
+                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                                <mat-error *ngIf="nombre.invalid">Indispensable ingresar dos letras
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-form-field class="input-tables cedula">
+                                <input matInput placeholder="" [(ngModel)]="filtroCedulades" maxlength="10"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    [formControl]="cedulades" type="text" (keypress)="IngresarSoloNumeros($event)">
+                                <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
+                                </mat-error>
+                            </mat-form-field>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr
+                        *ngFor="let u of usersAppWeb_deshabilitados | emplCodigo: filtroCodigodes | emplNombre: filtroNombredes | emplCedula: filtroCedulades | paginate:tamanio_paginades:this.numero_paginades">
+                        <td>
+                            <mat-checkbox *ngIf="deshabilitar" (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionEmpDeshab.toggle(u) : null" [checked]="selectionEmpDeshab.isSelected(u)"
+                                [aria-label]="checkboxLabelEmpdeshabilitados(u)">
+                            </mat-checkbox>
+                        </td>
+                        <td scope="row">{{u.codigo}}</td>
+                        <td>{{u.nombre}}</td>
+                        <td>{{u.cedula}}</td>
+                        <td>{{u.usuario}}</td>
+                        <td>{{u.web_habilita.toString() | i18nSelect: BooleanAppMap}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <mat-paginator id="pagina" [length]="usersAppWeb_deshabilitados.length" [pageSize]="tamanio_paginades"
+            [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaDeshabilitados($event)" showFirstLastButtons>
+        </mat-paginator>
+    </div>
+
+
 
 </div>
