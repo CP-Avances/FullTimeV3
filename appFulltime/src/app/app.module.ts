@@ -299,6 +299,8 @@ import { ListaAppComponent } from './componentes/modulos/appMovil/lista-app/list
 import { UpdateEstadoAppComponent } from './componentes/modulos/appMovil/update-estado-app/update-estado-app.component';
 import { ListaWebComponent } from './componentes/modulos/timbreWeb/lista-web/lista-web.component';
 import { UpdateEstadoWebComponent } from './componentes/modulos/timbreWeb/update-estado-web/update-estado-web.component';
+import { RegistroDispositivosComponent } from './componentes/modulos/appMovil/registro-dispositivos/registro-dispositivos.component';
+import { DeleteRegistroDispositivoComponent } from './componentes/modulos/appMovil/delete-registro-dispositivo/delete-registro-dispositivo.component';
 import { PlanificacionComidasComponent } from './componentes/modulos/alimentacion/planificacion-comidas/planificacion-comidas.component';
 import { MainNavComponent } from './componentes/administracionGeneral/main-nav/main-nav.component';
 import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
@@ -544,6 +546,8 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     RecuperarFraseComponent,
     PlanificacionComidasComponent,
     ListaAppComponent,
+    RegistroDispositivosComponent,
+    DeleteRegistroDispositivoComponent,
     UpdateEstadoAppComponent,
     ListaWebComponent,
     UpdateEstadoWebComponent,

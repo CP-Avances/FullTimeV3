@@ -17,7 +17,7 @@
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th>
-                            <mat-checkbox *ngIf="habilitar" (change)="$event ? masterToggleEmphabilitado() : null"
+                            <mat-checkbox *ngIf="habilitar" [hidden] = "ocultar" (change)="$event ? masterToggleEmphabilitado() : null"
                                 [checked]="selectionEmp.hasValue() && isAllSelectedEmpHabilitados()"
                                 [indeterminate]="selectionEmp.hasValue() && !isAllSelectedEmpHabilitados()"
                                 [aria-label]="checkboxLabelEmphabilitados()">
@@ -100,7 +100,7 @@
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th>
-                            <mat-checkbox *ngIf="deshabilitar" (change)="$event ? masterToggleEmpdeshabilitado() : null"
+                            <mat-checkbox *ngIf="deshabilitar" [hidden] = "ocultardes"  (change)="$event ? masterToggleEmpdeshabilitado() : null"
                                 [checked]="selectionEmpDeshab.hasValue() && isAllSelectedEmpDeshabilitados()"
                                 [indeterminate]="selectionEmpDeshab.hasValue() && !isAllSelectedEmpDeshabilitados()"
                                 [aria-label]="checkboxLabelEmpdeshabilitados()">

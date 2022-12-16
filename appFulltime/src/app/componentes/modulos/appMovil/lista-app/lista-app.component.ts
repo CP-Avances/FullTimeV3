@@ -15,6 +15,7 @@ import { MainNavService } from 'src/app/componentes/administracionGeneral/main-n
   templateUrl: './lista-app.component.html',
   styleUrls: ['./lista-app.component.css']
 })
+
 export class ListaAppComponent implements OnInit {
 
   usersAppMovil_habilitados: any = [];
@@ -31,6 +32,12 @@ export class ListaAppComponent implements OnInit {
   filtroCodigodes: number;
   filtroCedulades: '';
   filtroNombredes: '';
+
+  filtronum: boolean;
+  filtrolet: boolean;
+
+  ocultar: boolean = false;
+  ocultardes: boolean = false;
 
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
@@ -81,16 +88,69 @@ export class ListaAppComponent implements OnInit {
   HabilitarSeleccion_habilitados() {
     if(this.habilitar === false){
       this.habilitar = true;
+
+      if(this.filtroNombre != undefined){
+        if(this.filtroNombre.length > 1){
+          this.ocultar = true;
+        }else{
+          this.ocultar = false;
+        }
+      }
+
+      if(this.filtroCodigo != undefined){
+        if(this.filtroCodigo > 0){
+          this.ocultar = true;
+        }else{
+          this.ocultar = false;
+        }
+      }
+
+      if(this.filtroCedula != undefined){
+        if(this.filtroCedula.length > 1){
+          this.ocultar = true;
+        }else{
+          this.ocultar = false;
+        }
+      }
+      
     }else{
       this.habilitar = false;
+      this.ocultar = false;
       this.selectionEmp.clear();
     }
   }
+
   HabilitarSeleccion_deshabilitados() {
     if(this,this.deshabilitar === false){
       this.deshabilitar = true;
+
+      if(this.filtroNombredes != undefined){
+        if(this.filtroNombredes.length > 1){
+          this.ocultardes = true;
+        }else{
+          this.ocultardes = false;
+        }
+      }
+
+      if(this.filtroCodigodes != undefined){
+        if(this.filtroCodigodes > 0){
+          this.ocultardes = true;
+        }else{
+          this.ocultardes = false;
+        }
+      }
+
+      if(this.filtroCedulades != undefined){
+        if(this.filtroCedulades.length > 1){
+          this.ocultardes = true;
+        }else{
+          this.ocultardes = false;
+        }
+      }
+
     }else{
       this.deshabilitar = false;
+      this.ocultardes = false;
       this.selectionEmpDeshab.clear();
     }
   }
@@ -177,12 +237,12 @@ export class ListaAppComponent implements OnInit {
   /** Si el número de elementos seleccionados coincide con el número total de filas. */
   isAllSelectedEmpHabilitados() {
     const numSelected = this.selectionEmp.selected.length;
-    return numSelected === this.usersAppMovil_habilitados.length
+    return numSelected === this.usersAppMovil_habilitados.length;
   }
 
   isAllSelectedEmpDeshabilitados() {
     const numSelectedDes = this.selectionEmpDeshab.selected.length;
-    return numSelectedDes === this.usersAppMovil_deshabilitados.length
+    return numSelectedDes === this.usersAppMovil_deshabilitados.length;
   }
 
   /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
@@ -201,9 +261,11 @@ export class ListaAppComponent implements OnInit {
 
   /** La etiqueta de la casilla de verificación en la fila pasada*/
   checkboxLabelEmphabilitados(row?: ITableEmpleados): string {
+    
     if (!row) {
       return `${this.isAllSelectedEmpHabilitados() ? 'select' : 'deselect'} all`;
     }
+    
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
@@ -211,16 +273,18 @@ export class ListaAppComponent implements OnInit {
     if (!row) {
       return `${this.isAllSelectedEmpDeshabilitados() ? 'select' : 'deselect'} all`;
     }
+    
     return `${this.selectionEmpDeshab.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-
   IngresarSoloNumeros(evt) {
-    return this.validar.IngresarSoloNumeros(evt)
+    this.filtronum = this.validar.IngresarSoloNumeros(evt)
+    return this.filtronum;
   }
 
   IngresarSoloLetras(e) {
-    return this.validar.IngresarSoloLetras(e);
+    this.filtrolet = this.validar.IngresarSoloLetras(e);
+    return this.filtrolet;
   }
 
 

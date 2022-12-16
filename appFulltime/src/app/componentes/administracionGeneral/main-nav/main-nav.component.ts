@@ -412,6 +412,7 @@ export class MainNavComponent implements OnInit {
             subtitulo: true,
             children: [
               { name: 'Reloj Virtual', url: '/app-movil', color: true },
+              { name: 'Registro Dispositivos', url: '/registro-dispositivos', color: true },
             ]
           },
           {

@@ -296,6 +296,49 @@ class UsuarioControlador {
   }
 
 
+
+  //LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
+  public async usersListadispositivosMoviles(req: Request, res: Response) {
+    try {
+      const DISPOSITIVOS = await pool.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.codigo, d.id_dispositivo, d.modelo_dispositivo, e.cedula ' +
+        'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
+        .then(result => { return result.rows });
+
+      if (DISPOSITIVOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros' });
+
+      return res.status(200).jsonp(DISPOSITIVOS)
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
+  public async deleteDispositivoRegistrado(req: Request, res: Response){
+    try {
+      const array = req.params.dispositivo;
+
+      let dispositivos = array.split(',');
+      console.log("id_dispositivos: ",dispositivos);
+
+      if (dispositivos.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
+
+      const nuevo = await Promise.all(dispositivos.map(async (id_dispo: any) => {
+        try {
+          const [result] = await pool.query('DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *', [id_dispo])
+            .then(result => { return result.rows })
+          return result
+        } catch (error) {
+          return { error: error.toString() }
+        }
+      }))
+
+      return res.status(200).jsonp({ message: 'Datos eliminados exitosamente', nuevo })
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
 }
 
 export const USUARIO_CONTROLADOR = new UsuarioControlador();

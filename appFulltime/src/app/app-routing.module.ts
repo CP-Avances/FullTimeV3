@@ -159,6 +159,7 @@ import { EditarEmpresaComponent } from './componentes/catalogos/catEmpresa/edita
 import { AsignarCiudadComponent } from './componentes/catalogos/catFeriados/asignar-ciudad/asignar-ciudad.component';
 import { EditarRelojComponent } from './componentes/catalogos/catRelojes/editar-reloj/editar-reloj.component';
 import { ListaWebComponent } from './componentes/modulos/timbreWeb/lista-web/lista-web.component';
+import { RegistroDispositivosComponent } from './componentes/modulos/appMovil/registro-dispositivos/registro-dispositivos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -386,6 +387,7 @@ const routes: Routes = [
 
   // ACCESO A RUTAS DE APLICACION MOVIL
   { path: 'app-movil', component: ListaAppComponent, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'registro-dispositivos', component: RegistroDispositivosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // ACCESO A RUTAS DE DISPOSITIVOS
   { path: 'listarRelojes', component: ListarRelojesComponent, canActivate: [AuthGuard], data: { roles: 1 } },
