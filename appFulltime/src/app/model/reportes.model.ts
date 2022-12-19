@@ -83,6 +83,15 @@ export interface ITableEmpleados {
     cedula?: string,
 }
 
+export interface ItableDispositivos {
+    id: number,
+    nombre: string,
+    apellido: string,
+    id_empleado: string,
+    id_dispositivo: string,
+    model_dispositivo: string,
+}
+
 export interface IReporteAtrasos {
     id_suc: number,
     name_suc: string,

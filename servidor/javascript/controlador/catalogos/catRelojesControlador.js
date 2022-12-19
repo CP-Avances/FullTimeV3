@@ -146,6 +146,24 @@ class RelojesControlador {
             }
         });
     }
+    // METODO PARA CREAR ARCHIVO XML REGISTRO DISPOSITIVOS
+    FileXMLDispositivos(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            let filename = "IDDispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+            fs_1.default.writeFile(`xmlDownloadIdDispositivos/${filename}`, xml, function (err) {
+            });
+            res.jsonp({ text: 'XML creado', name: filename });
+        });
+    }
+    // METODO PARA DESCARGAR ARCHIVO XML
+    downloadXMLIdDispositivos(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.nameXML;
+            let filePath = `servidor\\xmlDownloadIdDispositivos\\${name}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
+        });
+    }
     CargaPlantillaRelojes(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;

@@ -146,6 +146,45 @@ class UsuarioControlador {
             }
         });
     }
+    usersEmpleadosWebHabilita(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const USUARIOS = yield database_1.default.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, u.web_habilita, u.id AS userId ' +
+                    'FROM usuarios AS u, empleados AS e WHERE e.id = u.id_empleado ORDER BY nombre')
+                    .then(result => { return result.rows; });
+                if (USUARIOS.length === 0)
+                    return res.status(404).jsonp({ message: 'No se encuentran registros' });
+                return res.status(200).jsonp(USUARIOS);
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
+    updateUsersEmpleadosWebHabilita(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(req.body);
+                const array = req.body;
+                if (array.length === 0)
+                    return res.status(400).jsonp({ message: 'No llego datos para actualizar' });
+                const nuevo = yield Promise.all(array.map((o) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        const [result] = yield database_1.default.query('UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id', [!o.web_habilita, o.userid])
+                            .then(result => { return result.rows; });
+                        return result;
+                    }
+                    catch (error) {
+                        return { error: error.toString() };
+                    }
+                })));
+                return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo });
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
     getIdByUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { usuario } = req.params;
@@ -233,6 +272,47 @@ class UsuarioControlador {
             yield database_1.default.query('INSERT INTO logged_user ( modulo, user_name, fecha, hora, acceso, ip_address ) ' +
                 'VALUES ($1, $2, $3, $4, $5, $6)', [modulo, user_name, fecha, hora, acceso, ip_address]);
             return res.jsonp({ message: 'Auditoria Realizada' });
+        });
+    }
+    //LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
+    usersListadispositivosMoviles(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const DISPOSITIVOS = yield database_1.default.query('SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo ' +
+                    'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
+                    .then(result => { return result.rows; });
+                if (DISPOSITIVOS.length === 0)
+                    return res.status(404).jsonp({ message: 'No se encuentran registros' });
+                return res.status(200).jsonp(DISPOSITIVOS);
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
+    deleteDispositivoRegistrado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const array = req.params.dispositivo;
+                let dispositivos = array.split(',');
+                console.log("id_dispositivos: ", dispositivos);
+                if (dispositivos.length === 0)
+                    return res.status(400).jsonp({ message: 'No llego datos para actualizar' });
+                const nuevo = yield Promise.all(dispositivos.map((id_dispo) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        const [result] = yield database_1.default.query('DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *', [id_dispo])
+                            .then(result => { return result.rows; });
+                        return result;
+                    }
+                    catch (error) {
+                        return { error: error.toString() };
+                    }
+                })));
+                return res.status(200).jsonp({ message: 'Datos eliminados exitosamente', nuevo });
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
         });
     }
 }
