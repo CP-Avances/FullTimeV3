@@ -11,20 +11,24 @@ export class BirthdayService {
     private http: HttpClient,
   ) { }
 
-  ObtenerBirthdayEmpresa(id_empresa: number){
+  // METODO PARA VER MENSAJE DE CUMPLEAÑOS
+  VerMensajeCumpleanios(id_empresa: number) {
     return this.http.get(`${environment.url}/birthday/${id_empresa}`);
   }
 
-  CrearBirthday(data: any){ 
+  // METODO PARA REGISTRAR MENSAJE
+  CrearMensajeCumpleanios(data: any) {
     return this.http.post(`${environment.url}/birthday`, data);
   }
 
-  EditarBirthday(id_birthday: number, data: any) {
-    return this.http.put(`${environment.url}/birthday/editar/${id_birthday}`, data)
+  // METODO PARA CARGAR IMAGEN DE CUMPLEAÑOS
+  SubirImagenBirthday(formData: any, id_empresa: number) {
+    return this.http.put(`${environment.url}/birthday/${id_empresa}/uploadImage`, formData)
   }
 
-  SubirImagenBirthday(formData, id_empresa: number) {
-    return this.http.put(`${environment.url}/birthday/${id_empresa}/uploadImage`, formData)
+  // METODO PARA ACTUALIZAR MENSAJE DE CUMPLEAÑOS
+  EditarMensajeCumpleanios(id_birthday: number, data: any) {
+    return this.http.put(`${environment.url}/birthday/editar/${id_birthday}`, data)
   }
 
 }

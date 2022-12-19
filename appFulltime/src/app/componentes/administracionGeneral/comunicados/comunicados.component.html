@@ -6,8 +6,10 @@
         <form [formGroup]="comunicadoForm">
             <div class="container">
                 <div class="nota">
-                    <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
-                        Enviar.</span>
+                    <span>
+                        NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
+                        Enviar.
+                    </span>
                 </div>
                 <div class="d-flex flex-wrap justify-content-between">
                     <mat-form-field id="ver">
@@ -16,8 +18,9 @@
                             required>
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Ingrese una descripción del mensaje.">
-                            help_outline</mat-icon>
-                        <mat-hint align="start"><strong>Puede ingresar hasta 45 caracteres</strong></mat-hint>
+                            help_outline
+                        </mat-icon>
+                        <mat-hint align="start"><strong>Puede ingresar hasta 45 caracteres.</strong></mat-hint>
                         <mat-hint align="end">{{message_a.value.length}} / 45</mat-hint>
                     </mat-form-field>
                     <mat-form-field id="ver">
@@ -27,7 +30,7 @@
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Ingrese el mensaje que desea compartir.">
                             help_outline</mat-icon>
-                        <mat-hint align="start"><strong>Puede ingresar hasta 255 caracteres</strong></mat-hint>
+                        <mat-hint align="start"><strong>Puede ingresar hasta 255 caracteres.</strong></mat-hint>
                         <mat-hint align="end">{{message.value.length}} / 255</mat-hint>
                     </mat-form-field>
                 </div>
@@ -66,7 +69,8 @@
                         <mat-error *ngIf="nombre_suc.invalid">Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right" matTooltip="Búsqueda de sucursales por nombre.">
-                            help_outline</mat-icon>
+                            help_outline
+                        </mat-icon>
                     </mat-form-field>
                 </div>
             </form>
@@ -82,7 +86,8 @@
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de departamentos por nombre.">
-                            help_outline</mat-icon>
+                            help_outline
+                        </mat-icon>
                     </mat-form-field>
                 </div>
             </form>
@@ -96,7 +101,8 @@
                             (keypress)="IngresarSoloNumeros($event)">
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por código.">
-                            help_outline</mat-icon>
+                            help_outline
+                        </mat-icon>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>CI o pasaporte</mat-label>
@@ -108,7 +114,8 @@
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por cédula de identificación o pasaporte.">
-                            help_outline</mat-icon>
+                            help_outline
+                        </mat-icon>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Nombres</mat-label>
@@ -119,7 +126,8 @@
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por nombre.">
-                            help_outline</mat-icon>
+                            help_outline
+                        </mat-icon>
                     </mat-form-field>
                 </div>
             </form>
@@ -211,9 +219,12 @@
             <div *ngIf="_booleanOptions.bool_emp" class="mat-elevation-z8" style="background: white;">
                 <div class="d-flex bd-highlight" id="resultados">
                     <span class="w-100 bd-highlight">
-                        RESULTADO USUARIOS</span>
+                        RESULTADO USUARIOS
+                    </span>
                     <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
-                        (click)="MostrarLista()">Mostrar lista</button>
+                        (click)="MostrarLista()">
+                        Mostrar lista
+                    </button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-sm">

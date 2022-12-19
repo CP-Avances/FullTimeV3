@@ -1,5 +1,5 @@
 // IMPORTAR LIBRERIAS
-import { Validators, FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -19,18 +19,14 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 export class RegistrarTimbreComponent implements OnInit {
 
   // CAMPOS DEL FORMULARIO Y VALIDACIONES
-  accionF = new FormControl('', Validators.required);
   observacionF = new FormControl('');
-  teclaFuncionF = new FormControl('');
 
   // CAMPOS DENTRO DEL FORMULARIO EN UN GRUPO
   public formulario = new FormGroup({
-    teclaFuncionForm: this.teclaFuncionF,
     observacionForm: this.observacionF,
-    accionForm: this.accionF,
   });
 
-  // VARIABLE DE SELECCIÓN DE OPCIÓN
+  // VARIABLE DE SELECCION DE OPCION
   botones_normal: boolean = true;
   boton_abierto: boolean = false;
 
@@ -48,16 +44,16 @@ export class RegistrarTimbreComponent implements OnInit {
   // VARIABLES DE ALMACENAMIENTO DE FECHA Y HORA DEL TIMBRE
   f: Date = new Date();
 
-  // ID EMPLEADO QUE INICIO SESIÓN
+  // ID EMPLEADO QUE INICIO SESION
   id_empl: number;
 
   constructor(
-    private toastr: ToastrService, // VARIABLE DE USO EN NOTIFICACIONES
     public restP: ParametrosService,
     public restE: EmpleadoService,
     public restU: EmpleadoUbicacionService,
     public restF: FuncionesService,
     public ventana: MatDialogRef<RegistrarTimbreComponent>, // VARIABLE DE USO DE VENTANA DE DIÁLOGO
+    private toastr: ToastrService, // VARIABLE DE USO EN NOTIFICACIONES
   ) {
     this.id_empl = parseInt(localStorage.getItem('empleado'));
   }
@@ -135,38 +131,40 @@ export class RegistrarTimbreComponent implements OnInit {
   }
 
   // METODO PARA GUARDAR DATOS DEL TIMBRE SEGUN LA OPCION INGRESADA
+  accionF: string = '';
+  teclaFuncionF: number;
   AlmacenarDatos(opcion: number, form: any) {
     switch (opcion) {
       case 1:
-        this.accionF.setValue('E')
-        this.teclaFuncionF.setValue(0)
+        this.accionF = 'E';
+        this.teclaFuncionF = 0;
         break;
       case 2:
-        this.accionF.setValue('S')
-        this.teclaFuncionF.setValue(1)
+        this.accionF = 'S';
+        this.teclaFuncionF = 1;
         break;
       case 3:
-        this.accionF.setValue('S/A')
-        this.teclaFuncionF.setValue(2)
+        this.accionF = 'S/A';
+        this.teclaFuncionF = 2;
         break;
       case 4:
-        this.accionF.setValue('E/A')
-        this.teclaFuncionF.setValue(3)
+        this.accionF = 'E/A';
+        this.teclaFuncionF = 3;
         break;
       case 5:
-        this.accionF.setValue('S/P')
-        this.teclaFuncionF.setValue(4)
+        this.accionF = 'S/P';
+        this.teclaFuncionF = 4;
         break;
       case 6:
-        this.accionF.setValue('E/P')
-        this.teclaFuncionF.setValue(5)
+        this.accionF = 'E/P';
+        this.teclaFuncionF = 5;
         break;
       case 7:
-        this.accionF.setValue('HA')
-        this.teclaFuncionF.setValue(6)
+        this.accionF = 'HA';
+        this.teclaFuncionF = 6;
         break;
       default:
-        this.accionF.setValue('code 99')
+        this.accionF = 'code 99';
         break;
     }
     this.InsertarTimbre(form);
@@ -194,13 +192,13 @@ export class RegistrarTimbreComponent implements OnInit {
   RegistrarDatosTimbre(form: any, ubicacion: any) {
     let dataTimbre = {
       fec_hora_timbre: this.f.toLocaleString(),
-      tecl_funcion: form.teclaFuncionForm,
+      tecl_funcion: this.teclaFuncionF,
       observacion: form.observacionForm,
       ubicacion: ubicacion,
       longitud: this.longitud,
       id_reloj: 98,
       latitud: this.latitud,
-      accion: form.accionForm,
+      accion: this.accionF,
     }
     this.ventana.close(dataTimbre);
   }

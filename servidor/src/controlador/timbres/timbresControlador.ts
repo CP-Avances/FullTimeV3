@@ -10,8 +10,8 @@ class TimbresControlador {
             let timbres = await pool.query(
                 `
                 SELECT CAST(t.fec_hora_timbre AS VARCHAR), t.accion, t.tecl_funcion, t.observacion, 
-                    t.latitud, t.longitud, t.id_empleado, t.id_reloj, ubicacion, fec_hora_timbre_servidor,
-                    dispositivo_timbre 
+                    t.latitud, t.longitud, t.id_empleado, t.id_reloj, ubicacion, 
+                    CAST(fec_hora_timbre_servidor AS VARCHAR), dispositivo_timbre 
                 FROM empleados AS e, timbres AS t 
                 WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
                 ORDER BY t.fec_hora_timbre DESC LIMIT 100
@@ -21,12 +21,12 @@ class TimbresControlador {
                         .map(obj => {
                             switch (obj.accion) {
                                 case 'EoS': obj.accion = 'Entrada o Salida'; break;
-                                case 'AES': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                                case 'AES': obj.accion = 'Entrada o Salida Alimentación'; break;
                                 case 'PES': obj.accion = 'Entrada o Salida Permiso'; break;
                                 case 'E': obj.accion = 'Entrada o Salida'; break;
                                 case 'S': obj.accion = 'Entrada o Salida'; break;
-                                case 'E/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
-                                case 'S/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                                case 'E/A': obj.accion = 'Entrada o Salida Alimentación'; break;
+                                case 'S/A': obj.accion = 'Entrada o Salida Alimentación'; break;
                                 case 'E/P': obj.accion = 'Entrada o Salida Permiso'; break;
                                 case 'S/P': obj.accion = 'Entrada o Salida Permiso'; break;
                                 case 'HA': obj.accion = 'Horario Abierto'; break;
@@ -97,6 +97,14 @@ class TimbresControlador {
     // METODO DE REGISTRO DE TIMBRES PERSONALES
     public async CrearTimbreWeb(req: Request, res: Response): Promise<any> {
         try {
+            // OBTENCION DE DIRECCION IP
+            var ip_cliente = '';
+            var requestIp = require('request-ip');
+            var clientIp = requestIp.getClientIp(req);
+            if (clientIp != null && clientIp != '' && clientIp != undefined) {
+                ip_cliente = clientIp.split(':')[3];
+            }
+
             const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_reloj,
                 ubicacion } = req.body;
 
@@ -116,10 +124,11 @@ class TimbresControlador {
             const [timbre] = await pool.query(
                 `
                 INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, 
-                    id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion)
-                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id
+                    id_empleado, fec_hora_timbre_servidor, id_reloj, ubicacion, dispositivo_timbre)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id
                 `
-                , [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, f, id_reloj, ubicacion])
+                , [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo,
+                    f.toLocaleString(), id_reloj, ubicacion, ip_cliente])
                 .then(result => {
                     return result.rows
                 }).catch(err => {
@@ -136,6 +145,65 @@ class TimbresControlador {
             res.status(400).jsonp({ message: error });
         }
     }
+
+    // METODO PARA REGISTRAR TIMBRES ADMINISTRADOR
+    public async CrearTimbreWebAdmin(req: Request, res: Response): Promise<any> {
+        try {
+
+            // OBTENCION DE DIRECCION IP
+            var ip_cliente = '';
+            var requestIp = require('request-ip');
+            var clientIp = requestIp.getClientIp(req);
+            if (clientIp != null && clientIp != '' && clientIp != undefined) {
+                ip_cliente = clientIp.split(':')[3];
+            }
+
+            const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud,
+                id_empleado, id_reloj } = req.body
+
+            let f = new Date();
+
+            let code = await pool.query(
+                `
+                SELECT codigo FROM empleados WHERE id = $1
+                `
+                , [id_empleado]).then(result => { return result.rows });
+
+            if (code.length === 0) return { mensaje: 'El usuario no tiene un código asignado.' };
+
+            var codigo = parseInt(code[0].codigo);
+
+            await pool.query(
+                `
+                INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, 
+                    longitud, id_empleado, id_reloj, dispositivo_timbre, fec_hora_timbre_servidor) 
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                `
+                , [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo,
+                    id_reloj, ip_cliente, f.toLocaleString()])
+                .then(result => {
+                    res.status(200).jsonp({ message: 'Registro guardado.' });
+                }).catch(err => {
+                    res.status(400).jsonp({ message: err });
+                })
+        } catch (error) {
+            res.status(400).jsonp({ message: error });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -280,25 +348,7 @@ class TimbresControlador {
 
 
 
-    public async CrearTimbreWebAdmin(req: Request, res: Response): Promise<any> {
-        try {
-            const { fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_empleado, id_reloj } = req.body
-            console.log(req.body);
 
-            let code = await pool.query('SELECT codigo FROM empleados WHERE id = $1', [id_empleado]).then(result => { return result.rows });
-            if (code.length === 0) return { mensaje: 'El empleado no tiene un codigo asignado.' };
-            var codigo = parseInt(code[0].codigo);
-
-            await pool.query('INSERT INTO timbres (fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, id_empleado, id_reloj) VALUES($1, $2, $3, $4, $5, $6, $7, $8)', [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo, id_reloj])
-                .then(result => {
-                    res.status(200).jsonp({ message: 'Timbre guardado' });
-                }).catch(err => {
-                    res.status(400).jsonp({ message: err });
-                })
-        } catch (error) {
-            res.status(400).jsonp({ message: error });
-        }
-    }
 
     public async ObtenerUltimoTimbreEmpleado(req: Request, res: Response): Promise<any> {
         try {

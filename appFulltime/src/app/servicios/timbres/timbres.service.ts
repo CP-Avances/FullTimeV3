@@ -22,7 +22,10 @@ export class TimbresService {
     return this.http.post<any>(`${environment.url}/timbres/`, datos);
   }
 
-
+  // METODO PARA REGISTRAR TIMBRES ADMINISTRADOR
+  RegistrarTimbreAdmin(datos: any) {
+    return this.http.post<any>(`${environment.url}/timbres/admin/`, datos);
+  }
 
 
 
@@ -60,9 +63,7 @@ export class TimbresService {
 
 
 
-  PostTimbreWebAdmin(datos: any) {
-    return this.http.post<any>(`${environment.url}/timbres/admin/`, datos);
-  }
+
 
 
   ObtenerTimbresEmpleado(id: number) {

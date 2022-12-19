@@ -13,15 +13,15 @@ import { BirthdayService } from 'src/app/servicios/birthday/birthday.service';
 
 export class RegistrarBirthdayComponent implements OnInit {
 
-  imagenF = new FormControl('');
   archivoForm = new FormControl('');
   mensajeF = new FormControl('', [Validators.required]);
+  imagenF = new FormControl('');
   tituloF = new FormControl('', [Validators.required]);
   linkF = new FormControl('');
 
   public formulario = new FormGroup({
-    imagenForm: this.imagenF,
     mensajeForm: this.mensajeF,
+    imagenForm: this.imagenF,
     tituloForm: this.tituloF,
     linkForm: this.linkF,
   })
@@ -35,18 +35,17 @@ export class RegistrarBirthdayComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
   }
 
   // GUARDAR DATOS DE MENSAJE
-  InsertarMensajeBirthday(form) {
+  InsertarMensajeBirthday(form: any) {
     let dataMensaje = {
       id_empresa: this.id_empresa,
+      mensaje: form.mensajeForm,
       titulo: form.tituloForm,
       link: form.linkForm,
-      mensaje: form.mensajeForm
     }
-    this.restB.CrearBirthday(dataMensaje).subscribe(res => {
+    this.restB.CrearMensajeCumpleanios(dataMensaje).subscribe(res => {
       this.ventana.close(true);
       this.SubirRespaldo(res[0].id)
     })
@@ -72,15 +71,12 @@ export class RegistrarBirthdayComponent implements OnInit {
   nameFile: string;
   archivoSubido: Array<File>;
 
-  fileChange(element) {
+  fileChange(element: any) {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
       let arrayItems = name.split(".");
       let itemExtencion = arrayItems[arrayItems.length - 1];
-      let itemName = arrayItems[0].slice(0, 16);
-      console.log(itemName.toLowerCase());
       if (this.archivoSubido[0].size <= 2e+6) {
         if (itemExtencion == 'png' || itemExtencion == 'jpg' ||
           itemExtencion == 'jpeg' || itemExtencion == 'gif') {
@@ -105,7 +101,6 @@ export class RegistrarBirthdayComponent implements OnInit {
   // GUARDAR DATOS DE IMAGEN
   SubirRespaldo(id: number) {
     let formData = new FormData();
-    console.log("tamaño", this.archivoSubido[0].size);
     for (var i = 0; i < this.archivoSubido.length; i++) {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
@@ -117,6 +112,7 @@ export class RegistrarBirthdayComponent implements OnInit {
     });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   ResetearDatos() {
     this.archivoForm.reset();
     this.nameFile = '';

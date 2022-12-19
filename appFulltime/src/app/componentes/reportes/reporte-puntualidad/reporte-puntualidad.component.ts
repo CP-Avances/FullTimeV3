@@ -68,7 +68,7 @@ export class ReportePuntualidadComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     sessionStorage.removeItem('reporte_puntualidad');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_puntualidad', JSON.stringify(res))
       this.sucursales = res.map(obj => {
         return {

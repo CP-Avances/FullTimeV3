@@ -95,7 +95,7 @@ export class TimbreVirtualComponent implements OnInit, OnDestroy {
       this.servidor = true;
     }
     sessionStorage.removeItem('reporte_timbres_multiple');
-    this.R_asistencias.Departamentos().subscribe((res: any[]) => {
+    this.R_asistencias.DatosGeneralesUsuarios().subscribe((res: any[]) => {
       sessionStorage.setItem('reporte_timbres_multiple', JSON.stringify(res))
       this.sucursales = res.map(obj => {
         return {

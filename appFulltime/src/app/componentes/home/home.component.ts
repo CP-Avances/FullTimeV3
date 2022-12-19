@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit {
   get geolocalizacion(): boolean { return this.funciones.geolocalizacion; }
   get alimentacion(): boolean { return this.funciones.alimentacion; }
   get horasExtras(): boolean { return this.funciones.horasExtras; }
+  get teletrabajo(): boolean { return this.funciones.timbre_web; }
   get vacaciones(): boolean { return this.funciones.vacaciones; }
   get permisos(): boolean { return this.funciones.permisos; }
   get accion(): boolean { return this.funciones.accionesPersonal; }
@@ -106,13 +107,13 @@ export class HomeComponent implements OnInit {
   // METODO PARA PRESENTAR GRAFICAS
   ModeloGraficas() {
     this.GraficaUno()
-    this.GraficaDos();
     this.GraficaTres();
-    this.GraficaCuatro();
-    this.GraficaCinco();
     this.GraficaSeis();
-    this.GraficaSiete();
     this.GraficaOcho();
+    this.GraficaCinco();
+    this.GraficaDos();
+    this.GraficaSiete();
+    this.GraficaCuatro();
   }
 
   // METODO GRAFICA ASISTENCIA
@@ -134,18 +135,20 @@ export class HomeComponent implements OnInit {
 
   // METODO GRAFICA HORAS EXTRAS
   GraficaDos() {
-    let local = sessionStorage.getItem('HoraExtra');
-    var chartDom = document.getElementById('charts_hora_extra') as HTMLCanvasElement;
-    var thisChart = echarts_hora.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
+    if (this.horasExtras === true) {
+      let local = sessionStorage.getItem('HoraExtra');
+      var chartDom = document.getElementById('charts_hora_extra') as HTMLCanvasElement;
+      var thisChart = echarts_hora.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
-    if (local === null) {
-      this.restGraficas.MetricaHoraExtraMicro().subscribe(res => {
-        sessionStorage.setItem('HoraExtra', JSON.stringify(res))
-        thisChart.setOption(res.datos_grafica);
-      });
-    } else {
-      var data_JSON = JSON.parse(local);
-      thisChart.setOption(data_JSON.datos_grafica);
+      if (local === null) {
+        this.restGraficas.MetricaHoraExtraMicro().subscribe(res => {
+          sessionStorage.setItem('HoraExtra', JSON.stringify(res))
+          thisChart.setOption(res.datos_grafica);
+        });
+      } else {
+        var data_JSON = JSON.parse(local);
+        thisChart.setOption(data_JSON.datos_grafica);
+      }
     }
   }
 
@@ -168,18 +171,20 @@ export class HomeComponent implements OnInit {
 
   // METODO GRAFICA JORNADA EXTRA
   GraficaCuatro() {
-    let local = sessionStorage.getItem('JornadaHoraExtra');
-    var chartDom = document.getElementById('charts_jornada_hora_extra') as HTMLCanvasElement;
-    var thisChart = echarts_jorn.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
+    if (this.horasExtras === true) {
+      let local = sessionStorage.getItem('JornadaHoraExtra');
+      var chartDom = document.getElementById('charts_jornada_hora_extra') as HTMLCanvasElement;
+      var thisChart = echarts_jorn.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
-    if (local === null) {
-      this.restGraficas.MetricaJornadaHoraExtraMicro().subscribe(res => {
-        sessionStorage.setItem('JornadaHoraExtra', JSON.stringify(res))
-        thisChart.setOption(res.datos_grafica);
-      });
-    } else {
-      var data_JSON = JSON.parse(local);
-      thisChart.setOption(data_JSON.datos_grafica);
+      if (local === null) {
+        this.restGraficas.MetricaJornadaHoraExtraMicro().subscribe(res => {
+          sessionStorage.setItem('JornadaHoraExtra', JSON.stringify(res))
+          thisChart.setOption(res.datos_grafica);
+        });
+      } else {
+        var data_JSON = JSON.parse(local);
+        thisChart.setOption(data_JSON.datos_grafica);
+      }
     }
   }
 
@@ -219,18 +224,20 @@ export class HomeComponent implements OnInit {
 
   // METODO GRAFICA TIEMPO JORNADA
   GraficaSiete() {
-    let local = sessionStorage.getItem('tiempo_jornada');
-    var chartDom = document.getElementById('charts_tiempo_jornada') as HTMLCanvasElement;
-    var thisChart = echarts_tiem.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
+    if (this.horasExtras === true) {
+      let local = sessionStorage.getItem('tiempo_jornada');
+      var chartDom = document.getElementById('charts_tiempo_jornada') as HTMLCanvasElement;
+      var thisChart = echarts_tiem.init(chartDom, 'light', { width: 350, renderer: 'svg', devicePixelRatio: 5 });
 
-    if (local === null) {
-      this.restGraficas.MetricaTiempoJornadaHoraExtraMicro().subscribe(res => {
-        sessionStorage.setItem('tiempo_jornada', JSON.stringify(res))
-        thisChart.setOption(res.datos_grafica);
-      });
-    } else {
-      var data_JSON = JSON.parse(local);
-      thisChart.setOption(data_JSON.datos_grafica);
+      if (local === null) {
+        this.restGraficas.MetricaTiempoJornadaHoraExtraMicro().subscribe(res => {
+          sessionStorage.setItem('tiempo_jornada', JSON.stringify(res))
+          thisChart.setOption(res.datos_grafica);
+        });
+      } else {
+        var data_JSON = JSON.parse(local);
+        thisChart.setOption(data_JSON.datos_grafica);
+      }
     }
   }
 
@@ -268,7 +275,7 @@ export class HomeComponent implements OnInit {
   MenuRapido(num: number) {
     switch (num) {
       case 1: // REPORTES
-        this.router.navigate(['/listaReportes'], { relativeTo: this.route, skipLocationChange: false });
+        this.router.navigate(['/timbres-personal'], { relativeTo: this.route, skipLocationChange: false });
         break;
       case 2: // HORAS EXTRAS
         this.router.navigate(['/horas-extras-solicitadas'], { relativeTo: this.route, skipLocationChange: false });

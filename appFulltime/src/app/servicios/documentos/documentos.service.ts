@@ -50,7 +50,7 @@ export class DocumentosService {
    ** **                        MANEJO DE ARCHIVOS DOCUMENTACION                                 ** **        
    ** ********************************************************************************************* **/
 
-  // RECGISTRAR DOCUMENTO
+  // REGISTRAR DOCUMENTO
   CrearArchivo(data: any, doc_nombre: string) {
     return this.http.post(`${environment.url}/archivosCargados/registrar/${doc_nombre}`, data);
   }

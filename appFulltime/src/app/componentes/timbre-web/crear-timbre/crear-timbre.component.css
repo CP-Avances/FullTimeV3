@@ -1,6 +1,13 @@
-.btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+    margin: 5px 10px 5px 10px;
+}
 
-mat-form-field {width: 100%; padding: 10px 10px 0px 10px;}
+mat-form-field {
+    width: 100%;
+    padding: 10px 10px 0px 10px;
+}
 
 .scrollbar {
     float: left;
@@ -14,5 +21,5 @@ mat-form-field {width: 100%; padding: 10px 10px 0px 10px;}
 
 .scrollbar-primary::-webkit-scrollbar {
     width: 12px;
-    background-color: #F5F5F5; 
+    background-color: #F5F5F5;
 }

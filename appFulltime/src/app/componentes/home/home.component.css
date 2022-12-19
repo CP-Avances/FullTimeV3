@@ -14,7 +14,7 @@
 }
 
 .btn-lg {
-    width: 170px;
+    width: 180px;
     height: 70px;
     margin: 7px 7px 7px 7px;
     color: white;
@@ -130,7 +130,7 @@
 @media only screen and (max-width: 800px) {
 
     .btn-lg {
-        width: 160px;
+        width: 180px;
         height: 80px;
         margin: 2px 2px 2px 2px;
         font-size: 15px;

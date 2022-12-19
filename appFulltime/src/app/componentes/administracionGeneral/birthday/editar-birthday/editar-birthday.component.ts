@@ -36,7 +36,6 @@ export class EditarBirthdayComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.data);
     this.ImprimirDatos();
   }
 
@@ -60,8 +59,8 @@ export class EditarBirthdayComponent implements OnInit {
       this.VerificarArchivo(dataMensaje);
     }
     else {
-      this.restB.EditarBirthday(this.data.id, dataMensaje).subscribe(res => {
-        this.toastr.success('Operación exitosa', 'Mensaje Actualizados', {
+      this.restB.EditarMensajeCumpleanios(this.data.id, dataMensaje).subscribe(res => {
+        this.toastr.success('Operación exitosa.', 'Registro actualizado.', {
           timeOut: 6000,
         });
         this.ventana.close(true);
@@ -93,17 +92,15 @@ export class EditarBirthdayComponent implements OnInit {
     this.archivoSubido = element.target.files;
     if (this.archivoSubido.length != 0) {
       const name = this.archivoSubido[0].name;
-      console.log(this.archivoSubido[0].name);
       let arrayItems = name.split(".");
       let itemExtencion = arrayItems[arrayItems.length - 1];
-      let itemName = arrayItems[0].slice(0, 16);
-      console.log(itemName.toLowerCase());
       if (itemExtencion == 'png' || itemExtencion == 'jpg' ||
         itemExtencion == 'jpeg' || itemExtencion == 'gif') {
         this.formulario.patchValue({ imagenForm: name });
       }
       else {
-        this.toastr.warning('Formatos aceptados .png, .jpg, .gif y .jpeg.', 'Error formato del archivo.', {
+        this.toastr.warning(
+          'Formatos aceptados .png, .jpg, .gif y .jpeg.', 'Error formato del archivo.', {
           timeOut: 6000,
         });
         this.archivoForm.reset();
@@ -119,7 +116,7 @@ export class EditarBirthdayComponent implements OnInit {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
     this.restB.SubirImagenBirthday(formData, id).subscribe(res => {
-      this.toastr.success('Operación Exitosa.', 'Imagen subida con éxito.', {
+      this.toastr.success('Operación Exitosa..', 'Imagen subida con éxito.', {
         timeOut: 6000,
       });
       this.archivoForm.reset();
@@ -127,11 +124,11 @@ export class EditarBirthdayComponent implements OnInit {
     });
   }
 
+  // METODO PARA VERIFICAR TAMAÑO DEL ARCHIVO
   VerificarArchivo(data: any) {
     if (this.archivoSubido[0].size <= 2e+6) {
-      this.restB.EditarBirthday(this.data.id, data).subscribe(res => {
-        console.log(res);
-        this.toastr.success('Operación exitosa', 'Mensaje Actualizados', {
+      this.restB.EditarMensajeCumpleanios(this.data.id, data).subscribe(res => {
+        this.toastr.success('Operación exitosa.', 'Registro actualizado.', {
           timeOut: 6000,
         });
         this.SubirImagen(this.data.id);
@@ -139,7 +136,8 @@ export class EditarBirthdayComponent implements OnInit {
       })
     }
     else {
-      this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
+      this.toastr.info(
+        'El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
         timeOut: 6000,
       });
     }

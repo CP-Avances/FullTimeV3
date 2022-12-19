@@ -370,6 +370,24 @@ class EmpleadoControlador {
             res.jsonp({ message: 'Registro eliminado.' });
         });
     }
+    /** ******************************************************************************************* **
+     ** **               CONSULTAS DE COORDENADAS DE UBICACION DEL USUARIO                       ** **
+     ** ******************************************************************************************* **/
+    // METODO PARA BUSCAR DATOS DE COORDENADAS DE DOMICILIO
+    BuscarCoordenadas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const UBICACION = yield database_1.default.query(`
+      SELECT longitud, latitud FROM empleados WHERE id = $1
+      `, [id]);
+            if (UBICACION.rowCount > 0) {
+                return res.jsonp(UBICACION.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se ha encontrado registros.' });
+            }
+        });
+    }
     // BUSQUEDA DE DATOS DE EMPLEADO INGRESANDO EL NOMBRE
     BuscarEmpleadoNombre(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -461,19 +479,6 @@ class EmpleadoControlador {
             }
         });
     }
-    // METODO PARA BUSCAR DATOS DE COORDENADAS
-    BuscarCoordenadas(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const UBICACION = yield database_1.default.query('SELECT longitud, latitud FROM empleados WHERE id = $1', [id]);
-            if (UBICACION.rowCount > 0) {
-                return res.jsonp(UBICACION.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se ha encontrado registros.' });
-            }
-        });
-    }
     // METODO PARA ACTUALIZAR DATOS DE UBICACIÓN DEL USUARIO
     ActualizarGeolocalizacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -518,7 +523,7 @@ class EmpleadoControlador {
             var codigo = parseInt(VALOR.rows[0].valor);
             plantilla.forEach((data) => __awaiter(this, void 0, void 0, function* () {
                 // Datos que se leen de la plantilla ingresada
-                const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
+                const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
                 //Verificar que la cédula no se encuentre registrada
                 const VERIFICAR_CEDULA = yield database_1.default.query('SELECT * FROM empleados WHERE cedula = $1', [cedula]);
                 if (VERIFICAR_CEDULA.rowCount === 0) {
@@ -560,7 +565,7 @@ class EmpleadoControlador {
                 if (VERIFICAR_CODIGO.rowCount === 0) {
                     contarCodigo = contarCodigo + 1;
                 }
-                //Verificar que los datos no esten vacios a excepción del dato mail_alternativo
+                //Verificar que los datos no esten vacios
                 if (cedula != undefined && estado_civil != undefined && genero != undefined && correo != undefined &&
                     fec_nacimiento != undefined && estado != undefined && domicilio != undefined && telefono != undefined &&
                     nacionalidad != undefined && usuario != undefined && estado_user != undefined && rol != undefined &&
@@ -606,7 +611,7 @@ class EmpleadoControlador {
             //Leer la plantilla para llenar un array con los datos cedula y usuario para verificar que no sean duplicados
             plantilla.forEach((data) => __awaiter(this, void 0, void 0, function* () {
                 // Datos que se leen de la plantilla ingresada
-                const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
+                const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
                 let datos_array = {
                     cedula: cedula,
                     usuario: usuario,
@@ -679,7 +684,7 @@ class EmpleadoControlador {
                 const md5 = new ts_md5_1.Md5();
                 const contrasena = md5.appendStr(data.contrasena).end();
                 // Datos que se leen de la plantilla ingresada
-                const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
+                const { cedula, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
                 //Obtener id del estado_civil
                 var id_estado_civil = 0;
                 if (estado_civil.toUpperCase() === 'SOLTERA/A') {
@@ -721,10 +726,10 @@ class EmpleadoControlador {
                 codigo = codigo + 1;
                 // Registro de nuevo empleado
                 yield database_1.default.query('INSERT INTO empleados (cedula, apellido, nombre, esta_civil, genero, correo, ' +
-                    'fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
-                    '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', [cedula, apellidoE, nombreE,
+                    'fec_nacimiento, estado, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
+                    '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', [cedula, apellidoE, nombreE,
                     id_estado_civil, id_genero, correo, fec_nacimiento, id_estado,
-                    mail_alternativo, domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
+                    domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
                 // Obtener el id del empleado ingresado
                 const oneEmpley = yield database_1.default.query('SELECT id FROM empleados WHERE cedula = $1', [cedula]);
                 const id_empleado = oneEmpley.rows[0].id;
@@ -765,7 +770,7 @@ class EmpleadoControlador {
             var contador = 1;
             plantilla.forEach((data) => __awaiter(this, void 0, void 0, function* () {
                 // Datos que se leen de la plantilla ingresada
-                const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
+                const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
                 //Verificar que la cédula no se encuentre registrada
                 const VERIFICAR_CEDULA = yield database_1.default.query('SELECT * FROM empleados WHERE cedula = $1', [cedula]);
                 if (VERIFICAR_CEDULA.rowCount === 0) {
@@ -805,7 +810,7 @@ class EmpleadoControlador {
                 if (VERIFICAR_NACIONALIDAD.rowCount > 0) {
                     contarNacionalidad = contarNacionalidad + 1;
                 }
-                //Verificar que los datos no esten vacios a excepción del dato mail_alternativo
+                //Verificar que los datos no esten vacios
                 if (cedula != undefined && estado_civil != undefined && genero != undefined && correo != undefined &&
                     fec_nacimiento != undefined && estado != undefined && domicilio != undefined && telefono != undefined &&
                     nacionalidad != undefined && usuario != undefined && estado_user != undefined && rol != undefined &&
@@ -852,7 +857,7 @@ class EmpleadoControlador {
             //Leer la plantilla para llenar un array con los datos cedula y usuario para verificar que no sean duplicados
             plantilla.forEach((data) => __awaiter(this, void 0, void 0, function* () {
                 // Datos que se leen de la plantilla ingresada
-                const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
+                const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
                 let datos_array = {
                     cedula: cedula,
                     usuario: usuario,
@@ -929,7 +934,7 @@ class EmpleadoControlador {
                 const md5 = new ts_md5_1.Md5();
                 const contrasena = md5.appendStr(data.contrasena).end();
                 // Datos que se leen de la plantilla ingresada
-                const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, mail_alternativo, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
+                const { cedula, codigo, estado_civil, genero, correo, fec_nacimiento, estado, domicilio, telefono, nacionalidad, usuario, estado_user, rol, app_habilita } = data;
                 //Obtener id del estado_civil
                 var id_estado_civil = 0;
                 if (estado_civil.toUpperCase() === 'SOLTERA/A') {
@@ -969,10 +974,10 @@ class EmpleadoControlador {
                 const id_rol = yield database_1.default.query('SELECT * FROM cg_roles WHERE UPPER(nombre) = $1', [rol.toUpperCase()]);
                 // Registro de nuevo empleado
                 yield database_1.default.query('INSERT INTO empleados ( cedula, apellido, nombre, esta_civil, genero, correo, ' +
-                    'fec_nacimiento, estado, mail_alternativo, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
-                    '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', [cedula, apellidoE, nombreE,
+                    'fec_nacimiento, estado, domicilio, telefono, id_nacionalidad, codigo) VALUES ' +
+                    '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', [cedula, apellidoE, nombreE,
                     id_estado_civil, id_genero, correo, fec_nacimiento, id_estado,
-                    mail_alternativo, domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
+                    domicilio, telefono, id_nacionalidad.rows[0]['id'], codigo]);
                 // Obtener el id del empleado ingresado
                 const oneEmpley = yield database_1.default.query('SELECT id FROM empleados WHERE cedula = $1', [cedula]);
                 const id_empleado = oneEmpley.rows[0].id;

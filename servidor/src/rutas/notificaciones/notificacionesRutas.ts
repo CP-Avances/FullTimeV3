@@ -30,9 +30,6 @@ class NotificacionTiempoRealRutas {
         this.router.post('/config/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.CrearConfiguracion);
         this.router.put('/config/noti-put/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ActualizarConfigEmpleado);
 
-        // RUTA DE ACCESO A DATOS DE COMUNICADOS
-        this.router.post('/mail-comunicado/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarCorreoComunicado);
-        this.router.post('/noti-comunicado/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarNotificacionGeneral);
 
         // RUTA DE ACCESO A DATOS DE COMUNICADOS APLICACION MÓVIL
         this.router.post('/mail-comunicado-movil/:id_empresa/', NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarCorreoComunicadoMovil);
@@ -43,6 +40,28 @@ class NotificacionTiempoRealRutas {
 
         // RUTA DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
         this.router.get('/one/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerUnaNotificacion);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /** *************************************************************************************** **
+         ** **                    MANEJO DE DATOS DE COMUNICADOS                                 ** ** 
+         ** *************************************************************************************** **/
+
+        // METODO PARA ENVIAR CORREO DE COMUNICADOS
+        this.router.post('/mail-comunicado/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarCorreoComunicado);
+        // METODO DE ENVIO DE NOTIFICACIONES DE COMUNICADOS
+        this.router.post('/noti-comunicado/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarNotificacionGeneral);
 
     }
 }

@@ -15,6 +15,12 @@ class TimbresRutas {
         this.router.get('/', TokenValidation, TIMBRES_CONTROLADOR.ObtenerTimbres);
         // METODO PARA REGISTRAR TIMBRES PERSONALES
         this.router.post('/', TokenValidation, TIMBRES_CONTROLADOR.CrearTimbreWeb);
+        // METODO PARA REGISTRAR TIMBRE ADMINISTRADOR
+        this.router.post('/admin/', TokenValidation, TIMBRES_CONTROLADOR.CrearTimbreWebAdmin);
+
+
+
+
 
 
 
@@ -31,7 +37,7 @@ class TimbresRutas {
         this.router.put('/noti-timbres/vista/:id_noti_timbre', TokenValidation, TIMBRES_CONTROLADOR.ActualizarVista);
         this.router.put('/eliminar-multiples/avisos', TokenValidation, TIMBRES_CONTROLADOR.EliminarMultiplesAvisos);
 
-        this.router.post('/admin/', TokenValidation, TIMBRES_CONTROLADOR.CrearTimbreWebAdmin);
+
 
         this.router.get('/ver/timbres/:id', TokenValidation, TIMBRES_CONTROLADOR.ObtenerTimbresEmpleado);
         this.router.get('/ultimo-timbre', TokenValidation, TIMBRES_CONTROLADOR.ObtenerUltimoTimbreEmpleado);

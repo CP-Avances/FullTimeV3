@@ -14,34 +14,37 @@ class DocumentosControlador {
             { nombre: 'Respaldos Permisos', filename: 'permisos' },
             { nombre: 'Documentacion', filename: 'documentacion' }
         ]
-
         res.status(200).jsonp(carpetas)
     }
 
-    public async ListarArchivosCarpeta(req: Request, res: Response) {
+    // METODO PARA LISTAR DOCUMENTOS 
+    public async ListarCarpetaDocumentos(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
-        res.status(200).jsonp(await listaCarpetas(nombre));
+        res.status(200).jsonp(await ListarDocumentos(nombre));
     }
 
     // METODO PARA LISTAR ARCHIVOS DE LA CARPETA CONTRATOS
     public async ListarCarpetaContratos(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
-        console.log('ver contratos.. ', await ListarContratos(nombre))
         res.status(200).jsonp(await ListarContratos(nombre));
     }
 
     // METODO PARA LISTAR ARCHIVOS DE LA CARPETA PERMISOS
     public async ListarCarpetaPermisos(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
-        console.log('ver permisos.. ', await ListarPermisos(nombre))
         res.status(200).jsonp(await ListarPermisos(nombre));
     }
 
     // METODO PARA LISTAR ARCHIVOS DE LA CARPETA HORARIOS
     public async ListarCarpetaHorarios(req: Request, res: Response) {
         let nombre = req.params.nom_carpeta;
-        console.log('ver horarios.. ', await ListarHorarios(nombre))
         res.status(200).jsonp(await ListarHorarios(nombre));
+    }
+
+    // METODO LISTAR ARCHIVOS DE CARPETAS
+    public async ListarArchivosCarpeta(req: Request, res: Response) {
+        let nombre = req.params.nom_carpeta;
+        res.status(200).jsonp(await listaCarpetas(nombre));
     }
 
     // METODO PARA DESCARGAR ARCHIVOS
@@ -52,9 +55,20 @@ class DocumentosControlador {
         res.status(200).sendFile(path);
     }
 
-    /** **************************************************************************************** **
-     ** **                MANEJO DE DOCUMENTOS BASE DE DATOS Y SERVIDOR                       ** **
-     ** **************************************************************************************** **/
+    // METODO PARA ELIMINAR REGISTROS DE DOCUMENTACION
+    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
+        let { id, documento } = req.params;
+        await pool.query(
+            `
+                DELETE FROM documentacion WHERE id = $1
+                `
+            , [id]);
+        let filePath = `servidor\\documentacion\\${documento}`
+        let direccionCompleta = __dirname.split("servidor")[0] + filePath;
+        fs.unlinkSync(direccionCompleta);
+
+        res.jsonp({ message: 'Registro eliminado.' });
+    }
 
     // METODO PARA REGISTRAR UN DOCUMENTO
     public async CrearDocumento(req: Request, res: Response): Promise<void> {
@@ -65,31 +79,10 @@ class DocumentosControlador {
         await pool.query(
             `
             INSERT INTO documentacion (documento, doc_nombre) VALUES ($1, $2)
-            `, [documento, doc_nombre]);
-        res.jsonp({ message: 'Documento cargado' });
-    }
-
-    // METODO PARA LISTAR DOCUMENTOS 
-    public async ListarCarpetaDocumentos(req: Request, res: Response) {
-        let nombre = req.params.nom_carpeta;
-        res.status(200).jsonp(await ListarDocumentos(nombre));
-    }
-
-    // METODO PARA ELIMINAR REGISTROS DE DOCUMENTACION
-    public async EliminarRegistros(req: Request, res: Response): Promise<void> {
-        let { id, documento } = req.params;
-        await pool.query(
             `
-            DELETE FROM documentacion WHERE id = $1
-            `
-            , [id]);
-        let filePath = `servidor\\documentacion\\${documento}`
-        let direccionCompleta = __dirname.split("servidor")[0] + filePath;
-        fs.unlinkSync(direccionCompleta);
-
-        res.jsonp({ message: 'Registro eliminado.' });
+            , [documento, doc_nombre]);
+        res.jsonp({ message: 'Registro guardado.' });
     }
-
 
 }
 

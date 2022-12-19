@@ -5,7 +5,8 @@
 </div>
 <mat-dialog-content class="mat-typography">
     <div class="nota">
-        <span>NOTA: Los siguientes usuarios cambiaran su acceso a la App de reloj virtual.</span>
+        <span *ngIf="usuarios.length > 1" >NOTA: Los siguientes usuarios cambiaran su acceso a la App de reloj virtual.</span>
+        <span *ngIf="usuarios.length < 2" >NOTA: El siguiente usuario cambiara su acceso a la App de reloj virtual.</span>
     </div>
     <mat-list>
         <mat-list-item *ngFor="let e of empleados">
@@ -18,6 +19,7 @@
         </mat-list-item>
     </mat-list>
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
     <button class="btn btn-sm" mat-button mat-dialog-close>Cancelar</button>
     <button class="btn btn-sm" mat-button [mat-dialog-close]="empleados" cdkFocusInitial>Actualizar</button>

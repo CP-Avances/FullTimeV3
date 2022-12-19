@@ -163,7 +163,6 @@ export class MainNavComponent implements OnInit {
   get HabilitarHoraExtra(): boolean { return this.funciones.horasExtras; }
   get HabilitarTimbreWeb(): boolean { return this.funciones.timbre_web; }
   get HabilitarPermisos(): boolean { return this.funciones.permisos; }
-  get HabilitarReportes(): boolean { return this.funciones.reportes; }
   get HabilitarAccion(): boolean { return this.funciones.accionesPersonal; }
   get HabilitarMovil(): boolean { return this.funciones.app_movil; }
 
@@ -203,6 +202,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'settings',
         children: [
           {
@@ -210,6 +210,7 @@ export class MainNavComponent implements OnInit {
             accion: true,
             estado: true,
             color: true,
+            subtitulo: true,
             icono: 'widgets',
             children: [
               { name: nombre, url: '/vistaEmpresa/' + localStorage.getItem('empresa'), color: true },
@@ -224,6 +225,7 @@ export class MainNavComponent implements OnInit {
             accion: true,
             estado: true,
             color: true,
+            subtitulo: true,
             icono: 'location_on',
             children: [
               { name: 'Provincia', url: '/provincia', color: true },
@@ -239,6 +241,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'account_circle',
         children: [
           { name: 'Configurar Código', url: '/codigo', color: true },
@@ -252,6 +255,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'assignment',
         children: [
           { name: 'Feriados', url: '/listarFeriados', color: true },
@@ -265,6 +269,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'games',
         children: [
           {
@@ -272,6 +277,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarPermisos,
             estado: this.HabilitarPermisos,
             color: true,
+            subtitulo: true,
             icono: 'insert_emoticon',
             children: [
               { name: 'Configurar Permisos', url: '/verTipoPermiso', color: true },
@@ -293,6 +299,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarVacaciones,
             estado: this.HabilitarVacaciones,
             icono: 'flight',
+            subtitulo: true,
             color: true,
             children: [
               { name: 'Aprobación Múltiple', url: '/vacaciones-solicitados', color: true },
@@ -312,6 +319,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarHoraExtra,
             estado: this.HabilitarHoraExtra,
             color: true,
+            subtitulo: true,
             icono: 'schedule',
             children: [
               { name: 'Configurar HoraExtra', url: '/listaHorasExtras', color: true },
@@ -333,6 +341,7 @@ export class MainNavComponent implements OnInit {
             name: 'Alimentación',
             accion: this.HabilitarAlimentacion,
             estado: this.HabilitarAlimentacion,
+            subtitulo: true,
             icono: 'local_dining',
             color: true,
             children: [
@@ -357,6 +366,7 @@ export class MainNavComponent implements OnInit {
             estado: this.HabilitarAccion,
             icono: 'how_to_reg',
             color: true,
+            subtitulo: true,
             children: [
               { name: 'Procesos', url: '/proceso', color: true },
               { name: 'Tipo Acción Personal', url: '/acciones-personal', color: true },
@@ -378,6 +388,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarGeolocalizacion,
             estado: this.HabilitarGeolocalizacion,
             icono: 'my_location',
+            subtitulo: true,
             color: true,
             children: [
               { name: 'Registrar Geolocalización', url: '/coordenadas', color: true },
@@ -398,8 +409,10 @@ export class MainNavComponent implements OnInit {
             estado: this.HabilitarMovil,
             icono: 'phone_android',
             color: true,
+            subtitulo: true,
             children: [
               { name: 'Reloj Virtual', url: '/app-movil', color: true },
+              { name: 'Registro Dispositivos', url: '/registro-dispositivos', color: true },
             ]
           },
           {
@@ -419,8 +432,10 @@ export class MainNavComponent implements OnInit {
         estado: true,
         icono: 'fingerprint',
         color: true,
+        subtitulo: false,
         children: [
           { name: 'Dispositivos', url: '/listarRelojes', color: true },
+          { name: 'Timbre Web', url: '/timbresWeb', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
           { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
           { name: 'Timbres Múltiples', url: '/timbres-multiples', color: true },
           { name: 'Administrar Timbres', url: '/timbres-admin', color: true },
@@ -430,6 +445,7 @@ export class MainNavComponent implements OnInit {
         name: 'Notificaciones',
         accion: true,
         estado: true,
+        subtitulo: false,
         icono: 'notifications',
         color: true,
         children: [
@@ -440,72 +456,93 @@ export class MainNavComponent implements OnInit {
       },
       {
         name: 'Reportes',
-        accion: this.HabilitarReportes,
+        accion: true,
         estado: true,
+        subtitulo: false,
         icono: 'description',
         color: true,
         children: [
           {
             name: 'Generales',
-            accion: this.HabilitarReportes,
+            accion: true,
             estado: true,
             icono: 'grid_view',
             color: true,
+            subtitulo: true,
             children: [
-              { name: 'Kardex', url: '/reporteKardex', color: true },
               { name: 'Timbres', url: '/reporteTimbres', color: true },
               { name: 'Atrasos', url: '/reporteAtrasos', color: true },
-              { name: 'Permisos', url: '/reportePermisos', color: true },
               { name: 'Empleados', url: '/reporteEmpleados', color: true },
               { name: 'Entradas Salidas', url: '/reporteEntradaSalida', color: true },
               { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos', color: true },
-              { name: 'Solicitudes Horas Extras', url: '/horas/extras', color: true },
-              { name: 'Horas Extras Autorizaciones', url: '/reporteHorasExtras', color: true },
               { name: 'Asistencia Detalle Consolidado', url: '/reporteAsistenciaConsolidado', color: true },
             ]
           },
           {
-            name: 'Múltiples',
-            accion: this.HabilitarReportes,
-            estado: true,
-            icono: 'watch_later',
+            name: 'Permisos',
+            accion: this.HabilitarPermisos,
+            estado: this.HabilitarPermisos,
+            icono: 'insert_emoticon',
             color: true,
+            subtitulo: true,
             children: [
-              { name: 'Faltas', url: '/reporte-faltas', color: true },
-              //{ name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
-              { name: 'Timbres', url: '/reporte-timbres-multiples', color: true },
-              { name: 'Timbre Teletrabajo', url: '/reporte-timbre-sistema', color: true },
-              { name: 'Timbre Reloj Virtual', url: '/reporte-timbre-reloj-virtual', color: true },
-              { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto', color: true },
-              { name: 'Puntualidad', url: '/reporte-puntualidad', color: true },
-              //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja', color: true },
-              { name: 'Empleados Vacunados', url: '/lista-vacunados', color: true },
-              //{ name: 'Timbre Incompleto', url: '/reporte-timbre-incompleto', color: true },
-              //{ name: 'Salidas Anticipadas', url: '/salidas-anticipadas', color: true },
-              { name: 'Vacaciones Solicitadas', url: '/solicitud-vacacion', color: true },
+              { name: 'Permisos', url: '/reportePermisos', color: true },
             ]
           },
           {
-            name: 'Estadísticos',
-            accion: this.HabilitarReportes,
-            estado: true,
-            icono: 'leaderboard',
+            name: 'Vacaciones',
+            accion: this.HabilitarVacaciones,
+            estado: this.HabilitarVacaciones,
+            icono: 'flight',
             color: true,
+            subtitulo: true,
             children: [
-              { name: 'Atrasos', url: '/macro/retrasos', color: true },
-              { name: 'Timbres', url: '/macro/marcaciones', color: true },
-              { name: 'Asistencia', url: '/macro/asistencia', color: true },
-              { name: 'Inasistencia', url: '/macro/inasistencia', color: true },
+              { name: 'Kardex', url: '/reporteKardex', color: true },
+              { name: 'Vacaciones Solicitadas', url: '/solicitud-vacacion', color: this.HabilitarVacaciones },
+            ]
+          },
+          {
+            name: 'Horas Extras',
+            accion: this.HabilitarHoraExtra,
+            estado: this.HabilitarHoraExtra,
+            icono: 'schedule',
+            color: true,
+            subtitulo: true,
+            children: [
+              { name: 'Solicitudes Horas Extras', url: '/horas/extras', color: true },
+              { name: 'Horas Extras Autorizaciones', url: '/reporteHorasExtras', color: true },
               { name: 'Horas Extras', url: '/macro/hora-extra', color: true },
-              { name: 'Salidas antes', url: '/macro/tiempo-jornada-vs-hora-ext', color: true },
               { name: 'Jornada vs Horas extras', url: '/macro/jornada-vs-hora-extra', color: true },
             ]
           },
           {
+            name: 'Aplicación Móvil',
+            accion: this.HabilitarMovil,
+            estado: this.HabilitarMovil,
+            icono: 'phone_android',
+            subtitulo: true,
+            color: true,
+            children: [
+              { name: 'Timbre Reloj Virtual', url: '/reporte-timbre-reloj-virtual', color: true },
+            ]
+          },
+          {
+            name: 'Timbre Teletrabajo',
+            accion: this.HabilitarTimbreWeb,
+            estado: this.HabilitarTimbreWeb,
+            icono: 'computer',
+            subtitulo: true,
+            color: true,
+            children: [
+              { name: 'Timbre Teletrabajo', url: '/reporte-timbre-sistema', color: true },
+            ]
+          },
+          {
             name: 'Alimentación',
-            accion: this.HabilitarReportes,
+            accion: this.HabilitarAlimentacion,
             estado: true,
             icono: 'restaurant',
+            subtitulo: true,
             color: true,
             children: [
               { name: 'Tickets Consumidos', url: '/alimentosGeneral', color: true },
@@ -514,9 +551,44 @@ export class MainNavComponent implements OnInit {
             ]
           },
           {
-            name: 'Notificaciones',
-            accion: this.HabilitarReportes,
+            name: 'Múltiples',
+            accion: true,
             estado: true,
+            subtitulo: true,
+            icono: 'group',
+            color: true,
+            children: [
+              { name: 'Faltas', url: '/reporte-faltas', color: true },
+              //{ name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
+              { name: 'Timbres', url: '/reporte-timbres-multiples', color: true },
+              { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto', color: true },
+              { name: 'Puntualidad', url: '/reporte-puntualidad', color: true },
+              //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja', color: true },
+              { name: 'Empleados Vacunados', url: '/lista-vacunados', color: true },
+              //{ name: 'Timbre Incompleto', url: '/reporte-timbre-incompleto', color: true },
+              //{ name: 'Salidas Anticipadas', url: '/salidas-anticipadas', color: true },
+            ]
+          },
+          {
+            name: 'Estadísticos',
+            accion: true,
+            estado: true,
+            subtitulo: true,
+            icono: 'leaderboard',
+            color: true,
+            children: [
+              { name: 'Atrasos', url: '/macro/retrasos', color: true },
+              { name: 'Timbres', url: '/macro/marcaciones', color: true },
+              { name: 'Asistencia', url: '/macro/asistencia', color: true },
+              { name: 'Inasistencia', url: '/macro/inasistencia', color: true },
+              { name: 'Salidas antes', url: '/macro/tiempo-jornada-vs-hora-ext', color: true },
+            ]
+          },
+          {
+            name: 'Notificaciones',
+            accion: true,
+            estado: true,
+            subtitulo: true,
             icono: 'notifications_active',
             color: true,
             children: [
@@ -526,8 +598,9 @@ export class MainNavComponent implements OnInit {
           },
           {
             name: 'Auditoría',
-            accion: this.HabilitarReportes,
+            accion: true,
             estado: true,
+            subtitulo: true,
             icono: 'gavel',
             color: true,
             children: [
@@ -546,6 +619,7 @@ export class MainNavComponent implements OnInit {
         name: 'Perfil',
         accion: true,
         estado: true,
+        subtitulo: false,
         icono: 'account_circle',
         color: true,
         children: [
@@ -558,6 +632,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'mobile_friendly',
         children: [
           { name: 'Planificación RangoFecha', url: '/horariosEmpleado' },
@@ -569,6 +644,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'games',
         children: [
           {
@@ -576,6 +652,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarPermisos,
             estado: this.HabilitarPermisos,
             color: true,
+            subtitulo: true,
             icono: 'transfer_within_a_station',
             children: [
               { name: 'Solicitar Permiso', url: '/solicitarPermiso', color: true },
@@ -595,6 +672,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarVacaciones,
             estado: this.HabilitarVacaciones,
             color: true,
+            subtitulo: true,
             icono: 'flight',
             children: [
               { name: 'Solicitar Vacaciones', url: '/vacacionesEmpleado', color: true },
@@ -613,6 +691,7 @@ export class MainNavComponent implements OnInit {
             name: 'Horas Extras',
             accion: this.HabilitarHoraExtra,
             estado: this.HabilitarHoraExtra,
+            subtitulo: true,
             color: true,
             icono: 'hourglass_full',
             children: [
@@ -633,6 +712,7 @@ export class MainNavComponent implements OnInit {
             name: 'Alimentación',
             accion: this.HabilitarAlimentacion,
             estado: this.HabilitarAlimentacion,
+            subtitulo: true,
             color: true,
             icono: 'restaurant',
             children: [
@@ -654,6 +734,7 @@ export class MainNavComponent implements OnInit {
             accion: this.HabilitarAccion,
             estado: this.HabilitarAccion,
             color: true,
+            subtitulo: true,
             icono: 'how_to_reg',
             children: [
               { name: 'Procesos', url: '/procesosEmpleado', color: true },
@@ -675,6 +756,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'fingerprint',
         children: [
           { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: true },
@@ -685,6 +767,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'lock_open',
         children: [
           { name: 'Autoridad', url: '/autorizaEmpleado', color: true },
@@ -696,6 +779,7 @@ export class MainNavComponent implements OnInit {
         estado: true,
         icono: 'info',
         color: true,
+        subtitulo: false,
         children: [
           { name: 'Autoridades', url: '/informacion', color: true },
           { name: 'Documentos', url: '/verDocumentacion', color: true },
@@ -706,6 +790,7 @@ export class MainNavComponent implements OnInit {
         accion: true,
         estado: true,
         color: true,
+        subtitulo: false,
         icono: 'notifications',
         children: [
           { name: 'Lista notificaciones', url: '/lista-notificaciones', color: true },

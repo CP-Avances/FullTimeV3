@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
-import { enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales,
-  FormatearFecha, FormatearHora, dia_completo }
+import {
+  enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, fechaHora, Credenciales,
+  FormatearFecha, FormatearHora, dia_completo
+}
   from '../../libs/settingsMail';
 import path from 'path';
 import { QueryResult } from 'pg';
@@ -209,118 +211,9 @@ class NotificacionTiempoRealControlador {
    ** **                      METODOS PARA ENVIOS DE COMUNICADOS                                ** ** 
    ** ******************************************************************************************** **/
 
-  // METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE SISTEMA WEB
-  public async EnviarCorreoComunicado(req: Request, res: Response): Promise<void> {
 
-    var tiempo = fechaHora();
-    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
-    var hora = await FormatearHora(tiempo.hora);
 
-    const path_folder = path.resolve('logos');
 
-    var datos = await Credenciales(req.id_empresa);
-
-    const { id_envia, correo, mensaje, asunto } = req.body;
-
-    if (datos === 'ok') {
-
-      const USUARIO_ENVIA = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
-        'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
-        'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
-        'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento',
-        [id_envia]);
-
-      let data = {
-        to: correo,
-        from: email,
-        subject: asunto,
-        html: `<body>
-                <div style="text-align: center;">
-                  <img width="25%" height="25%" src="cid:cabeceraf"/>
-                </div>
-                <br>
-                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
-                  El presente correo es para informar el siguiente comunicado: <br>  
-                </p>
-                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
-                  <b>Empresa:</b> ${nombre}<br>
-                  <b>Asunto:</b> ${asunto} <br>
-                  <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
-                  <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
-                  <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
-                  <b>Generado mediante:</b> Sistema Web <br>
-                  <b>Fecha de envío:</b> ${fecha} <br> 
-                  <b>Hora de envío:</b> ${hora} <br><br>                  
-                  <b>Mensaje:</b> ${mensaje} <br><br>
-                </p>
-                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
-                  <b>Gracias por la atención</b><br>
-                  <b>Saludos cordiales,</b> <br><br>
-                </p>
-                <img src="cid:pief" width="50%" height="50%"/>
-            </body>
-            `,
-        attachments: [
-          {
-            filename: 'cabecera_firma.jpg',
-            path: `${path_folder}/${cabecera_firma}`,
-            cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
-          },
-          {
-            filename: 'pie_firma.jpg',
-            path: `${path_folder}/${pie_firma}`,
-            cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
-          }]
-      };
-
-      var corr = enviarMail(servidor, parseInt(puerto));
-      corr.sendMail(data, function (error: any, info: any) {
-        if (error) {
-          corr.close();
-          console.log('Email error: ' + error);
-          return res.jsonp({ message: 'error' });
-        } else {
-          corr.close();
-          console.log('Email sent: ' + info.response);
-          return res.jsonp({ message: 'ok' });
-        }
-      });
-
-    } else {
-      res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
-    }
-  }
-
-  // NOTIFICACIÓNES GENERALES
-  public async EnviarNotificacionGeneral(req: Request, res: Response): Promise<Response> {
-    let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
-    var tiempo = fechaHora();
-    let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
-
-    const response: QueryResult = await pool.query(
-      `
-        INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
-        VALUES($1, $2, $3, $4, $5) RETURNING *
-      `,
-      [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
-
-    const [notificiacion] = response.rows;
-
-    if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
-
-    const USUARIO = await pool.query(
-      `
-      SELECT (nombre || ' ' || apellido) AS usuario
-      FROM empleados WHERE id = $1
-      `,
-      [id_empl_envia]);
-
-    notificiacion.usuario = USUARIO.rows[0].usuario;
-
-    return res.status(200)
-      .jsonp({ message: 'Comunicado enviado exitosamente.', respuesta: notificiacion });
-
-  }
 
   // METODO PARA ENVÍO DE CORREO ELECTRÓNICO DE COMUNICADOS MEDIANTE APLICACIÓN MÓVIL
   public async EnviarCorreoComunicadoMovil(req: Request, res: Response) {
@@ -338,7 +231,7 @@ class NotificacionTiempoRealControlador {
     if (datos === 'ok') {
 
       const USUARIO_ENVIA = await pool.query('SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula, ' +
-        'e.mail_alternativo, tc.cargo, d.nombre AS departamento ' +
+        'tc.cargo, d.nombre AS departamento ' +
         'FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d ' +
         'WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento',
         [id_envia]);
@@ -444,6 +337,146 @@ class NotificacionTiempoRealControlador {
       return res.status(500)
         .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
     }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /** ***************************************************************************************** **
+   ** **                          MANEJO DE COMUNICADOS                                      ** ** 
+   ** ***************************************************************************************** **/
+
+  // METODO PARA ENVIO DE CORREO ELECTRONICO DE COMUNICADOS MEDIANTE SISTEMA WEB
+  public async EnviarCorreoComunicado(req: Request, res: Response): Promise<void> {
+
+    var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
+
+    const path_folder = path.resolve('logos');
+
+    var datos = await Credenciales(req.id_empresa);
+
+    const { id_envia, correo, mensaje, asunto } = req.body;
+
+    if (datos === 'ok') {
+
+      const USUARIO_ENVIA = await pool.query(
+        `
+        SELECT e.id, e.correo, e.nombre, e.apellido, e.cedula,
+          tc.cargo, d.nombre AS departamento 
+        FROM datos_actuales_empleado AS e, empl_cargos AS ec, tipo_cargo AS tc, cg_departamentos AS d 
+        WHERE e.id = $1 AND ec.id = e.id_cargo AND tc.id = ec.cargo AND d.id = ec.id_departamento
+        `
+        , [id_envia]);
+
+      let data = {
+        to: correo,
+        from: email,
+        subject: asunto,
+        html: `<body>
+                <div style="text-align: center;">
+                  <img width="25%" height="25%" src="cid:cabeceraf"/>
+                </div>
+                <br>
+                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                  El presente correo es para informar el siguiente comunicado: <br>  
+                </p>
+                <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;" >
+                  <b>Empresa:</b> ${nombre}<br>
+                  <b>Asunto:</b> ${asunto} <br>
+                  <b>Colaborador que envía:</b> ${USUARIO_ENVIA.rows[0].nombre} ${USUARIO_ENVIA.rows[0].apellido} <br>
+                  <b>Cargo:</b> ${USUARIO_ENVIA.rows[0].cargo} <br>
+                  <b>Departamento:</b> ${USUARIO_ENVIA.rows[0].departamento} <br>
+                  <b>Generado mediante:</b> Sistema Web <br>
+                  <b>Fecha de envío:</b> ${fecha} <br> 
+                  <b>Hora de envío:</b> ${hora} <br><br>                  
+                  <b>Mensaje:</b> ${mensaje} <br><br>
+                </p>
+                <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                  <b>Gracias por la atención</b><br>
+                  <b>Saludos cordiales,</b> <br><br>
+                </p>
+                <img src="cid:pief" width="50%" height="50%"/>
+            </body>
+            `,
+        attachments: [
+          {
+            filename: 'cabecera_firma.jpg',
+            path: `${path_folder}/${cabecera_firma}`,
+            cid: 'cabeceraf' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+          },
+          {
+            filename: 'pie_firma.jpg',
+            path: `${path_folder}/${pie_firma}`,
+            cid: 'pief' // VALOR cid COLOCARSE IGUAL EN LA ETIQUETA img src DEL HTML.
+          }]
+      };
+
+      var corr = enviarMail(servidor, parseInt(puerto));
+      corr.sendMail(data, function (error: any, info: any) {
+        if (error) {
+          corr.close();
+          return res.jsonp({ message: 'error' });
+        } else {
+          corr.close();
+          return res.jsonp({ message: 'ok' });
+        }
+      });
+
+    } else {
+      res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
+    }
+  }
+
+  // NOTIFICACIONES GENERALES
+  public async EnviarNotificacionGeneral(req: Request, res: Response): Promise<Response> {
+    let { id_empl_envia, id_empl_recive, mensaje, tipo } = req.body;
+    var tiempo = fechaHora();
+    let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
+
+    const response: QueryResult = await pool.query(
+      `
+          INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, tipo) 
+          VALUES($1, $2, $3, $4, $5) RETURNING *
+        `,
+      [create_at, id_empl_envia, id_empl_recive, mensaje, tipo]);
+
+    const [notificiacion] = response.rows;
+
+    if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+
+    const USUARIO = await pool.query(
+      `
+        SELECT (nombre || ' ' || apellido) AS usuario
+        FROM empleados WHERE id = $1
+        `,
+      [id_empl_envia]);
+
+    notificiacion.usuario = USUARIO.rows[0].usuario;
+
+    return res.status(200)
+      .jsonp({ message: 'Comunicado enviado exitosamente.', respuesta: notificiacion });
+
   }
 
 }

@@ -131,6 +131,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   BuscarInformacion() {
     this.origen = [];
     this.informacion.ObtenerInformacion().subscribe((res: any[]) => {
+      
       this.origen = JSON.stringify(res);
 
       res.forEach(obj => {

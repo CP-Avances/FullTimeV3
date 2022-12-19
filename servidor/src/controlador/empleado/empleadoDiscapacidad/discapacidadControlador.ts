@@ -11,7 +11,7 @@ class DiscapacidadControlador {
       `
       SELECT cd.id_empleado, cd.carn_conadis, cd.porcentaje, cd.tipo, td.nombre AS nom_tipo
       FROM cg_discapacidades cd, tipo_discapacidad td, empleados e
-      WHERE cd.id_empleado = e.id AND cd.tipo = td.id AND cd. id_empleado = $1
+      WHERE cd.id_empleado = e.id AND cd.tipo = td.id AND cd.id_empleado = $1
       `
       , [id_empleado]);
     if (unaDiscapacidad.rowCount > 0) {

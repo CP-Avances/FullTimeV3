@@ -131,7 +131,6 @@ export class TimbreWebComponent implements OnInit {
         data.fecha = this.validar.FormatearFecha(data.fec_hora_timbre, formato_fecha, this.validar.dia_abreviado);
         data.hora = this.validar.FormatearHora(data.fec_hora_timbre.split(' ')[1], formato_hora);
       })
-
     }, err => {
       this.toastr.info(err.error.message)
     })

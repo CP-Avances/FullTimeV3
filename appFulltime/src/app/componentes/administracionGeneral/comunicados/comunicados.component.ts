@@ -2,7 +2,6 @@
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatRadioChange } from '@angular/material/radio';
 import { ToastrService } from 'ngx-toastr';
@@ -18,13 +17,13 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 import { ReportesAsistenciasService } from 'src/app/servicios/reportes/reportes-asistencias.service';
 
 export interface EmpleadoElemento {
-  id_recibe: number;
-  nombre: string;
-  apellido: string;
-  codigo: number;
-  correo: string;
   comunicado_mail: boolean;
   comunicado_noti: boolean;
+  id_recibe: number;
+  apellido: string;
+  nombre: string;
+  codigo: number;
+  correo: string;
 }
 
 @Component({
@@ -43,14 +42,15 @@ export class ComunicadosComponent implements OnInit {
   nombre_dep = new FormControl('', [Validators.minLength(2)]);
   nombre_suc = new FormControl('', [Validators.minLength(2)]);
 
+  // METODO PARA FILTROS
   filtroNombreSuc_: string = '';
   filtroNombreDep_: string = '';
-
   filtroCodigo_: number;
   filtroCedula_: string = '';
   filtroNombreEmp_: string = '';
 
   idEmpleado: number;
+  comunicados: any = [];
 
   public _booleanOptions: FormCriteriosBusqueda = {
     bool_suc: false,
@@ -72,24 +72,39 @@ export class ComunicadosComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
     private realTime: RealTimeService,
-    private restR: ReportesService,
     private validar: ValidacionesService,
-    private data: ReportesAsistenciasService,
+    private restR: ReportesService,
     private restP: ParametrosService,
-
+    private data: ReportesAsistenciasService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
 
+
   ngOnInit(): void {
-
-    this.BuscarParametro();
     this.check = this.restR.checkOptions(3);
-    console.log('CHECK ', this.check);
+    this.BuscarDatos();
+    this.BuscarParametro();
+  }
 
-    sessionStorage.removeItem('comunicado');
-    this.data.Departamentos().subscribe((res: any[]) => {
-      sessionStorage.setItem('comunicado', JSON.stringify(res))
+  // METODO PARA CERARR PROCESOS
+  ngOnDestroy() {
+    this.restR.GuardarCheckOpcion(0);
+    this.restR.DefaultFormCriterios();
+    this.restR.DefaultValoresFiltros();
+  }
+
+  // METODO DE VARIABLES DE ALMACENAMIENTO
+  departamentos: any = [];
+  sucursales: any = [];
+  respuesta: any[];
+  empleados: any = [];
+
+  // METODO PARA CARGAR DATOS DE USUARIO
+  BuscarDatos() {
+    this.comunicados = [];
+    this.data.DatosGeneralesUsuarios().subscribe((res: any[]) => {
+      this.comunicados = JSON.stringify(res);
 
       res.forEach(obj => {
         this.sucursales.push({
@@ -126,26 +141,14 @@ export class ComunicadosComponent implements OnInit {
           })
         })
       })
-      console.log('SUCURSALES', this.sucursales);
-      console.log('DEPARTAMENTOS', this.departamentos);
-      console.log('EMPLEADOS', this.empleados);
-
     }, err => {
-      this.toastr.error(err.error.message)
+      this.toastr.info(err.error.message)
     })
   }
 
-
-  ngOnDestroy() {
-    this.restR.GuardarCheckOpcion(0);
-    this.restR.DefaultFormCriterios();
-    this.restR.DefaultValoresFiltros();
-    console.log('Componenete destruido');
-  }
-
+  // METODO PARA MOSTRAR OPCIONES DE SELECCION
   opcion: number;
   BuscarPorTipo(e: MatRadioChange) {
-    console.log('CHECK ', e.value);
     this.opcion = e.value;
     switch (this.opcion) {
       case 1:
@@ -173,7 +176,8 @@ export class ComunicadosComponent implements OnInit {
     this.restR.GuardarCheckOpcion(this.opcion)
   }
 
-  Filtrar(e, orden: number) {
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
+  Filtrar(e: any, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;
       case 2: this.restR.setFiltroNombreDep(e); break;
@@ -185,35 +189,24 @@ export class ComunicadosComponent implements OnInit {
     }
   }
 
-  departamentos: any = [];
-  sucursales: any = [];
-  respuesta: any[];
-  empleados: any = [];
-
-  selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
-  selectionDep = new SelectionModel<ITableEmpleados>(true, []);
-  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
-
-  // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
+  // ITEMS DE PAGINACION DE LA TABLA SUCURSAL
   pageSizeOptions_suc = [5, 10, 20, 50];
   tamanio_pagina_suc: number = 5;
   numero_pagina_suc: number = 1;
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA DEPARTAMENTO
+  // ITEMS DE PAGINACION DE LA TABLA DEPARTAMENTO
   pageSizeOptions_dep = [5, 10, 20, 50];
   tamanio_pagina_dep: number = 5;
   numero_pagina_dep: number = 1;
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA EMPLEADOS
+  // ITEMS DE PAGINACION DE LA TABLA EMPLEADOS
   pageSizeOptions_emp = [5, 10, 20, 50];
   tamanio_pagina_emp: number = 5;
   numero_pagina_emp: number = 1;
 
-
+  // BUSQUEDA DE DATOS CON FILTROS
   get filtroNombreSuc() { return this.restR.filtroNombreSuc }
-
   get filtroNombreDep() { return this.restR.filtroNombreDep }
-
   get filtroNombreEmp() { return this.restR.filtroNombreEmp };
   get filtroCodigo() { return this.restR.filtroCodigo };
   get filtroCedula() { return this.restR.filtroCedula };
@@ -222,21 +215,25 @@ export class ComunicadosComponent implements OnInit {
   /** ************************************************************************************** **
    ** **                   METODOS DE SELECCION DE DATOS DE USUARIOS                      ** **
    ** ************************************************************************************** **/
+  
+   selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
+  selectionDep = new SelectionModel<ITableEmpleados>(true, []);
+  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedSuc() {
     const numSelected = this.selectionSuc.selected.length;
     return numSelected === this.sucursales.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleSuc() {
     this.isAllSelectedSuc() ?
       this.selectionSuc.clear() :
       this.sucursales.forEach(row => this.selectionSuc.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelSuc(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedSuc() ? 'select' : 'deselect'} all`;
@@ -244,20 +241,20 @@ export class ComunicadosComponent implements OnInit {
     return `${this.selectionSuc.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedDep() {
     const numSelected = this.selectionDep.selected.length;
     return numSelected === this.departamentos.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleDep() {
     this.isAllSelectedDep() ?
       this.selectionDep.clear() :
       this.departamentos.forEach(row => this.selectionDep.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelDep(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedDep() ? 'select' : 'deselect'} all`;
@@ -265,20 +262,20 @@ export class ComunicadosComponent implements OnInit {
     return `${this.selectionDep.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedEmp() {
     const numSelected = this.selectionEmp.selected.length;
     return numSelected === this.empleados.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleEmp() {
     this.isAllSelectedEmp() ?
       this.selectionEmp.clear() :
       this.empleados.forEach(row => this.selectionEmp.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelEmp(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
@@ -286,6 +283,7 @@ export class ComunicadosComponent implements OnInit {
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
+  // METODO PARA MANEJAR PAGINACION
   ManejarPaginaResultados(e: PageEvent) {
     if (this._booleanOptions.bool_suc === true) {
       this.tamanio_pagina_suc = e.pageSize;
@@ -299,9 +297,10 @@ export class ComunicadosComponent implements OnInit {
     }
   }
 
-  ModelarSucursal(form) {
+  // METODO PARA MOSTRAR DATOS DE SUCURSAL
+  ModelarSucursal(form: any) {
     let usuarios: any = [];
-    let respuesta = JSON.parse(sessionStorage.getItem('comunicado'))
+    let respuesta = JSON.parse(this.comunicados);
     respuesta.forEach((obj: any) => {
       this.selectionSuc.selected.find(obj1 => {
         if (obj.id_suc === obj1.id) {
@@ -318,7 +317,8 @@ export class ComunicadosComponent implements OnInit {
     this.EnviarNotificaciones(usuarios, form);
   }
 
-  ModelarEmpleados(form) {
+  // METODO PARA MOSTRAR DATOS DE EMPLEADO
+  ModelarEmpleados(form: any) {
     let respuesta: any = [];
     this.empleados.forEach((obj: any) => {
       this.selectionEmp.selected.find(obj1 => {
@@ -330,9 +330,10 @@ export class ComunicadosComponent implements OnInit {
     this.EnviarNotificaciones(respuesta, form);
   }
 
-  ModelarDepartamentos(form) {
+  // METODO PARA MOSTRAR DATOS DE DEPARTAMENTOS
+  ModelarDepartamentos(form: any) {
     let usuarios: any = [];
-    let respuesta = JSON.parse(sessionStorage.getItem('comunicado'))
+    let respuesta = JSON.parse(this.comunicados);
     respuesta.forEach((obj: any) => {
       obj.departamentos.forEach((obj1: any) => {
         this.selectionDep.selected.find(obj2 => {
@@ -425,7 +426,7 @@ export class ComunicadosComponent implements OnInit {
   }
 
   // METODO PARA TOMAR DATOS SELECCIONADOS
-  GuardarRegistros(form) {
+  GuardarRegistros(form: any) {
     if (this.opcion === 1) {
       this.ModelarSucursal(form);
     }
@@ -460,6 +461,7 @@ export class ComunicadosComponent implements OnInit {
     this.seleccion.reset();
   }
 
+  // METODO PARA MOSTRAR LISTA DE DATOS
   MostrarLista() {
     if (this.opcion === 1) {
       this.nombre_suc.reset();
@@ -479,7 +481,7 @@ export class ComunicadosComponent implements OnInit {
     }
   }
 
-  // METODO PARA LEER NUMERO DE OCRREOS PERMITIDOS
+  // METODO PARA LEER NUMERO DE CORREOS PERMITIDOS
   correos: number;
   BuscarParametro() {
     // id_tipo_parametro LIMITE DE CORREO = 24
@@ -497,11 +499,11 @@ export class ComunicadosComponent implements OnInit {
   }
 
   // METODO USADO PARA ENVIAR COMUNICADO POR CORREO
-  EnviarCorreo(correos, form) {
+  EnviarCorreo(correos: any, form: any) {
     let datosCorreo = {
       id_envia: this.idEmpleado,
-      correo: correos,
       mensaje: form.mensajeForm,
+      correo: correos,
       asunto: form.tituloForm,
     }
     this.realTime.EnviarCorreoComunicado(datosCorreo).subscribe(envio => {
@@ -518,11 +520,14 @@ export class ComunicadosComponent implements OnInit {
     });
   }
 
-  IngresarSoloLetras(e) {
+
+  // METODO PARA INGRESAR SOLO LETRAS
+  IngresarSoloLetras(e: any) {
     return this.validar.IngresarSoloLetras(e);
   }
 
-  IngresarSoloNumeros(evt) {
+  // METODO PARA VALIDAR SOLO INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
     return this.validar.IngresarSoloNumeros(evt);
   }
 

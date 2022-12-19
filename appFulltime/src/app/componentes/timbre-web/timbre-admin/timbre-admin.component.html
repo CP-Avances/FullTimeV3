@@ -1,5 +1,4 @@
-<br>
-<div class="container" style="padding-bottom: 25px; text-align: center;">
+<div class="container" style="padding-bottom: 25px; text-align: center; padding-top: 20px;">
     <div class="mat-elevation-z8" style="background: white;">
         <div id="titulo">
             ADMINISTRACIÓN DE TIMBRES
@@ -47,7 +46,8 @@
                         <td>
                             <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
                                 matTooltip="Búsqueda de datos de empleado de acuerdo a las columnas de la tabla.">
-                                help_outline</mat-icon>
+                                help_outline
+                            </mat-icon>
                         </td>
                     </tr>
                     <tr
@@ -111,10 +111,11 @@
                     <tr
                         *ngFor="let t of timbres | fecTimbre: filtroFechaTimbre | paginate:tamanio_pagina:numero_pagina">
                         <td>
-                            <mat-icon aria-hidden="false" id="accion" (click)="abrirMapa(t.latitud, t.longitud)"
+                            <mat-icon aria-hidden="false" id="accion" (click)="AbrirMapa(t.latitud, t.longitud)"
                                 matSuffix matTooltipPosition="right"
                                 matTooltip="Direccionar al mapa con ubicación del timbre seleccionado.">
-                                location_on</mat-icon>
+                                location_on
+                            </mat-icon>
                         </td>
                         <td>{{t.fecha}}</td>
                         <td>{{t.hora}}</td>

@@ -2200,7 +2200,6 @@ export class VerEmpleadoComponent implements OnInit {
           "correo": obj.correo,
           "fechaNacimiento": obj.fec_nacimiento_,
           "estado": estado,
-          "correoAlternativo": obj.mail_alternativo,
           "domicilio": obj.domicilio,
           "telefono": obj.telefono,
           "nacionalidad": nacionalidad,

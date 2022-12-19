@@ -41,7 +41,10 @@ export class RelojesService {
     return this.http.get(`${environment.url}/relojes/datosReloj/${id}`);
   }
 
-
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXMLIdDispositivos(data: any) {
+    return this.http.post(`${environment.url}/relojes/xmlDownloadIdDispositivos`, data);
+  }
 
 
 

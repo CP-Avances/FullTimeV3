@@ -16,10 +16,15 @@ class BirthdayRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO PARA CONSULTAR MENSAJE DE CUMPLEAÑOS
         this.router.get('/:id_empresa', verificarToken_1.TokenValidation, birthdayControlador_1.default.MensajeEmpresa);
-        this.router.get('/img/:imagen', birthdayControlador_1.default.getImagen);
+        // METODO PARA REGISTRAR MENSAJE DE CUMPLEAÑOS
         this.router.post('/', verificarToken_1.TokenValidation, birthdayControlador_1.default.CrearMensajeBirthday);
+        // METODO PARA SUBIR IMAGEN DE CUMPLEAÑOS
         this.router.put('/:id_empresa/uploadImage', [verificarToken_1.TokenValidation, multipartMiddleware], birthdayControlador_1.default.CrearImagenEmpleado);
+        // METODO PARA DESCARGAR IMAGEN DE CUMPLEAÑOS
+        this.router.get('/img/:imagen', birthdayControlador_1.default.getImagen);
+        // METODO PARA ACTUALIZAR MENSAJE DE CUMPLEAÑOS
         this.router.put('/editar/:id_mensaje', verificarToken_1.TokenValidation, birthdayControlador_1.default.EditarMensajeBirthday);
     }
 }

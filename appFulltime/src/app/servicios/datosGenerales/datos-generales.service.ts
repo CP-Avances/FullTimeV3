@@ -23,8 +23,10 @@ export class DatosGeneralesService {
     return this.http.get<any>(`${environment.url}/generalidades/informacion-general/${estado}`);
   }
 
-
-
+  // METODO PARA LISTAR INFORMACION ACTUAL DE USUARIO
+  ListarInformacionActual() {
+    return this.http.get(`${environment.url}/generalidades/info_actual`);
+  }
 
 
 
@@ -51,9 +53,7 @@ export class DatosGeneralesService {
     return this.http.get(`${environment.url}/generalidades/empleadoAutoriza/${id_empleado}`);
   }
 
-  ListarInformacionActual() {
-    return this.http.get(`${environment.url}/generalidades/info_actual`);
-  }
+
 
   /** INICIO CONSULTAS PARA FILTRAR INFORMACIÓN */
   VerDatosSucursal(id_sucursal: number) {

@@ -159,6 +159,47 @@ class UsuarioControlador {
     }
   }
 
+  public async usersEmpleadosWebHabilita(req: Request, res: Response) {
+    try {
+      const USUARIOS = await pool.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, u.web_habilita, u.id AS userId ' +
+        'FROM usuarios AS u, empleados AS e WHERE e.id = u.id_empleado ORDER BY nombre')
+        .then(result => { return result.rows });
+
+      if (USUARIOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros' });
+
+      return res.status(200).jsonp(USUARIOS)
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
+  public async updateUsersEmpleadosWebHabilita(req: Request, res: Response) {
+    try {
+      console.log(req.body);
+      const array = req.body;
+
+      if (array.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
+
+      const nuevo = await Promise.all(array.map(async (o: any) => {
+
+        try {
+          const [result] = await pool.query('UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id', [!o.web_habilita, o.userid])
+            .then(result => { return result.rows })
+          return result
+        } catch (error) {
+          return { error: error.toString() }
+        }
+
+      }))
+
+      return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo })
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
   public async getIdByUsuario(req: Request, res: Response): Promise<any> {
     const { usuario } = req.params;
     const unUsuario = await pool.query('SELECT id FROM usuarios WHERE usuario = $1', [usuario]);
@@ -254,6 +295,49 @@ class UsuarioControlador {
     return res.jsonp({ message: 'Auditoria Realizada' });
   }
 
+
+
+  //LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
+  public async usersListadispositivosMoviles(req: Request, res: Response) {
+    try {
+      const DISPOSITIVOS = await pool.query('SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo ' +
+        'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
+        .then(result => { return result.rows });
+
+      if (DISPOSITIVOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros' });
+
+      return res.status(200).jsonp(DISPOSITIVOS)
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
+  public async deleteDispositivoRegistrado(req: Request, res: Response){
+    try {
+      const array = req.params.dispositivo;
+
+      let dispositivos = array.split(',');
+      console.log("id_dispositivos: ",dispositivos);
+
+      if (dispositivos.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
+
+      const nuevo = await Promise.all(dispositivos.map(async (id_dispo: any) => {
+        try {
+          const [result] = await pool.query('DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *', [id_dispo])
+            .then(result => { return result.rows })
+          return result
+        } catch (error) {
+          return { error: error.toString() }
+        }
+      }))
+
+      return res.status(200).jsonp({ message: 'Datos eliminados exitosamente', nuevo })
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
 
 }
 

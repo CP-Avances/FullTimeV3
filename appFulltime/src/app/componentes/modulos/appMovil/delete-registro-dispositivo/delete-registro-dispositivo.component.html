@@ -1,0 +1,29 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        LISTA DE USUARIOS SELECCIONADOS </span>
+</div>
+
+<mat-dialog-content class="mat-typography">
+    <div class="nota">
+        <span *ngIf="usuarios.length > 1" >NOTA: Los siguientes dispositivos seleccionados se eliminaran.</span>
+        <span *ngIf="usuarios.length < 2" >NOTA: Se eliminara el dispositivo seleccionado.</span>
+    </div>
+    <mat-list>
+        <mat-list-item *ngFor="let d of dispositivos">
+            <mat-icon id="i-cursor" style="color:blue;" mat-list-icon>perm_identity</mat-icon>
+            <div mat-line style="font-weight: bold;">{{d.nombre}}</div>
+            <div mat-line style="font-size: 12px;">
+                <span style="font-weight: bold;">Dispositivo:  {{d.modelo_dispositivo}} </span>
+                <br>
+                <span style="font-weight: bold;">ID dispositivo: {{d.id_dispositivo}}</span>
+                
+            </div>
+        </mat-list-item>
+    </mat-list>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button class="btn btn-sm" mat-button mat-dialog-close>Cancelar</button>
+    <button class="btn btn-sm" mat-button [mat-dialog-close]="dispositivos" cdkFocusInitial>Eliminar</button>
+</mat-dialog-actions>

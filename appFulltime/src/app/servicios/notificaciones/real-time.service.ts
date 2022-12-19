@@ -13,11 +13,23 @@ export class RealTimeService {
     private socket: Socket
   ) { }
 
-  // realtime
+  // METODO PARA RECIBIR NOTIFICACION DE AVISOS EN TIEMPO REAL
   RecibirNuevosAvisos(data: any) {
-    console.log('entra ---- ', data)
     this.socket.emit('nuevo_aviso', data);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   ObtenerTodasNotificaciones() {
     return this.http.get(`${environment.url}/noti-real-time/`);
@@ -73,18 +85,28 @@ export class RealTimeService {
     return this.http.get(`${environment.url}/noti-real-time/receives/${id_empleado}`);
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
   /** ************************************************************************************ **
    ** **                 METODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
    ** ************************************************************************************ **/
 
+  // METODO PARA ENVIO DE CORREO DE COMUNICADOS
   EnviarCorreoComunicado(datos: any) {
     return this.http.post<any>(`${environment.url}/noti-real-time/mail-comunicado`, datos);
   }
 
-  /** ************************************************************************************ **
-   ** **                 METODOS DE CONSULTA DE DATOS DE COMUNICADOS                    ** ** 
-   ** ************************************************************************************ **/
-
+  // METODO PARA ENVIO DE NOTIFICACION DE COMUNICADOS
   EnviarMensajeGeneral(data: any) {
     return this.http.post<any>(`${environment.url}/noti-real-time/noti-comunicado/`, data);
   }

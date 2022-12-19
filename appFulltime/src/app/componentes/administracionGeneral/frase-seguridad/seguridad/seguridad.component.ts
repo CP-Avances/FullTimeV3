@@ -18,7 +18,7 @@ import { LoginService } from 'src/app/servicios/login/login.service';
 
 export class SeguridadComponent implements OnInit {
 
-  // VER PÁGINA SEGÚN CONFIGURACIÓN
+  // VER PAGINA SEGUN CONFIGURACION
   contrasena: boolean = false;
   frase: boolean = false;
 
@@ -26,11 +26,11 @@ export class SeguridadComponent implements OnInit {
   hide2 = true;
   hide3 = true;
   usuario: string;
-  ActualContrasena = new FormControl('', Validators.maxLength(12));
+  intentos: number = 0;
   datosUser: any = [];
 
-  intentos: number = 0;
-
+  // VARIABLES DE FORMULARIOS
+  ActualContrasena = new FormControl('', Validators.maxLength(12));
   ActualFrase = new FormControl('', Validators.maxLength(100));
 
   public formulario = new FormGroup({
@@ -45,10 +45,10 @@ export class SeguridadComponent implements OnInit {
     private restUser: UsuarioService,
     private restEmpr: EmpresaService,
     private toastr: ToastrService,
-    public loginService: LoginService,
     public router: Router,
+    public ventana: MatDialogRef<SeguridadComponent>,
     public location: Location,
-    public dialogRef: MatDialogRef<SeguridadComponent>,
+    public loginService: LoginService,
   ) {
     this.usuario = localStorage.getItem('empleado');
   }
@@ -58,6 +58,7 @@ export class SeguridadComponent implements OnInit {
     this.intentos = 0;
   }
 
+  // METODO DE CONSULTA DE DATOS DE EMPRESA
   empresa: any = [];
   VerEmpresa() {
     this.empresa = [];
@@ -72,28 +73,28 @@ export class SeguridadComponent implements OnInit {
     });
   }
 
-  CompararContrasenia(form) {
-    /* Cifrado de contraseña */
+  // METODO PARA COMPARAR CONTRASENIA 
+  CompararContrasenia(form: any) {
+    // CIFRADO DE CONTRASEÑA
     const md5 = new Md5();
     let pass = md5.appendStr(form.aPass).end();
     this.datosUser = [];
     this.restUser.BuscarDatosUser(parseInt(this.usuario)).subscribe(data => {
       this.datosUser = data;
-      console.log(pass);
       if (pass === this.datosUser[0].contrasena) {
-        this.dialogRef.close('true');
+        this.ventana.close('true');
       }
       else {
         this.intentos = this.intentos + 1;
         if (this.intentos === 4) {
           this.loginService.logout();
-          this.toastr.error('Intente más tarde', 'Ha exedido el número de intentos', {
+          this.toastr.error('Intente más tarde.', 'Ha exedido el número de intentos.', {
             timeOut: 3000,
           });
-          this.dialogRef.close('false');
+          this.ventana.close('false');
         }
         else {
-          this.toastr.error('Incorrecto', 'La contraseña actual no es la correcta', {
+          this.toastr.error('Incorrecto.', 'La contraseña actual no es la correcta.', {
             timeOut: 3000,
           });
         }
@@ -101,22 +102,23 @@ export class SeguridadComponent implements OnInit {
     });
   }
 
-  CompararFrase(form) {
+  // METODO PARA COMPARAR FRASE DE SEGURIDAD
+  CompararFrase(form: any) {
     this.restUser.BuscarDatosUser(parseInt(this.usuario)).subscribe(data => {
       if (form.aFrase === data[0].frase) {
-        this.dialogRef.close('true');
+        this.ventana.close('true');
       }
       else {
         this.intentos = this.intentos + 1;
         if (this.intentos === 4) {
           this.loginService.logout();
-          this.toastr.error('Intente más tarde', 'Ha exedido el número de intentos', {
+          this.toastr.error('Intente más tarde.', 'Ha exedido el número de intentos.', {
             timeOut: 3000,
           });
-          this.dialogRef.close('false');
+          this.ventana.close('false');
         }
         else {
-          this.toastr.error('La Frase ingresada no es la correcta.', 'Incorrecto', {
+          this.toastr.error('La Frase ingresada no es la correcta.', 'Incorrecto.', {
             timeOut: 3000,
           });
         }
@@ -124,12 +126,14 @@ export class SeguridadComponent implements OnInit {
     });
   }
 
+  // CERRAR VENTANA
   CerrarRegistro() {
-    this.dialogRef.close('false');
+    this.ventana.close('false');
   }
 
+  // METODO PARA RECUPERAR FRASE
   RecuperarFrase() {
     this.loginService.logout();
-    this.dialogRef.close('olvidar');
+    this.ventana.close('olvidar');
   }
 }

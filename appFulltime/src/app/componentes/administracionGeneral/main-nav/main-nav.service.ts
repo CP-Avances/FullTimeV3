@@ -39,7 +39,6 @@ export class MainNavService {
   private _HoraExtra: boolean = false;
   private _TimbreWeb: boolean = false;
   private _Permisos: boolean = false;
-  private _Reportes: boolean = false;
   private _Movil: boolean = false;
 
   get accionesPersonal() { return this._AccionesPersonal; }
@@ -53,9 +52,6 @@ export class MainNavService {
 
   get permisos() { return this._Permisos; }
   setPermisos(arg: boolean) { this._Permisos = arg; }
-
-  get reportes() { return this._Reportes; }
-  setReportes(arg: boolean) { this._Reportes = arg; }
 
   get geolocalizacion() { return this._Geolocalizacion; }
   setGeolocalizacion(arg: boolean) { this._Geolocalizacion = arg; }
@@ -78,7 +74,6 @@ export class MainNavService {
     this.setHoraExtra(value);
     this.setTimbreWeb(value);
     this.setPermisos(value);
-    this.setReportes(value);
     this.setAppMovil(value);
   }
 
@@ -93,7 +88,6 @@ export class MainNavService {
     this.setHoraExtra(hora_extra);
     this.setTimbreWeb(timbre_web);
     this.setPermisos(permisos);
-    this.setReportes(reportes);
     this.setAppMovil(app_movil);
   }
 

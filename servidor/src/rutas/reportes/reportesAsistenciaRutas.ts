@@ -10,8 +10,23 @@ class ReportesAsistenciasRutas {
     }
 
     configuracion(): void {
-        // lista departamentos con empleados activos o inactivos
-        this.router.get('/datos_generales/:estado', TokenValidation, REPORTE_A_CONTROLADOR.DatosGenerales);
+
+        // LISTA DEPARTAMENTOS CON EMPLEADOS ACTIVOS O INACTIVOS
+        this.router.get('/datos_generales/:estado', TokenValidation, REPORTE_A_CONTROLADOR.DatosGeneralesUsuarios);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Reportes de Atrasos
         this.router.put('/atrasos-empleados/:desde/:hasta', TokenValidation, REPORTE_A_CONTROLADOR.ReporteAtrasosMultiple);

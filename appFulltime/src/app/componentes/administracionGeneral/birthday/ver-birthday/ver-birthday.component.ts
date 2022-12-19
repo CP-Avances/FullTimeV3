@@ -28,16 +28,18 @@ export class VerBirthdayComponent implements OnInit {
     this.ObtenerMensajeCumple();
   }
 
+  // METODO PARA BUSCAR MENSAJE DE CUMPLEAÑOS
   ObtenerMensajeCumple() {
     let id_empresa = parseInt(localStorage.getItem("empresa"));
-    this.restB.ObtenerBirthdayEmpresa(id_empresa).subscribe(res => {
+    this.restB.VerMensajeCumpleanios(id_empresa).subscribe(res => {
       this.cumple = res;
-      console.log(this.cumple);
+      this.HabilitarBtn = false;
     }, error => {
       this.HabilitarBtn = true;
     });
   }
 
+  // METODO PARA REGISTRAR MENSAJE DE CUMPLEAÑOS
   AbrirRegistrarMensaje() {
     this.ventana.open(RegistrarBirthdayComponent, { width: '500px' })
       .afterClosed().subscribe(items => {
@@ -45,6 +47,7 @@ export class VerBirthdayComponent implements OnInit {
       })
   }
 
+  // METODO PARA EDITAR MENSAJE DE CUMPELAÑOS
   EditarMensaje(dataSelect: any) {
     this.ventana.open(EditarBirthdayComponent, { width: '500px', data: dataSelect })
       .afterClosed().subscribe(items => {

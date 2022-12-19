@@ -446,7 +446,7 @@ export class HoraExtraRealComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: [30, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: [30, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
                 { text: 'Id', style: 'tableHeader' },
@@ -455,7 +455,6 @@ export class HoraExtraRealComponent implements OnInit {
                 { text: 'Cedula', style: 'tableHeader' },
                 { text: 'Fecha Nacimiento', style: 'tableHeader' },
                 { text: 'Correo', style: 'tableHeader' },
-                { text: 'Correo Alternativo', style: 'tableHeader' },
                 { text: 'Género', style: 'tableHeader' },
                 { text: 'Estado Civil', style: 'tableHeader' },
                 { text: 'Domicilio', style: 'tableHeader' },
@@ -480,7 +479,6 @@ export class HoraExtraRealComponent implements OnInit {
                   { text: obj.cedula, style: 'itemsTableD' },
                   { text: obj.fec_nacimiento.split("T")[0], style: 'itemsTableD' },
                   { text: obj.correo, style: 'itemsTableD' },
-                  { text: obj.mail_alternativo, style: 'itemsTableD' },
                   { text: genero, style: 'itemsTableD' },
                   { text: estadoCivil, style: 'itemsTableD' },
                   { text: obj.domicilio, style: 'itemsTableD' },
@@ -538,7 +536,6 @@ export class HoraExtraRealComponent implements OnInit {
           "correo": obj.correo,
           "fechaNacimiento": obj.fec_nacimiento.split("T")[0],
           "estado": estado,
-          "correoAlternativo": obj.mail_alternativo,
           "domicilio": obj.domicilio,
           "telefono": obj.telefono,
           "nacionalidad": nacionalidad,
@@ -728,7 +725,6 @@ export class HoraExtraRealComponent implements OnInit {
                   { text: obj.cedula, style: 'itemsTableD' },
                   { text: obj.fec_nacimiento.split("T")[0], style: 'itemsTableD' },
                   { text: obj.correo, style: 'itemsTableD' },
-                  { text: obj.mail_alternativo, style: 'itemsTableD' },
                   { text: genero, style: 'itemsTableD' },
                   { text: estadoCivil, style: 'itemsTableD' },
                   { text: obj.domicilio, style: 'itemsTableD' },

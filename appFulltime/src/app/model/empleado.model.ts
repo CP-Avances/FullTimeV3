@@ -11,7 +11,6 @@ export interface EmpleadoElemento {
     id: number;
     id_nacionalidad: number;
     imagen: string
-    mail_alternativo: string;
     nombre: string;
     telefono: string;
 }

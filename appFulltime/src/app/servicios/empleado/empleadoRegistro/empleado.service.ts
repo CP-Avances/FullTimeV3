@@ -149,6 +149,11 @@ export class EmpleadoService {
     return this.http.put<any>(`${environment.url}/empleado/geolocalizacion/${id}`, data)
   }
 
+  // METODO PARA OBTENER LA UBICACION DE DOMICILIO DEL USUARIO
+  BuscarUbicacion(id: number) {
+    return this.http.get<any>(`${environment.url}/empleado/ubicacion/${id}`);
+  }
+  
 
   /** **************************************************************************************** **
    ** **                 METODOS MODALIDAD DE TRABAJO O TIPO DE CONTRATOS                   ** **
@@ -401,9 +406,7 @@ export class EmpleadoService {
     return this.http.put<any>(`${environment.url}/empleado/geolocalizacion-nuevo-domicilio/${id}`, data)
   }
 
-  BuscarUbicacion(id: number) {
-    return this.http.get<any>(`${environment.url}/empleado/ubicacion/${id}`);
-  }
+
 
   ActualizarUbicacion(id: number, data: any) {
     return this.http.put<any>(`${environment.url}/empleado/actualizar-geolocalizacion/${id}`, data);

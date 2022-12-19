@@ -1,4 +1,8 @@
-.btn { background-color: rgb(80,87,97); color: white; margin: 5px 10px 5px 10px;} 
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+    margin: 5px 10px 5px 10px;
+}
 
 [type="file"] {
     height: 0;
@@ -6,7 +10,7 @@
     width: 0;
 }
 
-[type="file"] + label {
+[type="file"]+label {
     background: #f15d22;
     border: none;
     border-radius: 5px;
@@ -25,12 +29,12 @@
     vertical-align: middle;
 }
 
-[type="file"] + label.btn-2 {
+[type="file"]+label.btn-2 {
     background-color: #93a3c7;
     overflow: hidden;
 }
 
-[type="file"] + label.btn-2::before {
+[type="file"]+label.btn-2::before {
     color: #fff;
     content: "\f382";
     font-family: "Font Awesome 5 Pro";
@@ -45,12 +49,14 @@
     transition: all 0.3s;
 }
 
-[type="file"] + label.btn-2:hover {
+[type="file"]+label.btn-2:hover {
     background-color: rgb(0, 76, 255)
 }
 
-[type="file"] + label.btn-2:hover::before {
+[type="file"]+label.btn-2:hover::before {
     right: 80%
 }
 
-#nomDoc { font-size: 14px; }
+#letras {
+    font-size: 13px;
+}
