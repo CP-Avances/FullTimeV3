@@ -18,3 +18,7 @@ mat-panel-description { color: white; }
     cursor: pointer;
     margin-left: 10px;
 }
+
+p {
+    font-size: x-small;
+}

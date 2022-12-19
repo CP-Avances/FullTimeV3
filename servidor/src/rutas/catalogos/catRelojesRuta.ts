@@ -33,9 +33,10 @@ class RelojesRuta {
         this.router.put('/', TokenValidation, RELOJES_CONTROLADOR.ActualizarReloj);
         // METODO PARA BUSCAR DATOS GENERALES DE DISPOSITIVOS
         this.router.get('/datosReloj/:id', TokenValidation, RELOJES_CONTROLADOR.ListarDatosUnReloj);
-
-
-
+        // METODO PARA CREAR ARCHIVO XML REGISTRAR DISPOSITIVOS
+        this.router.post('/xmlDownloadIdDispositivos/', TokenValidation, RELOJES_CONTROLADOR.FileXMLDispositivos);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/downloadIdDispositivos/:nameXML', RELOJES_CONTROLADOR.downloadXMLIdDispositivos);
 
 
 

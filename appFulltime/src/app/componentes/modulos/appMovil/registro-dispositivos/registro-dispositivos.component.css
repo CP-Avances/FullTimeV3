@@ -1,3 +1,7 @@
+p {
+    font-size: x-small;
+}
+
 mat-form-field.input-tables {
     margin-bottom: -5px;
     font-size: 10px;

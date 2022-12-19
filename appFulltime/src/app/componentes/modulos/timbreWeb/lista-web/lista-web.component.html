@@ -18,7 +18,7 @@
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th>
-                            <mat-checkbox *ngIf="habilitar" (change)="$event ? masterToggleEmphabilitado() : null"
+                            <mat-checkbox *ngIf="habilitar" [hidden] = "ocultar" (change)="$event ? masterToggleEmphabilitado() : null"
                                 [checked]="selectionEmp.hasValue() && isAllSelectedEmpHabilitados()"
                                 [indeterminate]="selectionEmp.hasValue() && !isAllSelectedEmpHabilitados()"
                                 [aria-label]="checkboxLabelEmphabilitados()">
@@ -80,6 +80,28 @@
         <mat-paginator id="pagina" [length]="usersAppWeb_habilitados.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaHabilitados($event)" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: 1%;">
+            <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel()" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS()" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML()" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Descarga el reporte de todos los usuarios habilitados </p>
+        </div>
+
     </div>
 
     <br><br>
@@ -101,7 +123,7 @@
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th>
-                            <mat-checkbox *ngIf="deshabilitar" (change)="$event ? masterToggleEmpdeshabilitado() : null"
+                            <mat-checkbox *ngIf="deshabilitar" [hidden] = "ocultardes" (change)="$event ? masterToggleEmpdeshabilitado() : null"
                                 [checked]="selectionEmpDeshab.hasValue() && isAllSelectedEmpDeshabilitados()"
                                 [indeterminate]="selectionEmpDeshab.hasValue() && !isAllSelectedEmpDeshabilitados()"
                                 [aria-label]="checkboxLabelEmpdeshabilitados()">
@@ -163,8 +185,29 @@
         <mat-paginator id="pagina" [length]="usersAppWeb_deshabilitados.length" [pageSize]="tamanio_paginades"
             [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaDeshabilitados($event)" showFirstLastButtons>
         </mat-paginator>
+
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: 1%;">
+            <i (click)="generarPdfDeshabilitados('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcelDeshabilitados()" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVSDeshabilitados()" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXMLDeshabilitados()" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Dispositivos en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Descarga el reporte de todos los usuarios deshabilitados </p>
+        </div>
+
     </div>
-
-
 
 </div>

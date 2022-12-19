@@ -32,6 +32,10 @@ class RelojesRuta {
         this.router.put('/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.ActualizarReloj);
         // METODO PARA BUSCAR DATOS GENERALES DE DISPOSITIVOS
         this.router.get('/datosReloj/:id', verificarToken_1.TokenValidation, catRelojesControlador_1.default.ListarDatosUnReloj);
+        // METODO PARA CREAR ARCHIVO XML REGISTRAR DISPOSITIVOS
+        this.router.post('/xmlDownloadIdDispositivos/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.FileXMLDispositivos);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/downloadIdDispositivos/:nameXML', catRelojesControlador_1.default.downloadXMLIdDispositivos);
         this.router.post('/plantillaExcel/', [verificarToken_1.TokenValidation, multipartMiddlewarePlantilla], catRelojesControlador_1.default.CargaPlantillaRelojes);
         // METODO para verificar datos de plantilla antes de subirlos
         this.router.post('/verificar_datos/plantillaExcel/', [verificarToken_1.TokenValidation, multipartMiddlewarePlantilla], catRelojesControlador_1.default.VerificarDatos);

@@ -300,7 +300,7 @@ class UsuarioControlador {
   //LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
   public async usersListadispositivosMoviles(req: Request, res: Response) {
     try {
-      const DISPOSITIVOS = await pool.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.codigo, d.id_dispositivo, d.modelo_dispositivo, e.cedula ' +
+      const DISPOSITIVOS = await pool.query('SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo ' +
         'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
         .then(result => { return result.rows });
 
