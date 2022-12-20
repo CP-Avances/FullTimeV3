@@ -9,8 +9,13 @@ const pool = new pg_pool_1.default({
     user: 'postgres',
     host: 'localhost',
     port: 5432,
+<<<<<<< HEAD
     database: 'fulltime_prueba',
     password: 'postgres'
+=======
+    database: 'fulltime4.0',
+    password: 'fulltime'
+>>>>>>> ac1c8dc (Actualizacion conexion a la nueva base de datos)
 });
 pool.query('SELECT NOW()', (err, res) => {
     if (err) {
