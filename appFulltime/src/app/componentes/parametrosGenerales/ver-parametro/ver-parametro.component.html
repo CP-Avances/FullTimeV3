@@ -11,6 +11,16 @@
         </div>
         <mat-card-content>
 
+            <!-- CONTENIDO DISPOSITIVOS REGISTRADOS -->
+            <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="dispositivos">
+                <div class="nota">
+                    <span>
+                        NOTA: Definir el número de dispositivos que pueden usar los usuarios para registrar sus timbres
+                        en la aplicación móvil.
+                    </span>
+                </div>
+            </div>
+
             <!-- CONTENIDO TOLERANCIA DE UBICACION -->
             <div class="container" style="padding-bottom: 20px; text-align: center;" *ngIf="ubicacion">
                 <div class="nota">

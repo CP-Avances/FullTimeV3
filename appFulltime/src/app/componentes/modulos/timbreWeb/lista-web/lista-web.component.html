@@ -4,13 +4,13 @@
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <mat-icon (click)="HabilitarSeleccion_habilitados()" class="flex-shrink-1 bd-highlight" matSuffix
-            matTooltipPosition="right" matTooltip="Habilitar selección múltiple." id="SelectCheck">
-            library_add_check</mat-icon>
+                matTooltipPosition="right" matTooltip="Habilitar selección múltiple." id="SelectCheck">
+                library_add_check</mat-icon>
             <span class="w-100 bd-highlight">
                 LISTA DE USUARIOS HABILITADOS</span>
             <button class="btn btn-sm btn-primary" style="float: right; margin-right: 10px; font-size: 70%;"
-                (click)="openDialogUpdateAppWeblHabilitados()" >
-               Deshabilitar Usuario</button>
+                (click)="openDialogUpdateAppWeblHabilitados()">
+                Deshabilitar Usuario</button>
         </div>
 
         <div class="table-responsive">
@@ -18,7 +18,8 @@
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th>
-                            <mat-checkbox *ngIf="habilitar" [hidden] = "ocultar" (change)="$event ? masterToggleEmphabilitado() : null"
+                            <mat-checkbox *ngIf="habilitar" [hidden]="ocultar"
+                                (change)="$event ? masterToggleEmphabilitado() : null"
                                 [checked]="selectionEmp.hasValue() && isAllSelectedEmpHabilitados()"
                                 [indeterminate]="selectionEmp.hasValue() && !isAllSelectedEmpHabilitados()"
                                 [aria-label]="checkboxLabelEmphabilitados()">
@@ -78,7 +79,8 @@
             </table>
         </div>
         <mat-paginator id="pagina" [length]="usersAppWeb_habilitados.length" [pageSize]="tamanio_pagina"
-            [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaHabilitados($event)" showFirstLastButtons>
+            [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaHabilitados($event)"
+            showFirstLastButtons>
         </mat-paginator>
         <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: 1%;">
             <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
@@ -116,14 +118,15 @@
                 LISTA DE USUARIOS DESHABILITADOS</span>
             <button class="btn btn-sm btn-primary" style="float: right; margin-right: 10px; font-size: 70%;"
                 (click)="openDialogUpdateAppWebDeshabilitados()">
-               Habilitar Usuario</button>
+                Habilitar Usuario</button>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th>
-                            <mat-checkbox *ngIf="deshabilitar" [hidden] = "ocultardes" (change)="$event ? masterToggleEmpdeshabilitado() : null"
+                            <mat-checkbox *ngIf="deshabilitar" [hidden]="ocultardes"
+                                (change)="$event ? masterToggleEmpdeshabilitado() : null"
                                 [checked]="selectionEmpDeshab.hasValue() && isAllSelectedEmpDeshabilitados()"
                                 [indeterminate]="selectionEmpDeshab.hasValue() && !isAllSelectedEmpDeshabilitados()"
                                 [aria-label]="checkboxLabelEmpdeshabilitados()">
@@ -169,7 +172,8 @@
                         *ngFor="let u of usersAppWeb_deshabilitados | emplCodigo: filtroCodigodes | emplNombre: filtroNombredes | emplCedula: filtroCedulades | paginate:tamanio_paginades:numero_paginades">
                         <td>
                             <mat-checkbox *ngIf="deshabilitar" (click)="$event.stopPropagation()"
-                                (change)="$event ? selectionEmpDeshab.toggle(u) : null" [checked]="selectionEmpDeshab.isSelected(u)"
+                                (change)="$event ? selectionEmpDeshab.toggle(u) : null"
+                                [checked]="selectionEmpDeshab.isSelected(u)"
                                 [aria-label]="checkboxLabelEmpdeshabilitados(u)">
                             </mat-checkbox>
                         </td>
@@ -183,24 +187,25 @@
             </table>
         </div>
         <mat-paginator id="pagina" [length]="usersAppWeb_deshabilitados.length" [pageSize]="tamanio_paginades"
-            [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaDeshabilitados($event)" showFirstLastButtons>
+            [pageSizeOptions]="pageSizeOptions" id="estilo" (page)="ManejarPaginaDeshabilitados($event)"
+            showFirstLastButtons>
         </mat-paginator>
 
         <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: 1%;">
-            <i (click)="generarPdfDeshabilitados('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
-                matTooltip="Descargar Lista de Dispositivos en formato PDF.">
+            <i (click)="generarPdfDeshabilitados('download')" id="pdf" class="fas fa-file-pdf" matSuffix
+                matTooltipPosition="right" matTooltip="Descargar Lista de Dispositivos en formato PDF.">
                 <p>PDF</p>
             </i>
-            <i (click)="exportToExcelDeshabilitados()" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
-                matTooltip="Descargar Lista de Dispositivos en formato EXCEL.">
+            <i (click)="exportToExcelDeshabilitados()" id="excel" class="fas fa-file-excel" matSuffix
+                matTooltipPosition="right" matTooltip="Descargar Lista de Dispositivos en formato EXCEL.">
                 <p>XLSL</p>
             </i>
-            <i (click)="exportToCVSDeshabilitados()" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
-                matTooltip="Descargar Lista de Dispositivos en formato CSV.">
+            <i (click)="exportToCVSDeshabilitados()" id="csv" class="fas fa-file-csv" matSuffix
+                matTooltipPosition="right" matTooltip="Descargar Lista de Dispositivos en formato CSV.">
                 <p>CSV</p>
             </i>
-            <i (click)="exportToXMLDeshabilitados()" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
-                matTooltip="Descargar Lista de Dispositivos en formato XML.">
+            <i (click)="exportToXMLDeshabilitados()" id="xml" class="fas fa-file-code" matSuffix
+                matTooltipPosition="right" matTooltip="Descargar Lista de Dispositivos en formato XML.">
                 <p>XML</p>
             </i>
         </div>

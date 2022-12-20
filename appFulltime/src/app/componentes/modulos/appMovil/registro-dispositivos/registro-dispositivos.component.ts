@@ -137,7 +137,7 @@ export class RegistroDispositivosComponent implements OnInit {
       this.usersDispositivosRegistrados = res;
     }, err => {
       console.log(err);
-      this.toastr.error(err.error.message)
+      this.toastr.info(err.error.message)
     })
   }
 

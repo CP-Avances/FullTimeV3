@@ -40,6 +40,7 @@ export class VerParametroComponent implements OnInit {
   laboral_calendario: boolean = false;
   limite_correo: boolean = false;
   ubicacion: boolean = false;
+  dispositivos: boolean = false;
 
   ingreso: number = 0;
 
@@ -88,6 +89,10 @@ export class VerParametroComponent implements OnInit {
     if (this.idParametro === '31') {
       this.formato = false;
       this.laboral_calendario = true;
+    }
+    if (this.idParametro === '32') {
+      this.formato = false;
+      this.dispositivos = true;
     }
   }
 

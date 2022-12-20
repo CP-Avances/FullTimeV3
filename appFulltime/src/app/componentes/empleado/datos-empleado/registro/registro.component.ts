@@ -215,7 +215,6 @@ export class RegistroComponent implements OnInit {
     const md5 = new Md5();
     let clave = md5.appendStr(form3.passForm).end();
     let dataUser = {
-      app_habilita: true,
       id_empleado: id,
       contrasena: clave,
       usuario: form3.userForm,

@@ -404,6 +404,27 @@ export class MainNavComponent implements OnInit {
             url: '/coordenadas'
           },
           {
+            name: 'Timbre Teletrabajo',
+            accion: this.HabilitarTimbreWeb,
+            estado: this.HabilitarTimbreWeb,
+            icono: 'computer',
+            color: true,
+            subtitulo: true,
+            children: [
+              { name: 'Timbre Web', url: '/timbresWeb', color: true },
+              { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: true },
+            ]
+          },
+          {
+            name: 'Timbre Teletrabajo',
+            accion: !this.HabilitarTimbreWeb,
+            estado: !this.HabilitarTimbreWeb,
+            activo: this.HabilitarTimbreWeb,
+            icono: 'computer',
+            color: false,
+            url: '/timbresWeb'
+          },
+          {
             name: 'Aplicación Móvil',
             accion: this.HabilitarMovil,
             estado: this.HabilitarMovil,
@@ -435,8 +456,6 @@ export class MainNavComponent implements OnInit {
         subtitulo: false,
         children: [
           { name: 'Dispositivos', url: '/listarRelojes', color: true },
-          { name: 'Timbre Web', url: '/timbresWeb', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
-          { name: 'Timbre Teletrabajo', url: '/timbres-personal', color: this.HabilitarTimbreWeb, activo: this.HabilitarTimbreWeb },
           { name: 'Timbres Múltiples', url: '/timbres-multiples', color: true },
           { name: 'Administrar Timbres', url: '/timbres-admin', color: true },
         ]

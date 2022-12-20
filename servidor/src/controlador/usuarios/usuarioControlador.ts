@@ -12,13 +12,13 @@ class UsuarioControlador {
   // CREAR REGISTRO DE USUARIOS
   public async CrearUsuario(req: Request, res: Response) {
     try {
-      const { usuario, contrasena, estado, id_rol, id_empleado, app_habilita } = req.body;
+      const { usuario, contrasena, estado, id_rol, id_empleado } = req.body;
       await pool.query(
         `
-        INSERT INTO usuarios (usuario, contrasena, estado, id_rol, id_empleado, app_habilita) 
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO usuarios (usuario, contrasena, estado, id_rol, id_empleado) 
+        VALUES ($1, $2, $3, $4, $5)
         `
-        , [usuario, contrasena, estado, id_rol, id_empleado, app_habilita]);
+        , [usuario, contrasena, estado, id_rol, id_empleado]);
 
       res.jsonp({ message: 'Usuario Guardado' });
     }
@@ -304,7 +304,7 @@ class UsuarioControlador {
         'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
         .then(result => { return result.rows });
 
-      if (DISPOSITIVOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros' });
+      if (DISPOSITIVOS.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
 
       return res.status(200).jsonp(DISPOSITIVOS)
 
@@ -313,12 +313,12 @@ class UsuarioControlador {
     }
   }
 
-  public async deleteDispositivoRegistrado(req: Request, res: Response){
+  public async deleteDispositivoRegistrado(req: Request, res: Response) {
     try {
       const array = req.params.dispositivo;
 
       let dispositivos = array.split(',');
-      console.log("id_dispositivos: ",dispositivos);
+      console.log("id_dispositivos: ", dispositivos);
 
       if (dispositivos.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
 

@@ -40,15 +40,15 @@ class LoginControlador {
                 if (USUARIO.rowCount != 0) {
                     const { id, id_empleado, id_rol, usuario: user } = USUARIO.rows[0];
                     let ACTIVO = yield database_1.default.query(`
-          SELECT e.estado AS empleado, u.estado AS usuario, u.app_habilita, e.codigo, e.web_access 
+          SELECT e.estado AS empleado, u.estado AS usuario, e.codigo, e.web_access 
           FROM empleados AS e, usuarios AS u WHERE e.id = u.id_empleado AND u.id = $1
           `, [USUARIO.rows[0].id])
                         .then(result => {
                         return result.rows;
                     });
-                    const { empleado, usuario, app_habilita, codigo, web_access } = ACTIVO[0];
+                    const { empleado, usuario, codigo, web_access } = ACTIVO[0];
                     // SI EL USUARIO NO SE ENCUENTRA ACTIVO
-                    if (empleado === 2 && usuario === false && app_habilita === false) {
+                    if (empleado === 2 && usuario === false) {
                         return res.jsonp({ message: 'EL usuario se encuentra con estado inactivo.' });
                     }
                     // SI LOS USUARIOS NO TIENEN PERMISO DE ACCESO

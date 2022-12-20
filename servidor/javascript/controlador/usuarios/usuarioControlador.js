@@ -21,11 +21,11 @@ class UsuarioControlador {
     CrearUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { usuario, contrasena, estado, id_rol, id_empleado, app_habilita } = req.body;
+                const { usuario, contrasena, estado, id_rol, id_empleado } = req.body;
                 yield database_1.default.query(`
-        INSERT INTO usuarios (usuario, contrasena, estado, id_rol, id_empleado, app_habilita) 
-        VALUES ($1, $2, $3, $4, $5, $6)
-        `, [usuario, contrasena, estado, id_rol, id_empleado, app_habilita]);
+        INSERT INTO usuarios (usuario, contrasena, estado, id_rol, id_empleado) 
+        VALUES ($1, $2, $3, $4, $5)
+        `, [usuario, contrasena, estado, id_rol, id_empleado]);
                 res.jsonp({ message: 'Usuario Guardado' });
             }
             catch (error) {
@@ -282,7 +282,7 @@ class UsuarioControlador {
                     'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
                     .then(result => { return result.rows; });
                 if (DISPOSITIVOS.length === 0)
-                    return res.status(404).jsonp({ message: 'No se encuentran registros' });
+                    return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
                 return res.status(200).jsonp(DISPOSITIVOS);
             }
             catch (error) {
