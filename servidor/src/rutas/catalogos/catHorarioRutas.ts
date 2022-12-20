@@ -43,7 +43,7 @@ class HorarioRutas {
         // METODO PARA CREAR ARCHIVO XML
         this.router.post('/xmlDownload/', TokenValidation, HORARIO_CONTROLADOR.FileXML);
         // METODO PARA DESCARGAR ARCHIVO XML
-        this.router.get('/download/:nameXML', HORARIO_CONTROLADOR.downloadXML);
+        this.router.get('/xmlDownload/:nameXML', HORARIO_CONTROLADOR.downloadXML);
         // METODO PARA BUSCAR DATOS DE UN HORARIO
         this.router.get('/:id', TokenValidation, HORARIO_CONTROLADOR.ObtenerUnHorario);
         // METODO PARA ACTUALIZAR HORAS TRABAJADAS

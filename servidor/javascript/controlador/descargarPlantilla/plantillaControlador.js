@@ -14,7 +14,7 @@ class PlantillasControlador {
     DescargarPlantilla(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const docs = req.params.docs;
-            let filePath = `servidor\\plantillasVacias\\${docs}`;
+            let filePath = `servidor/plantillasVacias/${docs}`;
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }

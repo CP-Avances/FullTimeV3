@@ -39,6 +39,8 @@ class EmpresaControlador {
 
         const codificado = await ImagenBase64LogosEmpresas(file_name.logo);
 
+        console.log("file_name: ",file_name.logo);
+
         if (codificado === 0) {
             res.status(200).jsonp({ imagen: 0, nom_empresa: file_name.nombre })
         } else {
@@ -48,9 +50,9 @@ class EmpresaControlador {
 
     // METODO PARA EDITAR LOGO DE EMPRESA
     public async ActualizarLogoEmpresa(req: Request, res: Response): Promise<any> {
-
         let list: any = req.files;
         let logo = list.image[0].path.split("\\")[1];
+        console.log("logo: ",logo);
         let id = req.params.id_empresa;
 
         const logo_name = await pool.query(
@@ -61,16 +63,18 @@ class EmpresaControlador {
 
         if (logo_name.rowCount > 0) {
             logo_name.rows.map(async (obj) => {
+
+                console.log("logo_name: ",obj.logo);
+
                 if (obj.logo != null) {
+                    console.log("lsi entro: ",obj.logo);
                     try {
-                        let filePath = `servidor\\logos\\${obj.logo}`;
+                        let filePath = `servidor/logos/${obj.logo}`;
                         let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                         // ELIMINAR LOGO DEL SERVIDOR
                         fs.unlinkSync(direccionCompleta);
                         await pool.query(
-                            `
-                            UPDATE cg_empresa SET logo = $2 WHERE id = $1
-                            `
+                            `UPDATE cg_empresa SET logo = $2 WHERE id = $1`
                             , [id, logo]);
                     } catch (error) {
                         await pool.query('', [id, logo]);

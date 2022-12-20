@@ -20,6 +20,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { count } from 'console';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -377,7 +378,7 @@ export class ListaWebComponent implements OnInit {
       },
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de usuarios Web habilitada ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
+        { text: 'Lista de usuarios timbre web habilitados ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         this.presentarDataPDF(),
       ],
       styles: {
@@ -389,6 +390,7 @@ export class ListaWebComponent implements OnInit {
   }
 
   presentarDataPDF() {
+    let count = 1;
     return {
       columns: [
         { width: '*', text: '' },
@@ -406,13 +408,14 @@ export class ListaWebComponent implements OnInit {
                 { text: 'Timbre Web', style: 'tableHeader' },
               ],
               ...this.usersAppWeb_habilitados.map(obj => {
+                const web_habilita = "Activo";
                 return [
-                  { text: obj.id, style: 'itemsTableC' },
+                  { text: count++, style: 'itemsTableC' },
                   { text: obj.codigo, style: 'itemsTableC' },
                   { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.cedula, style: 'itemsTableC' },
                   { text: obj.usuario, style: 'itemsTable' },
-                  { text: obj.web_habilita, style: 'itemsTable' },
+                  { text: web_habilita, style: 'itemsTable' },
                 ];
               })
             ]
@@ -435,18 +438,18 @@ export class ListaWebComponent implements OnInit {
   exportToExcel() {
     var objeto: any;
     var cont: number = 1;
+    const web_habilita = "Activo";
     var ListadoUsuahabilitados = [];
     this.usersAppWeb_habilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "TIMBRE WEB": obj.web_habilita,
+        "TIMBRE WEB": web_habilita,
       }
       ListadoUsuahabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuahabilitados);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -455,24 +458,24 @@ export class ListaWebComponent implements OnInit {
   }
 
   /** ********************************************************************************************** ** 
-   ** **                              METODO PARA EXPORTAR A CSV                                  ** **
-   ** ********************************************************************************************** **/
+  ** **                              METODO PARA EXPORTAR A CSV                                  ** **
+  ** ********************************************************************************************** **/
 
   exportToCVS() {
     var objeto: any;
     var cont: number = 1;
+    const web_habilita = "Activo";
     var ListadoUsuahabilitados = [];
     this.usersAppWeb_habilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "TIMBRE WEB": obj.web_habilita,
+        "TIMBRE WEB": web_habilita,
       }
       ListadoUsuahabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuahabilitados);
     const csvDataR = xlsx.utils.sheet_to_csv(wse);
@@ -488,16 +491,18 @@ export class ListaWebComponent implements OnInit {
   data: any = [];
   exportToXML() {
     var objeto: any;
+    var cont: number = 1;
+    const web_habilita = "Activo";
     var ListadoUsuahabilitados = [];
     this.usersAppWeb_habilitados.forEach(obj => {
       objeto = {
-        "dispositivo_moviles": {
-          '@id': obj.id,
+        "Timbre_web": {
+          '@id': cont++,
           "codigo": obj.codigo,
           "nombre": obj.nombre,
           "cedula": obj.cedula,
           "usuario": obj.usuario,
-          "TIMBRE WEB": obj.web_habilita,
+          "timbre_web": web_habilita,
         }
       }
       ListadoUsuahabilitados.push(objeto)
@@ -505,7 +510,7 @@ export class ListaWebComponent implements OnInit {
 
     this.rest.CrearXML(ListadoUsuahabilitados).subscribe(res => {
       this.data = res;
-      this.urlxml = `${environment.url}/relojes/download/` + this.data.name;
+      this.urlxml = `${environment.url}/relojes/xmlDownload/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });
   }
@@ -513,8 +518,8 @@ export class ListaWebComponent implements OnInit {
 
   //Listado de Usuarios Deshabilitados
   /** ********************************************************************************* **
-   ** **                        GENERACION DE PDFs                                   ** **
-   ** ********************************************************************************* **/
+  ** **                        GENERACION DE PDFs                                   ** **
+  ** ********************************************************************************* **/
 
   generarPdfDeshabilitados(action = 'open') {
     const documentDefinition = this.getDocumentDefinicionDeshabilitados();
@@ -559,7 +564,7 @@ export class ListaWebComponent implements OnInit {
       },
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de usuarios Web Deshabilitada ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
+        { text: 'Lista de usuarios timbre web deshabilitados', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         this.presentarDataPDFDeshabilitados(),
       ],
       styles: {
@@ -571,6 +576,7 @@ export class ListaWebComponent implements OnInit {
   }
 
   presentarDataPDFDeshabilitados() {
+    let count = 1;
     return {
       columns: [
         { width: '*', text: '' },
@@ -580,7 +586,7 @@ export class ListaWebComponent implements OnInit {
             widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'N#', style: 'tableHeader' },
                 { text: 'Codigo', style: 'tableHeader' },
                 { text: 'Empleado', style: 'tableHeader' },
                 { text: 'Cedula', style: 'tableHeader' },
@@ -588,13 +594,14 @@ export class ListaWebComponent implements OnInit {
                 { text: 'Timbre Web', style: 'tableHeader' },
               ],
               ...this.usersAppWeb_deshabilitados.map(obj => {
+                const web_habilita = "Inactivo";
                 return [
-                  { text: obj.id, style: 'itemsTableC' },
+                  { text: count++, style: 'itemsTableC' },
                   { text: obj.codigo, style: 'itemsTableC' },
                   { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.cedula, style: 'itemsTableC' },
                   { text: obj.usuario, style: 'itemsTable' },
-                  { text: obj.web_habilita, style: 'itemsTable' },
+                  { text: web_habilita, style: 'itemsTable' },
                 ];
               })
             ]
@@ -612,23 +619,23 @@ export class ListaWebComponent implements OnInit {
   }
 
   /** ********************************************************************************* **
-   ** **                              GENERACION DE EXCEL                            ** **
-   ** ********************************************************************************* **/
+  ** **                              GENERACION DE EXCEL                            ** **
+  ** ********************************************************************************* **/
   exportToExcelDeshabilitados() {
     var objeto: any;
     var cont: number = 1;
+    const web_habilita = "Inactivo";
     var ListadoUsuaDeshabilitados = [];
     this.usersAppWeb_deshabilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "TIMBRE WEB": obj.web_habilita,
+        "TIMBRE WEB": web_habilita,
       }
       ListadoUsuaDeshabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuaDeshabilitados);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -637,24 +644,24 @@ export class ListaWebComponent implements OnInit {
   }
 
   /** ********************************************************************************************** ** 
-   ** **                              METODO PARA EXPORTAR A CSV                                  ** **
-   ** ********************************************************************************************** **/
+  ** **                              METODO PARA EXPORTAR A CSV                                  ** **
+  ** ********************************************************************************************** **/
 
   exportToCVSDeshabilitados() {
     var objeto: any;
     var cont: number = 1;
+    const web_habilita = "Inactivo";
     var ListadoUsuaDeshabilitados = [];
     this.usersAppWeb_deshabilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "TIMBRE WEB": obj.web_habilita,
+        "TIMBRE WEB": web_habilita,
       }
       ListadoUsuaDeshabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuaDeshabilitados);
     const csvDataR = xlsx.utils.sheet_to_csv(wse);
@@ -663,23 +670,25 @@ export class ListaWebComponent implements OnInit {
   }
 
   /** ********************************************************************************************** **
-   ** **                          PARA LA EXPORTACION DE ARCHIVOS XML                             ** **
-   ** ********************************************************************************************** **/
+  ** **                          PARA LA EXPORTACION DE ARCHIVOS XML                             ** **
+  ** ********************************************************************************************** **/
 
   urlxmlDes: string;
   dataDes: any = [];
   exportToXMLDeshabilitados() {
     var objeto: any;
+    var count: number = 1;
+    const web_habilita = "Inactivo";
     var ListadoUsuaDeshabilitados = [];
     this.usersAppWeb_deshabilitados.forEach(obj => {
       objeto = {
-        "dispositivo_moviles": {
-          '@id': obj.id,
+        "Timbre_web": {
+          '@id': count++,
           "codigo": obj.codigo,
           "nombre": obj.nombre,
           "cedula": obj.cedula,
           "usuario": obj.usuario,
-          "Timbre Web": obj.app_habilita,
+          "timbre_web": web_habilita,
         }
       }
       ListadoUsuaDeshabilitados.push(objeto)
@@ -687,10 +696,8 @@ export class ListaWebComponent implements OnInit {
 
     this.rest.CrearXML(ListadoUsuaDeshabilitados).subscribe(res => {
       this.dataDes = res;
-      this.urlxmlDes = `${environment.url}/relojes/download/` + this.dataDes.name;
+      this.urlxmlDes = `${environment.url}/relojes/xmlDownload/` + this.dataDes.name;
       window.open(this.urlxmlDes, "_blank");
     });
   }
-
 }
-
