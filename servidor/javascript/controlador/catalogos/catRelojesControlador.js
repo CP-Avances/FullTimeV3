@@ -61,7 +61,7 @@ class RelojesControlador {
     downloadXML(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownload\\${name}`;
+            let filePath = `servidor/xmlDownload/${name}`;
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
@@ -151,7 +151,8 @@ class RelojesControlador {
         return __awaiter(this, void 0, void 0, function* () {
             var xml = builder.create('root').ele(req.body).end({ pretty: true });
             let filename = "IDDispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-            fs_1.default.writeFile(`xmlDownloadIdDispositivos/${filename}`, xml, function (err) {
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+                console.log(err);
             });
             res.jsonp({ text: 'XML creado', name: filename });
         });
@@ -160,7 +161,7 @@ class RelojesControlador {
     downloadXMLIdDispositivos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownloadIdDispositivos\\${name}`;
+            let filePath = `servidor/xmlDownload/${name}`;
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }

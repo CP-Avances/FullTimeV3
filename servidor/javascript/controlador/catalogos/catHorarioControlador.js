@@ -168,7 +168,7 @@ class HorarioControlador {
     downloadXML(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownload\\${name}`;
+            let filePath = `servidor/xmlDownload/${name}`;
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }

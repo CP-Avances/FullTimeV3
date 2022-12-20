@@ -385,7 +385,7 @@ export class ListaAppComponent implements OnInit {
       },
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de usuarios App habilitada ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
+        { text: 'Lista de usuarios app movil habilitados ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         this.presentarDataPDFHabilitados(),
       ],
       styles: {
@@ -397,6 +397,7 @@ export class ListaAppComponent implements OnInit {
   }
 
   presentarDataPDFHabilitados() {
+    let count = 1;
     return {
       columns: [
         { width: '*', text: '' },
@@ -406,7 +407,7 @@ export class ListaAppComponent implements OnInit {
             widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'N#', style: 'tableHeader' },
                 { text: 'Codigo', style: 'tableHeader' },
                 { text: 'Empleado', style: 'tableHeader' },
                 { text: 'Cedula', style: 'tableHeader' },
@@ -414,13 +415,14 @@ export class ListaAppComponent implements OnInit {
                 { text: 'App Movil', style: 'tableHeader' },
               ],
               ...this.usersAppMovil_habilitados.map(obj => {
+                const app_habilita = "Activo";
                 return [
-                  { text: obj.id, style: 'itemsTableC' },
+                  { text: count++, style: 'itemsTableC' },
                   { text: obj.codigo, style: 'itemsTableC' },
                   { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.cedula, style: 'itemsTableC' },
                   { text: obj.usuario, style: 'itemsTable' },
-                  { text: obj.app_habilita, style: 'itemsTable' },
+                  { text: app_habilita, style: 'itemsTable' },
                 ];
               })
             ]
@@ -444,18 +446,18 @@ export class ListaAppComponent implements OnInit {
   exportToExcel() {
     var objeto: any;
     var cont: number = 1;
+    const app_habilita = "Activo";
     var ListadoUsuahabilitados = [];
     this.usersAppMovil_habilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "APP HABILITADA": obj.app_habilita,
+        "APP HABILITADA": app_habilita,
       }
       ListadoUsuahabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuahabilitados);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -470,18 +472,18 @@ export class ListaAppComponent implements OnInit {
   exportToCVS() {
     var objeto: any;
     var cont: number = 1;
+    const app_habilita = "Activo";
     var ListadoUsuahabilitados = [];
     this.usersAppMovil_habilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "APP HABILITADA": obj.app_habilita,
+        "APP HABILITADA": app_habilita,
       }
       ListadoUsuahabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuahabilitados);
     const csvDataR = xlsx.utils.sheet_to_csv(wse);
@@ -497,16 +499,18 @@ export class ListaAppComponent implements OnInit {
   data: any = [];
   exportToXML() {
     var objeto: any;
+    var cont: number = 1;
+    const app_habilita = "Activo";
     var ListadoUsuaHabilitados = [];
     this.usersAppMovil_habilitados.forEach(obj => {
       objeto = {
-        "dispositivo_moviles": {
-          '@id': obj.id,
+        "App_movil": {
+          '@id': cont++,
           "codigo": obj.codigo,
           "nombre": obj.nombre,
           "cedula": obj.cedula,
           "usuario": obj.usuario,
-          "App Habilitada": obj.app_habilita,
+          "app_movil": app_habilita,
         }
       }
       ListadoUsuaHabilitados.push(objeto)
@@ -514,7 +518,7 @@ export class ListaAppComponent implements OnInit {
 
     this.rest.CrearXML(ListadoUsuaHabilitados).subscribe(res => {
       this.data = res;
-      this.urlxml = `${environment.url}/relojes/download/` + this.data.name;
+      this.urlxml = `${environment.url}/relojes/xmlDownload/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });
   }
@@ -567,7 +571,7 @@ export class ListaAppComponent implements OnInit {
       },
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de usuarios App habilitada ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
+        { text: 'Lista de usuarios app movil deshabilitados ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         this.presentarDataPDFDeshabilitados(),
       ],
       styles: {
@@ -579,6 +583,7 @@ export class ListaAppComponent implements OnInit {
   }
 
   presentarDataPDFDeshabilitados() {
+    let count = 1;
     return {
       columns: [
         { width: '*', text: '' },
@@ -588,21 +593,22 @@ export class ListaAppComponent implements OnInit {
             widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'N#', style: 'tableHeader' },
                 { text: 'Codigo', style: 'tableHeader' },
                 { text: 'Empleado', style: 'tableHeader' },
                 { text: 'Cedula', style: 'tableHeader' },
                 { text: 'Usuario', style: 'tableHeader' },
                 { text: 'App Movil', style: 'tableHeader' },
               ],
-              ...this.usersAppMovil_habilitados.map(obj => {
+              ...this.usersAppMovil_deshabilitados.map(obj => {
+                const app_habilita = "Inactivo";
                 return [
-                  { text: obj.id, style: 'itemsTableC' },
+                  { text: count++, style: 'itemsTableC' },
                   { text: obj.codigo, style: 'itemsTableC' },
                   { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.cedula, style: 'itemsTableC' },
                   { text: obj.usuario, style: 'itemsTable' },
-                  { text: obj.app_habilita, style: 'itemsTable' },
+                  { text: app_habilita, style: 'itemsTable' },
                 ];
               })
             ]
@@ -625,18 +631,18 @@ export class ListaAppComponent implements OnInit {
   exportToExcelDeshabilitados() {
     var objeto: any;
     var cont: number = 1;
+    const app_habilita = "Inactivo";
     var ListadoUsuaDeshabilitados = [];
     this.usersAppMovil_deshabilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "APP HABILITADA": obj.app_habilita,
+        "APP HABILITADA": app_habilita,
       }
       ListadoUsuaDeshabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuaDeshabilitados);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -651,18 +657,18 @@ export class ListaAppComponent implements OnInit {
   exportToCVSDeshabilitados() {
     var objeto: any;
     var cont: number = 1;
+    const app_habilita = "Inactivo";
     var ListadoUsuaDeshabilitados = [];
     this.usersAppMovil_deshabilitados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
         "USUARIO": obj.usuario,
-        "APP HABILITADA": obj.app_habilita,
+        "APP HABILITADA": app_habilita,
       }
       ListadoUsuaDeshabilitados.push(objeto);
-      cont = cont + 1;
     });
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuaDeshabilitados);
     const csvDataR = xlsx.utils.sheet_to_csv(wse);
@@ -678,16 +684,18 @@ export class ListaAppComponent implements OnInit {
   dataDes: any = [];
   exportToXMLDeshabilitados() {
     var objeto: any;
+    var cont: number = 1;
+    const app_habilita = "Inactivo";
     var ListadoUsuaDeshabilitados = [];
     this.usersAppMovil_deshabilitados.forEach(obj => {
       objeto = {
-        "dispositivo_moviles": {
-          '@id': obj.id,
+        "App_movil": {
+          '@id': cont++,
           "codigo": obj.codigo,
           "nombre": obj.nombre,
           "cedula": obj.cedula,
           "usuario": obj.usuario,
-          "App Habilitada": obj.app_habilita,
+          "app_movil": app_habilita,
         }
       }
       ListadoUsuaDeshabilitados.push(objeto)
@@ -695,7 +703,7 @@ export class ListaAppComponent implements OnInit {
 
     this.rest.CrearXMLIdDispositivos(ListadoUsuaDeshabilitados).subscribe(res => {
       this.dataDes = res;
-      this.urlxmlDes = `${environment.url}/relojes/downloadIdDispositivos/` + this.dataDes.name;
+      this.urlxmlDes = `${environment.url}/relojes/xmlDownload/` + this.dataDes.name;
       window.open(this.urlxmlDes, "_blank");
     });
   }

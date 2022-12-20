@@ -17,6 +17,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const ImagenBase64LogosEmpresas = function (path_file) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("Path logo: ", path_file);
         try {
             path_file = path_1.default.resolve('logos') + '/' + path_file;
             let data = fs_1.default.readFileSync(path_file);

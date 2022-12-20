@@ -101,6 +101,7 @@ export class PrincipalHorarioComponent implements OnInit {
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
       this.logo = 'data:image/jpeg;base64,' + res.imagen;
+      console.log("url Logo: ", this.logo)
     });
   }
 
@@ -478,7 +479,7 @@ export class PrincipalHorarioComponent implements OnInit {
 
     this.rest.CrearXML(arregloHorarios).subscribe(res => {
       this.data = res;
-      this.urlxml = `${environment.url}/horario/download/` + this.data.name;
+      this.urlxml = `${environment.url}/horario/xmlDownload/${this.data.name}`;
       window.open(this.urlxml, "_blank");
     });
   }

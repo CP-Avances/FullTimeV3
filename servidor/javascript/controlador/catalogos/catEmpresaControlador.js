@@ -45,6 +45,7 @@ class EmpresaControlador {
                 file_name.logo = 'logo_reportes.png';
             }
             const codificado = yield (0, ImagenCodificacion_1.ImagenBase64LogosEmpresas)(file_name.logo);
+            console.log("file_name: ", file_name.logo);
             if (codificado === 0) {
                 res.status(200).jsonp({ imagen: 0, nom_empresa: file_name.nombre });
             }
@@ -58,21 +59,22 @@ class EmpresaControlador {
         return __awaiter(this, void 0, void 0, function* () {
             let list = req.files;
             let logo = list.image[0].path.split("\\")[1];
+            console.log("logo: ", logo);
             let id = req.params.id_empresa;
             const logo_name = yield database_1.default.query(`
             SELECT nombre, logo FROM cg_empresa WHERE id = $1
             `, [id]);
             if (logo_name.rowCount > 0) {
                 logo_name.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {
+                    console.log("logo_name: ", obj.logo);
                     if (obj.logo != null) {
+                        console.log("lsi entro: ", obj.logo);
                         try {
-                            let filePath = `servidor\\logos\\${obj.logo}`;
+                            let filePath = `servidor/logos/${obj.logo}`;
                             let direccionCompleta = __dirname.split("servidor")[0] + filePath;
                             // ELIMINAR LOGO DEL SERVIDOR
                             fs_1.default.unlinkSync(direccionCompleta);
-                            yield database_1.default.query(`
-                            UPDATE cg_empresa SET logo = $2 WHERE id = $1
-                            `, [id, logo]);
+                            yield database_1.default.query(`UPDATE cg_empresa SET logo = $2 WHERE id = $1`, [id, logo]);
                         }
                         catch (error) {
                             yield database_1.default.query('', [id, logo]);

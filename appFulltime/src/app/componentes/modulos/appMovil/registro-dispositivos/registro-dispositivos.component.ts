@@ -269,7 +269,7 @@ export class RegistroDispositivosComponent implements OnInit {
       },
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de Dispositivos ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
+        { text: 'Lista de Dispositivos Registrados', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         this.presentarDataPDFRelojes(),
       ],
       styles: {
@@ -281,6 +281,7 @@ export class RegistroDispositivosComponent implements OnInit {
   }
 
   presentarDataPDFRelojes() {
+    let count = 1;
     return {
       columns: [
         { width: '*', text: '' },
@@ -290,7 +291,7 @@ export class RegistroDispositivosComponent implements OnInit {
             widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'N#', style: 'tableHeader' },
                 { text: 'Nombre', style: 'tableHeader' },
                 { text: 'Codigo', style: 'tableHeader' },
                 { text: 'Cedula', style: 'tableHeader' },
@@ -299,7 +300,7 @@ export class RegistroDispositivosComponent implements OnInit {
               ],
               ...this.usersDispositivosRegistrados.map(obj => {
                 return [
-                  { text: obj.id, style: 'itemsTableC' },
+                  { text: count++, style: 'itemsTableC' },
                   { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.codigo, style: 'itemsTableC' },
                   { text: obj.cedula, style: 'itemsTableC' },
@@ -331,7 +332,7 @@ export class RegistroDispositivosComponent implements OnInit {
     var ListaDispositivosRegistrados = [];
     this.usersDispositivosRegistrados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
@@ -339,7 +340,6 @@ export class RegistroDispositivosComponent implements OnInit {
         "MODELO": obj.modelo_dispositivo,
       }
       ListaDispositivosRegistrados.push(objeto);
-      cont = cont + 1;
     });
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListaDispositivosRegistrados);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -357,7 +357,7 @@ export class RegistroDispositivosComponent implements OnInit {
     var ListaDispositivosRegistrados = [];
     this.usersDispositivosRegistrados.forEach(obj => {
       objeto = {
-        'N#': cont,
+        'N#': cont++,
         "CODIGO": obj.codigo,
         "NOMBRE": obj.nombre,
         "CEDULA": obj.cedula,
@@ -365,7 +365,6 @@ export class RegistroDispositivosComponent implements OnInit {
         "MODELO": obj.modelo_dispositivo,
       }
       ListaDispositivosRegistrados.push(objeto);
-      cont = cont + 1;
     });
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListaDispositivosRegistrados);
     const csvDataR = xlsx.utils.sheet_to_csv(wse);
@@ -381,11 +380,12 @@ export class RegistroDispositivosComponent implements OnInit {
   data: any = [];
   exportToXML() {
     var objeto: any;
+    var count: number = 1;
     var arregloDispositivos = [];
     this.usersDispositivosRegistrados.forEach(obj => {
       objeto = {
         "dispositivo_moviles": {
-          '@id': obj.id,
+          '@id': count++,
           "nombre": obj.nombre,
           "codigo": obj.codigo,
           "cedula": obj.cedula,

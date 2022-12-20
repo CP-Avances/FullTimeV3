@@ -51,7 +51,7 @@ class RelojesControlador {
     // METODO PARA DESCARGAR ARCHIVO XML
     public async downloadXML(req: Request, res: Response): Promise<any> {
         const name = req.params.nameXML;
-        let filePath = `servidor\\xmlDownload\\${name}`
+        let filePath = `servidor/xmlDownload/${name}`
         res.sendFile(__dirname.split("servidor")[0] + filePath);
     }
 
@@ -149,15 +149,17 @@ class RelojesControlador {
         public async FileXMLDispositivos(req: Request, res: Response): Promise<any> {
             var xml = builder.create('root').ele(req.body).end({ pretty: true });
             let filename = "IDDispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-            fs.writeFile(`xmlDownloadIdDispositivos/${filename}`, xml, function (err) {
-            });
+            fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+            console.log(err);
+            }
+            );
             res.jsonp({ text: 'XML creado', name: filename });
         }
 
         // METODO PARA DESCARGAR ARCHIVO XML
         public async downloadXMLIdDispositivos(req: Request, res: Response): Promise<any> {
             const name = req.params.nameXML;
-            let filePath = `servidor\\xmlDownloadIdDispositivos\\${name}`
+            let filePath = `servidor/xmlDownload/${name}`
             res.sendFile(__dirname.split("servidor")[0] + filePath);
         }
 

@@ -174,7 +174,7 @@ class HorarioControlador {
   // METODO PARA DESCARGAR ARCHIVO XML
   public async downloadXML(req: Request, res: Response): Promise<any> {
     const name = req.params.nameXML;
-    let filePath = `servidor\\xmlDownload\\${name}`
+    let filePath = `servidor/xmlDownload/${name}`
     res.sendFile(__dirname.split("servidor")[0] + filePath);
   }
 
