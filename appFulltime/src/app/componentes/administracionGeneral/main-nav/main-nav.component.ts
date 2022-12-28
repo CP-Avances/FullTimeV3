@@ -218,6 +218,7 @@ export class MainNavComponent implements OnInit {
               { name: 'Correo', url: '/configurarCorreo/' + localStorage.getItem('empresa'), color: true },
               { name: 'Roles', url: '/roles', color: true },
               { name: 'Régimen Laboral', url: '/listarRegimen', color: true },
+              { name: 'Notificaciones Usuarios', url: '/configurarNotificaciones', color: true},
             ]
           },
           {

@@ -1,0 +1,133 @@
+<div class="container" style="padding-bottom: 50px; text-align: center; padding-top: 20px;">
+    <!-- LISTA DE EMPLEADOS QUE FORMAN PARTE DE LA EMPRESA -->
+    <div class="container" style="padding-bottom: 50px; text-align: center;">
+        <div class="mat-elevation-z8" style="background: white;">
+            <div class="d-flex bd-highlight" id="titulo">
+                <mat-icon class="flex-shrink-1 bd-highlight" (click)="HabilitarSeleccion()" matSuffix
+                matTooltipPosition="right" matTooltip="Selección múltiple para inhabilitar empleados." id="SelectCheck">
+                    library_add_check
+                </mat-icon>
+                <button *ngIf="btnCheckHabilitar" class="btn btn-primary btn-outline-light"
+                style="float: left; margin-left: 10px;" (click)="Deshabilitar(1)">
+                    Confirmar
+                </button>
+                <span class="w-100 bd-highlight">
+                    LISTA DE USUARIOS ACTIVOS
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead class="thead-light">
+                        <tr style="text-align: center;">
+                            <th>
+                                <mat-checkbox *ngIf="btnCheckHabilitar" (change)="$event ? masterToggle() : null"
+                                [checked]="selectionUno.hasValue() && isAllSelected()"
+                                [indeterminate]="selectionUno.hasValue() && !isAllSelected()"
+                                [aria-label]="checkboxLabel()">
+                                </mat-checkbox>
+                            </th>
+                            <th scope="col">Código</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Cédula</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Correo</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <mat-form-field id="t-inputs">
+                                    <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                                    (keypress)="IngresarSoloNumeros($event)">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field id="t-inputs">
+                                    <input matInput placeholder="Buscar" [(ngModel)]="filtroNombre" [formControl]="nombre"
+                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field id="t-inputs">
+                                    <input matInput placeholder="Buscar" [(ngModel)]="filtroApellido"
+                                    [formControl]="apellido" type="text" (keypress)="IngresarSoloLetras($event)">
+                                </mat-form-field>
+                            </td>
+                            <td>
+                                <mat-form-field id="t-inputs">
+                                    <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
+                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                    [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
+                                </mat-form-field>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
+                                matTooltip="Búsqueda de empleado de acuerdo a cada columna de la tabla.">
+                                help_outline
+                                </mat-icon>
+                            </td>
+                        </tr>
+
+                        <tr
+                        *ngFor="let e of empleado | emplCodigo: filtroCodigo | emplCedula: filtroCedula | emplNombre: filtroNombre | emplApellido: filtroApellido | paginate:tamanio_pagina:numero_pagina">
+                            <td>
+                                <mat-checkbox *ngIf="btnCheckHabilitar" (click)="$event.stopPropagation()"
+                                (change)="$event ? selectionUno.toggle(e) : null" [checked]="selectionUno.isSelected(e)"
+                                [aria-label]="checkboxLabel(e)">
+                                </mat-checkbox>
+                            </td>
+                            <td scope="row">{{e.codigo}}</td>
+                            <td>{{e.nombre}}</td>
+                            <td>{{e.apellido}}</td>
+                            <td>{{e.cedula}}</td>
+                            <td *ngIf="e.estado === 1; else showInactivo">Activo</td>
+                            <ng-template #showInactivo>
+                                <td *ngIf="e.estado === 2">Inactivo</td>
+                            </ng-template>
+                            <td>{{e.correo}}</td>
+                            <td class="d-flex justify-content-center">
+                                <i matSuffix matTooltipPosition="right" matTooltip="Configurar Correo y Notificaciones."
+                                class="fas fa-sliders-h" id="t-ver" (click)="AbrirSettings()">
+                                    <p>Configurar</p>
+                                </i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <mat-paginator id="pagina" [length]="empleado.length" [pageSize]="tamanio_pagina"
+            [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
+            </mat-paginator>
+
+            <!-- 
+            <div class="d-flex justify-content-end" style="margin-right: 5%;">
+                <i (click)="GenerarPdf('download', 1)" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Empleados en formato PDF.">
+                    <p>PDF</p>
+                </i>
+                <i (click)="ExportToExcel(1)" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Empleados en formato EXCEL.">
+                    <p>XLSL</p>
+                </i>
+                <i (click)="ExportToCVS(1)" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Empleados en formato CSV.">
+                    <p>CSV</p>
+                </i>
+                <i (click)="ExportToXML(1)" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Empleados en formato XML.">
+                    <p>XML</p>
+                </i>
+            </div>
+            -->
+
+        </div>
+    </div>
+</div>
