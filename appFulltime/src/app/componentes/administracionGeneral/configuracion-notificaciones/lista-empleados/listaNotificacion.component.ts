@@ -17,18 +17,18 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // IMPORTAR SERVICIOS
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { EmpleadoElemento } from '../comunicados/comunicados.component';
+import { EmpleadoElemento } from 'src/app/model/empleado.model';
 
-import { SettingsComponent } from '../preferecias/settings/settings.component';
+import { ConfiguracionNotificacionComponent } from '../configuracion/configuracionNotificacion.component';
 
 @Component({
-    selector: 'app-configuracionNotificacion',
-    templateUrl: './configuracionNotificacion.component.html',
-    styleUrls: ['./configuracionNotificacion.component.css']
+    selector: 'app-listaNotificacion',
+    templateUrl: './listaNotificacion.component.html',
+    styleUrls: ['./listaNotificacion.component.css']
 })
 
 
-export class ConfiguracionNotificacion implements OnInit {
+export class ListaNotificacionComponent implements OnInit {
 
     // VARIABLES DE ALMACENAMIENTO DE DATOS 
     nacionalidades: any = [];
@@ -61,7 +61,10 @@ export class ConfiguracionNotificacion implements OnInit {
     selectionUno = new SelectionModel<EmpleadoElemento>(true, []);
     selectionDos = new SelectionModel<EmpleadoElemento>(true, []);
 
+    //selectionEmp = new SelectionModel<ItableDispositivos>(true, []);
+
     idEmpleado: number;
+    empleados: any = [];
 
     constructor(
         public restEmpre: EmpresaService, // SERVICIO DATOS DE EMPRESA
@@ -120,14 +123,14 @@ export class ConfiguracionNotificacion implements OnInit {
     if (opcion === 1) {
       EmpleadosSeleccionados = this.selectionUno.selected.map(obj => {
         return {
-          id: obj.id_recibe,
+          id: obj.id,
           empleado: obj.nombre + ' ' + obj.apellido
         }
       })
     } else if (opcion === 2 || opcion === 3) {
       EmpleadosSeleccionados = this.selectionDos.selected.map(obj => {
         return {
-          id: obj.id_recibe,
+          id: obj.id,
           empleado: obj.nombre + ' ' + obj.apellido
         }
       })
@@ -135,7 +138,7 @@ export class ConfiguracionNotificacion implements OnInit {
 
     // VERIFICAR QUE EXISTAN USUARIOS SELECCIONADOS
     if (EmpleadosSeleccionados.length != 0) {
-      this.ventana.open(SettingsComponent, {
+      this.ventana.open(ConfiguracionNotificacionComponent, {
         width: '500px',
         data: { opcion: opcion, lista: EmpleadosSeleccionados }
       })
@@ -277,10 +280,22 @@ export class ConfiguracionNotificacion implements OnInit {
         });
     }
 
-
     AbrirSettings() {
-        const id_empleado = parseInt(localStorage.getItem('empleado'));
-        this.ventana.open(SettingsComponent, { width: '350px', data: { id_empleado } });
+        if (this.selectionUno.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
+        this.ventana.open(ConfiguracionNotificacionComponent, { width: '350px', data: this.selectionUno.selected }).afterClosed().subscribe(result => {
+          result.forEach(item => {
+             this.empleados.push(item);
+          });
+    
+          if (result) {
+            this.toastr.success('Configuración Actualizada');
+            this.selectionUno.clear();
+            this.btnCheckHabilitar  = false;
+            this.numero_pagina = 1;
+          }
+    
+        })
+          
     }
 
     /** ************************************************************************************************* **

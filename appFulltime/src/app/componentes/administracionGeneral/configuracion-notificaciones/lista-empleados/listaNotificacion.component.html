@@ -8,11 +8,11 @@
                     library_add_check
                 </mat-icon>
                 <button *ngIf="btnCheckHabilitar" class="btn btn-primary btn-outline-light"
-                style="float: left; margin-left: 10px;" (click)="Deshabilitar(1)">
+                style="float: left; margin-left: 10px;" (click)="AbrirSettings()">
                     Confirmar
                 </button>
                 <span class="w-100 bd-highlight">
-                    LISTA DE USUARIOS ACTIVOS
+                    LISTA DE USUARIOS
                 </span>
             </div>
 
@@ -33,7 +33,6 @@
                             <th scope="col">Cédula</th>
                             <th scope="col">Estado</th>
                             <th scope="col">Correo</th>
-                            <th scope="col">Acciones</th>
                         </tr>
                     </thead>
 
@@ -67,12 +66,6 @@
                             </td>
                             <td></td>
                             <td></td>
-                            <td>
-                                <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
-                                matTooltip="Búsqueda de empleado de acuerdo a cada columna de la tabla.">
-                                help_outline
-                                </mat-icon>
-                            </td>
                         </tr>
 
                         <tr
@@ -92,12 +85,6 @@
                                 <td *ngIf="e.estado === 2">Inactivo</td>
                             </ng-template>
                             <td>{{e.correo}}</td>
-                            <td class="d-flex justify-content-center">
-                                <i matSuffix matTooltipPosition="right" matTooltip="Configurar Correo y Notificaciones."
-                                class="fas fa-sliders-h" id="t-ver" (click)="AbrirSettings()">
-                                    <p>Configurar</p>
-                                </i>
-                            </td>
                         </tr>
                     </tbody>
                 </table>

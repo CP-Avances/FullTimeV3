@@ -118,7 +118,8 @@ import { VerCoordenadasComponent } from './componentes/modulos/geolocalizacion/v
 import { ComunicadosComponent } from './componentes/administracionGeneral/comunicados/comunicados.component';
 import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
 import { ConfiguracionComponent } from './componentes/administracionGeneral/correo/configuracion/configuracion.component';
-import { ConfiguracionNotificacion } from './componentes/administracionGeneral/configuracion-notificaciones/configuracionNotificacion.component';
+import { ListaNotificacionComponent } from './componentes/administracionGeneral/configuracion-notificaciones/lista-empleados/listaNotificacion.component';
+import { ConfiguracionNotificacionComponent } from './componentes/administracionGeneral/configuracion-notificaciones/configuracion/configuracionNotificacion.component';
 import { ListarNivelTitulosComponent } from './componentes/catalogos/catTitulos/nivelTitulos/listar-nivel-titulos/listar-nivel-titulos.component';
 import { InasistenciaMacroComponent } from './componentes/reportes/graficas-macro/inasistencia-macro/inasistencia-macro.component';
 import { AsistenciaMacroComponent } from './componentes/reportes/graficas-macro/asistencia-macro/asistencia-macro.component';
@@ -321,7 +322,7 @@ const routes: Routes = [
   { path: 'configurarCorreo/:id', component: ConfiguracionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // ACCESO A RUTAS DE CONFIGURACION DE NOTIFICACIONES DE USUARIOS
-  { path: 'configurarNotificaciones', component: ConfiguracionNotificacion, canActivate: [AuthGuard], data: { roles: 1 } },
+  { path: 'configurarNotificaciones', component: ListaNotificacionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // ACCESO A RUTAS DE ROLES
   { path: 'roles', component: VistaRolesComponent, canActivate: [AuthGuard], data: { roles: 1 } },
