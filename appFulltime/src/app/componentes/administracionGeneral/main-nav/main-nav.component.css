@@ -150,8 +150,8 @@ a.mat-menu-item {
   background-color: rgb(255, 255, 255);
   text-decoration: none;
   color: rgb(31, 31, 31);
+  font-size: 90%;
 }
-
 
 a.mat-menu-item.noti_menu:hover {
   background: rgba(236, 236, 236, 0.643);

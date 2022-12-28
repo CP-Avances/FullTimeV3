@@ -149,7 +149,6 @@ export class RegistroDispositivosComponent implements OnInit {
          this.dispositivo.push(item.id_dispositivo);
       });
 
-      console.log("id_dispositivos: ", this.dispositivo)
       if (result) {
         this.usuariosService.deleteDispositivoMovil(this.dispositivo).subscribe(res => {
           this.toastr.success('Dispositivos eliminados correctamente');

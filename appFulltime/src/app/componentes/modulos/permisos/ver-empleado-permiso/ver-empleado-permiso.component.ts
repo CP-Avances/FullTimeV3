@@ -50,6 +50,9 @@ export class VerEmpleadoPermisoComponent implements OnInit {
   habilitarActualizar: boolean = true;
   hipervinculo: string = environment.url
 
+  ocultar: boolean = false;
+  esconder: boolean = false;
+
   constructor(
 
     private parametro: ParametrosService,
@@ -128,6 +131,21 @@ export class VerEmpleadoPermisoComponent implements OnInit {
         p.hora_salida_ = this.validar.FormatearHora(p.hora_salida, formato_hora);
 
       })
+
+      if(this.idEmpleado == this.InfoPermiso[0].id_empleado){
+        this.ocultar = true;
+      }else{
+        this.ocultar = false;
+      }
+
+      console.log("Datos del Permiso: ",this.InfoPermiso);
+      console.log("Id Empleado: ",this.idEmpleado, " = Id de empleado solicita: ",this.InfoPermiso[0].id_empleado);
+
+      if(this.InfoPermiso[0].estado > 1){
+        this.esconder = true;
+      }else{
+        this.esconder = false;
+      }
 
       // BUSQUEDA DE DATOS DE AUTORIZACIÓN
       this.ObtenerAutorizacion(this.InfoPermiso[0].id);
@@ -267,7 +285,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
             }
           }
         } else {
-          this.habilitarActualizar = true;
+          this.habilitarActualizar = false;
         }
       });
     }, err => {

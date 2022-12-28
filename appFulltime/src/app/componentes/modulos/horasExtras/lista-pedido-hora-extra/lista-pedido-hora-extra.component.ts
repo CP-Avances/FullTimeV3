@@ -40,6 +40,8 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
   totalHorasExtras;
 
+  idEmpleado: number;
+
   // Habilitar o Deshabilitar el icono de autorización individual
   auto_individual: boolean = true;
 
@@ -61,7 +63,9 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
     private validar: ValidacionesService,
     public parametro: ParametrosService,
     private funciones: MainNavService
-  ) { }
+  ) { 
+    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     if (this.habilitarHorasE === false) {
@@ -122,6 +126,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   }
 
   sumaHoras: any = [];
+  sumaHorasfiltro: any = [];
   horasSumadas: any;
   SumatoriaHoras(inicio, fin) {
     var t1 = new Date();
@@ -129,9 +134,17 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
     var hora1 = '00:00:00', horaT = '00:00:00'.split(":");
     this.restHE.ListaAllHoraExtra().subscribe(res => {
       this.sumaHoras = res;
+
+      //Filtra la lista de Horas Extras para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.sumaHorasfiltro = this.sumaHoras.filter(o => {
+        if(this.idEmpleado !== o.id_usua_solicita){
+          return this.sumaHorasfiltro.push(o);
+        }
+      })
+
       for (var i = inicio; i < fin; i++) {
-        if (i < this.sumaHoras.length) {
-          hora1 = (this.sumaHoras[i].num_hora).split(":");
+        if (i < this.sumaHorasfiltro.length) {
+          hora1 = (this.sumaHorasfiltro[i].num_hora).split(":");
           t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
           tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
@@ -152,20 +165,29 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   }
 
   lista_pedidos: boolean = false;
+  lista_pedidosFiltradas: any = [];
   obtenerHorasExtras(formato_fecha: string) {
     var t1 = new Date();
     var tt = new Date();
     var hora1 = '00:00:00', horaT = '00:00:00'.split(":");
     this.restHE.ListaAllHoraExtra().subscribe(res => {
       this.horas_extras = res;
-      if (this.horas_extras.length != 0) {
+
+      //Filtra la lista de Horas Extras para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.lista_pedidosFiltradas = this.horas_extras.filter(o => {
+        if(this.idEmpleado !== o.id_usua_solicita){
+          return this.lista_pedidosFiltradas.push(o);
+        }
+      })
+
+      if (this.lista_pedidosFiltradas.length != 0) {
         this.lista_pedidos = true;
       }
       else {
         this.lista_pedidos = false;
       }
 
-      this.horas_extras.forEach(data => {
+      this.lista_pedidosFiltradas.forEach(data => {
 
         if (data.estado === 1) {
           data.estado = 'Pendiente';
@@ -201,7 +223,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS.
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
-    const numRows = this.horas_extras.length;
+    const numRows = this.lista_pedidosFiltradas.length;
     return numSelected === numRows;
   }
 
@@ -209,7 +231,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
-      this.horas_extras.forEach(row => this.selectionUno.select(row));
+      this.lista_pedidosFiltradas.forEach(row => this.selectionUno.select(row));
   }
 
   // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
@@ -238,6 +260,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   solicitudes_observacion: any = [];
   lista_observacion: boolean = false;
   total_horas_observacion: any;
+  listaHorasExtrasObservaFiltradas: any = [];
   obtenerHorasExtrasObservacion(formato_fecha: string) {
     var t1 = new Date();
     var tt = new Date();
@@ -245,14 +268,21 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
     this.restHE.ListaAllHoraExtraObservacion().subscribe(res => {
       this.solicitudes_observacion = res;
 
-      if (this.solicitudes_observacion.length != 0) {
+      //Filtra la lista de Horas Extras Autorizadas para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.listaHorasExtrasObservaFiltradas = this.solicitudes_observacion.filter(o => {
+        if(this.idEmpleado !== o.id_usua_solicita){
+          return this.listaHorasExtrasObservaFiltradas.push(o);
+        }
+      });
+
+      if (this.listaHorasExtrasObservaFiltradas.length != 0) {
         this.lista_observacion = true;
       }
       else {
         this.lista_observacion = false;
       }
 
-      this.solicitudes_observacion.forEach(data => {
+      this.listaHorasExtrasObservaFiltradas.forEach(data => {
 
         if (data.estado === 1) {
           data.estado = 'Pendiente';
@@ -279,7 +309,10 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
         data.fec_inicio = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
         data.fec_final = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
 
-      })
+      });
+
+      
+      
     }, err => {
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
@@ -307,15 +340,25 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
   sumaHoras_observacion: any = [];
   horasSumadas_observacion: any;
+  susmaHoras_observacionFiltada: any = [];
   SumatoriaHorasObservacion(inicio, fin) {
     var t1 = new Date();
     var tt = new Date();
     var hora1 = '00:00:00', horaT = '00:00:00'.split(":");
     this.restHE.ListaAllHoraExtraObservacion().subscribe(res => {
       this.sumaHoras_observacion = res;
+
+      //Filtra la lista de Horas Extras Autorizadas para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.susmaHoras_observacionFiltada = this.sumaHoras_observacion.filter(o => {
+        if(this.idEmpleado !== o.id_usua_solicita){
+          return this.susmaHoras_observacionFiltada.push(o);
+        }
+      });
+
+
       for (var i = inicio; i < fin; i++) {
-        if (i < this.sumaHoras_observacion.length) {
-          hora1 = (this.sumaHoras_observacion[i].num_hora).split(":");
+        if (i < this.susmaHoras_observacionFiltada.length) {
+          hora1 = (this.susmaHoras_observacionFiltada[i].num_hora).split(":");
           t1.setHours(parseInt(hora1[0]), parseInt(hora1[1]), parseInt(hora1[2]));
           tt.setHours(parseInt(horaT[0]), parseInt(horaT[1]), parseInt(horaT[2]));
 
@@ -338,7 +381,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelectedObserva() {
     const numSelected = this.selectionUnoObserva.selected.length;
-    const numRows = this.solicitudes_observacion.length;
+    const numRows = this.listaHorasExtrasObservaFiltradas.length;
     return numSelected === numRows;
   }
 
@@ -346,7 +389,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   masterToggleObserva() {
     this.isAllSelectedObserva() ?
       this.selectionUnoObserva.clear() :
-      this.solicitudes_observacion.forEach(row => this.selectionUnoObserva.select(row));
+      this.listaHorasExtrasObservaFiltradas.forEach(row => this.selectionUnoObserva.select(row));
   }
 
   // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
@@ -375,6 +418,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
   pedido_hora_autoriza: any = [];
   total_horas_autorizadas: any;
+  listaHorasExtrasAutorizadasFiltradas: any = [];
   obtenerHorasExtrasAutorizadas(formato_fecha: string) {
     var t1 = new Date();
     var tt = new Date();
@@ -382,14 +426,21 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
     this.restHE.ListaAllHoraExtraAutorizada().subscribe(res => {
       this.pedido_hora_autoriza = res;
 
-      if (this.pedido_hora_autoriza.length != 0) {
+      //Filtra la lista de Horas Extras Autorizadas para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.listaHorasExtrasAutorizadasFiltradas = this.pedido_hora_autoriza.filter(o => {
+        if(this.idEmpleado !== o.id_usua_solicita){
+          return this.listaHorasExtrasAutorizadasFiltradas.push(o);
+        }
+      });
+
+      if (this.listaHorasExtrasAutorizadasFiltradas.length != 0) {
         this.lista_autorizacion = true;
       }
       else {
         this.lista_autorizacion = false;
       }
 
-      this.pedido_hora_autoriza.forEach(data => {
+      this.listaHorasExtrasAutorizadasFiltradas.forEach(data => {
 
         if (data.estado === 1) {
           data.estado = 'Pendiente';
@@ -415,10 +466,14 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
           this.total_horas_autorizadas = (moment(tt).format('HH:mm:ss'));
         }
 
+        console.log("horas totales autorizadas: ",this.total_horas_autorizadas);
+
         data.fec_inicio = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
         data.fec_final = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
 
       })
+
+      
 
     }, err => {
       return this.validar.RedireccionarHomeAdmin(err.error)

@@ -41,6 +41,7 @@ export class ListarVacacionesComponent implements OnInit {
   pageSizeOptions = [5, 10, 20, 50];
 
   vacaciones: any = [];
+  idEmpleado: number;
 
   // HABILITAR LISTAS SEGUN LOS DATOS
   lista_vacaciones: boolean = false;
@@ -58,13 +59,18 @@ export class ListarVacacionesComponent implements OnInit {
 
   get habilitarVacaciones(): boolean { return this.funciones.vacaciones; }
 
+  // Variable oculta el boton de autorizar
+  ocultar: boolean = false;
+
   constructor(
     private restV: VacacionesService,
     private ventana: MatDialog,
     private funciones: MainNavService,
     public validar: ValidacionesService,
     public parametro: ParametrosService,
-  ) { }
+  ) {
+    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     if (this.habilitarVacaciones === false) {
@@ -103,11 +109,19 @@ export class ListarVacacionesComponent implements OnInit {
       });
   }
 
+  listaVacacionesFiltrada: any = [];
   ObtenerListaVacaciones(formato_fecha: string) {
     this.restV.ObtenerListaVacaciones().subscribe(res => {
       this.vacaciones = res;
 
-      this.vacaciones.forEach(data => {
+      //Filtra la lista de Vacaciones para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.listaVacacionesFiltrada = this.vacaciones.filter(o => {
+        if(this.idEmpleado !== o.id_empl_solicita){
+          return this.listaVacacionesFiltrada.push(o);
+        }
+      })
+
+      this.listaVacacionesFiltrada.forEach(data => {
 
         if (data.estado === 1) {
           data.estado = 'Pendiente';
@@ -125,10 +139,9 @@ export class ListarVacacionesComponent implements OnInit {
         data.fec_inicio_ = this.validar.FormatearFecha(data.fec_inicio, formato_fecha, this.validar.dia_abreviado);
         data.fec_final_ = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
         data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
-
       })
 
-      if (this.vacaciones.length != 0) {
+      if (this.listaVacacionesFiltrada.length != 0) {
         this.lista_vacaciones = true;
       } else {
         this.lista_vacaciones = false;
@@ -137,11 +150,19 @@ export class ListarVacacionesComponent implements OnInit {
     });
   }
 
+  listaVacacionesFiltradaAutorizada: any = [];
   ObtenerListaVacacionesAutorizadas(formato_fecha: string) {
     this.restV.ObtenerListaVacacionesAutorizadas().subscribe(res => {
       this.vacaciones_autorizadas = res;
 
-      this.vacaciones_autorizadas.forEach(data => {
+      //Filtra la lista de Vacaciones para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.listaVacacionesFiltradaAutorizada = this.vacaciones_autorizadas.filter(o => {
+        if(this.idEmpleado !== o.id_empl_solicita){
+          return this.listaVacacionesFiltradaAutorizada.push(o);
+        }
+      })
+
+      this.listaVacacionesFiltradaAutorizada.forEach(data => {
 
         if (data.estado === 1) {
           data.estado = 'Pendiente';
@@ -162,7 +183,8 @@ export class ListarVacacionesComponent implements OnInit {
 
       })
 
-      if (this.vacaciones_autorizadas.length != 0) {
+
+      if (this.listaVacacionesFiltradaAutorizada.length != 0) {
         this.lista_autoriza = true;
       } else {
         this.lista_autoriza = false;
@@ -181,7 +203,7 @@ export class ListarVacacionesComponent implements OnInit {
   // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS.
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
-    const numRows = this.vacaciones.length;
+    const numRows = this.listaVacacionesFiltrada.length;
     return numSelected === numRows;
   }
 
@@ -189,7 +211,7 @@ export class ListarVacacionesComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
-      this.vacaciones.forEach(row => this.selectionUno.select(row));
+      this.listaVacacionesFiltrada.forEach(row => this.selectionUno.select(row));
   }
 
   // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA

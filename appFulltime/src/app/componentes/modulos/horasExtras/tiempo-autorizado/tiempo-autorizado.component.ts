@@ -320,10 +320,22 @@ export class TiempoAutorizadoComponent implements OnInit {
       tipo: 12,  // APROBACIONES DE SOLICITUD DE HORAS EXTRAS
     }
 
-    horaExtra.EmpleadosSendNotiEmail.forEach(e => {
+    //Listado para eliminar el usuario duplicado
+    var allNotificaciones = [];
 
+    //Ciclo por cada elemento del catalogo
+    horaExtra.EmpleadosSendNotiEmail.forEach(function(elemento, indice, array) {
+      // Discriminación de elementos iguales
+      if(allNotificaciones.find(p=>p.fullname == elemento.fullname) == undefined)
+      {
+        // Nueva lista de empleados que reciben la notificacion
+        allNotificaciones.push(elemento);
+      }
+    });
+
+    //ForEach para enviar la notificacion a cada usuario dentro de la nueva lista filtrada
+    allNotificaciones.forEach(e => {
       mensaje.id_empl_recive = e.empleado;
-
       if (e.hora_extra_noti) {
         this.realTime.EnviarMensajeGeneral(mensaje).subscribe(
           resp => {
@@ -340,6 +352,7 @@ export class TiempoAutorizadoComponent implements OnInit {
         )
       }
     })
+
   }
 
 

@@ -29,7 +29,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let v of vacaciones | paginate:tamanio_pagina:numero_pagina">
+                    <tr *ngFor="let v of listaVacacionesFiltrada | paginate:tamanio_pagina:numero_pagina">
                         <td>
                             <mat-checkbox *ngIf="btnCheckHabilitar" (click)="$event.stopPropagation()"
                                 (change)="$event ? selectionUno.toggle(v) : null" [checked]="selectionUno.isSelected(v)"
@@ -50,7 +50,7 @@
                             <a *ngIf="auto_individual" class="fas fa-file-alt"
                                 style="color:rgb(197, 95, 11); margin-left: 15px;" matSuffix matTooltipPosition="right"
                                 matTooltip="Cambiar el estado del documentdo de autorazación"
-                                [routerLink]="['/ver-vacacion',v.id]">
+                                [routerLink]="['/ver-vacacion',v.id]" [hidden]="ocultar">
                                 <p>Autorizar</p>
                             </a>
                         </td>
@@ -58,7 +58,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="vacaciones.length" [pageSize]="tamanio_pagina"
+        <mat-paginator id="pagina" [length]="listaVacacionesFiltrada.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
@@ -79,7 +79,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let v of vacaciones_autorizadas | paginate:tamanio_pagina_auto:numero_pagina_auto">
+                    <tr *ngFor="let v of listaVacacionesFiltradaAutorizada  | paginate:tamanio_pagina_auto:numero_pagina_auto">
                         <td>{{v.nombre}} {{v.apellido}}</td>
                         <td>{{v.estado}}</td>
                         <td>{{v.fec_inicio_}}</td>
@@ -96,7 +96,7 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="vacaciones_autorizadas.length" [pageSize]="tamanio_pagina_auto"
+        <mat-paginator id="pagina" [length]="listaVacacionesFiltradaAutorizada.length" [pageSize]="tamanio_pagina_auto"
             [pageSizeOptions]="pageSizeOptions_auto" id="pagina" (page)="ManejarPaginaAutorizadas($event)"
             showFirstLastButtons>
         </mat-paginator>

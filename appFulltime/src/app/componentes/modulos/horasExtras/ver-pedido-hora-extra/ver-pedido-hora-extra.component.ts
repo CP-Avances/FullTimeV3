@@ -48,6 +48,9 @@ export class VerPedidoHoraExtraComponent implements OnInit {
   empleado: any = [];
   idEmpleado: number;
 
+  //Dato para ocultar las opciones de descarga del archivo si esta aun en pendiente
+  estado: boolean = false;
+
   constructor(
     private parametro: ParametrosService,
     private ventana: MatDialog, // VARIABLE DE MANEJO DE VENTANAS
@@ -136,7 +139,15 @@ export class VerPedidoHoraExtraComponent implements OnInit {
 
       })
 
-      console.log('data horas .. ', this.hora_extra)
+      console.log('data horas .. ', this.hora_extra);
+
+      if(this.idEmpleado == this.id_usua_solicita){
+        this.habilitarActualizar = false;
+      }
+
+      if(this.hora_extra[0].estado > 1){
+        this.estado = true;
+      }
 
       this.ObtenerAprobacion();
     }, err => {

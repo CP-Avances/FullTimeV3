@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<root>
+  <Timbre_web id="1">
+    <codigo>35</codigo>
+    <nombre>Jenny Patricia Tipan Villegas</nombre>
+    <cedula>1722128905</cedula>
+    <usuario>jenny.tipan</usuario>
+    <timbre_web>Inactivo</timbre_web>
+  </Timbre_web>
+  <Timbre_web id="2">
+    <codigo>1</codigo>
+    <nombre>Jose Luis Pazmiño</nombre>
+    <cedula>1542541256</cedula>
+    <usuario>jose.pazmino</usuario>
+    <timbre_web>Inactivo</timbre_web>
+  </Timbre_web>
+  <Timbre_web id="3">
+    <codigo>89</codigo>
+    <nombre>Josue Larry Robalino Lavayen</nombre>
+    <cedula>1717278210</cedula>
+    <usuario>josue.robalino</usuario>
+    <timbre_web>Inactivo</timbre_web>
+  </Timbre_web>
+  <Timbre_web id="4">
+    <codigo>55</codigo>
+    <nombre>Luis Fernando Pantoja Yumbo</nombre>
+    <cedula>1725458291</cedula>
+    <usuario>luis.pantoja</usuario>
+    <timbre_web>Inactivo</timbre_web>
+  </Timbre_web>
+</root>
