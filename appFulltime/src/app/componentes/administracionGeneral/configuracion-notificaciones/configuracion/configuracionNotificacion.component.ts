@@ -39,7 +39,6 @@ export class ConfiguracionNotificacionComponent implements OnInit {
         console.log("Empleados: ",this.empleados);
         if((this.empleados.length == 1)){
             this.empleados.forEach(item => {
-                console.log("datos: ",item)
                 this.restN.ObtenerConfiguracionEmpleado(item.id).subscribe(res => {
                     this.formGroup.patchValue({
                         vacaMail: res[0].vaca_mail,
@@ -62,35 +61,33 @@ export class ConfiguracionNotificacionComponent implements OnInit {
         
     }
 
-    CrearConfiguracion(form) {
+    CrearConfiguracion(form, item: any) {
 
-        this.empleados.forEach(item => {
-            let data = {
-                id_empleado: item.id,
-                vaca_mail: form.vacaMail,
-                vaca_noti: form.vacaNoti,
-                permiso_mail: form.permisoMail,
-                permiso_noti: form.permisoNoti,
-                hora_extra_mail: form.horaExtraMail,
-                hora_extra_noti: form.horaExtraNoti,
-                comida_mail: form.comidaMail,
-                comida_noti: form.comidaNoti,
-                comunicado_mail: form.comunicadoMail,
-                comunicado_noti: form.comunicadoNoti
-              }
-              this.restN.IngresarConfigNotiEmpleado(data).subscribe(res => {
-                this.dialogRef.close();
-                this.toaster.success('Operación exitosa', 'Configuración Guardada', {
-                  timeOut: 6000,
+        let data = {
+            id_empleado: item.id,
+            vaca_mail: form.vacaMail,
+            vaca_noti: form.vacaNoti,
+            permiso_mail: form.permisoMail,
+            permiso_noti: form.permisoNoti,
+            hora_extra_mail: form.horaExtraMail,
+            hora_extra_noti: form.horaExtraNoti,
+            comida_mail: form.comidaMail,
+            comida_noti: form.comidaNoti,
+            comunicado_mail: form.comunicadoMail,
+            comunicado_noti: form.comunicadoNoti
+        }
+            this.restN.IngresarConfigNotiEmpleado(data).subscribe(res => {
+            this.dialogRef.close();
+            if(this.empleados.length == 1){
+                this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
+                    timeOut: 6000,
                 });
-              });
-        })
- 
+            }
+        });
     }
     
     ActualizarConfiguracion(form) {
         this.empleados.forEach(item => {
-
             let data = {
                 vaca_mail: form.vacaMail,
                 vaca_noti: form.vacaNoti,
@@ -107,14 +104,16 @@ export class ConfiguracionNotificacionComponent implements OnInit {
             this.restN.ObtenerConfiguracionEmpleado(item.id).subscribe(res => {
                 this.restN.ActualizarConfigNotiEmpl(item.id, data).subscribe(res => {
                     this.dialogRef.close();
-                    this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
-                      timeOut: 6000,
-                    });
+                    if(this.empleados.length == 1){
+                        this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
+                            timeOut: 6000,
+                        });
+                    }
                 });
     
             }, error => {
                 console.log(error);
-                this.CrearConfiguracion(form);
+                this.CrearConfiguracion(form, item);
             });
         });
     }

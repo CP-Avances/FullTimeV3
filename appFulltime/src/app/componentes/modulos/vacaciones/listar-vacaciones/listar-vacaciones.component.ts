@@ -47,6 +47,9 @@ export class ListarVacacionesComponent implements OnInit {
   lista_vacaciones: boolean = false;
   lista_autoriza: boolean = false;
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+
   // HABILITAR ICONOS DE AUTORIZACION INDIVIDUAL
   auto_individual: boolean = true;
 
@@ -141,12 +144,19 @@ export class ListarVacacionesComponent implements OnInit {
         data.fec_ingreso_ = this.validar.FormatearFecha(data.fec_ingreso, formato_fecha, this.validar.dia_abreviado);
       })
 
+      if (Object.keys(this.listaVacacionesFiltrada).length == 0) {
+        this.validarMensaje1 = true;
+      }
+
       if (this.listaVacacionesFiltrada.length != 0) {
         this.lista_vacaciones = true;
       } else {
         this.lista_vacaciones = false;
       }
       console.log(res);
+
+    },err => {
+      this.validarMensaje1 = true;
     });
   }
 
@@ -183,6 +193,10 @@ export class ListarVacacionesComponent implements OnInit {
 
       })
 
+      if (Object.keys(this.listaVacacionesFiltradaAutorizada).length == 0) {
+        this.validarMensaje2 = true;
+      }
+
 
       if (this.listaVacacionesFiltradaAutorizada.length != 0) {
         this.lista_autoriza = true;
@@ -190,6 +204,10 @@ export class ListarVacacionesComponent implements OnInit {
         this.lista_autoriza = false;
       }
       console.log(res);
+
+    },err => {
+      this.validarMensaje2 = true;
+
     });
   }
 

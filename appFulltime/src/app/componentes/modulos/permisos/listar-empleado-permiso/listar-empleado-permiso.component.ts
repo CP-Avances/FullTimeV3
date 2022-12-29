@@ -46,6 +46,9 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   lista_autorizados: boolean = false;
   lista_permisos: boolean = false;
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+
   // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true;
 
@@ -125,10 +128,12 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
       vacio => {
         this.obtenerPermisos(fecha, this.formato_hora);
         this.ObtenerPermisosAutorizados(fecha, this.formato_hora);
-      });
+      }
+    );
+
   }
 
-  listaPermisosFiltradas: any = [];
+  public listaPermisosFiltradas: any = [];
   obtenerPermisos(fecha: string, hora: string) {
 
     this.restP.obtenerAllPermisos().subscribe(res => {
@@ -155,13 +160,16 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         }
       })
 
-      console.log('permisos', this.listaPermisosFiltradas);
+      if (Object.keys(this.listaPermisosFiltradas).length == 0) {
+        this.validarMensaje1 = true;
+      }
 
       if (this.listaPermisosFiltradas.length != 0) {
         this.lista_permisos = true;
       }
     }, err => {
       console.log('permisos ALL ', err.error)
+      this.validarMensaje1 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
@@ -251,7 +259,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   }
 
   permisosAutorizados: any = [];
-  listaPermisosAutorizadosFiltrados: any = [];
+  public listaPermisosAutorizadosFiltrados: any = [];
   ObtenerPermisosAutorizados(fecha: string, hora: string) {
     this.restP.BuscarPermisosAutorizados().subscribe(res => {
       this.permisosAutorizados = res;
@@ -277,10 +285,16 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         }
       })
 
+      if (Object.keys(this.listaPermisosAutorizadosFiltrados).length == 0) {
+        this.validarMensaje2 = true;
+      }
+
+
       if (this.listaPermisosAutorizadosFiltrados.length != 0) {
         this.lista_autorizados = true;
       }
     }, err => {
+      this.validarMensaje2 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }

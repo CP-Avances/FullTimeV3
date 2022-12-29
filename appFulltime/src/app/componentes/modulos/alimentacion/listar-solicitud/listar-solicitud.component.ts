@@ -50,8 +50,13 @@ export class ListarSolicitudComponent implements OnInit {
   lista_solicitados: boolean = false; // LISTA DE SOLICITUDES PENDIENTES
   lista_expirados: boolean = false; // LISTA DE SOLICITUDES EXPIRADAS
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+  validarMensaje3: boolean = false;
+
   // VARIABLE PARA MOSTRAR U OCULTAR ÍCONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true; // ÍCONO LISTA DE SOLICITUDES PENDIENTES
+
 
   // ITEMS DE PAGINACIÓN DE LA TABLA DE LISTA DE SOLICITUDES PENDIENTES
   pageSizeOptions = [5, 10, 20, 50];
@@ -174,8 +179,15 @@ export class ListarSolicitudComponent implements OnInit {
 
       if (this.lista_solicitudes_filtradas.length != 0) {
         this.lista_solicitados = true;
+      }else{
+        this.lista_solicitados = false;
+        this.validarMensaje1 = true;
       }
+
       this.FormatearDatos(this.lista_solicitudes_filtradas, formato_fecha, formato_hora);
+
+    }, err => {
+      this.validarMensaje1 = true;
     });
   }
 
@@ -289,9 +301,16 @@ export class ListarSolicitudComponent implements OnInit {
           this.solicitudesAutorizadas_filtradas[i].aprobada = 'NEGADO';
         }
       }
+
       if (this.solicitudesAutorizadas_filtradas.length != 0) {
         this.lista_autorizados = true;
+      }else{
+        this.lista_autorizados = false;
+        this.validarMensaje2 = true;
       }
+
+    }, err => {
+      this.validarMensaje2 = true;
     });
   }
 
@@ -364,7 +383,7 @@ export class ListarSolicitudComponent implements OnInit {
   // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES EXPIRADAS
   
   solicitudesExpiradas: any = []; // VARIABLE PARA ALMACENAR DATOS DE SOLIICTUDES EXPIRADAS
-  solicitudesExpiradas_filtradas: any [];
+  solicitudesExpiradas_filtradas: any = [];
   ObtenerSolicitudesExpiradas(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaExpirada().subscribe(res => {
       this.solicitudesExpiradas = res;
@@ -389,9 +408,17 @@ export class ListarSolicitudComponent implements OnInit {
           this.solicitudesExpiradas_filtradas[i].aprobada = 'PENDIENTE';
         }
       }
+
       if (this.solicitudesExpiradas_filtradas.length != 0) {
         this.lista_expirados = true;
+      }else{
+        this.lista_expirados = false;
+        this.validarMensaje3 = true;
       }
+
+
+    }, err => {
+      this.validarMensaje3 = true;
     });
   }
 }

@@ -48,6 +48,10 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
   // Habilitar listas según los datos
   lista_autorizacion: boolean = false;
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+  validarMensaje3: boolean = false;
+
   // Items de paginación de la tabla
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
@@ -215,7 +219,12 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
         data.fec_final = this.validar.FormatearFecha(data.fec_final, formato_fecha, this.validar.dia_abreviado);
       })
 
+      if (Object.keys(this.lista_pedidosFiltradas).length == 0) {
+        this.validarMensaje1 = true;
+      }
+
     }, err => {
+      this.validarMensaje1 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
@@ -311,9 +320,13 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
       });
 
+      if (Object.keys(this.listaHorasExtrasObservaFiltradas).length == 0) {
+        this.validarMensaje2 = true;
+      }
       
       
     }, err => {
+      this.validarMensaje2 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
@@ -473,9 +486,12 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
 
       })
 
-      
+      if (Object.keys(this.listaHorasExtrasAutorizadasFiltradas).length == 0) {
+        this.validarMensaje3 = true;
+      }
 
     }, err => {
+      this.validarMensaje3 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }

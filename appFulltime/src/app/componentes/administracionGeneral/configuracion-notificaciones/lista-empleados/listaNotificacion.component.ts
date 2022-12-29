@@ -64,7 +64,7 @@ export class ListaNotificacionComponent implements OnInit {
     //selectionEmp = new SelectionModel<ItableDispositivos>(true, []);
 
     idEmpleado: number;
-    empleados: any = [];
+
 
     constructor(
         public restEmpre: EmpresaService, // SERVICIO DATOS DE EMPRESA
@@ -78,7 +78,6 @@ export class ListaNotificacionComponent implements OnInit {
 
     ngOnInit(): void {
         this.ObtenerEmpleados(this.idEmpleado);
-        this.ObtenerNacionalidades();
         this.ObtenerColores();
         this.GetEmpleados();
         this.ObtenerLogo();
@@ -103,7 +102,7 @@ export class ListaNotificacionComponent implements OnInit {
         if (!row) {
             return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
         }
-        //return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+        return `${this.selectionUno.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
     }
 
 
@@ -273,259 +272,17 @@ export class ListaNotificacionComponent implements OnInit {
         this.apellido.reset();
     }
 
-    // METODO PARA LISTAR NACIONALIDADES
-    ObtenerNacionalidades() {
-        this.rest.BuscarNacionalidades().subscribe(res => {
-            this.nacionalidades = res;
-        });
-    }
-
     AbrirSettings() {
         if (this.selectionUno.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
         this.ventana.open(ConfiguracionNotificacionComponent, { width: '350px', data: this.selectionUno.selected }).afterClosed().subscribe(result => {
-          result.forEach(item => {
-             this.empleados.push(item);
-          });
-    
+
           if (result) {
             this.toastr.success('Configuración Actualizada');
-            this.selectionUno.clear();
-            this.btnCheckHabilitar  = false;
             this.numero_pagina = 1;
           }
-    
+          this.selectionUno.clear();
+          this.btnCheckHabilitar  = false;
         })
           
     }
-
-    /** ************************************************************************************************* **
-   ** **                             PARA LA EXPORTACION DE ARCHIVOS PDF                             ** **
-   ** ************************************************************************************************* **/
-
-  GenerarPdf(action = 'open', numero: any) {
-    const documentDefinition = this.GetDocumentDefinicion(numero);
-    switch (action) {
-      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
-      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-      case 'download': pdfMake.createPdf(documentDefinition).download(); break;
-      default: pdfMake.createPdf(documentDefinition).open(); break;
-    }
-  }
-
-  GetDocumentDefinicion(numero: any) {
-    sessionStorage.setItem('Empleados', this.empleado);
-    return {
-      // ENCABEZADO DE LA PÁGINA
-      pageOrientation: 'landscape',
-      watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
-      header: { text: 'Impreso por:  ' + this.empleadoD[0].nombre + ' ' + this.empleadoD[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
-      // PIE DE LA PÁGINA
-      footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
-        var f = moment();
-        fecha = f.format('YYYY-MM-DD');
-        hora = f.format('HH:mm:ss');
-        return {
-          margin: 10,
-          columns: [
-            { text: 'Fecha: ' + fecha + ' Hora: ' + hora, opacity: 0.3 },
-            {
-              text: [
-                {
-                  text: '© Pag ' + currentPage.toString() + ' of ' + pageCount,
-                  alignment: 'right', opacity: 0.3
-                }
-              ],
-            }
-          ],
-          fontSize: 10
-        }
-      },
-      content: [
-        { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de Empleados', bold: true, fontSize: 20, alignment: 'center', margin: [0, -20, 0, 10] },
-        this.presentarDataPDFEmpleados(numero),
-      ],
-      styles: {
-        tableHeader: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.p_color },
-        itemsTable: { fontSize: 9 },
-        itemsTableD: { fontSize: 9, alignment: 'center' }
-      }
-    };
-  }
-
-  EstadoCivilSelect: any = ['Soltero/a', 'Unión de Hecho', 'Casado/a', 'Divorciado/a', 'Viudo/a'];
-  GeneroSelect: any = ['Masculino', 'Femenino'];
-  EstadoSelect: any = ['Activo', 'Inactivo'];
-  presentarDataPDFEmpleados(numero: any) {
-    if (numero === 1) {
-      var arreglo = this.empleado
-    }
-    
-    return {
-      columns: [
-        { width: '*', text: '' },
-        {
-          width: 'auto',
-          table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-            body: [
-              [
-                { text: 'Código', style: 'tableHeader' },
-                { text: 'Nombre', style: 'tableHeader' },
-                { text: 'Apellido', style: 'tableHeader' },
-                { text: 'Cedula', style: 'tableHeader' },
-                { text: 'Fecha Nacimiento', style: 'tableHeader' },
-                { text: 'Correo', style: 'tableHeader' },
-                { text: 'Género', style: 'tableHeader' },
-                { text: 'Estado Civil', style: 'tableHeader' },
-                { text: 'Domicilio', style: 'tableHeader' },
-                { text: 'Teléfono', style: 'tableHeader' },
-                { text: 'Estado', style: 'tableHeader' },
-                { text: 'Nacionalidad', style: 'tableHeader' },
-              ],
-              ...arreglo.map(obj => {
-                var estadoCivil = this.EstadoCivilSelect[obj.esta_civil - 1];
-                var genero = this.GeneroSelect[obj.genero - 1];
-                var estado = this.EstadoSelect[obj.estado - 1];
-                let nacionalidad;
-                this.nacionalidades.forEach(element => {
-                  if (obj.id_nacionalidad == element.id) {
-                    nacionalidad = element.nombre;
-                  }
-                });
-                return [
-                  { text: obj.codigo, style: 'itemsTableD' },
-                  { text: obj.nombre, style: 'itemsTable' },
-                  { text: obj.apellido, style: 'itemsTable' },
-                  { text: obj.cedula, style: 'itemsTableD' },
-                  { text: obj.fec_nacimiento.split("T")[0], style: 'itemsTableD' },
-                  { text: obj.correo, style: 'itemsTableD' },
-                  { text: genero, style: 'itemsTableD' },
-                  { text: estadoCivil, style: 'itemsTableD' },
-                  { text: obj.domicilio, style: 'itemsTableD' },
-                  { text: obj.telefono, style: 'itemsTableD' },
-                  { text: estado, style: 'itemsTableD' },
-                  { text: nacionalidad, style: 'itemsTableD' }
-                ];
-              })
-            ]
-          },
-          // ESTILO DE COLORES FORMATO ZEBRA
-          layout: {
-            fillColor: function (i: any) {
-              return (i % 2 === 0) ? '#CCD1D1' : null;
-            }
-          }
-        },
-        { width: '*', text: '' },
-      ]
-    };
-  }
-
-  /** ************************************************************************************************* **
-   ** **                            PARA LA EXPORTACION DE ARCHIVOS EXCEL                            ** **
-   ** ************************************************************************************************* **/
-
-  ExportToExcel(numero: any) {
-    if (numero === 1) {
-      var arreglo = this.empleado
-    }
-    
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(arreglo.map(obj => {
-      let nacionalidad: any;
-      this.nacionalidades.forEach(element => {
-        if (obj.id_nacionalidad == element.id) {
-          nacionalidad = element.nombre;
-        }
-      });
-      return {
-        CODIGO: obj.codigo,
-        CEDULA: obj.cedula,
-        APELLIDO: obj.apellido,
-        NOMBRE: obj.nombre,
-        FECHA_NACIMIENTO: obj.fec_nacimiento.split("T")[0],
-        ESTADO_CIVIL: this.EstadoCivilSelect[obj.esta_civil - 1],
-        GENERO: this.GeneroSelect[obj.genero - 1],
-        CORREO: obj.correo,
-        ESTADO: this.EstadoSelect[obj.estado - 1],
-        DOMICILIO: obj.domicilio,
-        TELEFONO: obj.telefono,
-        NACIONALIDAD: nacionalidad,
-      }
-    }));
-    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
-    const header = Object.keys(arreglo[0]); // NOMBRE DE CABECERAS DE COLUMNAS
-    var wscols = [];
-    for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
-      wscols.push({ wpx: 100 })
-    }
-    wse["!cols"] = wscols;
-    const wb: xlsx.WorkBook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, wse, 'LISTA EMPLEADOS');
-    xlsx.writeFile(wb, "EmpleadoEXCEL" + new Date().getTime() + '.xlsx');
-  }
-
-  /** ************************************************************************************************* **
-   ** **                              PARA LA EXPORTACION DE ARCHIVOS XML                            ** **
-   ** ************************************************************************************************* **/
-  urlxml: string;
-  data: any = [];
-  ExportToXML(numero: any) {
-    if (numero === 1) {
-      var arreglo = this.empleado
-    }
-    
-    var objeto: any;
-    var arregloEmpleado = [];
-    arreglo.forEach(obj => {
-      var estadoCivil = this.EstadoCivilSelect[obj.esta_civil - 1];
-      var genero = this.GeneroSelect[obj.genero - 1];
-      var estado = this.EstadoSelect[obj.estado - 1];
-      let nacionalidad: any;
-      this.nacionalidades.forEach(element => {
-        if (obj.id_nacionalidad == element.id) {
-          nacionalidad = element.nombre;
-        }
-      });
-      objeto = {
-        "empleado": {
-          '@codigo': obj.codigo,
-          "cedula": obj.cedula,
-          "apellido": obj.apellido,
-          "nombre": obj.nombre,
-          "estadoCivil": estadoCivil,
-          "genero": genero,
-          "correo": obj.correo,
-          "fechaNacimiento": obj.fec_nacimiento.split("T")[0],
-          "estado": estado,
-          "domicilio": obj.domicilio,
-          "telefono": obj.telefono,
-          "nacionalidad": nacionalidad,
-          "imagen": obj.imagen
-        }
-      }
-      arregloEmpleado.push(objeto)
-    });
-    this.rest.CrearXML(arregloEmpleado).subscribe(res => {
-      console.log(arregloEmpleado)
-      this.data = res;
-      this.urlxml = `${environment.url}/empleado/download/` + this.data.name;
-      window.open(this.urlxml, "_blank");
-    });
-  }
-
-  /** ************************************************************************************************** ** 
-   ** **                                 METODO PARA EXPORTAR A CSV                                   ** **
-   ** ************************************************************************************************** **/
-
-  ExportToCVS(numero: any) {
-    if (numero === 1) {
-      var arreglo = this.empleado
-    }
-    
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(arreglo);
-    const csvDataC = xlsx.utils.sheet_to_csv(wse);
-    const data: Blob = new Blob([csvDataC], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "EmpleadosCSV" + new Date().getTime() + '.csv');
-  }
 }

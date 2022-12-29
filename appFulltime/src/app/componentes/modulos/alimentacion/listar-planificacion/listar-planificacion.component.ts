@@ -62,6 +62,9 @@ export class ListarPlanificacionComponent implements OnInit {
   lista_planificaciones: boolean = false; // LISTA DE SOLICITUDES PENDIENTES
   lista_empleados: boolean = false; // LISTA DE SOLICITUDES EXPIRADAS
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+
   // VARIABLE PARA MOSTRAR U OCULTAR ÍCONO DE EDICIÓN O ELIMINACIÓN DE PLANIFICACIÓN
   ver_icono: boolean = true; // ÍCONO ELIMINAR - EDITAR LISTA PLANIFICACIONES
   ver_editar: boolean = true; // ÍCONO EDITAR LISTA PLANIFICACIONES EMPLEADO
@@ -160,10 +163,17 @@ export class ListarPlanificacionComponent implements OnInit {
     this.planificaciones = [];
     this.restC.ObtenerPlanComidas().subscribe(res => {
       this.planificaciones = res;
+
       if (this.planificaciones.length != 0) {
         this.lista_planificaciones = true;
+      }else{
+        this.lista_planificaciones = false;
+        this.validarMensaje1 = true;
       }
+
       this.FormatearDatos(this.planificaciones, formato_fecha, formato_hora);
+    },err => {
+      this.validarMensaje1 = true;
     });
   }
 
@@ -181,6 +191,7 @@ export class ListarPlanificacionComponent implements OnInit {
   // METODO PARA CERRAR TABLA DE LISTA DE EMPLEADOS CON PLANIFICACIÓN SELECCIONADA
   CerrarTabla() {
     this.lista_empleados = false;
+    this.validarMensaje2 = true;
     this.ver_icono = true;
     this.ver_editar = false;
     this.ver_eliminar = false;
@@ -307,12 +318,19 @@ export class ListarPlanificacionComponent implements OnInit {
 
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.planEmpleados = res;
+
       this.FormatearDatos(this.planEmpleados, this.formato_fecha, this.formato_hora);
       this.tipo_accion = accion;
       this.lista_empleados = lista_empleados;
       this.ver_icono = icono;
       this.ver_editar = editar;
       this.ver_eliminar = eliminar;
+
+      if(this.planEmpleados.length == 0){
+        this.lista_empleados = false;
+        this.validarMensaje2 = true;
+      }
+
     }, error => {
       this.restC.EliminarRegistro(id).subscribe(res => {
         this.toastr.warning('Planificación no ha sido asignada a ningún colaborador.', 'Registro eliminado.', {
@@ -320,7 +338,10 @@ export class ListarPlanificacionComponent implements OnInit {
         })
         // window.location.reload();
         this.BuscarFecha();
+        this.validarMensaje2 = true;
       });
+
+      this.validarMensaje2 = true;
     });
   }
 
@@ -554,6 +575,7 @@ export class ListarPlanificacionComponent implements OnInit {
   VerificarPlanificacion(id, accion, editar, eliminar) {
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.lista_empleados = true;
+      this.validarMensaje2 = false;
       this.planEmpleados = res;
       this.FormatearDatos(this.planEmpleados, this.formato_fecha, this.formato_hora);
       this.ver_eliminar = eliminar;
@@ -564,6 +586,7 @@ export class ListarPlanificacionComponent implements OnInit {
       this.restC.EliminarRegistro(id).subscribe(res => {
         this.tipo_accion = accion;
         this.lista_empleados = false;
+        this.validarMensaje2 = true;
         this.ver_icono = true;
         this.ver_editar = false;
         this.ver_eliminar = false;
