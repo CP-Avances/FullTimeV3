@@ -34,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let h of horas_extras | paginate:tamanio_pagina:numero_pagina">
+                    <tr *ngFor="let h of lista_pedidosFiltradas | paginate:tamanio_pagina:numero_pagina">
                         <td>
                             <mat-checkbox *ngIf="btnCheckHabilitar" (click)="$event.stopPropagation()"
                                 (change)="$event ? selectionUno.toggle(h) : null" [checked]="selectionUno.isSelected(h)"
@@ -66,7 +66,7 @@
                 {{horasSumadas}}</button>
         </div>
         <br>
-        <mat-paginator id="pagina" [length]="horas_extras.length" [pageSize]="tamanio_pagina"
+        <mat-paginator id="pagina" [length]="lista_pedidosFiltradas.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
             (click)="calcularHoraPaginacion()" showFirstLastButtons>
         </mat-paginator>
@@ -111,7 +111,7 @@
                 </thead>
                 <tbody>
                     <tr
-                        *ngFor="let h of solicitudes_observacion | paginate:tamanio_pagina_observacion:numero_pagina_observacion">
+                        *ngFor="let h of listaHorasExtrasObservaFiltradas | paginate:tamanio_pagina_observacion:numero_pagina_observacion">
                         <td>
                             <mat-checkbox *ngIf="btnCheckHabilitarObserva" (click)="$event.stopPropagation()"
                                 (change)="$event ? selectionUnoObserva.toggle(h) : null"
@@ -143,7 +143,7 @@
                 {{horasSumadas_observacion}}</button>
         </div>
         <br>
-        <mat-paginator id="pagina" [length]="solicitudes_observacion.length" [pageSize]="tamanio_pagina_observacion"
+        <mat-paginator id="pagina" [length]="listaHorasExtrasObservaFiltradas.length" [pageSize]="tamanio_pagina_observacion"
             [pageSizeOptions]="pageSizeOptions_observacion" id="pagina" (page)="ManejarPaginaObservacion($event)"
             (click)="calcularHoraPaginacionObservacion()" showFirstLastButtons>
         </mat-paginator>
@@ -173,7 +173,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let h of pedido_hora_autoriza | paginate:tamanio_pagina_auto:numero_pagina_auto">
+                    <tr *ngFor="let h of listaHorasExtrasAutorizadasFiltradas | paginate:tamanio_pagina_auto:numero_pagina_auto">
                         <td>{{h.nombre}} {{h.apellido}}</td>
                         <td>{{h.estado}}</td>
                         <td>{{h.descripcion}}</td>
@@ -193,9 +193,15 @@
             </table>
         </div>
         <br>
-        <mat-paginator id="pagina" [length]="pedido_hora_autoriza.length" [pageSize]="tamanio_pagina_auto"
+        <mat-paginator id="pagina" [length]="listaHorasExtrasAutorizadasFiltradas.length" [pageSize]="tamanio_pagina_auto"
             [pageSizeOptions]="pageSizeOptions_auto" id="pagina" (page)="ManejarPaginaAutorizadas($event)"
             showFirstLastButtons>
         </mat-paginator>
+    </div>
+</div>
+
+<div *ngIf="(validarMensaje1) && (validarMensaje2) && (validarMensaje3)" class="container" style="padding-bottom: 50px; text-align: center; padding-top: 20px;" >
+    <div class="mat-elevation-z8" style="color: rgb(158, 154, 154); padding: 2%;">
+        <h5> Por el Momento no tiene Solicitudes de Horas Extras para Aprobar </h5>
     </div>
 </div>

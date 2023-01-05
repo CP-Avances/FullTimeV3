@@ -29,7 +29,7 @@ export class VerVacacionComponent implements OnInit {
 
   // VARIABLE DE BUSQUEDA DE DATOS DE VACACIONES
   vacacion: any = [];
-
+  id_solicitud: number;
   // VARIABLE DE BUSQUEDA DE DATOS DE AUTORIZACIONES
   autorizacion: any = [];
   HabilitarAutorizacion: boolean = true;
@@ -45,6 +45,9 @@ export class VerVacacionComponent implements OnInit {
   datosAutorizacion: any = [];
   habilitarActualizar: boolean = true;
 
+  ocultar: boolean = false;
+  estado: boolean = false;
+
   constructor(
     public restGeneral: DatosGeneralesService, // SERVICIO DE DATOS GENERALES DE EMPLEADO
     public restEmpre: EmpresaService, // SERVICIO DE DATOS DE EMPRESA
@@ -58,6 +61,10 @@ export class VerVacacionComponent implements OnInit {
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
     this.id_vacacion = this.router.url.split('/')[2];
+  }
+
+  ionViewWillEnter(){
+    this.BuscarParametro();
   }
 
   ngOnInit(): void {
@@ -93,21 +100,35 @@ export class VerVacacionComponent implements OnInit {
   // CONTADOR DE REVISIONES DE SOLICITUD
   lectura: number = 1;
   cont: number;
-
   // METODO DE BUSQUEDA DE DATOS DE SOLICITUD Y AUTORIZACIÓN
   BuscarDatos(formato_fecha: string) {
     this.vacacion = [];
-
     // BUSQUEDA DE DATOS DE VACACIONES
     this.restV.ObtenerUnaVacacion(parseInt(this.id_vacacion)).subscribe(res => {
       this.vacacion = res;
-      console.log('ver data ... ', this.vacacion)
+      console.log('ver data ... ', this.vacacion);
+
+      this.id_solicitud = this.vacacion[0].id;
+
       this.vacacion.forEach(v => {
         // TRATAMIENTO DE FECHAS Y HORAS 
         v.fec_ingreso_ = this.validar.FormatearFecha(v.fec_ingreso, formato_fecha, this.validar.dia_completo);
         v.fec_inicio_ = this.validar.FormatearFecha(v.fec_inicio, formato_fecha, this.validar.dia_completo);
         v.fec_final_ = this.validar.FormatearFecha(v.fec_final, formato_fecha, this.validar.dia_completo);
       })
+
+      if(this.idEmpleado == this.vacacion[0].id_empleado){
+        this.ocultar = true;
+      }else{
+        this.ocultar = false;
+      }
+
+      if(this.vacacion[0].estado > 1){
+        this.estado = true;
+      }else{
+        this.estado = false;
+      }
+
       this.ObtenerAutorizacion(this.vacacion[0].id);
     });
 
@@ -123,7 +144,7 @@ export class VerVacacionComponent implements OnInit {
     // BUSQUEDA DE DATOS DE AUTORIZACIÓN
     this.restA.getUnaAutorizacionByVacacionRest(id).subscribe(res1 => {
       this.autorizacion = res1;
-      console.log(this.autorizacion);
+      console.log("Autorizacion: ",this.autorizacion);
 
       // METODO PARA OBTENER EMPLEADOS Y ESTADOS
       var autorizaciones = this.autorizacion[0].id_documento.split(',');
@@ -238,11 +259,15 @@ export class VerVacacionComponent implements OnInit {
           this.habilitarActualizar = false;
         }
       });
+
+
+
     })
   }
 
   // ABRIR VENTANAS DE NAVEGACIÓN
   AbrirVentanaEditarAutorizacion(datosSeleccionados: any): void {
+    console.log("Esta en autorizacion 1 edicion: ",datosSeleccionados);
     this.ventana.open(EditarEstadoVacacionAutoriacionComponent,
       { width: '350px', data: { auto: datosSeleccionados, vacacion: this.vacacion[0] } })
       .afterClosed().subscribe(item => {

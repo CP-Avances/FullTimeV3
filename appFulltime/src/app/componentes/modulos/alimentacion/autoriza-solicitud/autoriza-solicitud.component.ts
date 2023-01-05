@@ -330,7 +330,20 @@ export class AutorizaSolicitudComponent implements OnInit {
       id_comida: alimentacion.id_comida
     }
 
-    alimentacion.EmpleadosSendNotiEmail.forEach(e => {
+    //Listado para eliminar el usuario duplicado
+    var allNotificaciones = [];
+    //Ciclo por cada elemento del catalogo
+    alimentacion.EmpleadosSendNotiEmail.forEach(function(elemento, indice, array) {
+      // Discriminación de elementos iguales
+      if(allNotificaciones.find(p=>p.fullname == elemento.fullname) == undefined)
+      {
+        // Nueva lista de empleados que reciben la notificacion
+        allNotificaciones.push(elemento);
+      }
+    });
+
+    //ForEach para enviar la notificacion a cada usuario dentro de la nueva lista filtrada
+    allNotificaciones.forEach(e => {
       mensaje.id_empl_recive = e.empleado;
       if (e.comida_noti) {
         this.restPlan.EnviarMensajePlanComida(mensaje).subscribe(res => {

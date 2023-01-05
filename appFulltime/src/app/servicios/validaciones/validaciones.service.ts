@@ -40,11 +40,6 @@ export class ValidacionesService {
     }
   }
 
-
-
-
-
-
   RedireccionarEstadisticas(error) {
     const { access, message, text } = error;
     console.log(error);

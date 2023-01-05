@@ -50,8 +50,13 @@ export class ListarSolicitudComponent implements OnInit {
   lista_solicitados: boolean = false; // LISTA DE SOLICITUDES PENDIENTES
   lista_expirados: boolean = false; // LISTA DE SOLICITUDES EXPIRADAS
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+  validarMensaje3: boolean = false;
+
   // VARIABLE PARA MOSTRAR U OCULTAR ÍCONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true; // ÍCONO LISTA DE SOLICITUDES PENDIENTES
+
 
   // ITEMS DE PAGINACIÓN DE LA TABLA DE LISTA DE SOLICITUDES PENDIENTES
   pageSizeOptions = [5, 10, 20, 50];
@@ -68,6 +73,8 @@ export class ListarSolicitudComponent implements OnInit {
   tamanio_pagina_expirada: number = 5;
   numero_pagina_expirada: number = 1;
 
+  idEmpleado: number;
+
   get habilitarComida(): boolean { return this.funciones.alimentacion; }
 
   constructor(
@@ -77,7 +84,9 @@ export class ListarSolicitudComponent implements OnInit {
     public restC: PlanComidasService, // SERVICIO DATOS SERVICIO DE COMIDA
     private ventana: MatDialog, // VARIABLE PARA LLAMADO A COMPONENTES
     private funciones: MainNavService,
-  ) { }
+  ) { 
+    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+  }
 
   ngOnInit(): void {
     if (this.habilitarComida === false) {
@@ -154,21 +163,38 @@ export class ListarSolicitudComponent implements OnInit {
     this.tamanio_pagina = e.pageSize;
   }
 
+
+  lista_solicitudes_filtradas: any = [];
   // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES PENDIENTES
   ObtenerSolicitudes(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaNegado().subscribe(res => {
       this.solicitudes = res;
-      if (this.solicitudes.length != 0) {
+
+      //Filtra la lista de Horas Extras Autorizadas para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.lista_solicitudes_filtradas = this.solicitudes.filter(o => {
+        if(this.idEmpleado !== o.id_empleado){
+          return this.lista_solicitudes_filtradas.push(o);
+        }
+      });
+
+      if (this.lista_solicitudes_filtradas.length != 0) {
         this.lista_solicitados = true;
+      }else{
+        this.lista_solicitados = false;
+        this.validarMensaje1 = true;
       }
-      this.FormatearDatos(this.solicitudes, formato_fecha, formato_hora);
+
+      this.FormatearDatos(this.lista_solicitudes_filtradas, formato_fecha, formato_hora);
+
+    }, err => {
+      this.validarMensaje1 = true;
     });
   }
 
   // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
-    const numRows = this.solicitudes.length;
+    const numRows = this.lista_solicitudes_filtradas.length;
     return numSelected === numRows;
   }
 
@@ -176,7 +202,7 @@ export class ListarSolicitudComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
-      this.solicitudes.forEach(row => this.selectionUno.select(row));
+      this.lista_solicitudes_filtradas.forEach(row => this.selectionUno.select(row));
   }
 
   // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
@@ -253,23 +279,38 @@ export class ListarSolicitudComponent implements OnInit {
 
   // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
   solicitudesAutorizados: any = []; // VARIABLE PARA GUARDAR DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS
+  solicitudesAutorizadas_filtradas: any = []; // VARIABLE PARA GUARDAR DATOS DE SOLICITUDES AUTORIZADAS O NEGADAS SIN LAS DEL PROPIO USUARIO QUE INGRESO
   ObtenerSolicitudesAutorizados(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaAprobado().subscribe(res => {
       this.solicitudesAutorizados = res;
 
-      this.FormatearDatos(this.solicitudesAutorizados, formato_fecha, formato_hora);
+      //Filtra la lista de Horas Extras Autorizadas para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.solicitudesAutorizadas_filtradas = this.solicitudesAutorizados.filter(o => {
+        if(this.idEmpleado !== o.id_empleado){
+          return this.solicitudesAutorizadas_filtradas.push(o);
+        }
+      });
 
-      for (var i = 0; i <= this.solicitudesAutorizados.length - 1; i++) {
-        if (this.solicitudesAutorizados[i].aprobada === true) {
-          this.solicitudesAutorizados[i].aprobada = 'AUTORIZADO';
+      this.FormatearDatos(this.solicitudesAutorizadas_filtradas, formato_fecha, formato_hora);
+
+      for (var i = 0; i <= this.solicitudesAutorizadas_filtradas.length - 1; i++) {
+        if (this.solicitudesAutorizadas_filtradas[i].aprobada === true) {
+          this.solicitudesAutorizadas_filtradas[i].aprobada = 'AUTORIZADO';
         }
-        else if (this.solicitudesAutorizados[i].aprobada === false) {
-          this.solicitudesAutorizados[i].aprobada = 'NEGADO';
+        else if (this.solicitudesAutorizadas_filtradas[i].aprobada === false) {
+          this.solicitudesAutorizadas_filtradas[i].aprobada = 'NEGADO';
         }
       }
-      if (this.solicitudesAutorizados.length != 0) {
+
+      if (this.solicitudesAutorizadas_filtradas.length != 0) {
         this.lista_autorizados = true;
+      }else{
+        this.lista_autorizados = false;
+        this.validarMensaje2 = true;
       }
+
+    }, err => {
+      this.validarMensaje2 = true;
     });
   }
 
@@ -279,7 +320,7 @@ export class ListarSolicitudComponent implements OnInit {
   //SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS.
   isAllSelectedEstado() {
     const numSelected = this.selectionUnoEstado.selected.length;
-    const numRows = this.solicitudes.length;
+    const numRows = this.solicitudesAutorizadas_filtradas.length;
     return numSelected === numRows;
   }
 
@@ -287,7 +328,7 @@ export class ListarSolicitudComponent implements OnInit {
   masterToggleEstado() {
     this.isAllSelectedEstado() ?
       this.selectionUnoEstado.clear() :
-      this.solicitudes.forEach(row => this.selectionUnoEstado.select(row));
+      this.solicitudesAutorizadas_filtradas.forEach(row => this.selectionUnoEstado.select(row));
   }
 
   // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA.
@@ -340,27 +381,44 @@ export class ListarSolicitudComponent implements OnInit {
   }
 
   // METODO PARA BUSQUEDA DE DATOS DE SOLICITUDES EXPIRADAS
+  
   solicitudesExpiradas: any = []; // VARIABLE PARA ALMACENAR DATOS DE SOLIICTUDES EXPIRADAS
+  solicitudesExpiradas_filtradas: any = [];
   ObtenerSolicitudesExpiradas(formato_fecha: string, formato_hora: string) {
     this.restC.ObtenerSolComidaExpirada().subscribe(res => {
       this.solicitudesExpiradas = res;
 
-      this.FormatearDatos(this.solicitudesExpiradas, formato_fecha, formato_hora);
-
-      for (var i = 0; i <= this.solicitudesExpiradas.length - 1; i++) {
-        if (this.solicitudesExpiradas[i].aprobada === true) {
-          this.solicitudesExpiradas[i].aprobada = 'AUTORIZADO';
+       //Filtra la lista de Horas Extras Autorizadas para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+       this.solicitudesExpiradas_filtradas = this.solicitudesExpiradas.filter(o => {
+        if(this.idEmpleado !== o.id_empleado){
+          return this.solicitudesExpiradas_filtradas.push(o);
         }
-        else if (this.solicitudesExpiradas[i].aprobada === false) {
-          this.solicitudesExpiradas[i].aprobada = 'NEGADO';
+      });
+
+      this.FormatearDatos(this.solicitudesExpiradas_filtradas, formato_fecha, formato_hora);
+
+      for (var i = 0; i <= this.solicitudesExpiradas_filtradas.length - 1; i++) {
+        if (this.solicitudesExpiradas_filtradas[i].aprobada === true) {
+          this.solicitudesExpiradas_filtradas[i].aprobada = 'AUTORIZADO';
+        }
+        else if (this.solicitudesExpiradas_filtradas[i].aprobada === false) {
+          this.solicitudesExpiradas_filtradas[i].aprobada = 'NEGADO';
         }
         else {
-          this.solicitudesExpiradas[i].aprobada = 'PENDIENTE';
+          this.solicitudesExpiradas_filtradas[i].aprobada = 'PENDIENTE';
         }
       }
-      if (this.solicitudesExpiradas.length != 0) {
+
+      if (this.solicitudesExpiradas_filtradas.length != 0) {
         this.lista_expirados = true;
+      }else{
+        this.lista_expirados = false;
+        this.validarMensaje3 = true;
       }
+
+
+    }, err => {
+      this.validarMensaje3 = true;
     });
   }
 }

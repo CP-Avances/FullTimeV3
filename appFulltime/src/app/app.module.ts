@@ -235,6 +235,8 @@ import { RegistrarBirthdayComponent } from './componentes/administracionGeneral/
 import { EditarBirthdayComponent } from './componentes/administracionGeneral/birthday/editar-birthday/editar-birthday.component';
 import { VerBirthdayComponent } from './componentes/administracionGeneral/birthday/ver-birthday/ver-birthday.component';
 import { ConfiguracionComponent } from './componentes/administracionGeneral/correo/configuracion/configuracion.component';
+import { ListaNotificacionComponent } from './componentes/administracionGeneral/configuracion-notificaciones/lista-empleados/listaNotificacion.component';
+import { ConfiguracionNotificacionComponent } from './componentes/administracionGeneral/configuracion-notificaciones/configuracion/configuracionNotificacion.component';
 import { EditarPermisoEmpleadoComponent } from './componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { CancelarPermisoComponent } from './componentes/rolEmpleado/permisos-empleado/cancelar-permiso/cancelar-permiso.component';
 import { CancelarVacacionesComponent } from './componentes/rolEmpleado/vacacion-empleado/cancelar-vacaciones/cancelar-vacaciones.component';
@@ -565,6 +567,8 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     VerCoordenadasComponent,
     ComunicadosComponent,
     ConfiguracionComponent,
+    ListaNotificacionComponent,
+    ConfiguracionNotificacionComponent,
     CancelarComidaComponent,
     HorasPlanificadasEmpleadoComponent,
     ComidasSolicitadasEmpleadoComponent,

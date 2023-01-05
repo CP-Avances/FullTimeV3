@@ -1084,11 +1084,22 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         hasta + ' ' + h_fin,
     }
 
-    permiso.EmpleadosSendNotiEmail.forEach(e => {
+    //Listado para eliminar el usuario duplicado
+    var allNotificaciones = [];
+    //Ciclo por cada elemento del catalogo
+    permiso.EmpleadosSendNotiEmail.forEach(function(elemento, indice, array) {
+      // Discriminación de elementos iguales
+      if(allNotificaciones.find(p=>p.fullname == elemento.fullname) == undefined)
+      {
+        // Nueva lista de empleados que reciben la notificacion
+        allNotificaciones.push(elemento);
+      }
+    });
 
+    //ForEach para enviar la notificacion a cada usuario dentro de la nueva lista filtrada
+    allNotificaciones.forEach(e => {
       notificacion.id_receives_depa = e.id_dep;
       notificacion.id_receives_empl = e.empleado;
-
       if (e.permiso_noti) {
         this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
           resp => {
@@ -1102,7 +1113,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           () => { },
         )
       }
+
     })
+
   }
 
   /** ********************************************************************************* **

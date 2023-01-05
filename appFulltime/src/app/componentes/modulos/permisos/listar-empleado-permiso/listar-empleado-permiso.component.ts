@@ -46,6 +46,9 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   lista_autorizados: boolean = false;
   lista_permisos: boolean = false;
 
+  validarMensaje1: boolean = false;
+  validarMensaje2: boolean = false;
+
   // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
   auto_individual: boolean = true;
 
@@ -59,6 +62,8 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   numero_pagina_autorizado: number = 1;
   pageSizeOptions_autorizado = [5, 10, 20, 50];
 
+  idEmpleado: number;
+
   get habilitarPermiso(): boolean { return this.funciones.permisos; }
 
   constructor(
@@ -68,7 +73,9 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
     private funciones: MainNavService,
     public parametro: ParametrosService,
     public restEmpleado: EmpleadoService,
-  ) { }
+  ) {
+    this.idEmpleado = parseInt(localStorage.getItem('empleado'));
+   }
 
   ngOnInit(): void {
     if (this.habilitarPermiso === false) {
@@ -121,15 +128,25 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
       vacio => {
         this.obtenerPermisos(fecha, this.formato_hora);
         this.ObtenerPermisosAutorizados(fecha, this.formato_hora);
-      });
+      }
+    );
+
   }
 
+  public listaPermisosFiltradas: any = [];
   obtenerPermisos(fecha: string, hora: string) {
 
     this.restP.obtenerAllPermisos().subscribe(res => {
       this.permisos = res;
 
-      this.permisos.forEach(p => {
+      //Filtra la lista de Horas Extras para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.listaPermisosFiltradas = this.permisos.filter(o => {
+        if(this.idEmpleado !== o.id_emple_solicita){
+          return this.listaPermisosFiltradas.push(o);
+        }
+      })
+
+      this.listaPermisosFiltradas.forEach(p => {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
         p.fec_creacion_ = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
         p.fec_inicio_ = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
@@ -142,12 +159,17 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
           p.estado = 'Pre-autorizado';
         }
       })
-      console.log('permisos', this.permisos)
-      if (this.permisos.length != 0) {
+
+      if (Object.keys(this.listaPermisosFiltradas).length == 0) {
+        this.validarMensaje1 = true;
+      }
+
+      if (this.listaPermisosFiltradas.length != 0) {
         this.lista_permisos = true;
       }
     }, err => {
       console.log('permisos ALL ', err.error)
+      this.validarMensaje1 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }
@@ -174,7 +196,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
   isAllSelected() {
     const numSelected = this.selectionUno.selected.length;
-    const numRows = this.permisos.length;
+    const numRows = this.listaPermisosFiltradas.length;
     return numSelected === numRows;
   }
 
@@ -182,7 +204,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selectionUno.clear() :
-      this.permisos.forEach(row => this.selectionUno.select(row));
+      this.listaPermisosFiltradas.forEach(row => this.selectionUno.select(row));
   }
 
   // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
@@ -231,18 +253,25 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
   }
 
   // LISTA DE PERMISOS QUE HAN SIDO AUTORIZADOS O NEGADOS
-
   ManejarPaginaAutorizados(e: PageEvent) {
     this.tamanio_pagina_autorizado = e.pageSize;
     this.numero_pagina_autorizado = e.pageIndex + 1;
   }
 
   permisosAutorizados: any = [];
+  public listaPermisosAutorizadosFiltrados: any = [];
   ObtenerPermisosAutorizados(fecha: string, hora: string) {
     this.restP.BuscarPermisosAutorizados().subscribe(res => {
       this.permisosAutorizados = res;
 
-      this.permisosAutorizados.forEach(p => {
+      //Filtra la lista de Horas Extras para descartar las solicitudes del mismo usuario y almacena en una nueva lista
+      this.listaPermisosAutorizadosFiltrados = this.permisosAutorizados.filter(o => {
+        if(this.idEmpleado !== o.id_emple_solicita){
+          return this.listaPermisosAutorizadosFiltrados.push(o);
+        }
+      })
+
+      this.listaPermisosAutorizadosFiltrados.forEach(p => {
         // TRATAMIENTO DE FECHAS Y HORAS EN FORMATO DD/MM/YYYYY
         p.fec_creacion_ = this.validar.FormatearFecha(p.fec_creacion, fecha, this.validar.dia_abreviado);
         p.fec_inicio_ = this.validar.FormatearFecha(p.fec_inicio, fecha, this.validar.dia_abreviado);
@@ -256,10 +285,16 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         }
       })
 
-      if (this.permisosAutorizados.length != 0) {
+      if (Object.keys(this.listaPermisosAutorizadosFiltrados).length == 0) {
+        this.validarMensaje2 = true;
+      }
+
+
+      if (this.listaPermisosAutorizadosFiltrados.length != 0) {
         this.lista_autorizados = true;
       }
     }, err => {
+      this.validarMensaje2 = true;
       return this.validar.RedireccionarHomeAdmin(err.error)
     });
   }

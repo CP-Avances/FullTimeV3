@@ -180,25 +180,25 @@ export class ButtonNotificacionComponent implements OnInit {
     if (data.tipo != 3) {
       if (rol === 1) {
         if (data.id_permiso != null) {
-          this.router.navigate(['/ver-permiso/', data.id_permiso]);
+          return this.router.navigate(['/ver-permiso/', data.id_permiso]);
         }
         if (data.id_vacaciones != null) {
-          this.router.navigate(['/ver-vacacion/', data.id_vacaciones]);
+          return this.router.navigate(['/ver-vacacion/', data.id_vacaciones]);
         }
         if (data.id_hora_extra != null) {
-          this.router.navigate(['/ver-hora-extra/', data.id_hora_extra]);
+          return this.router.navigate(['/ver-hora-extra/', data.id_hora_extra]);
         }
       }
 
       if (rol != 1) {
         if (data.id_permiso != null) {
-          this.router.navigate(['/solicitarPermiso']);
+          return this.router.navigate(['/solicitarPermiso']);
         }
         if (data.id_vacaciones != null) {
-          this.router.navigate(['/vacacionesEmpleado']);
+          return this.router.navigate(['/vacacionesEmpleado']);
         }
         if (data.id_hora_extra != null) {
-          this.router.navigate(['/horaExtraEmpleado/']);
+          return this.router.navigate(['/horaExtraEmpleado/']);
         }
       }
     }
