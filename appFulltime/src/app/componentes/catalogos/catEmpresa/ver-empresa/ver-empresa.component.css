@@ -108,3 +108,8 @@ mat-radio-group {
 #icono {
     color: rgba(8, 10, 124, 0.828);
 }
+
+table {
+    width: 100%;
+    font-size: 14px;
+}

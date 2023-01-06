@@ -20,7 +20,7 @@
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
                     <tr style="text-align: center;">
-                        <th scope="col">Id </th>
+                        <th scope="col">Código</th>
                         <th scope="col">Descripción</th>
                         <th scope="col">Acción</th>
                     </tr>
@@ -37,8 +37,8 @@
                     <tr
                         *ngFor="let tp of parametros | filtroNombre: filtroDescripcion | paginate:tamanio_pagina:numero_pagina">
                         <th style="padding-top: 10px; text-align: center;" scope="row">{{tp.id}}</th>
-                        <td style="padding-top: 10px;text-align: center;">{{tp.descripcion}}</td>
-                        <td style="padding-top: 10px;text-align: center;" class="d-flex justify-content-center">
+                        <td style="padding-top: 10px; text-align: center;">{{tp.descripcion}}</td>
+                        <td style="padding-top: 10px; text-align: center;" class="d-flex justify-content-center">
                             <i matSuffix matTooltipPosition="right" matTooltip="Ver datos generales de este registro."
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/mostrar/parametros/', tp.id]">
                                 <p>Ver</p>

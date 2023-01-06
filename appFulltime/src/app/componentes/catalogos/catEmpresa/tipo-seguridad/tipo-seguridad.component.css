@@ -31,3 +31,8 @@ mat-progress-spinner {
 #mover {
     cursor: grab;
 }
+
+#cerrar {
+    color: red;
+    cursor: pointer;
+}

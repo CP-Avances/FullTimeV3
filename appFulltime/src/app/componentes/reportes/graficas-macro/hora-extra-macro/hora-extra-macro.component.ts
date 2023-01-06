@@ -14,6 +14,8 @@ import * as echarts from 'echarts/core';
 import { TooltipComponent, LegendComponent, GridComponent } from 'echarts/components';
 import { BarChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-hora-extra-macro',
@@ -26,6 +28,8 @@ import { CanvasRenderer } from 'echarts/renderers';
     { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ]
 })
+
+
 export class HoraExtraMacroComponent implements OnInit {
 
   anio_inicio = new FormControl('', Validators.required);
@@ -42,20 +46,36 @@ export class HoraExtraMacroComponent implements OnInit {
 
   hora_extra: any;
   datos_horas_extra: any = [];
+
+  get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
+
   constructor(
     private restGraficas: GraficasService,
     private toastr: ToastrService,
     private restEmpre: EmpresaService,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
   ) {
     this.ObtenerLogo();
     this.ObtenerColores();
   }
 
   ngOnInit(): void {
-    echarts.use(
-      [TooltipComponent, LegendComponent, BarChart, GridComponent, CanvasRenderer]
-    );
-    this.llamarGraficaOriginal();
+    if (this.habilitarHorasE === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Horas Extras. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      echarts.use(
+        [TooltipComponent, LegendComponent, BarChart, GridComponent, CanvasRenderer]
+      );
+      this.llamarGraficaOriginal();
+    }
   }
 
   thisChart: any;

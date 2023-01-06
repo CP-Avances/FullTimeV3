@@ -1,12 +1,12 @@
-// SECCIÓN DE LIBRERIAS
+// SECCION DE LIBRERIAS
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
-// SECCIÓN DE SERVICICOS
+// SECCION DE SERVICICOS
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 
-// SECCIÓN DE COMPONENTES
+// SECCION DE COMPONENTES
 import { CorreoEmpresaComponent } from 'src/app/componentes/administracionGeneral/correo/correo-empresa/correo-empresa.component';
 import { LogosComponent } from 'src/app/componentes/catalogos/catEmpresa/logos/logos.component';
 
@@ -88,8 +88,12 @@ export class ConfiguracionComponent implements OnInit {
       data: { empresa: parseInt(this.idEmpresa), pagina: pagina }
     }).afterClosed()
       .subscribe((res: any) => {
-        this.ObtenerCabeceraCorreo();
-        this.ObtenerPieCorreo();
+        if (res) {
+          if (res.actualizar === true) {
+            this.ObtenerCabeceraCorreo();
+            this.ObtenerPieCorreo();
+          }
+        }
       })
   }
 
@@ -97,7 +101,11 @@ export class ConfiguracionComponent implements OnInit {
   ConfigurarCorreoElectronico(info_empresa: any) {
     this.ventana.open(CorreoEmpresaComponent, { width: '400px', data: info_empresa }).afterClosed()
       .subscribe(res => {
-        this.CargarDatosEmpresa();
+        if (res) {
+          if (res.actualizar === true) {
+            this.CargarDatosEmpresa();
+          }
+        }
       })
   }
 

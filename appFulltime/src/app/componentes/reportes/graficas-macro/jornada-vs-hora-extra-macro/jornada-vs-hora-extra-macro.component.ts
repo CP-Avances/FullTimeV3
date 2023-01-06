@@ -14,6 +14,8 @@ import * as echarts from 'echarts/core';
 import { TooltipComponent, LegendComponent } from 'echarts/components';
 import { PieChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-jornada-vs-hora-extra-macro',
@@ -39,23 +41,38 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
   habilitar: boolean = false;
   f_inicio_req: string = '';
   f_final_req: string = '';
-  
+
   jornada_hora_extra: any;
+
+  get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
 
   constructor(
     private restGraficas: GraficasService,
     private toastr: ToastrService,
     private restEmpre: EmpresaService,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
   ) {
     this.ObtenerLogo();
     this.ObtenerColores();
-   }
+  }
 
   ngOnInit(): void {
-    echarts.use(
-      [TooltipComponent, LegendComponent, PieChart, CanvasRenderer]
-    );
-    this.llamarGraficaOriginal();
+    if (this.habilitarHorasE === false) {
+      let mensaje = {
+        access: false,
+        title: `Ups!!! al parecer no tienes activado en tu plan el Módulo de Horas Extras. \n`,
+        message: '¿Te gustaría activarlo? Comunícate con nosotros.',
+        url: 'www.casapazmino.com.ec'
+      }
+      return this.validar.RedireccionarHomeAdmin(mensaje);
+    }
+    else {
+      echarts.use(
+        [TooltipComponent, LegendComponent, PieChart, CanvasRenderer]
+      );
+      this.llamarGraficaOriginal();
+    }
   }
 
   thisChart: any;
@@ -63,7 +80,7 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
   llamarGraficaOriginal() {
     let local = sessionStorage.getItem('JornadaHoraExtra');
     this.chartDom = document.getElementById('charts_jornada_macro') as HTMLCanvasElement;
-    this.thisChart = echarts.init(this.chartDom, 'light', {width: 1050, renderer: 'svg',devicePixelRatio: 5 });
+    this.thisChart = echarts.init(this.chartDom, 'light', { width: 1050, renderer: 'svg', devicePixelRatio: 5 });
 
     if (local === null) {
       this.restGraficas.MetricaJornadaHoraExtraMicro().subscribe(res => {
@@ -97,7 +114,7 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
     if (f_i < f_f) {
 
       if (f_i.getFullYear() === f_f.getFullYear()) {
-        this.toastr.success('Fechas validas','', {
+        this.toastr.success('Fechas validas', '', {
           timeOut: 6000,
         });
 
@@ -112,18 +129,18 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
           this.thisChart.setOption(res.datos_grafica);
         });
       } else {
-        this.toastr.error('Años de consulta diferente','Solo puede consultar datos de un año en concreto', {
+        this.toastr.error('Años de consulta diferente', 'Solo puede consultar datos de un año en concreto', {
           timeOut: 6000,
         });
       }
 
     } else if (f_i > f_f) {
-      this.toastr.info('Fecha final es menor a la fecha inicial','', {
+      this.toastr.info('Fecha final es menor a la fecha inicial', '', {
         timeOut: 6000,
       });
       this.fechasConsultaForm.reset();
     } else if (f_i.toLocaleDateString() === f_f.toLocaleDateString()) {
-      this.toastr.info('Fecha inicial es igual a la fecha final','', {
+      this.toastr.info('Fecha inicial es igual a la fecha final', '', {
         timeOut: 6000,
       });
       this.fechasConsultaForm.reset();
@@ -152,9 +169,9 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
   }
 
   graficaBase64: any;
-  metodosPDF(accion){  
-    this.graficaBase64 = this.thisChart.getDataURL({type: 'jpg' , pixelRatio: 5 });
-    this.generarPdf(accion) 
+  metodosPDF(accion) {
+    this.graficaBase64 = this.thisChart.getDataURL({ type: 'jpg', pixelRatio: 5 });
+    this.generarPdf(accion)
   }
 
   generarPdf(action) {
@@ -174,7 +191,7 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
     return {
       pageSize: 'A4',
       pageOrientation: 'portrait',
-      pageMargins: [ 30, 60, 30, 40 ],
+      pageMargins: [30, 60, 30, 40],
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + localStorage.getItem('fullname_print'), margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
@@ -184,12 +201,13 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
         fecha = f.format('YYYY-MM-DD');
         h.setUTCHours(h.getHours());
         var time = h.toJSON().split("T")[1].split(".")[0];
-        
+
         return {
           margin: 10,
           columns: [
             { text: 'Fecha: ' + fecha + ' Hora: ' + time, opacity: 0.3 },
-            { text: [
+            {
+              text: [
                 {
                   text: '© Pag ' + currentPage.toString() + ' of ' + pageCount,
                   alignment: 'right', opacity: 0.3
@@ -215,35 +233,35 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
       }
     };
   }
-  
+
   ImprimirDatos() {
     let datos = this.jornada_hora_extra.series.data;
     let tabla = {
-			table: {
+      table: {
         // widths: ['auto',40,'auto',40,'auto',40],
-				body: []
-			}
-		}
+        body: []
+      }
+    }
     let colums = [];
 
     for (let i = 0; i < datos.length; i++) {
 
       if (i >= 0 && i <= 2) {
-        colums.push({ text: datos[i].name, margin: [0,3,0,3], fillColor: this.p_color });
-        colums.push({ text: datos[i].value, margin: [0,3,0,3], alignment: 'center' });
+        colums.push({ text: datos[i].name, margin: [0, 3, 0, 3], fillColor: this.p_color });
+        colums.push({ text: datos[i].value, margin: [0, 3, 0, 3], alignment: 'center' });
       };
     }
-    
+
     if (colums.length > 0) { tabla.table.body.push(colums); }
 
     let columnas = {
       alignment: 'justify',
-			columns: [
-				{ width: 100, text: '' },
-				tabla,
-				{ width: 100, text: '' }
-			]
-		}
+      columns: [
+        { width: 100, text: '' },
+        tabla,
+        { width: 100, text: '' }
+      ]
+    }
 
     return columnas
   }
@@ -254,8 +272,8 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
     this.llamarGraficaOriginal();
   }
 
-  texto_grafica: string = 
-  "El establecer a nivel general las horas de jornada, y contrastarlas con las horas extraordinarias que " +
-  "se están ocupando en la empresa, permite determinar cómo se está empleando el tiempo laboral.";
+  texto_grafica: string =
+    "El establecer a nivel general las horas de jornada, y contrastarlas con las horas extraordinarias que " +
+    "se están ocupando en la empresa, permite determinar cómo se está empleando el tiempo laboral.";
 
 }

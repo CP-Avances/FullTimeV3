@@ -72,9 +72,9 @@ export class VerEmpresaComponent implements OnInit {
       else {
         this.nombre_establecimiento = this.datosEmpresa[0].establecimiento;
       }
-      if (this.datosEmpresa[0].logo != null) {
-        this.ObtenerLogotipo();
-      }
+
+      this.ObtenerLogotipo();
+
       if (this.datosEmpresa[0].cambios === true) {
         if (this.datosEmpresa[0].dias_cambio === 0) {
           this.cambiosTodos = false;
@@ -135,21 +135,19 @@ export class VerEmpresaComponent implements OnInit {
     this.ventana.open(RegistrarSucursalesComponent,
       { width: '900px', data: parseInt(this.idEmpresa) })
       .afterClosed().subscribe((items: any) => {
-          this.ObtenerSucursal();
+        this.ObtenerSucursal();
       });
   }
 
   // VENTANA PARA REVISAR FORMATO DE REPORTES COLORES
   AbrirVentanaReportes(datos_empresa: any, ventana: any) {
     this.ventana.open(ColoresEmpresaComponent, {
-      width: '600',
+      width: '700',
       data: { datos: datos_empresa, ventana: ventana }
     })
       .afterClosed().subscribe((items: any) => {
         if (items) {
           if (items.actualizar === true) {
-            this.ObtenerSucursal();
-            this.ObtenerLogotipo();
             this.CargarDatosEmpresa();
           }
         }
@@ -191,11 +189,13 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA DE REGISTRO DE FRASE DE SEGURIDAD
   AbrirVentanaSeguridad(datosSeleccionados: any) {
-    this.ventana.open(TipoSeguridadComponent, { width: '400', data: datosSeleccionados })
+    this.ventana.open(TipoSeguridadComponent, { width: '500', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
-        this.ObtenerSucursal();
-        this.ObtenerLogotipo();
-        this.CargarDatosEmpresa();
+        if (items) {
+          if (items === true) {
+            this.CargarDatosEmpresa();
+          }
+        }
       });
   }
 

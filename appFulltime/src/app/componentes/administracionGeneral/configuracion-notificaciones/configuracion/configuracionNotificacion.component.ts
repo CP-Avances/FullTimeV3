@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -12,57 +12,63 @@ import { ToastrService } from 'ngx-toastr';
 
 export class ConfiguracionNotificacionComponent implements OnInit {
 
+    // FORMULARIO
     formGroup: FormGroup;
 
     constructor(
-        public formBuilder: FormBuilder,
-        private restN: RealTimeService,
         private toaster: ToastrService,
-        public dialogRef: MatDialogRef<ConfiguracionNotificacionComponent>,
+        private restN: RealTimeService,
+        public formBuilder: FormBuilder,
+        public ventana: MatDialogRef<ConfiguracionNotificacionComponent>,
         @Inject(MAT_DIALOG_DATA) public empleados: any
-      ) {
-        this.formGroup = formBuilder.group({
-          vacaMail: false,
-          vacaNoti: false,
-          permisoMail: false,
-          permisoNoti: false,
-          horaExtraMail: false,
-          horaExtraNoti: false,
-          comidaMail: false,
-          comidaNoti: false,
-          comunicadoMail: false,
-          comunicadoNoti: false,
-        });
-      }
+    ) {
+        this.ValidarFormulario();
+    }
 
     ngOnInit(): void {
-        console.log("Empleados: ",this.empleados);
-        if((this.empleados.length == 1)){
-            this.empleados.forEach(item => {
-                this.restN.ObtenerConfiguracionEmpleado(item.id).subscribe(res => {
-                    this.formGroup.patchValue({
-                        vacaMail: res[0].vaca_mail,
-                        vacaNoti: res[0].vaca_noti,
-                        permisoMail: res[0].permiso_mail,
-                        permisoNoti: res[0].permiso_noti,
-                        horaExtraMail: res[0].hora_extra_mail,
-                        horaExtraNoti: res[0].hora_extra_noti,
-                        comidaMail: res[0].comida_mail,
-                        comidaNoti: res[0].comida_noti,
-                        comunicadoMail: res[0].comunicado_mail,
-                        comunicadoNoti: res[0].comunicado_noti
-                    });
-        
-                }, error => {
-                    console.log(error);
+        console.log("Empleados: ", this.empleados);
+        this.ImprimirDatosUsuario();
+    }
+
+    // METODO PARA VALIDAR FORMULARIO
+    ValidarFormulario() {
+        this.formGroup = this.formBuilder.group({
+            vacaMail: false,
+            vacaNoti: false,
+            permisoMail: false,
+            permisoNoti: false,
+            horaExtraMail: false,
+            horaExtraNoti: false,
+            comidaMail: false,
+            comidaNoti: false,
+            comunicadoMail: false,
+            comunicadoNoti: false,
+        });
+    }
+
+    // MOSTRAR INFORMACION DEL USUARIO
+    ImprimirDatosUsuario() {
+        if ((this.empleados.length == undefined)) {
+            this.restN.ObtenerConfiguracionEmpleado(this.empleados.id).subscribe(res => {
+                this.formGroup.patchValue({
+                    vacaMail: res[0].vaca_mail,
+                    vacaNoti: res[0].vaca_noti,
+                    permisoMail: res[0].permiso_mail,
+                    permisoNoti: res[0].permiso_noti,
+                    horaExtraMail: res[0].hora_extra_mail,
+                    horaExtraNoti: res[0].hora_extra_noti,
+                    comidaMail: res[0].comida_mail,
+                    comidaNoti: res[0].comida_noti,
+                    comunicadoMail: res[0].comunicado_mail,
+                    comunicadoNoti: res[0].comunicado_noti
                 });
             });
         }
-        
     }
 
-    CrearConfiguracion(form, item: any) {
 
+
+    CrearConfiguracion(form: any, item: any) {
         let data = {
             id_empleado: item.id,
             vaca_mail: form.vacaMail,
@@ -76,17 +82,50 @@ export class ConfiguracionNotificacionComponent implements OnInit {
             comunicado_mail: form.comunicadoMail,
             comunicado_noti: form.comunicadoNoti
         }
-            this.restN.IngresarConfigNotiEmpleado(data).subscribe(res => {
-            this.dialogRef.close();
-            if(this.empleados.length == 1){
-                this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
+        this.restN.IngresarConfigNotiEmpleado(data).subscribe(res => {
+            this.ventana.close();
+            if (this.empleados.length == undefined) {
+                this.toaster.success('Operación exitosa.', 'Configuración actualizada.', {
                     timeOut: 6000,
                 });
             }
         });
     }
-    
+
     ActualizarConfiguracion(form) {
+
+    }
+
+    // REGISTROS DE CONFIGURACION INDIVIDUAL
+    ConfigurarIndividual(form: any) {
+        let data = {
+            vaca_mail: form.vacaMail,
+            vaca_noti: form.vacaNoti,
+            permiso_mail: form.permisoMail,
+            permiso_noti: form.permisoNoti,
+            hora_extra_mail: form.horaExtraMail,
+            hora_extra_noti: form.horaExtraNoti,
+            comida_mail: form.comidaMail,
+            comida_noti: form.comidaNoti,
+            comunicado_mail: form.comunicadoMail,
+            comunicado_noti: form.comunicadoNoti
+        }
+        this.restN.ObtenerConfiguracionEmpleado(this.empleados.id).subscribe(res => {
+            this.restN.ActualizarConfigNotiEmpl(this.empleados.id, data).subscribe(res => {
+                this.ventana.close();
+                this.toaster.success('Operación exitosa.', 'Configuración actualizada.', {
+                    timeOut: 6000,
+                });
+            });
+        }, error => {
+            this.CrearConfiguracion(form, this.empleados);
+        });
+    }
+
+    // REGISTRO DE CONFIGURACION MULTIPLE
+    contador: number = 0;
+    ConfigurarMultiple(form: any) {
+        this.contador = 0;
         this.empleados.forEach(item => {
             let data = {
                 vaca_mail: form.vacaMail,
@@ -100,19 +139,19 @@ export class ConfiguracionNotificacionComponent implements OnInit {
                 comunicado_mail: form.comunicadoMail,
                 comunicado_noti: form.comunicadoNoti
             }
-
+            this.contador = this.contador + 1;
             this.restN.ObtenerConfiguracionEmpleado(item.id).subscribe(res => {
                 this.restN.ActualizarConfigNotiEmpl(item.id, data).subscribe(res => {
-                    this.dialogRef.close();
-                    if(this.empleados.length == 1){
+
+                    if (this.empleados.length == this.contador) {
                         this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
                             timeOut: 6000,
                         });
                     }
+                    this.ventana.close();
                 });
-    
+
             }, error => {
-                console.log(error);
                 this.CrearConfiguracion(form, item);
             });
         });

@@ -39,7 +39,6 @@ export class TipoSeguridadComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('datos', this.data)
     this.ImprimirDatos();
   }
 
@@ -80,7 +79,7 @@ export class TipoSeguridadComponent implements OnInit {
     }
 
     this.GuardarDatos(datosEmpresa);
-    this.CerrarVentana();
+    this.CerrarVentana(true);
   }
 
   // METODO PARA GUARDAR DATOS DE SEGURIDAD
@@ -101,9 +100,9 @@ export class TipoSeguridadComponent implements OnInit {
   }
 
   // METODO PARA CERRAR VENTANA
-  CerrarVentana() {
+  CerrarVentana(evento: boolean) {
     this.LimpiarCampos();
-    this.ventana.close();
+    this.ventana.close(evento);
   }
 
 }

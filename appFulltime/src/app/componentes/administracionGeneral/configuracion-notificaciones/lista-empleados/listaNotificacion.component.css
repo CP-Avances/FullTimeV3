@@ -1,22 +1,37 @@
-mat-form-field.input-tables {
-    margin-bottom: -5px;
-    font-size: 10px;
+.btn {
+    margin-left: 15px;
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
+
+td {
+    padding-top: 10px;
     text-align: center;
 }
 
-.codigo { width: 60px; }
-.nombre { width: 120px; }
-.cedula { width: 100px; }
+mat-form-field {
+    padding: 10px 15px 0px 15px;
+}
 
-mat-expansion-panel-header { text-align: center; background: rgb(52,65,84); }
-
-mat-panel-title { color: white; }
-
-mat-panel-description { color: white; }
+table {
+    width: 100%;
+    font-size: 14px;
+}
 
 #SelectCheck {
     cursor: pointer;
     margin-left: 10px;
+}
+
+.mat-radio-button~.mat-radio-button {
+    margin-left: 16px;
+}
+
+#plan {
+    color: rgb(38, 0, 255);
+    font-size: 20px;
+    text-align: center;
+    cursor: pointer;
 }
 
 p {

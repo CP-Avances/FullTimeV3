@@ -70,7 +70,7 @@ export class LogosComponent implements OnInit {
         timeOut: 6000,
       });
       this.archivoForm.reset();
-      this.ventana.close({ actualizar: false })
+      this.ventana.close({ actualizar: true });
     });
   }
 
@@ -104,7 +104,7 @@ export class LogosComponent implements OnInit {
         timeOut: 6000,
       });
       this.archivoForm.reset();
-      this.ventana.close({ actualizar: false })
+      this.ventana.close({ actualizar: true });
     });
   }
 
@@ -137,7 +137,7 @@ export class LogosComponent implements OnInit {
         timeOut: 6000,
       });
       this.archivoForm.reset();
-      this.ventana.close({ actualizar: false })
+      this.ventana.close({ actualizar: true });
     });
   }
 

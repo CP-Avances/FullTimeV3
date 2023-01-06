@@ -85,7 +85,7 @@ export class ListaPedidoHoraExtraComponent implements OnInit {
       this.BuscarParametro();
       this.calcularHoraPaginacion();
       this.calcularHoraPaginacionObservacion();
-    }
+    }  
   }
 
   /** **************************************************************************************** **
