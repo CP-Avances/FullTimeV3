@@ -10,21 +10,11 @@ import { PageEvent } from '@angular/material/paginator';
 import { ITableEmpleados } from 'src/app/model/reportes.model';
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
 
-
-import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
+// IMPORTAR SERVICIOS
+import { ConfiguracionNotificacionComponent } from '../configuracion/configuracionNotificacion.component';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
-import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
-
-// IMPORTAR SERVICIOS
-import { EmpleadoElemento } from 'src/app/model/empleado.model';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-
-import { ConfiguracionNotificacionComponent } from '../configuracion/configuracionNotificacion.component';
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
-import { PermisosMultiplesComponent } from 'src/app/componentes/modulos/permisos/permisos-multiples/permisos-multiples.component';
 
 @Component({
     selector: 'app-listaNotificacion',
@@ -33,8 +23,6 @@ import { PermisosMultiplesComponent } from 'src/app/componentes/modulos/permisos
 })
 
 export class ListaNotificacionComponent implements OnInit {
-
-    idEmpleadoLogueado: any;
 
     // CONTROL DE CRITERIOS DE BUSQUEDA
     codigo = new FormControl('');
@@ -65,7 +53,7 @@ export class ListaNotificacionComponent implements OnInit {
     selectionDep = new SelectionModel<ITableEmpleados>(true, []);
     selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
 
-    // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
+    // ITEMS DE PAGINACION DE LA TABLA SUCURSAL
     pageSizeOptions_suc = [5, 10, 20, 50];
     tamanio_pagina_suc: number = 5;
     numero_pagina_suc: number = 1;
@@ -101,14 +89,11 @@ export class ListaNotificacionComponent implements OnInit {
 
     constructor(
         public informacion: DatosGeneralesService,
-        public restPerV: PeriodoVacacionesService,
         public restR: ReportesService,
         private ventana: MatDialog,
-        private toastr: ToastrService,
-        private funciones: MainNavService,
         private validar: ValidacionesService,
+        private toastr: ToastrService,
     ) {
-        this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
     }
 
     ngOnInit(): void {
@@ -123,6 +108,7 @@ export class ListaNotificacionComponent implements OnInit {
         this.origen = [];
     }
 
+    // METODO PARA BUSCAR DATOS DE EMPRESA
     BuscarInformacion() {
         this.origen = [];
         this.informacion.ObtenerInformacion().subscribe((res: any[]) => {
@@ -140,7 +126,8 @@ export class ListaNotificacionComponent implements OnInit {
                 obj.departamentos.forEach(ele => {
                     this.departamentos.push({
                         id: ele.id_depa,
-                        nombre: ele.name_dep
+                        nombre: ele.name_dep,
+                        sucursal: ele.sucursal
                     })
                 })
             })
@@ -420,9 +407,13 @@ export class ListaNotificacionComponent implements OnInit {
     // METODO PARA CONFIGURAR DATOS
     Registrar(seleccionados: any) {
         this.ventana.open(ConfiguracionNotificacionComponent,
-            { width: '350px', data: seleccionados }).afterClosed().subscribe(result => {
-                this.individual = true;
-                this.LimpiarFormulario();
+            { width: '350px', data: seleccionados }).afterClosed().subscribe(evento => {
+                if (evento) {
+                    if (evento === true) {
+                        this.individual = true;
+                        this.LimpiarFormulario();
+                    }
+                }
             })
     }
 
@@ -442,13 +433,10 @@ export class ListaNotificacionComponent implements OnInit {
     // METODO PARA LIMPIAR FORMULARIOS
     LimpiarFormulario() {
         if (this._booleanOptions.bool_emp === true) {
-
             this.codigo.reset();
             this.cedula.reset();
             this.nombre_emp.reset();
-
             this._booleanOptions.bool_emp = false;
-
             this.selectionEmp.clear();
         }
 
@@ -488,44 +476,13 @@ export class ListaNotificacionComponent implements OnInit {
         }
     }
 
-    IngresarSoloLetras(e) {
-        let key = e.keyCode || e.which;
-        let tecla = String.fromCharCode(key).toString();
-        // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-        let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-        // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-        let especiales = [8, 37, 39, 46, 6, 13];
-        let tecla_especial = false
-        for (var i in especiales) {
-            if (key == especiales[i]) {
-                tecla_especial = true;
-                break;
-            }
-        }
-        if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-            this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-                timeOut: 6000,
-            })
-            return false;
-        }
+    // METODO PARA VALIDAR INGRESO DE LETRAS
+    IngresarSoloLetras(e: any) {
+        return this.validar.IngresarSoloLetras(e);
     }
 
-    IngresarSoloNumeros(evt) {
-        if (window.event) {
-            var keynum = evt.keyCode;
-        }
-        else {
-            keynum = evt.which;
-        }
-        // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-        if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-            return true;
-        }
-        else {
-            this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-                timeOut: 6000,
-            })
-            return false;
-        }
+    // METODO PARA VALIDAR INGRESO DE NUMEROS
+    IngresarSoloNumeros(evt: any) {
+        return this.validar.IngresarSoloNumeros(evt);
     }
 }

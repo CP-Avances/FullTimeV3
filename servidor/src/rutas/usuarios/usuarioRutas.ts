@@ -25,18 +25,24 @@ class UsuarioRutas {
         this.router.put('/admin/comida', TokenValidation, USUARIO_CONTROLADOR.RegistrarAdminComida);
         // METODO PARA REGISTRAR FRASE DE SEGURIDAD
         this.router.put('/frase', TokenValidation, USUARIO_CONTROLADOR.ActualizarFrase);
+        // METODO PARA BUSCAR DATOS DE USUARIOS TIMBRE WEB
+        this.router.get('/lista-web/', TokenValidation, USUARIO_CONTROLADOR.UsuariosTimbreWeb);
+
+
+
+
 
 
 
         this.router.get('/', TokenValidation, USUARIO_CONTROLADOR.list);
         this.router.get('/lista-app-movil/', TokenValidation, USUARIO_CONTROLADOR.usersEmpleados);
         this.router.put('/lista-app-movil/', TokenValidation, USUARIO_CONTROLADOR.updateUsersEmpleados);
-        this.router.get('/lista-web/', TokenValidation, USUARIO_CONTROLADOR.usersEmpleadosWebHabilita);
+
         this.router.put('/lista-web/', TokenValidation, USUARIO_CONTROLADOR.updateUsersEmpleadosWebHabilita);
         this.router.get('/busqueda/:usuario', TokenValidation, USUARIO_CONTROLADOR.getIdByUsuario);
         this.router.get('/registro-dispositivos/', TokenValidation, USUARIO_CONTROLADOR.usersListadispositivosMoviles);
         this.router.delete('/delete-registro-dispositivos/:dispositivo', TokenValidation, USUARIO_CONTROLADOR.deleteDispositivoRegistrado);
-       
+
 
         this.router.get('/noEnrolados', TokenValidation, USUARIO_CONTROLADOR.ListarUsuriosNoEnrolados);
 

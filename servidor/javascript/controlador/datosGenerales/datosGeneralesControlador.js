@@ -40,17 +40,19 @@ class DatosGeneralesControlador {
             let estado = req.params.estado;
             // CONSULTA DE BUSQUEDA DE SUCURSALES
             let suc = yield database_1.default.query(`
-                SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-                ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
-                `).then(result => { return result.rows; });
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+                ciudades AS c 
+            WHERE s.id_ciudad = c.id ORDER BY s.id
+            `).then(result => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
             let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
                 dep.departamentos = yield database_1.default.query(`
-                    SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
-                    WHERE d.id_sucursal = $1
-                    `, [dep.id_suc]).then(result => {
+                SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+                FROM cg_departamentos AS d, sucursales AS s
+                WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+                `, [dep.id_suc]).then(result => {
                     return result.rows.filter(obj => {
                         return obj.name_dep != 'Ninguno';
                     });

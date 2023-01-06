@@ -51,8 +51,10 @@ export class UsuarioService {
     return this.http.put(`${environment.url}/usuarios/frase`, data);
   }
 
-
-
+  // METODO PARA BUSCAR DATOS DE USUARIOS TIMBRE WEB
+  UsuariosTimbreWeb() {
+    return this.http.get<any>(`${environment.url}/usuarios/lista-web`);
+  }
 
 
 
@@ -74,23 +76,21 @@ export class UsuarioService {
     return this.http.put<any>(`${environment.url}/usuarios/lista-app-movil/`, data);
   }
 
-  getUserTimbreWeb(){
-    return this.http.get<any>(`${environment.url}/usuarios/lista-web`);
-  }
+
 
   updateUsersTimbreWeb(data: any) {
     return this.http.put<any>(`${environment.url}/usuarios/lista-web/`, data);
   }
 
-  getUserDispositivoMovil(){
+  getUserDispositivoMovil() {
     return this.http.get<any>(`${environment.url}/usuarios/registro-dispositivos`);
   }
-  
-  deleteDispositivoMovil(data: any){
-    console.log("Datos a elimanar: ",data)
+
+  deleteDispositivoMovil(data: any) {
+    console.log("Datos a elimanar: ", data)
     return this.http.delete(`${environment.url}/usuarios/delete-registro-dispositivos/${data}`);
   }
-  
+
   BuscarUsersNoEnrolados() {
     return this.http.get(`${environment.url}/usuarios/noEnrolados`);
   }

@@ -218,7 +218,6 @@ export class MainNavComponent implements OnInit {
               { name: 'Correo', url: '/configurarCorreo/' + localStorage.getItem('empresa'), color: true },
               { name: 'Roles', url: '/roles', color: true },
               { name: 'Régimen Laboral', url: '/listarRegimen', color: true },
-              { name: 'Notificaciones Usuarios', url: '/configurarNotificaciones', color: true},
             ]
           },
           {
@@ -469,6 +468,7 @@ export class MainNavComponent implements OnInit {
         icono: 'notifications',
         color: true,
         children: [
+          { name: 'Configurar Notificaciones', url: '/configurarNotificaciones', color: true },
           { name: 'Documentos', url: '/archivos', color: true },
           { name: 'Cumpleaños', url: '/cumpleanios', color: true },
           { name: 'Comunicados', url: '/comunicados', color: true },

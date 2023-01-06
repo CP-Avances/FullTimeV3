@@ -20,7 +20,6 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { count } from 'console';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -111,7 +110,7 @@ export class ListaWebComponent implements OnInit {
 
   // METODO PARA OBTENER EL LISTADO DE USUARIOS CON EL TIMBRE WEB HABILITADO Y DESHABILITADO
   ObtenerUsuariosAppWeb() {
-    this.usuariosService.getUserTimbreWeb().subscribe(res => {
+    this.usuariosService.UsuariosTimbreWeb().subscribe(res => {
       let usuariosHabilitados = [];
       let usuariosDeshabilitados = [];
       res.forEach(usuario => {

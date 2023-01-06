@@ -33,9 +33,10 @@ class DatosGeneralesControlador {
         // CONSULTA DE BUSQUEDA DE SUCURSALES
         let suc = await pool.query(
             `
-                SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-                ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
-                `
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+                ciudades AS c 
+            WHERE s.id_ciudad = c.id ORDER BY s.id
+            `
         ).then(result => { return result.rows });
 
         if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
@@ -44,9 +45,10 @@ class DatosGeneralesControlador {
         let departamentos = await Promise.all(suc.map(async (dep: any) => {
             dep.departamentos = await pool.query(
                 `
-                    SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
-                    WHERE d.id_sucursal = $1
-                    `
+                SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+                FROM cg_departamentos AS d, sucursales AS s
+                WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+                `
                 , [dep.id_suc]
             ).then(result => {
                 return result.rows.filter(obj => {

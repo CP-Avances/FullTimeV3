@@ -82,6 +82,7 @@ class UsuarioControlador {
     res.jsonp({ message: 'Registro guardado.' });
   }
 
+
   /** ************************************************************************************* ** 
    ** **                METODO FRASE DE SEGURIDAD ADMINISTRADOR                          ** **
    ** ************************************************************************************* **/
@@ -96,6 +97,152 @@ class UsuarioControlador {
       , [frase, id_empleado]);
     res.jsonp({ message: 'Registro guardado.' });
   }
+
+
+  /** ******************************************************************************************** **
+   ** **               METODO PARA MANEJAR DATOS DE USUARIOS TIMBRE WEB                         ** **
+   ** ******************************************************************************************** **/
+
+  // METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE WEB
+  public async UsuariosTimbreWeb(req: Request, res: Response) {
+    try {
+      const USUARIOS = await pool.query(
+        `
+        SELECT (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
+          u.web_habilita, u.id AS userId, d.nombre AS departamento
+        FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
+        WHERE e.id = u.id_empleado AND d.id = e.id_departamento 
+        ORDER BY nombre
+        `
+      ).then(result => { return result.rows });
+
+      if (USUARIOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros.' });
+
+      return res.status(200).jsonp(USUARIOS)
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
+
+  /**
+   * METODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
+   * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DEL ESTADO DEL 
+   * EMPLEADO SI BUSCA EMPLEADOS ACTIVOS O INACTIVOS. 
+   * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
+   **/
+
+  public async DatosGenerales(req: Request, res: Response) {
+    let estado = req.params.estado;
+
+    // CONSULTA DE BUSQUEDA DE SUCURSALES
+    let suc = await pool.query(
+      `
+          SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+              ciudades AS c 
+          WHERE s.id_ciudad = c.id ORDER BY s.id
+          `
+    ).then(result => { return result.rows });
+
+    if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+    // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
+    let departamentos = await Promise.all(suc.map(async (dep: any) => {
+      dep.departamentos = await pool.query(
+        `
+              SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+              FROM cg_departamentos AS d, sucursales AS s
+              WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+              `
+        , [dep.id_suc]
+      ).then(result => {
+        return result.rows.filter(obj => {
+          return obj.name_dep != 'Ninguno';
+        })
+      });
+      return dep;
+    }));
+
+    let depa = departamentos.filter(obj => {
+      return obj.departamentos.length > 0
+    });
+
+    if (depa.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+    // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
+    let lista = await Promise.all(depa.map(async (obj: any) => {
+      obj.departamentos = await Promise.all(obj.departamentos.map(async (empl: any) => {
+        if (estado === '1') {
+          empl.empleado = await pool.query(
+            `
+            SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
+              u.web_habilita, u.id AS userId, d.nombre AS departamento
+            FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
+            WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
+            ORDER BY nombre
+            `,
+            [empl.id_depa, estado])
+            .then(result => { return result.rows });
+
+        } else {
+          empl.empleado = await pool.query(
+            `
+            SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
+              u.web_habilita, u.id AS userId, d.nombre AS departamento
+            FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
+            WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
+            ORDER BY nombre
+            `,
+            [empl.id_depa, estado])
+            .then(result => { return result.rows });
+        }
+        return empl;
+      }));
+      return obj;
+    }))
+
+    if (lista.length === 0) return res.status(404)
+      .jsonp({ message: 'No se han encontrado registros.' });
+
+    let respuesta = lista.map(obj => {
+      obj.departamentos = obj.departamentos.filter((ele: any) => {
+        return ele.empleado.length > 0;
+      })
+      return obj;
+    }).filter(obj => {
+      return obj.departamentos.length > 0;
+    });
+
+    if (respuesta.length === 0) return res.status(404)
+      .jsonp({ message: 'No se han encontrado registros.' })
+
+    return res.status(200).jsonp(respuesta);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -159,20 +306,7 @@ class UsuarioControlador {
     }
   }
 
-  public async usersEmpleadosWebHabilita(req: Request, res: Response) {
-    try {
-      const USUARIOS = await pool.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, u.web_habilita, u.id AS userId ' +
-        'FROM usuarios AS u, empleados AS e WHERE e.id = u.id_empleado ORDER BY nombre')
-        .then(result => { return result.rows });
 
-      if (USUARIOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros' });
-
-      return res.status(200).jsonp(USUARIOS)
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
-  }
 
   public async updateUsersEmpleadosWebHabilita(req: Request, res: Response) {
     try {

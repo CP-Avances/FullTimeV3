@@ -66,9 +66,8 @@ export class ConfiguracionNotificacionComponent implements OnInit {
         }
     }
 
-
-
-    CrearConfiguracion(form: any, item: any) {
+    // CREAR CONFIGURACION POR PRIMERA VEZ
+    CrearConfiguracion(form: any, item: any, contador: number) {
         let data = {
             id_empleado: item.id,
             vaca_mail: form.vacaMail,
@@ -83,17 +82,13 @@ export class ConfiguracionNotificacionComponent implements OnInit {
             comunicado_noti: form.comunicadoNoti
         }
         this.restN.IngresarConfigNotiEmpleado(data).subscribe(res => {
-            this.ventana.close();
-            if (this.empleados.length == undefined) {
+            if (this.empleados.length == contador) {
                 this.toaster.success('Operación exitosa.', 'Configuración actualizada.', {
                     timeOut: 6000,
                 });
+                this.ventana.close(true);
             }
         });
-    }
-
-    ActualizarConfiguracion(form) {
-
     }
 
     // REGISTROS DE CONFIGURACION INDIVIDUAL
@@ -112,13 +107,13 @@ export class ConfiguracionNotificacionComponent implements OnInit {
         }
         this.restN.ObtenerConfiguracionEmpleado(this.empleados.id).subscribe(res => {
             this.restN.ActualizarConfigNotiEmpl(this.empleados.id, data).subscribe(res => {
-                this.ventana.close();
                 this.toaster.success('Operación exitosa.', 'Configuración actualizada.', {
                     timeOut: 6000,
                 });
+                this.ventana.close(true);
             });
         }, error => {
-            this.CrearConfiguracion(form, this.empleados);
+            this.CrearConfiguracion(form, this.empleados, undefined);
         });
     }
 
@@ -139,22 +134,30 @@ export class ConfiguracionNotificacionComponent implements OnInit {
                 comunicado_mail: form.comunicadoMail,
                 comunicado_noti: form.comunicadoNoti
             }
-            this.contador = this.contador + 1;
             this.restN.ObtenerConfiguracionEmpleado(item.id).subscribe(res => {
                 this.restN.ActualizarConfigNotiEmpl(item.id, data).subscribe(res => {
-
+                    this.contador = this.contador + 1;
                     if (this.empleados.length == this.contador) {
                         this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
                             timeOut: 6000,
                         });
+                        this.ventana.close(true);
                     }
-                    this.ventana.close();
                 });
-
             }, error => {
-                this.CrearConfiguracion(form, item);
+                this.contador = this.contador + 1;
+                this.CrearConfiguracion(form, item, this.contador);
             });
         });
     }
 
+    // METODO DE CONFIGURCAION DE NOTIFICACIONES
+    ActualizarConfiguracion(form: any) {
+        if (this.empleados.length === undefined) {
+            this.ConfigurarIndividual(form);
+        }
+        else {
+            this.ConfigurarMultiple(form);
+        }
+    }
 }

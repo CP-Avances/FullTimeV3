@@ -180,6 +180,7 @@
                                         [aria-label]="checkboxLabelDep()">
                                     </mat-checkbox>
                                 </th>
+                                <th scope="col">Sucursal</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Proceso</th>
                             </tr>
@@ -193,6 +194,7 @@
                                         [checked]="selectionDep.isSelected(d)" [aria-label]="checkboxLabelDep(d)">
                                     </mat-checkbox>
                                 </td>
+                                <td>{{d.sucursal}}</td>
                                 <td>{{d.nombre}}</td>
                                 <td class="d-flex justify-content-center">
                                     <i (click)="GuardarRegistros(d.id)" id="plan" *ngIf="individual"

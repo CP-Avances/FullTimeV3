@@ -1,6 +1,6 @@
 <div class="container" style="padding-bottom: 50px; text-align: center; padding-top: 20px;">
 
-    <!-- Tabla que habilita los Usuarios seleccionados-->
+    <!-- TABLA QUE HABILITA LOS USUARIOS SELECCIONADOS -->
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <mat-icon (click)="HabilitarSeleccion_habilitados()" class="flex-shrink-1 bd-highlight" matSuffix
@@ -26,9 +26,9 @@
                             </mat-checkbox>
                         </th>
                         <th scope="col">Código</th>
+                        <th scope="col">Departamento</th>
                         <th scope="col">Empleado</th>
                         <th scope="col">Cédula</th>
-                        <th scope="col">Usuario</th>
                         <th scope="col">Timbre Web</th>
                     </tr>
                 </thead>
@@ -37,13 +37,14 @@
                         <td></td>
                         <td>
                             <mat-form-field class="input-tables codigo">
-                                <input matInput placeholder="" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
                                     (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
                         </td>
+                        <td></td>
                         <td>
                             <mat-form-field class="input-tables nombre">
-                                <input matInput placeholder="" [(ngModel)]="filtroNombre" [formControl]="nombre"
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroNombre" [formControl]="nombre"
                                     type="text" (keypress)="IngresarSoloLetras($event)">
                                 <mat-error *ngIf="nombre.invalid">Indispensable ingresar dos letras
                                 </mat-error>
@@ -51,14 +52,13 @@
                         </td>
                         <td>
                             <mat-form-field class="input-tables cedula">
-                                <input matInput placeholder="" [(ngModel)]="filtroCedula" maxlength="10"
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
                                 <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                        <td></td>
                         <td></td>
                     </tr>
                     <tr
@@ -70,9 +70,9 @@
                             </mat-checkbox>
                         </td>
                         <td scope="row">{{u.codigo}}</td>
+                        <td>{{u.departamento}}</td>
                         <td>{{u.nombre}}</td>
                         <td>{{u.cedula}}</td>
-                        <td>{{u.usuario}}</td>
                         <td>{{u.web_habilita.toString() | i18nSelect: BooleanAppMap}} </td>
                     </tr>
                 </tbody>
@@ -101,14 +101,14 @@
             </i>
         </div>
         <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
-            <p> Descarga el reporte de todos los usuarios habilitados </p>
+            <p> Descarga el reporte de usuarios habilitados. </p>
         </div>
 
     </div>
 
     <br><br>
 
-    <!-- Tabla que deshabilita los Usuarios seleccionados-->
+    <!-- TABLA QUE DESHABILITA LOS USUARIOS SELECCIONADOS -->
     <div class="mat-elevation-z8" style="background: white;">
         <div class="d-flex bd-highlight" id="titulo">
             <mat-icon (click)="HabilitarSeleccion_deshabilitados()" class="flex-shrink-1 bd-highlight" matSuffix
@@ -133,9 +133,9 @@
                             </mat-checkbox>
                         </th>
                         <th scope="col">Código</th>
+                        <th scope="col">Departamento</th>
                         <th scope="col">Empleado</th>
                         <th scope="col">Cédula</th>
-                        <th scope="col">Usuario</th>
                         <th scope="col">Timbre Web</th>
                     </tr>
                 </thead>
@@ -144,28 +144,28 @@
                         <td></td>
                         <td>
                             <mat-form-field class="input-tables codigo">
-                                <input matInput placeholder="" [(ngModel)]="filtroCodigodes" [formControl]="codigodes"
-                                    (keypress)="IngresarSoloNumeros($event)">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigodes"
+                                    [formControl]="codigodes" (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
                         </td>
+                        <td></td>
                         <td>
                             <mat-form-field class="input-tables nombre">
-                                <input matInput placeholder="" [(ngModel)]="filtroNombredes" [formControl]="nombredes"
-                                    type="text" (keypress)="IngresarSoloLetras($event)">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroNombredes"
+                                    [formControl]="nombredes" type="text" (keypress)="IngresarSoloLetras($event)">
                                 <mat-error *ngIf="nombre.invalid">Indispensable ingresar dos letras
                                 </mat-error>
                             </mat-form-field>
                         </td>
                         <td>
                             <mat-form-field class="input-tables cedula">
-                                <input matInput placeholder="" [(ngModel)]="filtroCedulades" maxlength="10"
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCedulades" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedulades" type="text" (keypress)="IngresarSoloNumeros($event)">
                                 <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
                                 </mat-error>
                             </mat-form-field>
                         </td>
-                        <td></td>
                         <td></td>
                     </tr>
                     <tr
@@ -178,9 +178,9 @@
                             </mat-checkbox>
                         </td>
                         <td scope="row">{{u.codigo}}</td>
+                        <td>{{u.departamento}}</td>
                         <td>{{u.nombre}}</td>
                         <td>{{u.cedula}}</td>
-                        <td>{{u.usuario}}</td>
                         <td>{{u.web_habilita.toString() | i18nSelect: BooleanAppMap}} </td>
                     </tr>
                 </tbody>
@@ -210,7 +210,7 @@
             </i>
         </div>
         <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
-            <p> Descarga el reporte de todos los usuarios deshabilitados </p>
+            <p> Descarga el reporte de usuarios deshabilitados. </p>
         </div>
 
     </div>
