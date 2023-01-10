@@ -12,7 +12,8 @@
                     </button>
                     <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampoBuscar()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda y mostrar todos los datos.">Mostrar lista
+                        matTooltip="Limpiar campos de búsqueda y mostrar todos los datos.">
+                        Mostrar lista
                     </button>
                 </div>
             </mat-card>
@@ -41,7 +42,8 @@
                         <td>
                             <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
                                 matTooltip="Búsqueda de roles por su descripción.">
-                                help_outline</mat-icon>
+                                help_outline
+                            </mat-icon>
                         </td>
                     </tr>
                     <tr *ngFor="let rol of roles | roles:filtroRoles | paginate:tamanio_pagina:numero_pagina">

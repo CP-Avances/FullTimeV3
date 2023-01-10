@@ -52,15 +52,37 @@ export class UsuarioService {
   }
 
   // METODO PARA BUSCAR DATOS DE USUARIOS TIMBRE WEB
-  UsuariosTimbreWeb() {
-    return this.http.get<any>(`${environment.url}/usuarios/lista-web`);
+  UsuariosTimbreWeb(habilitado: boolean) {
+    const estado = 1; // 1 = activo 
+    return this.http.get<any>(`${environment.url}/usuarios/lista-web/${estado}/activo/${habilitado}`);
+  }
+
+  // METODO PARA ACTUALIZAR ESTADO TIMBRE WEB
+  ActualizarEstadoTimbreWeb(data: any) {
+    return this.http.put<any>(`${environment.url}/usuarios/lista-web/`, data);
+  }
+
+  // METODO PARA BUSCAR DATOS DE USUARIOS TIMBRE MOVIL
+  UsuariosTimbreMovil(habilitado: boolean) {
+    const estado = 1; // 1 = activo 
+    return this.http.get<any>(`${environment.url}/usuarios/lista-app-movil/${estado}/activo/${habilitado}`);
+  }
+
+  // METODO PARA ACTUALIZAR ESTADO DE TIMBRE MOVIL
+  ActualizarEstadoTimbreMovil(data: any) {
+    return this.http.put<any>(`${environment.url}/usuarios/lista-app-movil/`, data);
+  }
+
+  // METODO PARA BUSCAR DISPOSITIVOS REGISTRADOS
+  BuscarDispositivoMovill() {
+    return this.http.get<any>(`${environment.url}/usuarios/registro-dispositivos`);
   }
 
 
 
 
 
-
+  
 
   // catalogo de usuarios
 
@@ -68,23 +90,15 @@ export class UsuarioService {
     return this.http.get(`${environment.url}/usuarios`);
   }
 
-  getUsersAppMovil() {
-    return this.http.get<any>(`${environment.url}/usuarios/lista-app-movil/`);
-  }
-
-  updateUsersAppMovil(data: any) {
-    return this.http.put<any>(`${environment.url}/usuarios/lista-app-movil/`, data);
-  }
 
 
 
-  updateUsersTimbreWeb(data: any) {
-    return this.http.put<any>(`${environment.url}/usuarios/lista-web/`, data);
-  }
 
-  getUserDispositivoMovil() {
-    return this.http.get<any>(`${environment.url}/usuarios/registro-dispositivos`);
-  }
+
+
+
+
+
 
   deleteDispositivoMovil(data: any) {
     console.log("Datos a elimanar: ", data)

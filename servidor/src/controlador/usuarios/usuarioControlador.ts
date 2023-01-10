@@ -103,46 +103,24 @@ class UsuarioControlador {
    ** **               METODO PARA MANEJAR DATOS DE USUARIOS TIMBRE WEB                         ** **
    ** ******************************************************************************************** **/
 
-  // METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE WEB
-  public async UsuariosTimbreWeb(req: Request, res: Response) {
-    try {
-      const USUARIOS = await pool.query(
-        `
-        SELECT (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
-          u.web_habilita, u.id AS userId, d.nombre AS departamento
-        FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
-        WHERE e.id = u.id_empleado AND d.id = e.id_departamento 
-        ORDER BY nombre
-        `
-      ).then(result => { return result.rows });
-
-      if (USUARIOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros.' });
-
-      return res.status(200).jsonp(USUARIOS)
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
-  }
-
-
   /**
-   * METODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
-   * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DEL ESTADO DEL 
-   * EMPLEADO SI BUSCA EMPLEADOS ACTIVOS O INACTIVOS. 
+   * METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE WEB
+   * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DE SU ESTADO 
+   * BUSCA EMPLEADOS ACTIVOS O INACTIVOS. 
    * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
    **/
 
-  public async DatosGenerales(req: Request, res: Response) {
+  public async UsuariosTimbreWeb(req: Request, res: Response) {
     let estado = req.params.estado;
+    let habilitado = req.params.habilitado;
 
     // CONSULTA DE BUSQUEDA DE SUCURSALES
     let suc = await pool.query(
       `
-          SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-              ciudades AS c 
-          WHERE s.id_ciudad = c.id ORDER BY s.id
-          `
+        SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+          ciudades AS c 
+        WHERE s.id_ciudad = c.id ORDER BY s.id
+      `
     ).then(result => { return result.rows });
 
     if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
@@ -151,15 +129,13 @@ class UsuarioControlador {
     let departamentos = await Promise.all(suc.map(async (dep: any) => {
       dep.departamentos = await pool.query(
         `
-              SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
-              FROM cg_departamentos AS d, sucursales AS s
-              WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
-              `
+          SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+          FROM cg_departamentos AS d, sucursales AS s
+          WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+        `
         , [dep.id_suc]
       ).then(result => {
-        return result.rows.filter(obj => {
-          return obj.name_dep != 'Ninguno';
-        })
+        return result.rows
       });
       return dep;
     }));
@@ -173,30 +149,17 @@ class UsuarioControlador {
     // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
     let lista = await Promise.all(depa.map(async (obj: any) => {
       obj.departamentos = await Promise.all(obj.departamentos.map(async (empl: any) => {
-        if (estado === '1') {
-          empl.empleado = await pool.query(
-            `
+        empl.empleado = await pool.query(
+          `
             SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
-              u.web_habilita, u.id AS userId, d.nombre AS departamento
+              u.web_habilita, u.id AS userid, d.nombre AS departamento
             FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
             WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
+              AND u.web_habilita = $3
             ORDER BY nombre
-            `,
-            [empl.id_depa, estado])
-            .then(result => { return result.rows });
-
-        } else {
-          empl.empleado = await pool.query(
-            `
-            SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
-              u.web_habilita, u.id AS userId, d.nombre AS departamento
-            FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
-            WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
-            ORDER BY nombre
-            `,
-            [empl.id_depa, estado])
-            .then(result => { return result.rows });
-        }
+          `,
+          [empl.id_depa, estado, habilitado])
+          .then(result => { return result.rows });
         return empl;
       }));
       return obj;
@@ -220,12 +183,150 @@ class UsuarioControlador {
     return res.status(200).jsonp(respuesta);
   }
 
+  // METODO PARA ACTUALIZAR ESTADO DE TIMBRE WEB
+  public async ActualizarEstadoTimbreWeb(req: Request, res: Response) {
+    try {
+      const array = req.body;
+
+      if (array.length === 0) return res.status(400).jsonp({ message: 'No se ha encontrado registros.' })
+
+      const nuevo = await Promise.all(array.map(async (o: any) => {
+
+        try {
+          const [result] = await pool.query(
+            `
+            UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id
+            `
+            , [!o.web_habilita, o.userid])
+            .then(result => { return result.rows })
+          return result
+        } catch (error) {
+          return { error: error.toString() }
+        }
+
+      }))
+
+      return res.status(200).jsonp({ message: 'Datos actualizados exitosamente.', nuevo })
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
 
 
+  /** ******************************************************************************************** **
+   ** **               METODO PARA MANEJAR DATOS DE USUARIOS TIMBRE MOVIL                       ** **
+   ** ******************************************************************************************** **/
 
+  /**
+   * METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE MOVIL
+   * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DE SU ESTADO 
+   * BUSCA EMPLEADOS ACTIVOS O INACTIVOS. 
+   * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
+   **/
 
+  public async UsuariosTimbreMovil(req: Request, res: Response) {
+    let estado = req.params.estado;
+    let habilitado = req.params.habilitado;
 
+    // CONSULTA DE BUSQUEDA DE SUCURSALES
+    let suc = await pool.query(
+      `
+        SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+          ciudades AS c 
+        WHERE s.id_ciudad = c.id ORDER BY s.id
+      `
+    ).then(result => { return result.rows });
 
+    if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+    // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
+    let departamentos = await Promise.all(suc.map(async (dep: any) => {
+      dep.departamentos = await pool.query(
+        `
+          SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+          FROM cg_departamentos AS d, sucursales AS s
+          WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+        `
+        , [dep.id_suc]
+      ).then(result => {
+        return result.rows
+      });
+      return dep;
+    }));
+
+    let depa = departamentos.filter(obj => {
+      return obj.departamentos.length > 0
+    });
+
+    if (depa.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+    // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
+    let lista = await Promise.all(depa.map(async (obj: any) => {
+      obj.departamentos = await Promise.all(obj.departamentos.map(async (empl: any) => {
+        empl.empleado = await pool.query(
+          `
+            SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
+              u.app_habilita, u.id AS userid, d.nombre AS departamento
+            FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
+            WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
+              AND u.app_habilita = $3
+            ORDER BY nombre
+          `,
+          [empl.id_depa, estado, habilitado])
+          .then(result => { return result.rows });
+        return empl;
+      }));
+      return obj;
+    }))
+
+    if (lista.length === 0) return res.status(404)
+      .jsonp({ message: 'No se han encontrado registros.' });
+
+    let respuesta = lista.map(obj => {
+      obj.departamentos = obj.departamentos.filter((ele: any) => {
+        return ele.empleado.length > 0;
+      })
+      return obj;
+    }).filter(obj => {
+      return obj.departamentos.length > 0;
+    });
+
+    if (respuesta.length === 0) return res.status(404)
+      .jsonp({ message: 'No se han encontrado registros.' })
+
+    return res.status(200).jsonp(respuesta);
+  }
+
+  // METODO PARA ACTUALIZAR ESTADO DE TIMBRE MOVIL
+  public async ActualizarEstadoTimbreMovil(req: Request, res: Response) {
+    try {
+      console.log(req.body);
+      const array = req.body;
+
+      if (array.length === 0) return res.status(400).jsonp({ message: 'No se ha encontrado registros.' })
+
+      const nuevo = await Promise.all(array.map(async (o: any) => {
+
+        try {
+          const [result] = await pool.query(
+            `
+            UPDATE usuarios SET app_habilita = $1 WHERE id = $2 RETURNING id
+            `
+            , [!o.app_habilita, o.userid])
+            .then(result => { return result.rows })
+          return result
+        } catch (error) {
+          return { error: error.toString() }
+        }
+      }))
+
+      return res.status(200).jsonp({ message: 'Datos actualizados exitosamente.', nuevo })
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
 
 
 
@@ -265,74 +366,13 @@ class UsuarioControlador {
     }
   }
 
-  public async usersEmpleados(req: Request, res: Response) {
-    try {
-      const USUARIOS = await pool.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, u.app_habilita, u.id AS userId ' +
-        'FROM usuarios AS u, empleados AS e WHERE e.id = u.id_empleado ORDER BY nombre')
-        .then(result => { return result.rows });
-
-      if (USUARIOS.length === 0) return res.status(404).jsonp({ message: 'No se encuentran registros' });
-
-      return res.status(200).jsonp(USUARIOS)
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
-  }
-
-  public async updateUsersEmpleados(req: Request, res: Response) {
-    try {
-      console.log(req.body);
-      const array = req.body;
-
-      if (array.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
-
-      const nuevo = await Promise.all(array.map(async (o: any) => {
-
-        try {
-          const [result] = await pool.query('UPDATE usuarios SET app_habilita = $1 WHERE id = $2 RETURNING id', [!o.app_habilita, o.userid])
-            .then(result => { return result.rows })
-          return result
-        } catch (error) {
-          return { error: error.toString() }
-        }
-
-      }))
-
-      return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo })
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
-  }
 
 
 
-  public async updateUsersEmpleadosWebHabilita(req: Request, res: Response) {
-    try {
-      console.log(req.body);
-      const array = req.body;
 
-      if (array.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
 
-      const nuevo = await Promise.all(array.map(async (o: any) => {
 
-        try {
-          const [result] = await pool.query('UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id', [!o.web_habilita, o.userid])
-            .then(result => { return result.rows })
-          return result
-        } catch (error) {
-          return { error: error.toString() }
-        }
 
-      }))
-
-      return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo })
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
-  }
 
   public async getIdByUsuario(req: Request, res: Response): Promise<any> {
     const { usuario } = req.params;

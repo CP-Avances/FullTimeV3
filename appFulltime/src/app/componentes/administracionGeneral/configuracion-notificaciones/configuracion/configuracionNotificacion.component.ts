@@ -138,10 +138,10 @@ export class ConfiguracionNotificacionComponent implements OnInit {
                 this.restN.ActualizarConfigNotiEmpl(item.id, data).subscribe(res => {
                     this.contador = this.contador + 1;
                     if (this.empleados.length == this.contador) {
-                        this.toaster.success('Operación exitosa', 'Configuración Actualizada', {
+                        this.ventana.close(true);
+                        this.toaster.success('Operación exitosa', 'Configuración Actualizada....', {
                             timeOut: 6000,
                         });
-                        this.ventana.close(true);
                     }
                 });
             }, error => {

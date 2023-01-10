@@ -1,26 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { SelectionModel } from '@angular/cdk/collections';
 import { FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatRadioChange } from '@angular/material/radio';
+import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
-import { UpdateEstadoAppComponent } from '../update-estado-app/update-estado-app.component';
-import { ITableEmpleados } from 'src/app/model/reportes.model';
-import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
-//Reporte de Usuarios App Habilitada o Deshabilitada
-import { environment } from 'src/environments/environment';
-import * as xlsx from 'xlsx';
-import * as moment from 'moment';
-import * as FileSaver from 'file-saver';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// IMPORTAR PLANTILLA DE MODELO DE DATOS
+import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
+import { ITableEmpleados } from 'src/app/model/reportes.model';
+
+// IMPORTAR SERVICIOS
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
 @Component({
   selector: 'app-lista-app',
@@ -30,66 +23,142 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export class ListaAppComponent implements OnInit {
 
-  usersAppMovil_habilitados: any = [];
-  usersAppMovil_deshabilitados: any = [];
-
-  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
-  selectionEmpDeshab = new SelectionModel<ITableEmpleados>(true, []);
-
-
-  filtroCodigo: number;
-  filtroCedula: '';
-  filtroNombre: '';
-
-  filtroCodigodes: number;
-  filtroCedulades: '';
-  filtroNombredes: '';
-
-  empleado: any = [];
-  idEmpleado: number;
-
-  filtronum: boolean;
-  filtrolet: boolean;
-
-  ocultar: boolean = false;
-  ocultardes: boolean = false;
-
+  // CONTROL DE CRITERIOS DE BUSQUEDA
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
-  nombre = new FormControl('', [Validators.minLength(2)]);
+  nombre_emp = new FormControl('', [Validators.minLength(2)]);
+  nombre_dep = new FormControl('', [Validators.minLength(2)]);
+  nombre_suc = new FormControl('', [Validators.minLength(2)]);
+  seleccion = new FormControl('');
 
-  codigodes = new FormControl('');
-  cedulades = new FormControl('', [Validators.minLength(2)]);
-  nombredes = new FormControl('', [Validators.minLength(2)]);
+  public _booleanOptions: FormCriteriosBusqueda = {
+    bool_suc: false,
+    bool_dep: false,
+    bool_emp: false,
+  };
 
-  // Items de paginación de la tabla
-  tamanio_pagina: number = 5;
-  numero_pagina: number = 1;
-  tamanio_paginades: number = 5;
-  numero_paginades: number = 1;
+  public check: checkOptions[];
 
-  pageSizeOptions = [5, 10, 20, 50];
+  // PRESENTACION DE INFORMACION DE ACUERDO AL CRITERIO DE BUSQUEDA HABILITADOS
+  departamentos: any = [];
+  sucursales: any = [];
+  respuesta: any[];
+  empleados: any = [];
+  habilitados: any = [];
 
-  BooleanAppMap: any = { 'true': 'Si', 'false': 'No' };
+  selectionSuc = new SelectionModel<ITableEmpleados>(true, []);
+  selectionDep = new SelectionModel<ITableEmpleados>(true, []);
+  selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
+
+  // ITEMS DE PAGINACION DE LA TABLA SUCURSAL
+  pageSizeOptions_suc = [5, 10, 20, 50];
+  tamanio_pagina_suc: number = 5;
+  numero_pagina_suc: number = 1;
+
+  // ITEMS DE PAGINACION DE LA TABLA DEPARTAMENTO
+  pageSizeOptions_dep = [5, 10, 20, 50];
+  tamanio_pagina_dep: number = 5;
+  numero_pagina_dep: number = 1;
+
+  // ITEMS DE PAGINACION DE LA TABLA EMPLEADOS
+  pageSizeOptions_emp = [5, 10, 20, 50];
+  tamanio_pagina_emp: number = 5;
+  numero_pagina_emp: number = 1;
+
+  // FILTROS SUCURSALES
+  filtroNombreSuc_: string = '';
+  get filtroNombreSuc() { return this.restR.filtroNombreSuc }
+
+  // FILTROS DEPARTAMENTOS
+  filtroNombreDep_: string = '';
+  get filtroNombreDep() { return this.restR.filtroNombreDep }
+
+  // FILTROS EMPLEADO
+  filtroCodigo_: number;
+  filtroCedula_: string = '';
+  filtroNombreEmp_: string = '';
+  get filtroNombreEmp() { return this.restR.filtroNombreEmp };
+  get filtroCodigo() { return this.restR.filtroCodigo };
+  get filtroCedula() { return this.restR.filtroCedula };
+
+
+  /** ********************************************************************************************************************** **
+   ** **                         INICIALIZAR VARIABLES DE USUARIOS DESHABILITADOS TIMBRE WEB                              ** ** 
+   ** ********************************************************************************************************************** **/
+
+  // CONTROL DE CRITERIOS DE BUSQUEDA
+  codigo_dh = new FormControl('');
+  cedula_dh = new FormControl('', [Validators.minLength(2)]);
+  nombre_emp_dh = new FormControl('', [Validators.minLength(2)]);
+  nombre_dep_dh = new FormControl('', [Validators.minLength(2)]);
+  nombre_suc_dh = new FormControl('', [Validators.minLength(2)]);
+  seleccion_dh = new FormControl('');
+
+  public _booleanOptions_dh: FormCriteriosBusqueda = {
+    bool_suc: false,
+    bool_dep: false,
+    bool_emp: false,
+  };
+
+  public check_dh: checkOptions[];
+
+  // PRESENTACION DE INFORMACION DE ACUERDO AL CRITERIO DE BUSQUEDA DESHABILITADOS
+  departamentos_dh: any = [];
+  sucursales_dh: any = [];
+  respuesta_dh: any[];
+  empleados_dh: any = [];
+  deshabilitados: any = [];
+
+  selectionSuc_dh = new SelectionModel<ITableEmpleados>(true, []);
+  selectionDep_dh = new SelectionModel<ITableEmpleados>(true, []);
+  selectionEmp_dh = new SelectionModel<ITableEmpleados>(true, []);
+
+  // ITEMS DE PAGINACION DE LA TABLA SUCURSAL
+  pageSizeOptions_suc_dh = [5, 10, 20, 50];
+  tamanio_pagina_suc_dh: number = 5;
+  numero_pagina_suc_dh: number = 1;
+
+  // ITEMS DE PAGINACION DE LA TABLA DEPARTAMENTO
+  pageSizeOptions_dep_dh = [5, 10, 20, 50];
+  tamanio_pagina_dep_dh: number = 5;
+  numero_pagina_dep_dh: number = 1;
+
+  // ITEMS DE PAGINACION DE LA TABLA EMPLEADOS
+  pageSizeOptions_emp_dh = [5, 10, 20, 50];
+  tamanio_pagina_emp_dh: number = 5;
+  numero_pagina_emp_dh: number = 1;
+
+  // FILTROS SUCURSALES
+  dh_filtroNombreSuc_: string = '';
+  get dh_filtroNombreSuc() { return this.restR.filtroNombreSuc }
+
+  // FILTROS DEPARTAMENTOS
+  dh_filtroNombreDep_: string = '';
+  get dh_filtroNombreDep() { return this.restR.filtroNombreDep }
+
+  // FILTROS EMPLEADO
+  dh_filtroCodigo_: number;
+  dh_filtroCedula_: string = '';
+  dh_filtroNombreEmp_: string = '';
+  get dh_filtroNombreEmp() { return this.restR.filtroNombreEmp };
+  get dh_filtroCodigo() { return this.restR.filtroCodigo };
+  get dh_filtroCedula() { return this.restR.filtroCedula };
+
+  // HABILITAR O DESHABILITAR EL ICONO DE PROCESO INDIVIDUAL
+  individual: boolean = true;
+  individual_dh: boolean = true;
 
   get habilitarMovil(): boolean { return this.funciones.app_movil; }
 
   constructor(
-    public restEmpre: EmpresaService,
-    private usuariosService: UsuarioService,
     private toastr: ToastrService,
     private validar: ValidacionesService,
-    private dialog: MatDialog,
     private funciones: MainNavService,
-    private rest: RelojesService,
-    public restE: EmpleadoService,
-  ) {this.idEmpleado = parseInt(localStorage.getItem('empleado'));}
+    public informacion: UsuarioService,
+    public restR: ReportesService,
+  ) { }
 
   ngOnInit(): void {
-    this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerColores();
-    this.ObtenerLogo();
-
     if (this.habilitarMovil === false) {
       let mensaje = {
         access: false,
@@ -100,612 +169,760 @@ export class ListaAppComponent implements OnInit {
       return this.validar.RedireccionarHomeAdmin(mensaje);
     }
     else {
-      this.ObtenerUsuariosAppMovil();
+      this.check = this.restR.checkOptions(3);
+      this.check_dh = this.restR.checkOptions(3);
+      this.BuscarInformacionHabilitados();
+      this.BuscarInformacioDeshabilitados();
     }
   }
 
-  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
-  ObtenerEmpleados(idemploy: any) {
-    this.empleado = [];
-    this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
-      this.empleado = data;
+  ngOnDestroy() {
+    this.restR.GuardarCheckOpcion(0);
+    this.restR.DefaultFormCriterios();
+    this.restR.DefaultValoresFiltros();
+    this.habilitados = [];
+    this.deshabilitados = [];
+  }
+
+
+  /** ************************************************************************************************************** **
+   ** **                        MANEJO DE DATOS DE USUARIOS DESHABILITADOS TIMBRE MOVIL                           ** **
+   ** ************************************************************************************************************** **/
+
+  // METODO PARA BUSCAR DATOS DE EMPRESA
+  activar_deshabilitados: boolean = true;
+  BuscarInformacioDeshabilitados() {
+    this.departamentos_dh = [];
+    this.deshabilitados = [];
+    this.sucursales_dh = [];
+    this.empleados_dh = [];
+    this.informacion.UsuariosTimbreMovil(false).subscribe((res: any[]) => {
+      this.activar_deshabilitados = true;
+      this.deshabilitados = JSON.stringify(res);
+
+      res.forEach(obj => {
+        this.sucursales_dh.push({
+          id: obj.id_suc,
+          nombre: obj.name_suc
+        })
+      })
+
+      res.forEach(obj => {
+        obj.departamentos.forEach(ele => {
+          this.departamentos_dh.push({
+            id: ele.id_depa,
+            nombre: ele.name_dep,
+            sucursal: ele.sucursal
+          })
+        })
+      })
+
+      res.forEach(obj => {
+        obj.departamentos.forEach(ele => {
+          ele.empleado.forEach(r => {
+            let elemento = {
+              id: r.id,
+              nombre: r.nombre,
+              codigo: r.codigo,
+              cedula: r.cedula,
+              web_habilita: r.web_habilita,
+              userid: r.userid,
+            }
+            this.empleados_dh.push(elemento)
+          })
+        })
+      })
+      console.log('SUCURSALES', this.sucursales_dh);
+      console.log('DEPARTAMENTOS', this.departamentos_dh);
+      console.log('EMPLEADOS', this.empleados_dh);
+
+    }, err => {
+      this.activar_deshabilitados = false;
     })
   }
 
-  // METODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE LAS TABLAS
-  habilitar: boolean = false;
-  deshabilitar: boolean = false;
-  HabilitarSeleccion_habilitados() {
-    if(this.habilitar === false){
-      this.habilitar = true;
+  // METODO PARA ACTIVAR SELECCION MULTIPLE
+  multiple_dh: boolean = false;
+  HabilitarSeleccion_dh() {
+    this.multiple_dh = true;
+    this.individual_dh = false;
+    this.activar_seleccion_dh = false;
+  }
 
-      if(this.filtroNombre != undefined){
-        if(this.filtroNombre.length > 1){
-          this.ocultar = true;
-        }else{
-          this.ocultar = false;
-        }
-      }
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
+  opcion_dh: number;
+  activar_boton_dh: boolean = false;
+  activar_seleccion_dh: boolean = true;
+  BuscarPorTipo_dh(e: MatRadioChange) {
+    this.opcion_dh = e.value;
+    this.activar_boton_dh = true;
+    this.activar_habilitados = false;
+    switch (this.opcion_dh) {
+      case 1:
+        this._booleanOptions_dh.bool_suc = true;
+        this._booleanOptions_dh.bool_dep = false;
+        this._booleanOptions_dh.bool_emp = false;
+        this.activar_seleccion_dh = true;
+        this.multiple_dh = false;
+        this.individual_dh = true;
+        break;
+      case 2:
+        this._booleanOptions_dh.bool_suc = false;
+        this._booleanOptions_dh.bool_dep = true;
+        this._booleanOptions_dh.bool_emp = false;
+        this.activar_seleccion_dh = true;
+        this.multiple_dh = false;
+        this.individual_dh = true;
+        break;
+      case 3:
+        this._booleanOptions_dh.bool_suc = false;
+        this._booleanOptions_dh.bool_dep = false;
+        this._booleanOptions_dh.bool_emp = true;
+        this.activar_seleccion_dh = true;
+        this.multiple_dh = false;
+        this.individual_dh = true;
+        break;
+      default:
+        this._booleanOptions_dh.bool_suc = false;
+        this._booleanOptions_dh.bool_dep = false;
+        this._booleanOptions_dh.bool_emp = false;
+        this.activar_seleccion_dh = true;
+        this.multiple_dh = false;
+        this.individual_dh = true;
+        break;
+    }
+    this.restR.GuardarFormCriteriosBusqueda(this._booleanOptions_dh);
+    this.restR.GuardarCheckOpcion(this.opcion_dh)
+  }
 
-      if(this.filtroCodigo != undefined){
-        if(this.filtroCodigo > 0){
-          this.ocultar = true;
-        }else{
-          this.ocultar = false;
-        }
-      }
-
-      if(this.filtroCedula != undefined){
-        if(this.filtroCedula.length > 1){
-          this.ocultar = true;
-        }else{
-          this.ocultar = false;
-        }
-      }
-      
-    }else{
-      this.habilitar = false;
-      this.ocultar = false;
-      this.selectionEmp.clear();
+  // METODO PARA TOMAR DATOS SELECCIONADOS
+  GuardarRegistros_DH(id: number) {
+    console.log('ver opcion .. ', this.opcion_dh)
+    if (this.opcion_dh === 1) {
+      this.ModelarSucursal_DH(id);
+    }
+    else if (this.opcion_dh === 2) {
+      this.ModelarDepartamentos_DH(id);
+    }
+    else {
+      this.ModelarEmpleados_DH();
     }
   }
 
-  HabilitarSeleccion_deshabilitados() {
-    if(this,this.deshabilitar === false){
-      this.deshabilitar = true;
-
-      if(this.filtroNombredes != undefined){
-        if(this.filtroNombredes.length > 1){
-          this.ocultardes = true;
-        }else{
-          this.ocultardes = false;
+  // METODO PARA PRESENTAR DATOS DE SUCURSALES
+  ModelarSucursal_DH(id: number) {
+    let usuarios: any = [];
+    let respuesta = JSON.parse(this.deshabilitados)
+    if (id === 0) {
+      respuesta.forEach((obj: any) => {
+        this.selectionSuc_dh.selected.find(obj1 => {
+          if (obj.id_suc === obj1.id) {
+            obj.departamentos.forEach((obj2: any) => {
+              obj2.empleado.forEach((obj3: any) => {
+                usuarios.push(obj3)
+              })
+            })
+          }
+        })
+      })
+    }
+    else {
+      respuesta.forEach((obj: any) => {
+        if (obj.id_suc === id) {
+          obj.departamentos.forEach((obj2: any) => {
+            obj2.empleado.forEach((obj3: any) => {
+              usuarios.push(obj3)
+            })
+          })
         }
-      }
+      })
+    }
 
-      if(this.filtroCodigodes != undefined){
-        if(this.filtroCodigodes > 0){
-          this.ocultardes = true;
-        }else{
-          this.ocultardes = false;
+    this.RegistrarMultiple(usuarios, 1);
+  }
+
+  // METODO PARA PRESENTAR DATOS DE DEPARTAMENTOS
+  ModelarDepartamentos_DH(id: number) {
+    let usuarios: any = [];
+    let respuesta = JSON.parse(this.deshabilitados)
+
+    if (id === 0) {
+      respuesta.forEach((obj: any) => {
+        obj.departamentos.forEach((obj1: any) => {
+          this.selectionDep_dh.selected.find(obj2 => {
+            if (obj1.id_depa === obj2.id) {
+              obj1.empleado.forEach((obj3: any) => {
+                usuarios.push(obj3)
+              })
+            }
+          })
+        })
+      })
+    }
+    else {
+      respuesta.forEach((obj: any) => {
+        obj.departamentos.forEach((obj1: any) => {
+          if (obj1.id_depa === id) {
+            obj1.empleado.forEach((obj3: any) => {
+              usuarios.push(obj3)
+            })
+          }
+        })
+      })
+    }
+
+    this.RegistrarMultiple(usuarios, 1);
+  }
+
+  // METODO PARA PRESENTAR DATOS DE EMPLEADO
+  ModelarEmpleados_DH() {
+    let respuesta: any = [];
+    this.empleados_dh.forEach((obj: any) => {
+      this.selectionEmp_dh.selected.find(obj1 => {
+        if (obj1.id === obj.id) {
+          respuesta.push(obj)
         }
-      }
+      })
+    })
+    this.RegistrarMultiple(respuesta, 1);
+  }
 
-      if(this.filtroCedulades != undefined){
-        if(this.filtroCedulades.length > 1){
-          this.ocultardes = true;
-        }else{
-          this.ocultardes = false;
-        }
-      }
+  // MOSTRAR DATOS DE EMPRESA
+  MostrarLista_DH() {
+    if (this.opcion_dh === 1) {
+      this.nombre_suc_dh.reset();
+      this.Filtrar_DH('', 1)
+    }
+    else if (this.opcion_dh === 2) {
+      this.nombre_dep_dh.reset();
+      this.Filtrar_DH('', 2)
+    }
+    else if (this.opcion_dh === 3) {
+      this.codigo_dh.reset();
+      this.cedula_dh.reset();
+      this.nombre_emp_dh.reset();
+      this.Filtrar_DH('', 3)
+      this.Filtrar_DH('', 4)
+      this.Filtrar_DH('', 5)
+    }
+  }
 
-    }else{
-      this.deshabilitar = false;
-      this.ocultardes = false;
-      this.selectionEmpDeshab.clear();
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
+  Filtrar_DH(e: any, orden: number) {
+    switch (orden) {
+      case 1: this.restR.setFiltroNombreSuc(e); break;
+      case 2: this.restR.setFiltroNombreDep(e); break;
+      case 3: this.restR.setFiltroCodigo(e); break;
+      case 4: this.restR.setFiltroCedula(e); break;
+      case 5: this.restR.setFiltroNombreEmp(e); break;
+      default:
+        break;
+    }
+  }
+
+  /** ************************************************************************************** **
+   ** **            METODOS DE SELECCION DE DATOS DE USUARIOS DESHABILITADOS              ** **
+   ** ************************************************************************************** **/
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
+  isAllSelectedSuc_DH() {
+    const numSelected = this.selectionSuc_dh.selected.length;
+    return numSelected === this.sucursales_dh.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
+  masterToggleSuc_DH() {
+    this.isAllSelectedSuc_DH() ?
+      this.selectionSuc_dh.clear() :
+      this.sucursales_dh.forEach(row => this.selectionSuc_dh.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
+  checkboxLabelSuc_DH(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedSuc_DH() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionSuc_dh.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
+  isAllSelectedDep_DH() {
+    const numSelected = this.selectionDep_dh.selected.length;
+    return numSelected === this.departamentos_dh.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
+  masterToggleDep_DH() {
+    this.isAllSelectedDep_DH() ?
+      this.selectionDep_dh.clear() :
+      this.departamentos_dh.forEach(row => this.selectionDep_dh.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
+  checkboxLabelDep_DH(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedDep_DH() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionDep_dh.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
+  isAllSelectedEmp_DH() {
+    const numSelected = this.selectionEmp_dh.selected.length;
+    return numSelected === this.empleados_dh.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
+  masterToggleEmp_DH() {
+    this.isAllSelectedEmp_DH() ?
+      this.selectionEmp_dh.clear() :
+      this.empleados_dh.forEach(row => this.selectionEmp_dh.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
+  checkboxLabelEmp_DH(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedEmp_DH() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionEmp_dh.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // METODO DE PAGINACION DE DATOS
+  ManejarPaginaResultados_DH(e: PageEvent) {
+    if (this._booleanOptions_dh.bool_suc === true) {
+      this.tamanio_pagina_suc_dh = e.pageSize;
+      this.numero_pagina_suc_dh = e.pageIndex + 1;
+    } else if (this._booleanOptions_dh.bool_dep === true) {
+      this.tamanio_pagina_dep_dh = e.pageSize;
+      this.numero_pagina_dep_dh = e.pageIndex + 1;
+    } else if (this._booleanOptions_dh.bool_emp === true) {
+      this.tamanio_pagina_emp_dh = e.pageSize;
+      this.numero_pagina_emp_dh = e.pageIndex + 1;
     }
   }
 
 
-  ObtenerUsuariosAppMovil() {
-    this.usuariosService.getUsersAppMovil().subscribe(res => {
-      let usuariosHabilitados = [];
-      let usuariosDeshabilitados = [];
-      res.forEach(usuario => {
-        if(usuario.app_habilita === true){
-          usuariosHabilitados.push(usuario);
-        }else{
-          usuariosDeshabilitados.push(usuario);
-        }
-      });
+  /** ************************************************************************************************************** **
+   ** **                         MANEJO DE DATOS DE USUARIOS HABILITADOS TIMBRE MOVIL                             ** **
+   ** ************************************************************************************************************** **/
 
-      this.usersAppMovil_habilitados = usuariosHabilitados;
-      this.usersAppMovil_deshabilitados = usuariosDeshabilitados;
-      
+  // METODO PARA BUSCAR DATOS DE EMPRESA
+  activar_habilitados: boolean = true;
+  BuscarInformacionHabilitados() {
+    this.departamentos = [];
+    this.habilitados = [];
+    this.sucursales = [];
+    this.empleados = [];
+    this.informacion.UsuariosTimbreMovil(true).subscribe((res: any[]) => {
+      this.activar_habilitados = true;
+      this.habilitados = JSON.stringify(res);
+
+      res.forEach(obj => {
+        this.sucursales.push({
+          id: obj.id_suc,
+          nombre: obj.name_suc
+        })
+      })
+
+      res.forEach(obj => {
+        obj.departamentos.forEach(ele => {
+          this.departamentos.push({
+            id: ele.id_depa,
+            nombre: ele.name_dep,
+            sucursal: ele.sucursal
+          })
+        })
+      })
+
+      res.forEach(obj => {
+        obj.departamentos.forEach(ele => {
+          ele.empleado.forEach(r => {
+            let elemento = {
+              id: r.id,
+              nombre: r.nombre,
+              codigo: r.codigo,
+              cedula: r.cedula,
+              app_habilita: r.app_habilita,
+              userid: r.userid,
+            }
+            this.empleados.push(elemento)
+          })
+        })
+      })
+      console.log('SUCURSALES', this.sucursales);
+      console.log('DEPARTAMENTOS', this.departamentos);
+      console.log('EMPLEADOS', this.empleados);
+
     }, err => {
-      console.log(err);
+      this.activar_habilitados = false;
+    })
+  }
+
+  // METODO PARA ACTIVAR SELECCION MULTIPLE
+  multiple: boolean = false;
+  HabilitarSeleccion() {
+    this.multiple = true;
+    this.individual = false;
+    this.activar_seleccion = false;
+  }
+
+  // METODO PARA MOSTRAR DATOS DE BUSQUEDA
+  opcion: number;
+  activar_boton: boolean = false;
+  activar_seleccion: boolean = true;
+  BuscarPorTipo(e: MatRadioChange) {
+    this.opcion = e.value;
+    this.activar_boton = true;
+    this.activar_deshabilitados = false;
+    switch (this.opcion) {
+      case 1:
+        this._booleanOptions.bool_suc = true;
+        this._booleanOptions.bool_dep = false;
+        this._booleanOptions.bool_emp = false;
+        this.activar_seleccion = true;
+        this.multiple = false;
+        this.individual = true;
+        break;
+      case 2:
+        this._booleanOptions.bool_suc = false;
+        this._booleanOptions.bool_dep = true;
+        this._booleanOptions.bool_emp = false;
+        this.activar_seleccion = true;
+        this.multiple = false;
+        this.individual = true;
+        break;
+      case 3:
+        this._booleanOptions.bool_suc = false;
+        this._booleanOptions.bool_dep = false;
+        this._booleanOptions.bool_emp = true;
+        this.activar_seleccion = true;
+        this.multiple = false;
+        this.individual = true;
+        break;
+      default:
+        this._booleanOptions.bool_suc = false;
+        this._booleanOptions.bool_dep = false;
+        this._booleanOptions.bool_emp = false;
+        this.activar_seleccion = true;
+        this.multiple = false;
+        this.individual = true;
+        break;
+    }
+    this.restR.GuardarFormCriteriosBusqueda(this._booleanOptions);
+    this.restR.GuardarCheckOpcion(this.opcion)
+
+  }
+
+  // METODO PARA FILTRAR DATOS DE BUSQUEDA
+  Filtrar(e: any, orden: number) {
+    switch (orden) {
+      case 6: this.restR.setFiltroNombreSuc(e); break;
+      case 7: this.restR.setFiltroNombreDep(e); break;
+      case 8: this.restR.setFiltroCodigo(e); break;
+      case 9: this.restR.setFiltroCedula(e); break;
+      case 10: this.restR.setFiltroNombreEmp(e); break;
+      default:
+        break;
+    }
+  }
+
+  /** ************************************************************************************** **
+   ** **            METODOS DE SELECCION DE DATOS DE USUARIOS HABILITADOS                 ** **
+   ** ************************************************************************************** **/
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
+  isAllSelectedSuc() {
+    const numSelected = this.selectionSuc.selected.length;
+    return numSelected === this.sucursales.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
+  masterToggleSuc() {
+    this.isAllSelectedSuc() ?
+      this.selectionSuc.clear() :
+      this.sucursales.forEach(row => this.selectionSuc.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
+  checkboxLabelSuc(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedSuc() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionSuc.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
+  isAllSelectedDep() {
+    const numSelected = this.selectionDep.selected.length;
+    return numSelected === this.departamentos.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
+  masterToggleDep() {
+    this.isAllSelectedDep() ?
+      this.selectionDep.clear() :
+      this.departamentos.forEach(row => this.selectionDep.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
+  checkboxLabelDep(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedDep() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionDep.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
+  isAllSelectedEmp() {
+    const numSelected = this.selectionEmp.selected.length;
+    return numSelected === this.empleados.length
+  }
+
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
+  masterToggleEmp() {
+    this.isAllSelectedEmp() ?
+      this.selectionEmp.clear() :
+      this.empleados.forEach(row => this.selectionEmp.select(row));
+  }
+
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
+  checkboxLabelEmp(row?: ITableEmpleados): string {
+    if (!row) {
+      return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  // METODO DE PAGINACION DE DATOS
+  ManejarPaginaResultados(e: PageEvent) {
+    if (this._booleanOptions.bool_suc === true) {
+      this.tamanio_pagina_suc = e.pageSize;
+      this.numero_pagina_suc = e.pageIndex + 1;
+    } else if (this._booleanOptions.bool_dep === true) {
+      this.tamanio_pagina_dep = e.pageSize;
+      this.numero_pagina_dep = e.pageIndex + 1;
+    } else if (this._booleanOptions.bool_emp === true) {
+      this.tamanio_pagina_emp = e.pageSize;
+      this.numero_pagina_emp = e.pageIndex + 1;
+    }
+  }
+
+  // METODO PARA PRESENTAR DATOS DE SUCURSALES
+  ModelarSucursal(id: number) {
+    let usuarios: any = [];
+    let respuesta = JSON.parse(this.habilitados)
+    if (id === 0) {
+      respuesta.forEach((obj: any) => {
+        this.selectionSuc.selected.find(obj1 => {
+          if (obj.id_suc === obj1.id) {
+            obj.departamentos.forEach((obj2: any) => {
+              obj2.empleado.forEach((obj3: any) => {
+                usuarios.push(obj3)
+              })
+            })
+          }
+        })
+      })
+    }
+    else {
+      respuesta.forEach((obj: any) => {
+        if (obj.id_suc === id) {
+          obj.departamentos.forEach((obj2: any) => {
+            obj2.empleado.forEach((obj3: any) => {
+              usuarios.push(obj3)
+            })
+          })
+        }
+      })
+    }
+
+    this.RegistrarMultiple(usuarios, 2);
+  }
+
+  // METODO PARA PRESENTAR DATOS DE DEPARTAMENTOS
+  ModelarDepartamentos(id: number) {
+    let usuarios: any = [];
+    let respuesta = JSON.parse(this.habilitados)
+
+    if (id === 0) {
+      respuesta.forEach((obj: any) => {
+        obj.departamentos.forEach((obj1: any) => {
+          this.selectionDep.selected.find(obj2 => {
+            if (obj1.id_depa === obj2.id) {
+              obj1.empleado.forEach((obj3: any) => {
+                usuarios.push(obj3)
+              })
+            }
+          })
+        })
+      })
+    }
+    else {
+      respuesta.forEach((obj: any) => {
+        obj.departamentos.forEach((obj1: any) => {
+          if (obj1.id_depa === id) {
+            obj1.empleado.forEach((obj3: any) => {
+              usuarios.push(obj3)
+            })
+          }
+        })
+      })
+    }
+
+    this.RegistrarMultiple(usuarios, 2);
+  }
+
+  // METODO PARA PRESENTAR DATOS DE EMPLEADO
+  ModelarEmpleados() {
+    let respuesta: any = [];
+    this.empleados.forEach((obj: any) => {
+      this.selectionEmp.selected.find(obj1 => {
+        if (obj1.id === obj.id) {
+          respuesta.push(obj)
+        }
+      })
+    })
+    this.RegistrarMultiple(respuesta, 2);
+  }
+
+
+  /** ************************************************************************************** **
+   ** **               METODOS DE ACTUALIZACION DE ESTADO DE TIMBRE WEB                   ** ** 
+   ** ************************************************************************************** **/
+
+  RegistrarConfiguracion(usuario: any, tipo: number) {
+    this.Registrar(usuario, tipo);
+  }
+
+  // METODO DE VALIDACION DE SELECCION MULTIPLE
+  RegistrarMultiple(data: any, tipo: number) {
+    if (data.length > 0) {
+      this.Registrar(data, tipo);
+    }
+    else {
+      this.toastr.warning('No ha seleccionado usuarios.', '', {
+        timeOut: 6000,
+      });
+    }
+  }
+
+  // METODO PARA CONFIGURAR DATOS
+  Registrar(seleccionados: any, tipo: number) {
+    if (seleccionados.length === undefined) {
+      seleccionados = [seleccionados];
+    }
+    this.informacion.ActualizarEstadoTimbreMovil(seleccionados).subscribe(res => {
+      this.toastr.success(res.message)
+      this.individual = true;
+      this.individual_dh = true;
+      this.LimpiarFormulario(tipo);
+      this.BuscarInformacionHabilitados();
+      this.BuscarInformacioDeshabilitados();
+    }, err => {
       this.toastr.error(err.error.message)
     })
   }
 
-  openDialogUpdateAppMovilHabilitados() {
-    this.selectionEmpDeshab.clear();
-    this.deshabilitar = false;
-    if (this.selectionEmp.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
-    this.dialog.open(UpdateEstadoAppComponent, { data: this.selectionEmp.selected }).afterClosed().subscribe(result => {
-      console.log(result);
-      if (result) {
-        this.usuariosService.updateUsersAppMovil(result).subscribe(res => {
-          console.log(res);
-          this.toastr.success(res.message)
-          this.ObtenerUsuariosAppMovil();
-          this.selectionEmp.clear();
-          this.habilitar = false;
-          this.numero_pagina = 1;
-        }, err => {
-          console.log(err);
-          this.toastr.error(err.error.message)
-        })
+
+  // METODO PARA TOMAR DATOS SELECCIONADOS
+  GuardarRegistros(id: number) {
+    if (this.opcion === 1) {
+      this.ModelarSucursal(id);
+    }
+    else if (this.opcion === 2) {
+      this.ModelarDepartamentos(id);
+    }
+    else {
+      this.ModelarEmpleados();
+    }
+  }
+
+  // METODO PARA LIMPIAR FORMULARIOS
+  LimpiarFormulario(tipo: number) {
+    if (this.sucursales.length > 0) {
+      this.activar_habilitados = true;
+    }
+    if (this.sucursales_dh.length > 0) {
+      this.activar_deshabilitados = true;
+    }
+    if (tipo === 2) {
+      if (this._booleanOptions.bool_emp === true) {
+        this.codigo.reset();
+        this.cedula.reset();
+        this.nombre_emp.reset();
+        this._booleanOptions.bool_emp = false;
+        this.selectionEmp.clear();
       }
 
-    })
-  }
-
-  openDialogUpdateAppMovilDeshabilitados() {
-    this.selectionEmp.clear();
-    this.habilitar = false;
-    if (this.selectionEmpDeshab.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
-    this.dialog.open(UpdateEstadoAppComponent, { data: this.selectionEmpDeshab.selected }).afterClosed().subscribe(result => {
-      console.log(result);
-      if (result) {
-        this.usuariosService.updateUsersAppMovil(result).subscribe(res => {
-          console.log(res);
-          this.toastr.success(res.message)
-          this.ObtenerUsuariosAppMovil();
-          this.selectionEmpDeshab.clear();
-          this.deshabilitar = false;
-          this.numero_paginades = 1;
-        }, err => {
-          console.log(err);
-          this.toastr.error(err.error.message)
-        })
+      if (this._booleanOptions.bool_dep) {
+        this.nombre_dep.reset();
+        this._booleanOptions.bool_dep = false;
+        this.selectionDep.clear();
       }
 
-    })
-  }
+      if (this._booleanOptions.bool_suc) {
+        this.nombre_suc.reset();
+        this._booleanOptions.bool_suc = false;
+        this.selectionSuc.clear();
+      }
 
-
-  ManejarPaginaHabilitados(e: PageEvent) {
-    this.tamanio_pagina = e.pageSize;
-    this.numero_pagina = e.pageIndex + 1;
-  }
-
-  ManejarPaginaDeshabilitados(a: PageEvent) {
-    this.tamanio_paginades = a.pageSize;
-    this.numero_paginades = a.pageIndex + 1;
-  }
-
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
-  isAllSelectedEmpHabilitados() {
-    const numSelected = this.selectionEmp.selected.length;
-    return numSelected === this.usersAppMovil_habilitados.length;
-  }
-
-  isAllSelectedEmpDeshabilitados() {
-    const numSelectedDes = this.selectionEmpDeshab.selected.length;
-    return numSelectedDes === this.usersAppMovil_deshabilitados.length;
-  }
-
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
-  masterToggleEmphabilitado() {
-    this.isAllSelectedEmpHabilitados()?
-      this.selectionEmp.clear() :
-      this.usersAppMovil_habilitados.forEach(row => this.selectionEmp.select(row));
-  }
-
-  masterToggleEmpdeshabilitado() {
-    this.isAllSelectedEmpDeshabilitados()?
-      this.selectionEmpDeshab.clear() :
-      this.usersAppMovil_deshabilitados.forEach(row => this.selectionEmpDeshab.select(row));
-  }
-
-
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
-  checkboxLabelEmphabilitados(row?: ITableEmpleados): string {
-    
-    if (!row) {
-      return `${this.isAllSelectedEmpHabilitados() ? 'select' : 'deselect'} all`;
+      this.seleccion.reset();
+      this.activar_boton = false;
     }
-    
-    return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
-  }
+    else {
+      if (this._booleanOptions_dh.bool_emp === true) {
+        this.codigo_dh.reset();
+        this.cedula_dh.reset();
+        this.nombre_emp_dh.reset();
+        this._booleanOptions_dh.bool_emp = false;
+        this.selectionEmp_dh.clear();
+      }
 
-  checkboxLabelEmpdeshabilitados(row?: ITableEmpleados): string {
-    if (!row) {
-      return `${this.isAllSelectedEmpDeshabilitados() ? 'select' : 'deselect'} all`;
+      if (this._booleanOptions_dh.bool_dep) {
+        this.nombre_dep_dh.reset();
+        this._booleanOptions_dh.bool_dep = false;
+        this.selectionDep_dh.clear();
+      }
+
+      if (this._booleanOptions_dh.bool_suc) {
+        this.nombre_suc_dh.reset();
+        this._booleanOptions_dh.bool_suc = false;
+        this.selectionSuc_dh.clear();
+      }
+
+      this.seleccion_dh.reset();
+      this.activar_boton_dh = false;
     }
-    
-    return `${this.selectionEmpDeshab.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  IngresarSoloNumeros(evt) {
-    this.ocultar = true;
-    this.ocultardes = true;
-    return this.validar.IngresarSoloNumeros(evt);
+  // MOSTRAR DATOS DE EMPRESA
+  MostrarLista() {
+    if (this.opcion === 1) {
+      this.nombre_suc.reset();
+      this.Filtrar('', 6)
+    }
+    else if (this.opcion === 2) {
+      this.nombre_dep.reset();
+      this.Filtrar('', 7)
+    }
+    else if (this.opcion === 3) {
+      this.codigo.reset();
+      this.cedula.reset();
+      this.nombre_emp.reset();
+      this.Filtrar('', 8)
+      this.Filtrar('', 9)
+      this.Filtrar('', 10)
+    }
   }
 
-  IngresarSoloLetras(e) {
-    this.ocultar = true;
-    this.ocultardes = true;
+  // METODO PARA VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     return this.validar.IngresarSoloLetras(e);
   }
 
-  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
-  logo: any = String;
-  ObtenerLogo() {
-    this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
-      this.logo = 'data:image/jpeg;base64,' + res.imagen;
-    });
-  }
-
-   // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
-   p_color: any;
-   s_color: any;
-   frase: any;
-   ObtenerColores() {
-     this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
-       this.p_color = res[0].color_p;
-       this.s_color = res[0].color_s;
-       this.frase = res[0].marca_agua;
-     });
-   }
-
-   /** ********************************************************************************* **
-   ** **                        GENERACION DE PDFs                                   ** **
-   ** ********************************************************************************* **/
-
-   generarPdf(action = 'open') {
-    const documentDefinition = this.getDocumentDefinicion();
-    switch (action) {
-      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
-      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-      case 'download': pdfMake.createPdf(documentDefinition).download(); break;
-      default: pdfMake.createPdf(documentDefinition).open(); break;
-    }
-
-  }
-
-  getDocumentDefinicion() {
-    sessionStorage.setItem('App_Habilitada', this.usersAppMovil_habilitados);
-    return {
-
-      // ENCABEZADO DE LA PAGINA
-      pageOrientation: 'landscape',
-      watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
-      header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
-
-      // PIE DE LA PAGINA
-      footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
-        var f = moment();
-        fecha = f.format('YYYY-MM-DD');
-        hora = f.format('HH:mm:ss');
-        return {
-          margin: 10,
-          columns: [
-            { text: 'Fecha: ' + fecha + ' Hora: ' + hora, opacity: 0.3 },
-            {
-              text: [
-                {
-                  text: '© Pag ' + currentPage.toString() + ' of ' + pageCount,
-                  alignment: 'right', opacity: 0.3
-                }
-              ],
-            }
-          ], fontSize: 10
-        }
-      },
-      content: [
-        { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de usuarios app movil habilitados ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
-        this.presentarDataPDFHabilitados(),
-      ],
-      styles: {
-        tableHeader: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.p_color },
-        itemsTable: { fontSize: 9 },
-        itemsTableC: { fontSize: 9, alignment: 'center' }
-      }
-    };
-  }
-
-  presentarDataPDFHabilitados() {
-    let count = 1;
-    return {
-      columns: [
-        { width: '*', text: '' },
-        {
-          width: 'auto',
-          table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-            body: [
-              [
-                { text: 'N#', style: 'tableHeader' },
-                { text: 'Codigo', style: 'tableHeader' },
-                { text: 'Empleado', style: 'tableHeader' },
-                { text: 'Cedula', style: 'tableHeader' },
-                { text: 'Usuario', style: 'tableHeader' },
-                { text: 'App Movil', style: 'tableHeader' },
-              ],
-              ...this.usersAppMovil_habilitados.map(obj => {
-                const app_habilita = "Activo";
-                return [
-                  { text: count++, style: 'itemsTableC' },
-                  { text: obj.codigo, style: 'itemsTableC' },
-                  { text: obj.nombre, style: 'itemsTable' },
-                  { text: obj.cedula, style: 'itemsTableC' },
-                  { text: obj.usuario, style: 'itemsTable' },
-                  { text: app_habilita, style: 'itemsTable' },
-                ];
-              })
-            ]
-          },
-          // ESTILO DE COLORES FORMATO ZEBRA
-          layout: {
-            fillColor: function (i: any) {
-              return (i % 2 === 0) ? '#CCD1D1' : null;
-            }
-          }
-        },
-        { width: '*', text: '' },
-      ]
-    };
-  }
-
-  /** ********************************************************************************* **
-   ** **                              GENERACION DE EXCEL                            ** **
-   ** ********************************************************************************* **/
-
-  exportToExcel() {
-    var objeto: any;
-    var cont: number = 1;
-    const app_habilita = "Activo";
-    var ListadoUsuahabilitados = [];
-    this.usersAppMovil_habilitados.forEach(obj => {
-      objeto = {
-        'N#': cont++,
-        "CODIGO": obj.codigo,
-        "NOMBRE": obj.nombre,
-        "CEDULA": obj.cedula,
-        "USUARIO": obj.usuario,
-        "APP HABILITADA": app_habilita,
-      }
-      ListadoUsuahabilitados.push(objeto);
-    });
-    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuahabilitados);
-    const wb: xlsx.WorkBook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, wsr, 'App_Habilitada');
-    xlsx.writeFile(wb, "AppHabilitadaEXCEL" + new Date().getTime() + '.xlsx');
-  }
-
-  /** ********************************************************************************************** ** 
-   ** **                              METODO PARA EXPORTAR A CSV                                  ** **
-   ** ********************************************************************************************** **/
-
-  exportToCVS() {
-    var objeto: any;
-    var cont: number = 1;
-    const app_habilita = "Activo";
-    var ListadoUsuahabilitados = [];
-    this.usersAppMovil_habilitados.forEach(obj => {
-      objeto = {
-        'N#': cont++,
-        "CODIGO": obj.codigo,
-        "NOMBRE": obj.nombre,
-        "CEDULA": obj.cedula,
-        "USUARIO": obj.usuario,
-        "APP HABILITADA": app_habilita,
-      }
-      ListadoUsuahabilitados.push(objeto);
-    });
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuahabilitados);
-    const csvDataR = xlsx.utils.sheet_to_csv(wse);
-    const data: Blob = new Blob([csvDataR], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "AppHabilitadaCSV" + new Date().getTime() + '.csv');
-  }
-
-  /** ********************************************************************************************** **
-   ** **                          PARA LA EXPORTACION DE ARCHIVOS XML                             ** **
-   ** ********************************************************************************************** **/
-
-  urlxml: string;
-  data: any = [];
-  exportToXML() {
-    var objeto: any;
-    var cont: number = 1;
-    const app_habilita = "Activo";
-    var ListadoUsuaHabilitados = [];
-    this.usersAppMovil_habilitados.forEach(obj => {
-      objeto = {
-        "App_movil": {
-          '@id': cont++,
-          "codigo": obj.codigo,
-          "nombre": obj.nombre,
-          "cedula": obj.cedula,
-          "usuario": obj.usuario,
-          "app_movil": app_habilita,
-        }
-      }
-      ListadoUsuaHabilitados.push(objeto)
-    });
-
-    this.rest.CrearXML(ListadoUsuaHabilitados).subscribe(res => {
-      this.data = res;
-      this.urlxml = `${environment.url}/relojes/xmlDownload/` + this.data.name;
-      window.open(this.urlxml, "_blank");
-    });
-  }
-
-  //Listado de Usuarios Deshabilitados
-  /** ********************************************************************************* **
-   ** **                        GENERACION DE PDFs                                   ** **
-   ** ********************************************************************************* **/
-
-   generarPdfDeshabilitados(action = 'open') {
-    const documentDefinition = this.getDocumentDefinicionDeshabilitados();
-
-    switch (action) {
-      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
-      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-      case 'download': pdfMake.createPdf(documentDefinition).download(); break;
-      default: pdfMake.createPdf(documentDefinition).open(); break;
-    }
-
-  }
-
-  getDocumentDefinicionDeshabilitados() {
-    sessionStorage.setItem('App_Deshabilitada', this.usersAppMovil_deshabilitados);
-    return {
-
-      // ENCABEZADO DE LA PAGINA
-      pageOrientation: 'landscape',
-      watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
-      header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
-
-      // PIE DE LA PAGINA
-      footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
-        var f = moment();
-        fecha = f.format('YYYY-MM-DD');
-        hora = f.format('HH:mm:ss');
-        return {
-          margin: 10,
-          columns: [
-            { text: 'Fecha: ' + fecha + ' Hora: ' + hora, opacity: 0.3 },
-            {
-              text: [
-                {
-                  text: '© Pag ' + currentPage.toString() + ' of ' + pageCount,
-                  alignment: 'right', opacity: 0.3
-                }
-              ],
-            }
-          ], fontSize: 10
-        }
-      },
-      content: [
-        { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de usuarios app movil deshabilitados ', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
-        this.presentarDataPDFDeshabilitados(),
-      ],
-      styles: {
-        tableHeader: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.p_color },
-        itemsTable: { fontSize: 9 },
-        itemsTableC: { fontSize: 9, alignment: 'center' }
-      }
-    };
-  }
-
-  presentarDataPDFDeshabilitados() {
-    let count = 1;
-    return {
-      columns: [
-        { width: '*', text: '' },
-        {
-          width: 'auto',
-          table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-            body: [
-              [
-                { text: 'N#', style: 'tableHeader' },
-                { text: 'Codigo', style: 'tableHeader' },
-                { text: 'Empleado', style: 'tableHeader' },
-                { text: 'Cedula', style: 'tableHeader' },
-                { text: 'Usuario', style: 'tableHeader' },
-                { text: 'App Movil', style: 'tableHeader' },
-              ],
-              ...this.usersAppMovil_deshabilitados.map(obj => {
-                const app_habilita = "Inactivo";
-                return [
-                  { text: count++, style: 'itemsTableC' },
-                  { text: obj.codigo, style: 'itemsTableC' },
-                  { text: obj.nombre, style: 'itemsTable' },
-                  { text: obj.cedula, style: 'itemsTableC' },
-                  { text: obj.usuario, style: 'itemsTable' },
-                  { text: app_habilita, style: 'itemsTable' },
-                ];
-              })
-            ]
-          },
-          // ESTILO DE COLORES FORMATO ZEBRA
-          layout: {
-            fillColor: function (i: any) {
-              return (i % 2 === 0) ? '#CCD1D1' : null;
-            }
-          }
-        },
-        { width: '*', text: '' },
-      ]
-    };
-  }
-
-  /** ********************************************************************************* **
-   ** **                              GENERACION DE EXCEL                            ** **
-   ** ********************************************************************************* **/
-  exportToExcelDeshabilitados() {
-    var objeto: any;
-    var cont: number = 1;
-    const app_habilita = "Inactivo";
-    var ListadoUsuaDeshabilitados = [];
-    this.usersAppMovil_deshabilitados.forEach(obj => {
-      objeto = {
-        'N#': cont++,
-        "CODIGO": obj.codigo,
-        "NOMBRE": obj.nombre,
-        "CEDULA": obj.cedula,
-        "USUARIO": obj.usuario,
-        "APP HABILITADA": app_habilita,
-      }
-      ListadoUsuaDeshabilitados.push(objeto);
-    });
-    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuaDeshabilitados);
-    const wb: xlsx.WorkBook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, wsr, 'App_Deshabilitada');
-    xlsx.writeFile(wb, "AppDeshabilitadaEXCEL" + new Date().getTime() + '.xlsx');
-  }
-
-  /** ********************************************************************************************** ** 
-   ** **                              METODO PARA EXPORTAR A CSV                                  ** **
-   ** ********************************************************************************************** **/
-
-  exportToCVSDeshabilitados() {
-    var objeto: any;
-    var cont: number = 1;
-    const app_habilita = "Inactivo";
-    var ListadoUsuaDeshabilitados = [];
-    this.usersAppMovil_deshabilitados.forEach(obj => {
-      objeto = {
-        'N#': cont++,
-        "CODIGO": obj.codigo,
-        "NOMBRE": obj.nombre,
-        "CEDULA": obj.cedula,
-        "USUARIO": obj.usuario,
-        "APP HABILITADA": app_habilita,
-      }
-      ListadoUsuaDeshabilitados.push(objeto);
-    });
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(ListadoUsuaDeshabilitados);
-    const csvDataR = xlsx.utils.sheet_to_csv(wse);
-    const data: Blob = new Blob([csvDataR], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "AppDeshabilitadaCSV" + new Date().getTime() + '.csv');
-  }
-
-  /** ********************************************************************************************** **
-   ** **                          PARA LA EXPORTACION DE ARCHIVOS XML                             ** **
-   ** ********************************************************************************************** **/
-
-  urlxmlDes: string;
-  dataDes: any = [];
-  exportToXMLDeshabilitados() {
-    var objeto: any;
-    var cont: number = 1;
-    const app_habilita = "Inactivo";
-    var ListadoUsuaDeshabilitados = [];
-    this.usersAppMovil_deshabilitados.forEach(obj => {
-      objeto = {
-        "App_movil": {
-          '@id': cont++,
-          "codigo": obj.codigo,
-          "nombre": obj.nombre,
-          "cedula": obj.cedula,
-          "usuario": obj.usuario,
-          "app_movil": app_habilita,
-        }
-      }
-      ListadoUsuaDeshabilitados.push(objeto)
-    });
-
-    this.rest.CrearXMLIdDispositivos(ListadoUsuaDeshabilitados).subscribe(res => {
-      this.dataDes = res;
-      this.urlxmlDes = `${environment.url}/relojes/xmlDownload/` + this.dataDes.name;
-      window.open(this.urlxmlDes, "_blank");
-    });
+  // METODO PARA VALIDAR INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
 }

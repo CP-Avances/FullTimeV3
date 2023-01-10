@@ -19,6 +19,7 @@ import { LoginService } from 'src/app/servicios/login/login.service';
 import { FraseSeguridadComponent } from 'src/app/componentes/administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
 
 import { MenuNode } from 'src/app/model/menu.model';
+import { PlantillaReportesService } from '../../reportes/plantilla-reportes.service';
 
 @Component({
   selector: 'app-main-nav',
@@ -57,6 +58,7 @@ export class MainNavComponent implements OnInit {
     private router: Router,
     private toaster: ToastrService,
     private funciones: MainNavService,
+    private plantillaPDF: PlantillaReportesService,
     private breakpointObserver: BreakpointObserver,
   ) { }
 
@@ -107,6 +109,7 @@ export class MainNavComponent implements OnInit {
       this.idEmpresa = parseInt(localStorage.getItem('empresa'))
       this.FuncionLicencia();
       this.funciones.LogicaFunciones();
+      this.plantillaPDF.ShowColoresLogo(localStorage.getItem('empresa'));
       this.breakpointObserver.observe('(max-width: 800px)').subscribe((result: BreakpointState) => {
         this.barraInicial = result.matches;
       });

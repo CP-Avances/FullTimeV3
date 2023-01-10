@@ -10,10 +10,10 @@ import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { TimbresService } from 'src/app/servicios/timbres/timbres.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
-import { MainNavService } from '../../administracionGeneral/main-nav/main-nav.service';
+import { MainNavService } from '../../../administracionGeneral/main-nav/main-nav.service';
 
 // IMPORTAR COMPONENTES
-import { RegistrarTimbreComponent } from '../registrar-timbre/registrar-timbre.component';
+import { RegistrarTimbreComponent } from '../../../timbre-web/registrar-timbre/registrar-timbre.component';
 
 @Component({
   selector: 'app-timbre-web',

@@ -176,7 +176,7 @@ import { AyudaComponent } from './componentes/administracionGeneral/preferecias/
 import { CorreoEmpresaComponent } from './componentes/administracionGeneral/correo/correo-empresa/correo-empresa.component';
 import { ListaArchivosComponent } from './componentes/documentos/lista-archivos/lista-archivos.component';
 import { EmplLeafletComponent } from './componentes/modulos/geolocalizacion/empl-leaflet/empl-leaflet.component';
-import { TimbreWebComponent } from './componentes/timbre-web/timbre-empleado/timbre-web.component';
+import { TimbreWebComponent } from './componentes/modulos/timbreWeb/timbre-empleado/timbre-web.component';
 import { TimbreAdminComponent } from './componentes/timbre-web/timbre-admin/timbre-admin.component';
 import { CrearTimbreComponent } from './componentes/timbre-web/crear-timbre/crear-timbre.component';
 import { SeguridadComponent } from './componentes/administracionGeneral/frase-seguridad/seguridad/seguridad.component';
@@ -298,9 +298,7 @@ import { ListarSolicitudComponent } from './componentes/modulos/alimentacion/lis
 import { EditarSolicitudComidaComponent } from './componentes/modulos/alimentacion/editar-solicitud-comida/editar-solicitud-comida.component';
 import { ListarPlanificacionComponent } from './componentes/modulos/alimentacion/listar-planificacion/listar-planificacion.component';
 import { ListaAppComponent } from './componentes/modulos/appMovil/lista-app/lista-app.component';
-import { UpdateEstadoAppComponent } from './componentes/modulos/appMovil/update-estado-app/update-estado-app.component';
 import { ListaWebComponent } from './componentes/modulos/timbreWeb/lista-web/lista-web.component';
-import { UpdateEstadoWebComponent } from './componentes/modulos/timbreWeb/update-estado-web/update-estado-web.component';
 import { RegistroDispositivosComponent } from './componentes/modulos/appMovil/registro-dispositivos/registro-dispositivos.component';
 import { DeleteRegistroDispositivoComponent } from './componentes/modulos/appMovil/delete-registro-dispositivo/delete-registro-dispositivo.component';
 import { PlanificacionComidasComponent } from './componentes/modulos/alimentacion/planificacion-comidas/planificacion-comidas.component';
@@ -550,9 +548,7 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ListaAppComponent,
     RegistroDispositivosComponent,
     DeleteRegistroDispositivoComponent,
-    UpdateEstadoAppComponent,
     ListaWebComponent,
-    UpdateEstadoWebComponent,
     OlvidarFraseComponent,
     TipoVacunaComponent,
     CrearParametroComponent,

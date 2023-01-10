@@ -1,79 +1,95 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { SelectionModel } from '@angular/cdk/collections';
 import { FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { DeleteRegistroDispositivoComponent } from '../delete-registro-dispositivo/delete-registro-dispositivo.component';
-import { ItableDispositivos } from 'src/app/model/reportes.model'; 
-import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
-import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
-import { environment } from 'src/environments/environment';
+// LIBRERIAS DE ARCHIVOS
 import * as xlsx from 'xlsx';
 import * as moment from 'moment';
 import * as FileSaver from 'file-saver';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
+// MODELOS
+import { ItableDispositivos } from 'src/app/model/reportes.model';
+
+// COMPONENTES
+import { DeleteRegistroDispositivoComponent } from '../delete-registro-dispositivo/delete-registro-dispositivo.component';
+
+// SERVICIOS
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { RelojesService } from 'src/app/servicios/catalogos/catRelojes/relojes.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
+
 @Component({
-    selector: 'app-registro-dispositivos',
-    templateUrl: './registro-dispositivos.component.html',
-    styleUrls: ['./registro-dispositivos.component.css']
+  selector: 'app-registro-dispositivos',
+  templateUrl: './registro-dispositivos.component.html',
+  styleUrls: ['./registro-dispositivos.component.css']
 })
 
 export class RegistroDispositivosComponent implements OnInit {
 
-  usersDispositivosRegistrados: any = [];
+  // VARIABLES DE ALMACENAMIENTO
+  dispositivosRegistrados: any = [];
   dispositivo: any = [];
 
+  // FILTROS DE BUSQUEDA
   filtroCodigo: number;
   filtroCedula: '';
   filtroNombre: '';
 
+  // DATOS DE EMPLEADO
   empleado: any = [];
   idEmpleado: number;
 
+  // VALIDAR ELIMINAR PROCESO CON FILTROS
   ocultar: boolean = false;
 
+  // FORMULARIO
   codigo = new FormControl('');
   cedula = new FormControl('', [Validators.minLength(2)]);
   nombre = new FormControl('', [Validators.minLength(2)]);
 
-   // Items de paginación de la tabla
-   tamanio_pagina: number = 5;
-   numero_pagina: number = 1;
-   pageSizeOptions = [5, 10, 20, 50];
- 
-   BooleanAppMap: any = { 'true': 'Si', 'false': 'No' };
+  // ITEMS DE PAGINACION DE LA TABLA
+  pageSizeOptions = [5, 10, 20, 50];
+  tamanio_pagina: number = 5;
+  numero_pagina: number = 1;
 
+  // DATOS BOOLEANOS
+  BooleanAppMap: any = { 'true': 'Si', 'false': 'No' };
+
+  // BUSQUEDA DE MODULOS ACTIVOS
   get habilitarMovil(): boolean { return this.funciones.app_movil; }
 
+  // ALMACENAMIENTO DATOS SELECCIONADOS
   selectionEmp = new SelectionModel<ItableDispositivos>(true, []);
 
+  // DIRECCIONAMIENTO DE RUTAS
   hipervinculo: string = environment.url;
 
-  constructor(
-    public restEmpre: EmpresaService,
-    private usuariosService: UsuarioService,
-    private toastr: ToastrService,
-    private validar: ValidacionesService,
-    private dialog: MatDialog,
-    private funciones: MainNavService,
-    private rest: RelojesService,
-    public restE: EmpleadoService,
-  ) {this.idEmpleado = parseInt(localStorage.getItem('empleado'));}
-    
-  ngOnInit(): void {
-    this.ObtenerEmpleados(this.idEmpleado);
-    this.ObtenerColores();
-    this.ObtenerLogo();
+  // CONTROL DE BOTONES
+  individual: boolean = true;
+  multiple: boolean = false;
 
+  constructor(
+    private usuariosService: UsuarioService,
+    private funciones: MainNavService,
+    private validar: ValidacionesService,
+    private ventana: MatDialog,
+    private toastr: ToastrService,
+    private rest: RelojesService,
+    public restEmpre: EmpresaService,
+    public restE: EmpleadoService,
+  ) { this.idEmpleado = parseInt(localStorage.getItem('empleado')); }
+
+  ngOnInit(): void {
     if (this.habilitarMovil === false) {
       let mensaje = {
         access: false,
@@ -84,6 +100,9 @@ export class RegistroDispositivosComponent implements OnInit {
       return this.validar.RedireccionarHomeAdmin(mensaje);
     }
     else {
+      this.ObtenerLogo();
+      this.ObtenerColores();
+      this.ObtenerEmpleados(this.idEmpleado);
       this.ObtenerDispositivosRegistrados();
     }
   }
@@ -98,87 +117,112 @@ export class RegistroDispositivosComponent implements OnInit {
 
   // METODO PARA ACTIVAR O DESACTIVAR CHECK LIST DE LAS TABLAS
   habilitar: boolean = false;
-  HabilitarSeleccion_habilitados() {
-    if(this.habilitar === false){
+  HabilitarSeleccion() {
+    if (this.multiple === false) {
+      this.multiple = true;
+      this.individual = false;
+    }
+    else {
+      this.selectionEmp.clear();
+      this.multiple = false;
+      this.individual = true;
+    }
+
+    if (this.habilitar === false) {
       this.habilitar = true;
 
-      if(this.filtroNombre != undefined){
-        if(this.filtroNombre.length > 1){
+      if (this.filtroNombre != undefined) {
+        if (this.filtroNombre.length > 1) {
           this.ocultar = true;
-        }else{
+        } else {
           this.ocultar = false;
         }
       }
 
-      if(this.filtroCodigo != undefined){
-        if(this.filtroCodigo > 0){
+      if (this.filtroCodigo != undefined) {
+        if (this.filtroCodigo > 0) {
           this.ocultar = true;
-        }else{
+        } else {
           this.ocultar = false;
         }
       }
 
-      if(this.filtroCedula != undefined){
-        if(this.filtroCedula.length > 1){
+      if (this.filtroCedula != undefined) {
+        if (this.filtroCedula.length > 1) {
           this.ocultar = true;
-        }else{
+        } else {
           this.ocultar = false;
         }
       }
 
-    }else{
+    } else {
       this.habilitar = false;
       this.selectionEmp.clear();
     }
   }
 
-  ObtenerDispositivosRegistrados(){
-    this.usuariosService.getUserDispositivoMovil().subscribe(res => {
-      this.usersDispositivosRegistrados = res;
+  // METODO PARA LISTAR DISPOSITIVOS
+  ObtenerDispositivosRegistrados() {
+    this.usuariosService.BuscarDispositivoMovill().subscribe(res => {
+      this.dispositivosRegistrados = res;
     }, err => {
-      console.log(err);
       this.toastr.info(err.error.message)
     })
   }
 
-  openDialogDeleteDispositivo() {
-    this.habilitar = false;
-    if (this.selectionEmp.selected.length === 0) return this.toastr.warning('Debe seleccionar al menos un empleado para modificar su acceso al reloj virtual.')
-    this.dialog.open(DeleteRegistroDispositivoComponent, { data: this.selectionEmp.selected }).afterClosed().subscribe(result => {
-      result.forEach(item => {
-         this.dispositivo.push(item.id_dispositivo);
-      });
-
-      if (result) {
-        this.usuariosService.deleteDispositivoMovil(this.dispositivo).subscribe(res => {
-          this.toastr.success('Dispositivos eliminados correctamente');
-          this.ObtenerDispositivosRegistrados();
-          this.selectionEmp.clear();
-          this.habilitar = false;
-          this.numero_pagina = 1;
-        }, err => {
-          console.log(err);
-          this.toastr.error(err.error.message)
-        })
-      }
-
-    })
+  // METODO PARA ABRIR VENTANA ELIMINAR REGISTROS
+  AbrirVentanaEliminar(datos: any) {
+    if (datos === 1) {
+      this.EliminarRegistro(this.selectionEmp.selected);
+    }
+    else {
+      var data = [datos];
+      this.EliminarRegistro(data);
+    }
   }
 
-  /** Si el número de elementos seleccionados coincide con el número total de filas. */
+  // METODO PARA ELIMINAR REGISTROS
+  EliminarRegistro(array: any) {
+    this.habilitar = false;
+    // VALIDAR SELECCION DE REGISTROS
+    if (array.length === 0) return this.toastr.
+      warning('Debe seleccionar al menos un usuario para modificar su acceso al reloj virtual.');
+    // ABRIR VENTANA CONFIRMACION DE ELIMINACION
+    this.ventana.open(DeleteRegistroDispositivoComponent,
+      { width: '400px', data: array }).afterClosed().subscribe(result => {
+        if (result) {
+          result.forEach(item => {
+            this.dispositivo.push(item.id_dispositivo);
+          });
+          this.usuariosService.deleteDispositivoMovil(this.dispositivo).subscribe(res => {
+            this.toastr.success('Registro eliminado exitosamnete.');
+            this.ObtenerDispositivosRegistrados();
+            this.selectionEmp.clear();
+            this.multiple = false;
+            this.individual = true;
+            this.habilitar = false;
+            this.numero_pagina = 1;
+          }, err => {
+            this.toastr.error(err.error.message)
+          })
+        }
+      })
+  }
+
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedEmp() {
     const numSelected = this.selectionEmp.selected.length;
-    return numSelected === this.usersDispositivosRegistrados.length
+    return numSelected === this.dispositivosRegistrados.length
   }
 
-  /** Selecciona todas las filas si no están todas seleccionadas; de lo contrario, selección clara. */
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleEmp() {
-    this.isAllSelectedEmp()?
+    this.isAllSelectedEmp() ?
       this.selectionEmp.clear() :
-      this.usersDispositivosRegistrados.forEach(row => this.selectionEmp.select(row));
+      this.dispositivosRegistrados.forEach(row => this.selectionEmp.select(row));
   }
 
-  /** La etiqueta de la casilla de verificación en la fila pasada*/
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA 
   checkboxLabelEmp(row?: ItableDispositivos): string {
     if (!row) {
       return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
@@ -186,17 +230,20 @@ export class RegistroDispositivosComponent implements OnInit {
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
+  // EVENTO DE PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
-  IngresarSoloNumeros(evt) {
+  // VALIDAR INGRESO DE NUMEROS
+  IngresarSoloNumeros(evt: any) {
     this.ocultar = true;
     return this.validar.IngresarSoloNumeros(evt)
   }
 
-  IngresarSoloLetras(e) {
+  // VALIDAR INGRESO DE LETRAS
+  IngresarSoloLetras(e: any) {
     this.ocultar = true;
     return this.validar.IngresarSoloLetras(e);
   }
@@ -209,23 +256,23 @@ export class RegistroDispositivosComponent implements OnInit {
     });
   }
 
-   // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
-   p_color: any;
-   s_color: any;
-   frase: any;
-   ObtenerColores() {
-     this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
-       this.p_color = res[0].color_p;
-       this.s_color = res[0].color_s;
-       this.frase = res[0].marca_agua;
-     });
-   }
+  // METODO PARA OBTENER COLORES Y MARCA DE AGUA DE EMPRESA 
+  p_color: any;
+  s_color: any;
+  frase: any;
+  ObtenerColores() {
+    this.restEmpre.ConsultarDatosEmpresa(parseInt(localStorage.getItem('empresa'))).subscribe(res => {
+      this.p_color = res[0].color_p;
+      this.s_color = res[0].color_s;
+      this.frase = res[0].marca_agua;
+    });
+  }
 
   /** ********************************************************************************* **
    ** **                        GENERACION DE PDFs                                   ** **
    ** ********************************************************************************* **/
 
-   generarPdf(action = 'open') {
+  generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
 
     switch (action) {
@@ -238,7 +285,7 @@ export class RegistroDispositivosComponent implements OnInit {
   }
 
   getDocumentDefinicion() {
-    sessionStorage.setItem('dispositivos_moviles',this.usersDispositivosRegistrados);
+    sessionStorage.setItem('dispositivos_moviles', this.dispositivosRegistrados);
     return {
 
       // ENCABEZADO DE LA PAGINA
@@ -297,7 +344,7 @@ export class RegistroDispositivosComponent implements OnInit {
                 { text: 'Id dispositivo', style: 'tableHeader' },
                 { text: 'Modelo dispositivo', style: 'tableHeader' },
               ],
-              ...this.usersDispositivosRegistrados.map(obj => {
+              ...this.dispositivosRegistrados.map(obj => {
                 return [
                   { text: count++, style: 'itemsTableC' },
                   { text: obj.nombre, style: 'itemsTable' },
@@ -329,7 +376,7 @@ export class RegistroDispositivosComponent implements OnInit {
     var objeto: any;
     var cont: number = 1;
     var ListaDispositivosRegistrados = [];
-    this.usersDispositivosRegistrados.forEach(obj => {
+    this.dispositivosRegistrados.forEach(obj => {
       objeto = {
         'N#': cont++,
         "CODIGO": obj.codigo,
@@ -354,7 +401,7 @@ export class RegistroDispositivosComponent implements OnInit {
     var objeto: any;
     var cont: number = 1;
     var ListaDispositivosRegistrados = [];
-    this.usersDispositivosRegistrados.forEach(obj => {
+    this.dispositivosRegistrados.forEach(obj => {
       objeto = {
         'N#': cont++,
         "CODIGO": obj.codigo,
@@ -381,7 +428,7 @@ export class RegistroDispositivosComponent implements OnInit {
     var objeto: any;
     var count: number = 1;
     var arregloDispositivos = [];
-    this.usersDispositivosRegistrados.forEach(obj => {
+    this.dispositivosRegistrados.forEach(obj => {
       objeto = {
         "dispositivo_moviles": {
           '@id': count++,

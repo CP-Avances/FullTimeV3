@@ -80,7 +80,7 @@ import { AutorizaEmpleadoComponent } from './componentes/rolEmpleado/autoriza-em
 import { ReporteKardexComponent } from './componentes/reportes/vacaciones/reporte-kardex/reporte-kardex.component';
 import { ReporteEmpleadosComponent } from './componentes/reportes/empleados/reporte-empleados/reporte-empleados.component';
 import { ListaArchivosComponent } from './componentes/documentos/lista-archivos/lista-archivos.component';
-import { TimbreWebComponent } from './componentes/timbre-web/timbre-empleado/timbre-web.component';
+import { TimbreWebComponent } from './componentes/modulos/timbreWeb/timbre-empleado/timbre-web.component';
 import { TimbreAdminComponent } from './componentes/timbre-web/timbre-admin/timbre-admin.component';
 import { ReporteHorasExtrasComponent } from './componentes/reportes/horas-extras/reporte-horas-extras/reporte-horas-extras.component';
 import { AlimentosGeneralComponent } from './componentes/reportes/alimentacion/alimentos-general/alimentos-general.component';

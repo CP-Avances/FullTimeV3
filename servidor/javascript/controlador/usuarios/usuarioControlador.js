@@ -99,53 +99,32 @@ class UsuarioControlador {
     /** ******************************************************************************************** **
      ** **               METODO PARA MANEJAR DATOS DE USUARIOS TIMBRE WEB                         ** **
      ** ******************************************************************************************** **/
-    // METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE WEB
-    UsuariosTimbreWeb(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const USUARIOS = yield database_1.default.query(`
-        SELECT (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
-          u.web_habilita, u.id AS userId, d.nombre AS departamento
-        FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
-        WHERE e.id = u.id_empleado AND d.id = e.id_departamento 
-        ORDER BY nombre
-        `).then(result => { return result.rows; });
-                if (USUARIOS.length === 0)
-                    return res.status(404).jsonp({ message: 'No se encuentran registros.' });
-                return res.status(200).jsonp(USUARIOS);
-            }
-            catch (error) {
-                return res.status(500).jsonp({ message: error });
-            }
-        });
-    }
     /**
-     * METODO DE CONSULTA DE DATOS GENERALES DE USUARIOS
-     * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DEL ESTADO DEL
-     * EMPLEADO SI BUSCA EMPLEADOS ACTIVOS O INACTIVOS.
+     * METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE WEB
+     * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DE SU ESTADO
+     * BUSCA EMPLEADOS ACTIVOS O INACTIVOS.
      * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
      **/
-    DatosGenerales(req, res) {
+    UsuariosTimbreWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let estado = req.params.estado;
+            let habilitado = req.params.habilitado;
             // CONSULTA DE BUSQUEDA DE SUCURSALES
             let suc = yield database_1.default.query(`
-          SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-              ciudades AS c 
-          WHERE s.id_ciudad = c.id ORDER BY s.id
-          `).then(result => { return result.rows; });
+        SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+          ciudades AS c 
+        WHERE s.id_ciudad = c.id ORDER BY s.id
+      `).then(result => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
             let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
                 dep.departamentos = yield database_1.default.query(`
-              SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
-              FROM cg_departamentos AS d, sucursales AS s
-              WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
-              `, [dep.id_suc]).then(result => {
-                    return result.rows.filter(obj => {
-                        return obj.name_dep != 'Ninguno';
-                    });
+          SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+          FROM cg_departamentos AS d, sucursales AS s
+          WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+        `, [dep.id_suc]).then(result => {
+                    return result.rows;
                 });
                 return dep;
             })));
@@ -157,26 +136,15 @@ class UsuarioControlador {
             // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
             let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 obj.departamentos = yield Promise.all(obj.departamentos.map((empl) => __awaiter(this, void 0, void 0, function* () {
-                    if (estado === '1') {
-                        empl.empleado = yield database_1.default.query(`
+                    empl.empleado = yield database_1.default.query(`
             SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
-              u.web_habilita, u.id AS userId, d.nombre AS departamento
+              u.web_habilita, u.id AS userid, d.nombre AS departamento
             FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
             WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
+              AND u.web_habilita = $3
             ORDER BY nombre
-            `, [empl.id_depa, estado])
-                            .then(result => { return result.rows; });
-                    }
-                    else {
-                        empl.empleado = yield database_1.default.query(`
-            SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
-              u.web_habilita, u.id AS userId, d.nombre AS departamento
-            FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
-            WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
-            ORDER BY nombre
-            `, [empl.id_depa, estado])
-                            .then(result => { return result.rows; });
-                    }
+          `, [empl.id_depa, estado, habilitado])
+                        .then(result => { return result.rows; });
                     return empl;
                 })));
                 return obj;
@@ -198,6 +166,129 @@ class UsuarioControlador {
             return res.status(200).jsonp(respuesta);
         });
     }
+    // METODO PARA ACTUALIZAR ESTADO DE TIMBRE WEB
+    ActualizarEstadoTimbreWeb(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const array = req.body;
+                if (array.length === 0)
+                    return res.status(400).jsonp({ message: 'No se ha encontrado registros.' });
+                const nuevo = yield Promise.all(array.map((o) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        const [result] = yield database_1.default.query(`
+            UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id
+            `, [!o.web_habilita, o.userid])
+                            .then(result => { return result.rows; });
+                        return result;
+                    }
+                    catch (error) {
+                        return { error: error.toString() };
+                    }
+                })));
+                return res.status(200).jsonp({ message: 'Datos actualizados exitosamente.', nuevo });
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
+    /** ******************************************************************************************** **
+     ** **               METODO PARA MANEJAR DATOS DE USUARIOS TIMBRE MOVIL                       ** **
+     ** ******************************************************************************************** **/
+    /**
+     * METODO DE BUSQUEDA DE USUARIOS QUE USAN TIMBRE MOVIL
+     * REALIZA UN ARRAY DE SUCURSALES CON DEPARTAMENTOS Y EMPLEADOS DEPENDIENDO DE SU ESTADO
+     * BUSCA EMPLEADOS ACTIVOS O INACTIVOS.
+     * @returns Retorna Array de [Sucursales[Departamentos[empleados[]]]]
+     **/
+    UsuariosTimbreMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let estado = req.params.estado;
+            let habilitado = req.params.habilitado;
+            // CONSULTA DE BUSQUEDA DE SUCURSALES
+            let suc = yield database_1.default.query(`
+        SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
+          ciudades AS c 
+        WHERE s.id_ciudad = c.id ORDER BY s.id
+      `).then(result => { return result.rows; });
+            if (suc.length === 0)
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+            // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
+            let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
+                dep.departamentos = yield database_1.default.query(`
+          SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+          FROM cg_departamentos AS d, sucursales AS s
+          WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
+        `, [dep.id_suc]).then(result => {
+                    return result.rows;
+                });
+                return dep;
+            })));
+            let depa = departamentos.filter(obj => {
+                return obj.departamentos.length > 0;
+            });
+            if (depa.length === 0)
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+            // CONSULTA DE BUSQUEDA DE COLABORADORES POR DEPARTAMENTO
+            let lista = yield Promise.all(depa.map((obj) => __awaiter(this, void 0, void 0, function* () {
+                obj.departamentos = yield Promise.all(obj.departamentos.map((empl) => __awaiter(this, void 0, void 0, function* () {
+                    empl.empleado = yield database_1.default.query(`
+            SELECT DISTINCT e.id, (e.nombre || ' ' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, 
+              u.app_habilita, u.id AS userid, d.nombre AS departamento
+            FROM usuarios AS u, datos_actuales_empleado AS e, cg_departamentos AS d
+            WHERE e.id = u.id_empleado AND d.id = e.id_departamento AND e.id_departamento = $1 AND e.estado = $2
+              AND u.app_habilita = $3
+            ORDER BY nombre
+          `, [empl.id_depa, estado, habilitado])
+                        .then(result => { return result.rows; });
+                    return empl;
+                })));
+                return obj;
+            })));
+            if (lista.length === 0)
+                return res.status(404)
+                    .jsonp({ message: 'No se han encontrado registros.' });
+            let respuesta = lista.map(obj => {
+                obj.departamentos = obj.departamentos.filter((ele) => {
+                    return ele.empleado.length > 0;
+                });
+                return obj;
+            }).filter(obj => {
+                return obj.departamentos.length > 0;
+            });
+            if (respuesta.length === 0)
+                return res.status(404)
+                    .jsonp({ message: 'No se han encontrado registros.' });
+            return res.status(200).jsonp(respuesta);
+        });
+    }
+    // METODO PARA ACTUALIZAR ESTADO DE TIMBRE MOVIL
+    ActualizarEstadoTimbreMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(req.body);
+                const array = req.body;
+                if (array.length === 0)
+                    return res.status(400).jsonp({ message: 'No se ha encontrado registros.' });
+                const nuevo = yield Promise.all(array.map((o) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        const [result] = yield database_1.default.query(`
+            UPDATE usuarios SET app_habilita = $1 WHERE id = $2 RETURNING id
+            `, [!o.app_habilita, o.userid])
+                            .then(result => { return result.rows; });
+                        return result;
+                    }
+                    catch (error) {
+                        return { error: error.toString() };
+                    }
+                })));
+                return res.status(200).jsonp({ message: 'Datos actualizados exitosamente.', nuevo });
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const USUARIOS = yield database_1.default.query('SELECT * FROM usuarios');
@@ -206,69 +297,6 @@ class UsuarioControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    usersEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const USUARIOS = yield database_1.default.query('SELECT (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, e.codigo, u.usuario, u.app_habilita, u.id AS userId ' +
-                    'FROM usuarios AS u, empleados AS e WHERE e.id = u.id_empleado ORDER BY nombre')
-                    .then(result => { return result.rows; });
-                if (USUARIOS.length === 0)
-                    return res.status(404).jsonp({ message: 'No se encuentran registros' });
-                return res.status(200).jsonp(USUARIOS);
-            }
-            catch (error) {
-                return res.status(500).jsonp({ message: error });
-            }
-        });
-    }
-    updateUsersEmpleados(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log(req.body);
-                const array = req.body;
-                if (array.length === 0)
-                    return res.status(400).jsonp({ message: 'No llego datos para actualizar' });
-                const nuevo = yield Promise.all(array.map((o) => __awaiter(this, void 0, void 0, function* () {
-                    try {
-                        const [result] = yield database_1.default.query('UPDATE usuarios SET app_habilita = $1 WHERE id = $2 RETURNING id', [!o.app_habilita, o.userid])
-                            .then(result => { return result.rows; });
-                        return result;
-                    }
-                    catch (error) {
-                        return { error: error.toString() };
-                    }
-                })));
-                return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo });
-            }
-            catch (error) {
-                return res.status(500).jsonp({ message: error });
-            }
-        });
-    }
-    updateUsersEmpleadosWebHabilita(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log(req.body);
-                const array = req.body;
-                if (array.length === 0)
-                    return res.status(400).jsonp({ message: 'No llego datos para actualizar' });
-                const nuevo = yield Promise.all(array.map((o) => __awaiter(this, void 0, void 0, function* () {
-                    try {
-                        const [result] = yield database_1.default.query('UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id', [!o.web_habilita, o.userid])
-                            .then(result => { return result.rows; });
-                        return result;
-                    }
-                    catch (error) {
-                        return { error: error.toString() };
-                    }
-                })));
-                return res.status(200).jsonp({ message: 'Datos actualizados exitosamente', nuevo });
-            }
-            catch (error) {
-                return res.status(500).jsonp({ message: error });
             }
         });
     }

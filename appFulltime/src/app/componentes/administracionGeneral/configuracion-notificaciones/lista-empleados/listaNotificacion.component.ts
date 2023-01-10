@@ -32,8 +32,6 @@ export class ListaNotificacionComponent implements OnInit {
     nombre_suc = new FormControl('', [Validators.minLength(2)]);
     seleccion = new FormControl('');
 
-    habilitado: any;
-
     public _booleanOptions: FormCriteriosBusqueda = {
         bool_suc: false,
         bool_dep: false,
@@ -409,7 +407,7 @@ export class ListaNotificacionComponent implements OnInit {
         this.ventana.open(ConfiguracionNotificacionComponent,
             { width: '350px', data: seleccionados }).afterClosed().subscribe(evento => {
                 if (evento) {
-                    if (evento === true) {
+                    if (evento != false) {
                         this.individual = true;
                         this.LimpiarFormulario();
                     }

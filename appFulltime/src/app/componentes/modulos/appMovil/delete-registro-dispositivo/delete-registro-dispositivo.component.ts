@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-delete-registro-dispositivo',
@@ -8,15 +8,15 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class DeleteRegistroDispositivoComponent implements OnInit {
 
-  BooleanAppMap: any = {'true': 'Si', 'false': 'No'};
+  BooleanAppMap: any = { 'true': 'Si', 'false': 'No' };
   usuarios: any = [];
-  
+
   constructor(
-    public dialogRef: MatDialogRef<DeleteRegistroDispositivoComponent>,
+    public ventana: MatDialogRef<DeleteRegistroDispositivoComponent>,
     @Inject(MAT_DIALOG_DATA) public dispositivos: any
   ) { }
 
-  ngOnInit(): void {  
+  ngOnInit(): void {
     this.usuarios = this.dispositivos;
   }
 

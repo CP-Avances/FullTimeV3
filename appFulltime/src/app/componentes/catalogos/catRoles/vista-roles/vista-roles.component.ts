@@ -46,13 +46,13 @@ export class VistaRolesComponent implements OnInit {
   buscarDescripcion = new FormControl('', Validators.minLength(2));
 
   // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
-  get s_color(): string { return this.plantillaPDF.color_Secundary }
-  get p_color(): string { return this.plantillaPDF.color_Primary }
-  get logoE(): string { return this.plantillaPDF.logoBase64 }
-  get frase(): string { return this.plantillaPDF.marca_Agua }
+  get s_color(): string { return this.plantilla.color_Secundary }
+  get p_color(): string { return this.plantilla.color_Primary }
+  get logoE(): string { return this.plantilla.logoBase64 }
+  get frase(): string { return this.plantilla.marca_Agua }
 
   constructor(
-    private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
+    private plantilla: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
     private validar: ValidacionesService, // VARIABLE PARA MANEJO DE SERVICIOS
     private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
     private router: Router, // VARAIBLE MANEJO DE RUTAS URL
