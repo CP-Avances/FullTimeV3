@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
+import fs from 'fs';
+const builder = require('xmlbuilder');
 
 class ProvinciaControlador {
 
@@ -78,6 +80,22 @@ class ProvinciaControlador {
     res.jsonp({ message: 'Registro eliminado.' });
   }
 
+   // METODO PARA CREAR ARCHIVO XML
+   public async FileXML(req: Request, res: Response): Promise<any> {
+    var xml = builder.create('root').ele(req.body).end({ pretty: true });
+    let filename = "Provincias-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+    });
+    res.jsonp({ text: 'XML creado', name: filename });
+  }
+
+    // METODO PARA DESCARGAR ARCHIVO XML
+    public async downloadXML(req: Request, res: Response): Promise<any> {
+        const name = req.params.nameXML;
+        let filePath = `servidor\\xmlDownload\\${name}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+      }
+
   // METODO PARA REGISTRAR PROVINCIA
   public async CrearProvincia(req: Request, res: Response): Promise<void> {
     const { nombre, id_pais } = req.body;
@@ -105,29 +123,6 @@ class ProvinciaControlador {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   public async ObtenerProvincia(req: Request, res: Response): Promise<any> {
     const { id } = req.params;
     const UNA_PROVINCIA = await pool.query('SELECT * FROM cg_provincias WHERE id = $1', [id]);
@@ -150,8 +145,6 @@ class ProvinciaControlador {
     }
   }
 
-
-
   public async ListarTodoPais(req: Request, res: Response) {
     const PAIS = await pool.query('SELECT *FROM cg_paises');
     if (PAIS.rowCount > 0) {
@@ -161,9 +154,6 @@ class ProvinciaControlador {
       return res.status(404).jsonp({ text: 'No se encuentran registros' });
     }
   }
-
-
-
 
 }
 

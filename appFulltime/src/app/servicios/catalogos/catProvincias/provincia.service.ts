@@ -37,6 +37,11 @@ export class ProvinciaService {
     return this.http.delete(`${environment.url}/provincia/eliminar/${id}`);
   }
 
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/provincia/xmlDownload`, data);
+  }
+
   // METODO PARA REGISTRAR PROVINCIA
   RegistrarProvincia(data: any) {
     return this.http.post(`${environment.url}/provincia`, data);

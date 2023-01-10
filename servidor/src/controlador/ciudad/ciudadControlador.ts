@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import pool from '../../database';
+import fs from 'fs';
+const builder = require('xmlbuilder');
 
 class CiudadControlador {
 
@@ -71,10 +73,10 @@ class CiudadControlador {
     public async ListarNombreCiudad(req: Request, res: Response) {
         const CIUDAD = await pool.query(
             `
-            SELECT c.id, c.descripcion, p.nombre, p.id AS id_prov
+            SELECT c.id, c.descripcion AS nombre, p.nombre AS provincia, p.id AS id_prov
             FROM ciudades c, cg_provincias p
             WHERE c.id_provincia = p.id
-            ORDER BY nombre, descripcion ASC
+            ORDER BY provincia, nombre ASC
             `
         );
         if (CIUDAD.rowCount > 0) {
@@ -95,6 +97,22 @@ class CiudadControlador {
             , [id]);
         res.jsonp({ message: 'Registro eliminado.' });
     }
+
+    // METODO PARA CREAR ARCHIVO XML
+  public async FileXML(req: Request, res: Response): Promise<any> {
+    var xml = builder.create('root').ele(req.body).end({ pretty: true });
+    let filename = "Ciudades-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+    fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+    });
+    res.jsonp({ text: 'XML creado', name: filename });
+  }
+
+    // METODO PARA DESCARGAR ARCHIVO XML
+    public async downloadXML(req: Request, res: Response): Promise<any> {
+        const name = req.params.nameXML;
+        let filePath = `servidor\\xmlDownload\\${name}`
+        res.sendFile(__dirname.split("servidor")[0] + filePath);
+      }
 
     // METODO PARA CONSULTAR DATOS DE UNA CIUDAD
     public async ConsultarUnaCiudad(req: Request, res: Response): Promise<any> {
