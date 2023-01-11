@@ -45,7 +45,7 @@ export class CambiarFraseComponent implements OnInit {
   }
 
   // METODO PARA COMPARAR FRASE ACTUAL CON LA INGRESADA POR EL USUARIO
-  CompararFrase(form) {
+  CompararFrase(form: any) {
     this.datosUser = [];
     this.restUser.BuscarDatosUser(parseInt(this.usuario)).subscribe(data => {
       this.datosUser = data;
@@ -53,11 +53,11 @@ export class CambiarFraseComponent implements OnInit {
         this.IngresarFrase(form);
       }
       else {
-        this.toastr.error('Incorrecto', 'Frase actual no es la correcta', {
+        this.toastr.error('Incorrecto.', 'Frase actual no es la correcta.', {
           timeOut: 6000,
         });
       }
-    }, error => { });
+    });
   }
 
   // METODO PARA CERRAR REGISTRO
@@ -72,13 +72,14 @@ export class CambiarFraseComponent implements OnInit {
       id_empleado: parseInt(this.usuario)
     }
     this.restUser.ActualizarFrase(data).subscribe(data => {
-      this.toastr.success('Frase ingresada éxitosamente', '', {
+      this.toastr.success('Frase ingresada exitosamente.', '', {
         timeOut: 6000,
       });
     });
     this.CerrarRegistro();
   }
 
+  // METODO PARA ABRIR PANTALLA RECUPERAR FRASE
   RecuperarFrase() {
     this.loginService.logout();
     this.ventana.close();

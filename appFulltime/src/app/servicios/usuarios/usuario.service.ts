@@ -78,11 +78,25 @@ export class UsuarioService {
     return this.http.get<any>(`${environment.url}/usuarios/registro-dispositivos`);
   }
 
+  // METODO PARA ELIMINAR REGISTROS DISPOSITIVOS
+  EliminarDispositivoMovil(data: any) {
+    return this.http.delete(`${environment.url}/usuarios/delete-registro-dispositivos/${data}`);
+  }
+
+  // METODO PARA ENVIAR CORREO CAMBIAR FRASE SEGURIDAD
+  RecuperarFraseSeguridad(data: any) {
+    return this.http.post(`${environment.url}/usuarios/frase/olvido-frase`, data)
+  }
+
+  // METODO PARA CAMBIAR LA FRASE DE SEGURIDAD
+  CambiarFrase(data: any) {
+    return this.http.post(`${environment.url}/usuarios/frase/restaurar-frase/nueva`, data)
+  }
 
 
 
 
-  
+
 
   // catalogo de usuarios
 
@@ -100,10 +114,7 @@ export class UsuarioService {
 
 
 
-  deleteDispositivoMovil(data: any) {
-    console.log("Datos a elimanar: ", data)
-    return this.http.delete(`${environment.url}/usuarios/delete-registro-dispositivos/${data}`);
-  }
+
 
   BuscarUsersNoEnrolados() {
     return this.http.get(`${environment.url}/usuarios/noEnrolados`);
@@ -113,24 +124,5 @@ export class UsuarioService {
     return this.http.get(`${environment.url}/usuarios/busqueda/${usuario}`);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  RecuperarFraseSeguridad(data: any) {
-    return this.http.post(`${environment.url}/usuarios/frase/olvido-frase`, data)
-  }
-
-  CambiarFrase(data: any) {
-    return this.http.post(`${environment.url}/usuarios/frase/restaurar-frase/nueva`, data)
-  }
 
 }

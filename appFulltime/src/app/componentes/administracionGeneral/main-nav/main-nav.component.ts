@@ -20,6 +20,7 @@ import { FraseSeguridadComponent } from 'src/app/componentes/administracionGener
 
 import { MenuNode } from 'src/app/model/menu.model';
 import { PlantillaReportesService } from '../../reportes/plantilla-reportes.service';
+import { VerEmpleadoComponent } from '../../empleado/ver-empleado/ver-empleado.component';
 
 @Component({
   selector: 'app-main-nav',

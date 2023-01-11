@@ -14,8 +14,7 @@
                 <div class="d-flex flex-wrap justify-content-between">
                     <mat-form-field id="ver">
                         <mat-label>Asunto</mat-label>
-                        <input matInput #message_a maxlength="45" [formControl]="tituloF" placeholder="Placeholder"
-                            required>
+                        <input matInput #message_a maxlength="45" [formControl]="tituloF" required>
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Ingrese una descripción del mensaje.">
                             help_outline
@@ -25,8 +24,7 @@
                     </mat-form-field>
                     <mat-form-field id="ver">
                         <mat-label>Mensaje</mat-label>
-                        <textarea matInput #message maxlength="255" placeholder="Placeholder" [formControl]="mensajeF"
-                            required></textarea>
+                        <textarea matInput #message maxlength="255" [formControl]="mensajeF" required></textarea>
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                             matTooltip="Ingrese el mensaje que desea compartir.">
                             help_outline</mat-icon>
@@ -66,7 +64,8 @@
                         <input matInput placeholder="Buscar" [(ngModel)]="filtroNombreSuc_"
                             (input)="Filtrar(filtroNombreSuc_, 1)" [formControl]="nombre_suc" type="text"
                             (keypress)="IngresarSoloLetras($event)">
-                        <mat-error *ngIf="nombre_suc.invalid">Indispensable ingresar dos letras
+                        <mat-error *ngIf="nombre_suc.invalid">
+                            Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right" matTooltip="Búsqueda de sucursales por nombre.">
                             help_outline
@@ -82,7 +81,8 @@
                         <input matInput placeholder="Buscar" [(ngModel)]="filtroNombreDep_"
                             (input)="Filtrar(filtroNombreDep_, 2)" [formControl]="nombre_dep" type="text"
                             (keypress)="IngresarSoloLetras($event)">
-                        <mat-error *ngIf="nombre_dep.invalid">Indispensable ingresar dos letras
+                        <mat-error *ngIf="nombre_dep.invalid">
+                            Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de departamentos por nombre.">
@@ -110,7 +110,8 @@
                             (input)="Filtrar(filtroCedula_, 4)"
                             oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                             [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
-                        <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
+                        <mat-error *ngIf="cedula.invalid">
+                            Indispensable ingresar dos valores
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por cédula de identificación o pasaporte.">
@@ -122,7 +123,8 @@
                         <input matInput placeholder="Buscar" [(ngModel)]="filtroNombreEmp_"
                             (input)="Filtrar(filtroNombreEmp_, 5)" [formControl]="nombre_emp" type="text"
                             (keypress)="IngresarSoloLetras($event)">
-                        <mat-error *ngIf="nombre_emp.invalid">Indispensable ingresar dos letras
+                        <mat-error *ngIf="nombre_emp.invalid">
+                            Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por nombre.">

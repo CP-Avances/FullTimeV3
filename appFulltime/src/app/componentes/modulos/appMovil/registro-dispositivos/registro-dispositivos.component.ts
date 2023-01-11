@@ -194,7 +194,7 @@ export class RegistroDispositivosComponent implements OnInit {
           result.forEach(item => {
             this.dispositivo.push(item.id_dispositivo);
           });
-          this.usuariosService.deleteDispositivoMovil(this.dispositivo).subscribe(res => {
+          this.usuariosService.EliminarDispositivoMovil(this.dispositivo).subscribe(res => {
             this.toastr.success('Registro eliminado exitosamnete.');
             this.ObtenerDispositivosRegistrados();
             this.selectionEmp.clear();

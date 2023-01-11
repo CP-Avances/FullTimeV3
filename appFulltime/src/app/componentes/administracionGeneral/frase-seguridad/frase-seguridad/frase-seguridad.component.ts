@@ -47,12 +47,12 @@ export class FraseSeguridadComponent implements OnInit {
         timeOut: 6000,
       });
     });
-    this.CerrarRegistro();
+    this.CerrarRegistro(true);
   }
 
   // METODO PARA CERRAR VENTANA
-  CerrarRegistro() {
-    this.ventana.close(false);
+  CerrarRegistro(evento: boolean) {
+    this.ventana.close(evento);
   }
 
 }

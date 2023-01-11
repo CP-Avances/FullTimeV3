@@ -33,29 +33,26 @@ class UsuarioRutas {
         this.router.get('/lista-app-movil/:estado/activo/:habilitado', TokenValidation, USUARIO_CONTROLADOR.UsuariosTimbreMovil);
         // METODO PARA ACTUALIZAR ESTADO DE TIMBRE MOVIL
         this.router.put('/lista-app-movil/', TokenValidation, USUARIO_CONTROLADOR.ActualizarEstadoTimbreMovil);
-
-
-
-
-
-
-        
-        this.router.get('/', TokenValidation, USUARIO_CONTROLADOR.list);
-
-
-
-
-        this.router.get('/busqueda/:usuario', TokenValidation, USUARIO_CONTROLADOR.getIdByUsuario);
-        this.router.get('/registro-dispositivos/', TokenValidation, USUARIO_CONTROLADOR.usersListadispositivosMoviles);
-        this.router.delete('/delete-registro-dispositivos/:dispositivo', TokenValidation, USUARIO_CONTROLADOR.deleteDispositivoRegistrado);
-
-
-        this.router.get('/noEnrolados', TokenValidation, USUARIO_CONTROLADOR.ListarUsuriosNoEnrolados);
-
-
+        // LISTAR DISPOSITIVOS REGISTRADOS
+        this.router.get('/registro-dispositivos/', TokenValidation, USUARIO_CONTROLADOR.ListarDispositivosMoviles);
+        // METODO PARA ELIMINAR REGISTROS DE DISPOSITIVOS MOVILES
+        this.router.delete('/delete-registro-dispositivos/:dispositivo', TokenValidation, USUARIO_CONTROLADOR.EliminarDispositivoMovil);
+        // METODO PARA ENVIAR CORREO DE FRASE DE SEGURIDAD
         this.router.post('/frase/olvido-frase', USUARIO_CONTROLADOR.RestablecerFrase);
+        // METODO PARA CAMBIAR FRASE DE SEGURIDAD
         this.router.post('/frase/restaurar-frase/nueva', USUARIO_CONTROLADOR.CambiarFrase);
 
+
+
+
+
+
+
+
+
+        this.router.get('/', TokenValidation, USUARIO_CONTROLADOR.list);
+        this.router.get('/busqueda/:usuario', TokenValidation, USUARIO_CONTROLADOR.getIdByUsuario);
+        this.router.get('/noEnrolados', TokenValidation, USUARIO_CONTROLADOR.ListarUsuriosNoEnrolados);
 
     }
 }

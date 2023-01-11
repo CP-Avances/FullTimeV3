@@ -39,7 +39,7 @@ export class RecuperarFraseComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  IngresarFrase(form) {
+  IngresarFrase(form: any) {
     let data = {
       token: this.token,
       frase: form.nFrase
@@ -48,7 +48,7 @@ export class RecuperarFraseComponent implements OnInit {
       this.mensaje = res;
       if (this.mensaje.expiro === 'si') {
         this.router.navigate(['/frase-olvidar']);
-        this.toastr.error(this.mensaje.message, 'UPS! Algo a salido mal.', {
+        this.toastr.error(this.mensaje.message, 'Ups!!! Algo a salido mal.', {
           timeOut: 6000,
         });
       } else {

@@ -65,7 +65,6 @@ export class OlvidarContraseniaComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     }, error => {
-      console.log(error);
       this.toastr.error('El correo electrónico ingresado no consta en los registros.', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       });

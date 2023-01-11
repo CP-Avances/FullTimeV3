@@ -21,6 +21,7 @@ import { ConfirmarDesactivadosComponent } from '../confirmar-desactivados/confir
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { EmpleadoElemento } from '../../../../model/empleado.model'
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-lista-empleados',
@@ -74,6 +75,7 @@ export class ListaEmpleadosComponent implements OnInit {
     public router: Router, // VARIABLE DE USO DE PÁGINAS CON URL
     public rest: EmpleadoService, // SERVICIO DATOS DE EMPLEADO
     private toastr: ToastrService, // VARIABLE DE MANEJO DE MENSAJES DE NOTIFICACIONES
+    private validar: ValidacionesService,
   ) {
     this.idEmpleado = parseInt(localStorage.getItem('empleado'));
   }
@@ -116,6 +118,8 @@ export class ListaEmpleadosComponent implements OnInit {
       this.btnCheckHabilitar = true;
     } else if (this.btnCheckHabilitar === true) {
       this.btnCheckHabilitar = false;
+      this.selectionUno.clear();
+      this.selectionDos.clear();
     }
   }
 
@@ -144,6 +148,8 @@ export class ListaEmpleadosComponent implements OnInit {
       this.btnCheckDeshabilitado = true;
     } else if (this.btnCheckDeshabilitado === true) {
       this.btnCheckDeshabilitado = false;
+      this.selectionUno.clear();
+      this.selectionDos.clear();
     }
   }
 
@@ -254,45 +260,12 @@ export class ListaEmpleadosComponent implements OnInit {
 
   // METODO PARA VALIDAR INGRESO DE LETRAS
   IngresarSoloLetras(e: any) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACION DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    return this.validar.IngresarSoloLetras(e);
   }
 
   //  METODO PARA VALIDAR INGRESO DE NUMEROSO
   IngresarSoloNumeros(evt: any) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    return this.IngresarSoloNumeros(evt);
   }
 
   // METODO PARA LISTAR USUARIOS
@@ -336,6 +309,23 @@ export class ListaEmpleadosComponent implements OnInit {
       this.nacionalidades = res;
     });
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   /** ************************************************************************* **
@@ -494,6 +484,15 @@ export class ListaEmpleadosComponent implements OnInit {
     });
   }
 
+
+
+
+
+
+
+
+
+  
 
   /** ************************************************************************************************* **
    ** **                             PARA LA EXPORTACION DE ARCHIVOS PDF                             ** **

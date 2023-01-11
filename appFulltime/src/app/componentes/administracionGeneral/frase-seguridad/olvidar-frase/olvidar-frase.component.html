@@ -6,15 +6,16 @@
                     <div class="col d-flex align-items-center justify-content-center">
                         <mat-card class="mat-elevation-z8">
                             <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
-                            <span>Recuperar Frase Seguridad</span>
+                            <span>Cambiar frase seguridad</span>
                             <form [formGroup]="formulario">
                                 <mat-form-field>
                                     <mat-label>Ingresa correo electrónico</mat-label>
                                     <input matInput placeholder="pat@example.com" [formControl]="correo" required>
                                     <mat-icon matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar correo electrónico asociado a su cuenta de usuario, recibirá un mail de recuperación de frase de seguridad.">
-                                        help_outline</mat-icon>
-                                    <mat-error *ngIf="correo.invalid">{{ObtenerMensajeCampoUsuarioError()}}</mat-error>
+                                        matTooltip="Ingresar correo electrónico asociado a su cuenta de usuario, recibirá un mail para cambiar su frase de seguridad.">
+                                        help_outline
+                                    </mat-icon>
+                                    <mat-error *ngIf="correo.invalid">{{ObtenerMensajeError()}}</mat-error>
                                 </mat-form-field>
                             </form>
                             <br>

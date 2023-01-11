@@ -93,10 +93,10 @@ import { LoginService } from 'src/app/servicios/login/login.service';
 export class VerEmpleadoComponent implements OnInit {
 
   // VARIABLES DE ALMACENAMIENTO DE DATOS CONSULTADOS
-  tituloEmpleado: any = [];
   discapacidadUser: any = [];
   empleadoLogueado: any = [];
   contratoEmpleado: any = [];
+  tituloEmpleado: any = [];
   idPerVacacion: any = [];
   empleadoUno: any = [];
 
@@ -106,8 +106,8 @@ export class VerEmpleadoComponent implements OnInit {
   idEmpleado: string; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO SELECCIONADO PARA VER DATOS
   editar: string = '';
 
-  hipervinculo: string = environment.url; // VARIABLE DE MANEJO DE RUTAS CON URL
   idEmpleadoLogueado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESIÓN
+  hipervinculo: string = environment.url; // VARIABLE DE MANEJO DE RUTAS CON URL
   FechaActual: any; // VARIBLE PARA ALMACENAR LA FECHA DEL DÍA DE HOY
 
   // ITEMS DE PAGINACIÓN DE LA TABLA 
@@ -153,7 +153,7 @@ export class VerEmpleadoComponent implements OnInit {
     private plantillaPDF: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
     private scriptService: ScriptService, // SERVICIO DATOS EMPLEADO - REPORTE
     private activatedRoute: ActivatedRoute,
-    private restPlanGeneral: PlanGeneralService, // SERVICIO DATOS DE PLANIFICACIÓN
+    private restPlanGeneral: PlanGeneralService, // SERVICIO DATOS DE PLANIFICACION
 
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
@@ -1937,19 +1937,29 @@ export class VerEmpleadoComponent implements OnInit {
 
   // INGRESAR FRASE 
   IngresarFrase(): void {
-    console.log(this.idEmpleado);
-    this.ventana.open(FraseSeguridadComponent, { width: '350px', data: this.idEmpleado })
-      .disableClose = true;
+    this.restU.BuscarDatosUser(this.idEmpleadoLogueado).subscribe(data => {
+      if (data[0].frase === null || data[0].frase === '') {
+        this.ventana.open(FraseSeguridadComponent, { width: '350px', data: this.idEmpleado })
+          .afterClosed()
+          .subscribe((confirmado: Boolean) => {
+            if (confirmado) {
+              this.VerEmpresa();
+            }
+          });
+      }
+      else {
+        this.CambiarFrase();
+      }
+    });
   }
 
   // CAMBIAR FRASE 
   CambiarFrase(): void {
-    console.log(this.idEmpleado);
     this.ventana.open(CambiarFraseComponent, { width: '350px', data: this.idEmpleado })
       .disableClose = true;
   }
 
-  // VER BOTON FRASE DE ACUERDO A LA  CONFIGURACION DE SEGURIDAD
+  // VER BOTON FRASE DE ACUERDO A LA CONFIGURACION DE SEGURIDAD
   empresa: any = [];
   frase: boolean = false;
   cambiar_frase: boolean = false;
@@ -1963,8 +1973,10 @@ export class VerEmpleadoComponent implements OnInit {
         this.restU.BuscarDatosUser(this.idEmpleadoLogueado).subscribe(data => {
           if (data[0].frase === null || data[0].frase === '') {
             this.frase = true;
+            this.cambiar_frase = false;
           }
           else {
+            this.frase = false;
             this.cambiar_frase = true;
           }
         });

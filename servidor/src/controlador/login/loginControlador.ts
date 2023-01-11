@@ -246,7 +246,7 @@ class LoginControlador {
                     <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
                     <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
                         <b>Empresa:</b> ${nombre} <br>   
-                        <b>Asunto:</b> RECUPERAR CONTRASEÑA DE ACCESO <br> 
+                        <b>Asunto:</b> CAMBIAR CONTRASEÑA DE ACCESO <br> 
                         <b>Colaborador que envía:</b> ${correoValido.rows[0].nombre} ${correoValido.rows[0].apellido} <br>
                         <b>Generado mediante:</b> Aplicación Web <br>
                         <b>Fecha de envío:</b> ${fecha} <br> 

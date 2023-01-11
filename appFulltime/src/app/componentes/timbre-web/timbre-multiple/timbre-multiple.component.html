@@ -20,7 +20,8 @@
                         <input matInput placeholder="Buscar" [(ngModel)]="filtroNombreSuc_"
                             (input)="Filtrar(filtroNombreSuc_, 1)" [formControl]="nombre_suc" type="text"
                             (keypress)="IngresarSoloLetras($event)">
-                        <mat-error *ngIf="nombre_suc.invalid">Indispensable ingresar dos letras
+                        <mat-error *ngIf="nombre_suc.invalid">
+                            Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right" matTooltip="Búsqueda de sucursales por nombre.">
                             help_outline
@@ -36,7 +37,8 @@
                         <input matInput placeholder="Buscar" [(ngModel)]="filtroNombreDep_"
                             (input)="Filtrar(filtroNombreDep_, 2)" [formControl]="nombre_dep" type="text"
                             (keypress)="IngresarSoloLetras($event)">
-                        <mat-error *ngIf="nombre_dep.invalid">Indispensable ingresar dos letras
+                        <mat-error *ngIf="nombre_dep.invalid">
+                            Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de departamentos por nombre.">
@@ -64,7 +66,8 @@
                             (input)="Filtrar(filtroCedula_, 4)"
                             oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                             [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
-                        <mat-error *ngIf="cedula.invalid">Indispensable ingresar dos valores
+                        <mat-error *ngIf="cedula.invalid">
+                            Indispensable ingresar dos valores
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por cédula de identificación o pasaporte.">
@@ -76,7 +79,8 @@
                         <input matInput placeholder="Buscar" [(ngModel)]="filtroNombreEmp_"
                             (input)="Filtrar(filtroNombreEmp_, 5)" [formControl]="nombre_emp" type="text"
                             (keypress)="IngresarSoloLetras($event)">
-                        <mat-error *ngIf="nombre_emp.invalid">Indispensable ingresar dos letras
+                        <mat-error *ngIf="nombre_emp.invalid">
+                            Indispensable ingresar dos letras
                         </mat-error>
                         <mat-icon matSuffix matTooltipPosition="right"
                             matTooltip="Búsqueda de datos de empleado por nombre.">
@@ -96,7 +100,8 @@
             <div *ngIf="_booleanOptions.bool_suc" class="mat-elevation-z8" style="background: white;">
                 <div class="d-flex bd-highlight" id="resultados">
                     <span class="w-100 bd-highlight">
-                        RESULTADO SUCURSALES</span>
+                        RESULTADO SUCURSALES
+                    </span>
                     <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
                         (click)="MostrarLista()">
                         Mostrar lista
@@ -136,7 +141,7 @@
                                 <td class="d-flex justify-content-center">
                                     <i (click)="GuardarRegistros(s.id)" id="accion" *ngIf="auto_individual"
                                         class="far fa-clock" matSuffix matTooltipPosition="right"
-                                        matTooltip="Abrir formulario de registro de registro de timbre."
+                                        matTooltip="Abrir formulario de registro de timbres."
                                         [ngStyle]="habilitado">
                                         <p>Timbrar</p>
                                     </i>
@@ -155,7 +160,8 @@
             <div *ngIf="_booleanOptions.bool_dep" class="mat-elevation-z8" style="background: white;">
                 <div class="d-flex bd-highlight" id="resultados">
                     <span class="w-100 bd-highlight">
-                        RESULTADO DEPARTAMENTOS</span>
+                        RESULTADO DEPARTAMENTOS
+                    </span>
                     <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
                         (click)="MostrarLista()">
                         Mostrar lista
@@ -195,7 +201,7 @@
                                 <td class="d-flex justify-content-center">
                                     <i (click)="GuardarRegistros(d.id)" id="accion" *ngIf="auto_individual"
                                         class="far fa-clock" matSuffix matTooltipPosition="right"
-                                        matTooltip="Abrir formulario de registro de registro de timbre."
+                                        matTooltip="Abrir formulario de registro de timbres."
                                         [ngStyle]="habilitado">
                                         <p>Timbrar</p>
                                     </i>
@@ -214,7 +220,8 @@
             <div *ngIf="_booleanOptions.bool_emp" class="mat-elevation-z8" style="background: white;">
                 <div class="d-flex bd-highlight" id="resultados">
                     <span class="w-100 bd-highlight">
-                        RESULTADO USUARIOS</span>
+                        RESULTADO USUARIOS
+                    </span>
                     <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
                         (click)="MostrarLista()">
                         Mostrar lista
@@ -258,7 +265,7 @@
                                 <td class="d-flex justify-content-center">
                                     <i (click)="ConfirmarTimbre(e)" id="accion" *ngIf="auto_individual"
                                         class="far fa-clock" matSuffix matTooltipPosition="right"
-                                        matTooltip="Abrir formulario de registro de registro de timbre."
+                                        matTooltip="Abrir formulario de registro de timbres."
                                         [ngStyle]="habilitado">
                                         <p>Timbrar</p>
                                     </i>

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.USUARIO_CONTROLADOR = void 0;
 const settingsMail_1 = require("../../libs/settingsMail");
+const path_1 = __importDefault(require("path"));
 const database_1 = __importDefault(require("../../database"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class UsuarioControlador {
@@ -289,6 +290,160 @@ class UsuarioControlador {
             }
         });
     }
+    /** ******************************************************************************************** **
+     ** **            METODO PARA MANEJAR DATOS DE REGISTRO DE DISPOSITIVOS MOVILES               ** **
+     ** ******************************************************************************************** **/
+    // LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
+    ListarDispositivosMoviles(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const DISPOSITIVOS = yield database_1.default.query(`
+        SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo
+        FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) 
+        ORDER BY nombre
+        `).then(result => { return result.rows; });
+                if (DISPOSITIVOS.length === 0)
+                    return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+                return res.status(200).jsonp(DISPOSITIVOS);
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
+    // METODO PARA ELIMINAR REGISTROS DE DISPOSITIVOS MOVILES
+    EliminarDispositivoMovil(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const array = req.params.dispositivo;
+                let dispositivos = array.split(',');
+                if (dispositivos.length === 0)
+                    return res.status(400).jsonp({ message: 'No se han encontrado registros.' });
+                const nuevo = yield Promise.all(dispositivos.map((id_dispo) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        const [result] = yield database_1.default.query(`
+            DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *
+            `, [id_dispo])
+                            .then(result => { return result.rows; });
+                        return result;
+                    }
+                    catch (error) {
+                        return { error: error.toString() };
+                    }
+                })));
+                return res.status(200).jsonp({ message: 'Datos eliminados exitosamente.', nuevo });
+            }
+            catch (error) {
+                return res.status(500).jsonp({ message: error });
+            }
+        });
+    }
+    /** ******************************************************************************************************************* **
+     ** **                           ENVIAR CORREO PARA CAMBIAR FRASE DE SEGURIDAD                                       ** **
+     ** ******************************************************************************************************************* **/
+    RestablecerFrase(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const correo = req.body.correo;
+            const url_page = req.body.url_page;
+            var tiempo = (0, settingsMail_1.fechaHora)();
+            var fecha = yield (0, settingsMail_1.FormatearFecha)(tiempo.fecha_formato, settingsMail_1.dia_completo);
+            var hora = yield (0, settingsMail_1.FormatearHora)(tiempo.hora);
+            const path_folder = path_1.default.resolve('logos');
+            const correoValido = yield database_1.default.query(`
+      SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, u.contrasena 
+      FROM empleados AS e, usuarios AS u 
+      WHERE E.correo = $1 AND u.id_empleado = e.id
+      `, [correo]);
+            if (correoValido.rows[0] == undefined)
+                return res.status(401).send('Correo de usuario no válido.');
+            var datos = yield (0, settingsMail_1.Credenciales)(1);
+            if (datos === 'ok') {
+                const token = jsonwebtoken_1.default.sign({ _id: correoValido.rows[0].id }, process.env.TOKEN_SECRET_MAIL || 'llaveEmail', { expiresIn: 60 * 5, algorithm: 'HS512' });
+                var url = url_page + '/recuperar-frase';
+                let data = {
+                    to: correoValido.rows[0].correo,
+                    from: settingsMail_1.email,
+                    subject: 'FULLTIME CAMBIO FRASE DE SEGURIDAD',
+                    html: `
+                <body>
+                    <div style="text-align: center;">
+                        <img width="25%" height="25%" src="cid:cabeceraf"/>
+                    </div>
+                    <br>
+                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                        El presente correo es para informar que se ha enviado un link para cambiar su frase de seguridad. <br>  
+                    </p>
+                    <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                        <b>Empresa:</b> ${settingsMail_1.nombre} <br>   
+                        <b>Asunto:</b> CAMBIAR FRASE DE SEGURIDAD <br> 
+                        <b>Colaborador que envía:</b> ${correoValido.rows[0].nombre} ${correoValido.rows[0].apellido} <br>
+                        <b>Generado mediante:</b> Aplicación Web <br>
+                        <b>Fecha de envío:</b> ${fecha} <br> 
+                        <b>Hora de envío:</b> ${hora} <br><br> 
+                    </p>
+                    <h3 style="font-family: Arial; text-align: center;">CAMBIAR FRASE DE SEGURIDAD</h3>
+                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                            <b>Ingrese al siguiente link y registre una nueva frase de seguridad.</b> <br>   
+                            <a href="${url}/${token}">${url}/${token}</a>  
+                        </p>
+                        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                            <b>Gracias por la atención</b><br>
+                            <b>Saludos cordiales,</b> <br><br>
+                        </p>
+                        <img src="cid:pief" width="50%" height="50%"/>
+                </body>
+            `,
+                    attachments: [
+                        {
+                            filename: 'cabecera_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.cabecera_firma}`,
+                            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        },
+                        {
+                            filename: 'pie_firma.jpg',
+                            path: `${path_folder}/${settingsMail_1.pie_firma}`,
+                            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+                        }
+                    ]
+                };
+                var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
+                corr.sendMail(data, function (error, info) {
+                    if (error) {
+                        console.log('Email error: ' + error);
+                        corr.close();
+                        return res.jsonp({ message: 'error' });
+                    }
+                    else {
+                        console.log('Email sent: ' + info.response);
+                        corr.close();
+                        return res.jsonp({ message: 'ok' });
+                    }
+                });
+            }
+            else {
+                res.jsonp({ message: 'Ups!!! algo salio mal. No fue posible enviar correo electrónico.' });
+            }
+        });
+    }
+    // METODO PARA CAMBIAR FRASE DE SEGURIDAD
+    CambiarFrase(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var token = req.body.token;
+            var frase = req.body.frase;
+            try {
+                const payload = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET_MAIL || 'llaveEmail');
+                const id_empleado = payload._id;
+                yield database_1.default.query(`
+        UPDATE usuarios SET frase = $2 WHERE id_empleado = $1
+        `, [id_empleado, frase]);
+                return res.jsonp({ expiro: 'no', message: "Frase de seguridad actualizada." });
+            }
+            catch (error) {
+                return res.jsonp({ expiro: 'si', message: "Tiempo para cambiar su frase de seguridad ha expirado." });
+            }
+        });
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const USUARIOS = yield database_1.default.query('SELECT * FROM usuarios');
@@ -323,63 +478,6 @@ class UsuarioControlador {
             }
         });
     }
-    RestablecerFrase(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const correo = req.body.correo;
-            const url_page = req.body.url_page;
-            (0, settingsMail_1.Credenciales)(1);
-            const correoValido = yield database_1.default.query('SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, ' +
-                'u.contrasena FROM empleados AS e, usuarios AS u WHERE correo = $1 AND u.id_empleado = e.id AND ' +
-                'e.estado = 1', [correo]);
-            if (correoValido.rows[0] == undefined)
-                return res.status(401).send('Correo no registrado en el sistema.');
-            const token = jsonwebtoken_1.default.sign({ _id: correoValido.rows[0].id }, process.env.TOKEN_SECRET_MAIL || 'llaveEmail', { expiresIn: 60 * 5, algorithm: 'HS512' });
-            var url = url_page + '/recuperar-frase';
-            var data = {
-                to: correoValido.rows[0].correo,
-                from: settingsMail_1.email,
-                template: 'forgot-password-frase',
-                subject: 'Recuperar frase de seguridad!',
-                html: `<p>Hola <b>${correoValido.rows[0].nombre.split(' ')[0] + ' ' + correoValido.rows[0].apellido.split(' ')[0]}</b>
-       ingresar al siguiente link y registrar una nueva frase que le sea fácil de recordar.: </p>
-        <a href="${url}/${token}">
-        ${url}/${token}
-        </a>
-      `
-            };
-            let port = 465;
-            if (settingsMail_1.puerto != null && settingsMail_1.puerto != '') {
-                port = parseInt(settingsMail_1.puerto);
-            }
-            var corr = (0, settingsMail_1.enviarMail)(settingsMail_1.servidor, parseInt(settingsMail_1.puerto));
-            corr.sendMail(data, function (error, info) {
-                if (error) {
-                    console.log('Email error: ' + error);
-                    return res.jsonp({ message: 'error' });
-                }
-                else {
-                    console.log('Email sent: ' + info.response);
-                    return res.jsonp({ message: 'ok' });
-                }
-            });
-            res.jsonp({ mail: 'si', message: 'Mail enviado.' });
-        });
-    }
-    CambiarFrase(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var token = req.body.token;
-            var frase = req.body.frase;
-            try {
-                const payload = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET_MAIL || 'llaveEmail');
-                const id_empleado = payload._id;
-                yield database_1.default.query('UPDATE usuarios SET frase = $2 WHERE id_empleado = $1 ', [id_empleado, frase]);
-                return res.jsonp({ expiro: 'no', message: "Frase de Seguridad Actualizada." });
-            }
-            catch (error) {
-                return res.jsonp({ expiro: 'si', message: "Tiempo para cambiar la frase ha expirado." });
-            }
-        });
-    }
     //ACCESOS AL SISTEMA
     AuditarAcceso(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -387,47 +485,6 @@ class UsuarioControlador {
             yield database_1.default.query('INSERT INTO logged_user ( modulo, user_name, fecha, hora, acceso, ip_address ) ' +
                 'VALUES ($1, $2, $3, $4, $5, $6)', [modulo, user_name, fecha, hora, acceso, ip_address]);
             return res.jsonp({ message: 'Auditoria Realizada' });
-        });
-    }
-    //LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
-    usersListadispositivosMoviles(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const DISPOSITIVOS = yield database_1.default.query('SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo ' +
-                    'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
-                    .then(result => { return result.rows; });
-                if (DISPOSITIVOS.length === 0)
-                    return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
-                return res.status(200).jsonp(DISPOSITIVOS);
-            }
-            catch (error) {
-                return res.status(500).jsonp({ message: error });
-            }
-        });
-    }
-    deleteDispositivoRegistrado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const array = req.params.dispositivo;
-                let dispositivos = array.split(',');
-                console.log("id_dispositivos: ", dispositivos);
-                if (dispositivos.length === 0)
-                    return res.status(400).jsonp({ message: 'No llego datos para actualizar' });
-                const nuevo = yield Promise.all(dispositivos.map((id_dispo) => __awaiter(this, void 0, void 0, function* () {
-                    try {
-                        const [result] = yield database_1.default.query('DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *', [id_dispo])
-                            .then(result => { return result.rows; });
-                        return result;
-                    }
-                    catch (error) {
-                        return { error: error.toString() };
-                    }
-                })));
-                return res.status(200).jsonp({ message: 'Datos eliminados exitosamente', nuevo });
-            }
-            catch (error) {
-                return res.status(500).jsonp({ message: error });
-            }
         });
     }
 }

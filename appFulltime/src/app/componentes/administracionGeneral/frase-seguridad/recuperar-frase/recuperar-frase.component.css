@@ -49,3 +49,7 @@ mat-card {
     background: url('../../../../../assets/imagenes/fingerprint.jpg') no-repeat;
     min-height: 100vh;
 }
+
+#fuente {
+    font-size: x-small;
+}

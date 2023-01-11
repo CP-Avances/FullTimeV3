@@ -101,7 +101,6 @@ export class PrincipalHorarioComponent implements OnInit {
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
       this.logo = 'data:image/jpeg;base64,' + res.imagen;
-      console.log("url Logo: ", this.logo)
     });
   }
 

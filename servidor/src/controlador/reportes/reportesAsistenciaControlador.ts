@@ -20,8 +20,10 @@ class ReportesAsistenciaControlador {
         // CONSULTA DE BUSQUEDA DE SUCURSALES
         let suc = await pool.query(
             `
-            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
-            ciudades AS c WHERE s.id_ciudad = c.id ORDER BY s.id
+            SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad 
+            FROM sucursales AS s, ciudades AS c 
+            WHERE s.id_ciudad = c.id 
+            ORDER BY s.id
             `)
             .then(result => { return result.rows });
 
@@ -30,8 +32,9 @@ class ReportesAsistenciaControlador {
         let departamentos = await Promise.all(suc.map(async (dep: any) => {
             dep.departamentos = await pool.query(
                 `
-                SELECT d.id as id_depa, d.nombre as name_dep FROM cg_departamentos AS d
-                WHERE d.id_sucursal = $1
+                SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
+                FROM cg_departamentos AS d, sucursales AS s
+                WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
                 `, [dep.id_suc])
                 .then(result => {
                     return result.rows.filter(obj => {
@@ -52,18 +55,17 @@ class ReportesAsistenciaControlador {
                 if (estado === '1') {
                     ele.empleado = await pool.query(
                         `
-                        SELECT DISTINCT e.id, CONCAT(nombre, \' \' , apellido)
+                        SELECT DISTINCT e.id, CONCAT(nombre, ' ' , apellido)
                             name_empleado, e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail,
                             cn.comunicado_noti 
                         FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
                             config_noti AS cn 
-                        WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo WHERE
-                            codigo = e.codigo) 
+                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE da.id = e.id)  
                             AND ca.id_departamento = $1 
-                            AND co.id = (SELECT MAX(id_contrato) AS contrato_id 
-                                FROM datos_contrato_actual WHERE codigo = e.codigo) 
+                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE da.id = e.id)  
                             AND e.id = cn.id_empleado 
                             AND co.id_regimen = r.id AND e.estado = $2
+                            AND (cn.comunicado_mail = true OR cn.comunicado_noti = true)
                         `
                         , [ele.id_depa, estado])
                         .then(result => { return result.rows })
@@ -71,17 +73,17 @@ class ReportesAsistenciaControlador {
                 } else {
                     ele.empleado = await pool.query(
                         `
-                        SELECT DISTINCT e.id, CONCAT(nombre, \' \', apellido) name_empleado, 
-                            e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail,
-                            cn.comunicado_noti, ca.fec_final 
+                        SELECT DISTINCT e.id, CONCAT(nombre, ' ' , apellido)
+                            name_empleado, e.codigo, e.cedula, e.genero, e.correo, cn.comunicado_mail,
+                            cn.comunicado_noti, ca.fec_final
                         FROM empl_cargos AS ca, empl_contratos AS co, cg_regimenes AS r, empleados AS e,
                             config_noti AS cn 
-                        WHERE ca.id = (SELECT MAX(cargo_id) AS cargo_id FROM datos_empleado_cargo 
-                            WHERE codigo = e.codigo) AND ca.id_departamento = $1 
-                            AND co.id = (SELECT MAX(id_contrato) AS contrato_id 
-                                FROM datos_contrato_actual WHERE codigo = e.codigo) 
+                        WHERE ca.id = (SELECT da.id_cargo FROM datos_actuales_empleado AS da WHERE da.id = e.id)  
+                            AND ca.id_departamento = $1 
+                            AND co.id = (SELECT da.id_contrato FROM datos_actuales_empleado AS da WHERE da.id = e.id)  
                             AND e.id = cn.id_empleado 
                             AND co.id_regimen = r.id AND e.estado = $2
+                            AND (cn.comunicado_mail = true OR cn.comunicado_noti = true)
                         `
                         , [ele.id_depa, estado])
                         .then(result => { return result.rows })
@@ -103,7 +105,7 @@ class ReportesAsistenciaControlador {
         });
 
         if (respuesta.length === 0) return res.status(404)
-            .jsonp({ message: 'Usuarios no han configurado recepción de notificaciones.' })
+            .jsonp({ message: 'Usuarios no han configurado recepción de notificaciones de comunicados.' })
 
         return res.status(200).jsonp(respuesta)
     }

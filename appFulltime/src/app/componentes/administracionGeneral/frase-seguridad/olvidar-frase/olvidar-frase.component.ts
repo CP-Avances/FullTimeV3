@@ -16,9 +16,11 @@ import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.s
 
 export class OlvidarFraseComponent implements OnInit {
 
+  // VARIABLES DE FORMULARIO
   cadena: string;
   correo = new FormControl('', [Validators.required, Validators.email]);
 
+  // FORMULARIO
   public formulario = new FormGroup({
     usuarioF: this.correo,
   });
@@ -34,43 +36,52 @@ export class OlvidarFraseComponent implements OnInit {
     this.VerRuta();
   }
 
-  ObtenerMensajeCampoUsuarioError() {
+  // MENSAJES DE ERROR PARA EL USUARIO
+  ObtenerMensajeError() {
     if (this.correo.hasError('required')) {
-      return 'Ingresar correo de usuario';
+      return 'Ingresar correo de usuario.';
     }
     if (this.correo.hasError('email')) {
-      return 'No es un correo electrónico';
+      return 'No es un correo electrónico.';
     }
   }
-  respuesta: any = [];
 
+  // METODO PARA ENVIAR CORREO ELECTRONICO
+  respuesta: any = [];
   EnviarCorreoConfirmacion(form) {
     let dataPass = {
       correo: form.usuarioF,
       url_page: this.cadena
     }
-    
     this.rest.RecuperarFraseSeguridad(dataPass).subscribe(res => {
       this.respuesta = res;
-      if (this.respuesta.mail === 'si') {
-        this.toastr.success('Solicitud Enviada.', 'Por favor revisar su correo electrónico', {
+      if (this.respuesta.message === 'ok') {
+        this.toastr.success('Operación Exitosa.', 'Un link para cambiar su frase de seguridad fue enviado a su correo electrónico.', {
           timeOut: 6000,
         });
         this.router.navigate(['/login']);
       }
+      else {
+        this.toastr.error('Revisar la configuración de correo electrónico.', 'Ups!!! algo salio mal.', {
+          timeOut: 6000,
+        });
+        this.correo.reset();
+        this.router.navigate(['/login']);
+      }
     }, error => {
-      console.log(error);
-      this.toastr.error('Operación Incorrecta', 'El correo no consta en los registros.', {
+      this.toastr.error('El correo electrónico ingresado no consta en los registros.', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       });
       this.correo.reset();
     })
   }
 
+  // METODO PARA CANCELAR REGISTRO
   Cancelar() {
     this.router.navigate(['/login']);
   }
 
+  // METODO PARA BUSCAR RUTA DEL SISTEMA
   VerRuta() {
     this.restE.ConsultarEmpresaCadena().subscribe(res => {
       this.cadena = res[0].cadena

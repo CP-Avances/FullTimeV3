@@ -1,5 +1,9 @@
-import { email, enviarMail, servidor, puerto, Credenciales } from '../../libs/settingsMail';
+import {
+  enviarMail, email, nombre, cabecera_firma, pie_firma, servidor, puerto, Credenciales, fechaHora,
+  FormatearFecha, FormatearHora, dia_completo
+} from '../../libs/settingsMail'
 import { Request, Response } from 'express';
+import path from 'path';
 import pool from '../../database';
 import jwt from 'jsonwebtoken';
 
@@ -328,10 +332,176 @@ class UsuarioControlador {
     }
   }
 
+  /** ******************************************************************************************** **
+   ** **            METODO PARA MANEJAR DATOS DE REGISTRO DE DISPOSITIVOS MOVILES               ** **
+   ** ******************************************************************************************** **/
+
+  // LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
+  public async ListarDispositivosMoviles(req: Request, res: Response) {
+    try {
+      const DISPOSITIVOS = await pool.query(
+        `
+        SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo
+        FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) 
+        ORDER BY nombre
+        `
+      ).then(result => { return result.rows });
+
+      if (DISPOSITIVOS.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+
+      return res.status(200).jsonp(DISPOSITIVOS)
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
+
+  // METODO PARA ELIMINAR REGISTROS DE DISPOSITIVOS MOVILES
+  public async EliminarDispositivoMovil(req: Request, res: Response) {
+    try {
+      const array = req.params.dispositivo;
+
+      let dispositivos = array.split(',');
+
+      if (dispositivos.length === 0) return res.status(400).jsonp({ message: 'No se han encontrado registros.' })
+
+      const nuevo = await Promise.all(dispositivos.map(async (id_dispo: any) => {
+        try {
+          const [result] = await pool.query(
+            `
+            DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *
+            `
+            , [id_dispo])
+            .then(result => { return result.rows })
+          return result
+        } catch (error) {
+          return { error: error.toString() }
+        }
+      }))
+
+      return res.status(200).jsonp({ message: 'Datos eliminados exitosamente.', nuevo })
+
+    } catch (error) {
+      return res.status(500).jsonp({ message: error })
+    }
+  }
 
 
+  /** ******************************************************************************************************************* **
+   ** **                           ENVIAR CORREO PARA CAMBIAR FRASE DE SEGURIDAD                                       ** ** 
+   ** ******************************************************************************************************************* **/
 
+  public async RestablecerFrase(req: Request, res: Response) {
+    const correo = req.body.correo;
+    const url_page = req.body.url_page;
 
+    var tiempo = fechaHora();
+    var fecha = await FormatearFecha(tiempo.fecha_formato, dia_completo);
+    var hora = await FormatearHora(tiempo.hora);
+
+    const path_folder = path.resolve('logos');
+
+    const correoValido = await pool.query(
+      `
+      SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, u.contrasena 
+      FROM empleados AS e, usuarios AS u 
+      WHERE E.correo = $1 AND u.id_empleado = e.id
+      `
+      , [correo]);
+
+    if (correoValido.rows[0] == undefined) return res.status(401).send('Correo de usuario no válido.');
+
+    var datos = await Credenciales(1);
+
+    if (datos === 'ok') {
+
+      const token = jwt.sign({ _id: correoValido.rows[0].id }, process.env.TOKEN_SECRET_MAIL || 'llaveEmail',
+        { expiresIn: 60 * 5, algorithm: 'HS512' });
+
+      var url = url_page + '/recuperar-frase';
+
+      let data = {
+        to: correoValido.rows[0].correo,
+        from: email,
+        subject: 'FULLTIME CAMBIO FRASE DE SEGURIDAD',
+        html: `
+                <body>
+                    <div style="text-align: center;">
+                        <img width="25%" height="25%" src="cid:cabeceraf"/>
+                    </div>
+                    <br>
+                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                        El presente correo es para informar que se ha enviado un link para cambiar su frase de seguridad. <br>  
+                    </p>
+                    <h3 style="font-family: Arial; text-align: center;">DATOS DEL SOLICITANTE</h3>
+                    <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                        <b>Empresa:</b> ${nombre} <br>   
+                        <b>Asunto:</b> CAMBIAR FRASE DE SEGURIDAD <br> 
+                        <b>Colaborador que envía:</b> ${correoValido.rows[0].nombre} ${correoValido.rows[0].apellido} <br>
+                        <b>Generado mediante:</b> Aplicación Web <br>
+                        <b>Fecha de envío:</b> ${fecha} <br> 
+                        <b>Hora de envío:</b> ${hora} <br><br> 
+                    </p>
+                    <h3 style="font-family: Arial; text-align: center;">CAMBIAR FRASE DE SEGURIDAD</h3>
+                        <p style="color:rgb(11, 22, 121); font-family: Arial; font-size:12px; line-height: 1em;">
+                            <b>Ingrese al siguiente link y registre una nueva frase de seguridad.</b> <br>   
+                            <a href="${url}/${token}">${url}/${token}</a>  
+                        </p>
+                        <p style="font-family: Arial; font-size:12px; line-height: 1em;">
+                            <b>Gracias por la atención</b><br>
+                            <b>Saludos cordiales,</b> <br><br>
+                        </p>
+                        <img src="cid:pief" width="50%" height="50%"/>
+                </body>
+            `,
+        attachments: [
+          {
+            filename: 'cabecera_firma.jpg',
+            path: `${path_folder}/${cabecera_firma}`,
+            cid: 'cabeceraf' // COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+          },
+          {
+            filename: 'pie_firma.jpg',
+            path: `${path_folder}/${pie_firma}`,
+            cid: 'pief' //COLOCAR EL MISMO cid EN LA ETIQUETA html img src QUE CORRESPONDA
+          }]
+      };
+
+      var corr = enviarMail(servidor, parseInt(puerto));
+      corr.sendMail(data, function (error: any, info: any) {
+        if (error) {
+          console.log('Email error: ' + error);
+          corr.close();
+          return res.jsonp({ message: 'error' });
+        } else {
+          console.log('Email sent: ' + info.response);
+          corr.close();
+          return res.jsonp({ message: 'ok' });
+        }
+      });
+    }
+    else {
+      res.jsonp({ message: 'Ups!!! algo salio mal. No fue posible enviar correo electrónico.' });
+    }
+  }
+
+  // METODO PARA CAMBIAR FRASE DE SEGURIDAD
+  public async CambiarFrase(req: Request, res: Response) {
+    var token = req.body.token;
+    var frase = req.body.frase;
+    try {
+      const payload = jwt.verify(token, process.env.TOKEN_SECRET_MAIL || 'llaveEmail') as IPayload;
+      const id_empleado = payload._id;
+      await pool.query(
+        `
+        UPDATE usuarios SET frase = $2 WHERE id_empleado = $1
+        `
+        , [id_empleado, frase]);
+      return res.jsonp({ expiro: 'no', message: "Frase de seguridad actualizada." });
+    } catch (error) {
+      return res.jsonp({ expiro: 'si', message: "Tiempo para cambiar su frase de seguridad ha expirado." });
+    }
+  }
 
 
 
@@ -366,14 +536,6 @@ class UsuarioControlador {
     }
   }
 
-
-
-
-
-
-
-
-
   public async getIdByUsuario(req: Request, res: Response): Promise<any> {
     const { usuario } = req.params;
     const unUsuario = await pool.query('SELECT id FROM usuarios WHERE usuario = $1', [usuario]);
@@ -385,8 +547,6 @@ class UsuarioControlador {
     }
   }
 
-
-
   public async ListarUsuriosNoEnrolados(req: Request, res: Response) {
     const USUARIOS = await pool.query('SELECT u.id, u.usuario, ce.id_usuario FROM usuarios AS u LEFT JOIN cg_enrolados AS ce ON u.id = ce.id_usuario WHERE ce.id_usuario IS null');
     if (USUARIOS.rowCount > 0) {
@@ -397,120 +557,12 @@ class UsuarioControlador {
     }
   }
 
-
-
-
-
-
-
-
-  public async RestablecerFrase(req: Request, res: Response) {
-    const correo = req.body.correo;
-    const url_page = req.body.url_page;
-    Credenciales(1);
-    const correoValido = await pool.query('SELECT e.id, e.nombre, e.apellido, e.correo, u.usuario, ' +
-      'u.contrasena FROM empleados AS e, usuarios AS u WHERE correo = $1 AND u.id_empleado = e.id AND ' +
-      'e.estado = 1', [correo]);
-
-    if (correoValido.rows[0] == undefined) return res.status(401).send('Correo no registrado en el sistema.');
-
-    const token = jwt.sign({ _id: correoValido.rows[0].id }, process.env.TOKEN_SECRET_MAIL || 'llaveEmail', { expiresIn: 60 * 5, algorithm: 'HS512' });
-
-    var url = url_page + '/recuperar-frase';
-    var data = {
-      to: correoValido.rows[0].correo,
-      from: email,
-      template: 'forgot-password-frase',
-      subject: 'Recuperar frase de seguridad!',
-      html: `<p>Hola <b>${correoValido.rows[0].nombre.split(' ')[0] + ' ' + correoValido.rows[0].apellido.split(' ')[0]}</b>
-       ingresar al siguiente link y registrar una nueva frase que le sea fácil de recordar.: </p>
-        <a href="${url}/${token}">
-        ${url}/${token}
-        </a>
-      `
-    };
-    let port = 465;
-
-    if (puerto != null && puerto != '') {
-      port = parseInt(puerto);
-    }
-    var corr = enviarMail(servidor, parseInt(puerto));
-    corr.sendMail(data, function (error: any, info: any) {
-      if (error) {
-        console.log('Email error: ' + error);
-        return res.jsonp({ message: 'error' });
-      } else {
-        console.log('Email sent: ' + info.response);
-        return res.jsonp({ message: 'ok' });
-      }
-    });
-
-    res.jsonp({ mail: 'si', message: 'Mail enviado.' })
-  }
-
-  public async CambiarFrase(req: Request, res: Response) {
-    var token = req.body.token;
-    var frase = req.body.frase;
-    try {
-      const payload = jwt.verify(token, process.env.TOKEN_SECRET_MAIL || 'llaveEmail') as IPayload;
-      const id_empleado = payload._id;
-      await pool.query('UPDATE usuarios SET frase = $2 WHERE id_empleado = $1 ', [id_empleado, frase]);
-      return res.jsonp({ expiro: 'no', message: "Frase de Seguridad Actualizada." });
-    } catch (error) {
-      return res.jsonp({ expiro: 'si', message: "Tiempo para cambiar la frase ha expirado." });
-    }
-  }
-
   //ACCESOS AL SISTEMA
   public async AuditarAcceso(req: Request, res: Response) {
     const { modulo, user_name, fecha, hora, acceso, ip_address } = req.body;
     await pool.query('INSERT INTO logged_user ( modulo, user_name, fecha, hora, acceso, ip_address ) ' +
       'VALUES ($1, $2, $3, $4, $5, $6)', [modulo, user_name, fecha, hora, acceso, ip_address]);
     return res.jsonp({ message: 'Auditoria Realizada' });
-  }
-
-
-
-  //LISTADO DE DISPOSITIVOS REGISTRADOS POR EL CODIGO DE USUARIO
-  public async usersListadispositivosMoviles(req: Request, res: Response) {
-    try {
-      const DISPOSITIVOS = await pool.query('SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo ' +
-        'FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) ORDER BY nombre')
-        .then(result => { return result.rows });
-
-      if (DISPOSITIVOS.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
-
-      return res.status(200).jsonp(DISPOSITIVOS)
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
-  }
-
-  public async deleteDispositivoRegistrado(req: Request, res: Response) {
-    try {
-      const array = req.params.dispositivo;
-
-      let dispositivos = array.split(',');
-      console.log("id_dispositivos: ", dispositivos);
-
-      if (dispositivos.length === 0) return res.status(400).jsonp({ message: 'No llego datos para actualizar' })
-
-      const nuevo = await Promise.all(dispositivos.map(async (id_dispo: any) => {
-        try {
-          const [result] = await pool.query('DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *', [id_dispo])
-            .then(result => { return result.rows })
-          return result
-        } catch (error) {
-          return { error: error.toString() }
-        }
-      }))
-
-      return res.status(200).jsonp({ message: 'Datos eliminados exitosamente', nuevo })
-
-    } catch (error) {
-      return res.status(500).jsonp({ message: error })
-    }
   }
 
 }
