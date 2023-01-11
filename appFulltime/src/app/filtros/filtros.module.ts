@@ -46,6 +46,7 @@ import { TipoPipe } from './comidas/tipoServicio/tipo.pipe';
 // Pipe Paginacion
 import { CustomMatPaginatorIntl } from './pipes/paginator-es';
 import { MatPaginatorIntl } from '@angular/material/paginator';
+import { FiltroProvinciaPipe } from './catProvincias/filtro-provincia/filtro-provincia.pipe';
 
 @NgModule({
   declarations: [
@@ -95,7 +96,8 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
     FecTimbrePipe,
     TimbreEmpleadoPipe,
     TipoPipe,
-    NombreApellidoPipe
+    NombreApellidoPipe,
+    FiltroProvinciaPipe,
   ],
   exports: [
     DepartamentoPipe,
@@ -144,7 +146,8 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
     FecTimbrePipe,
     TimbreEmpleadoPipe, 
     TipoPipe,
-    NombreApellidoPipe
+    NombreApellidoPipe,
+    FiltroProvinciaPipe,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl },

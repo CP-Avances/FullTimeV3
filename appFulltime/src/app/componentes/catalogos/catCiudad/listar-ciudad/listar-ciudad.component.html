@@ -36,7 +36,7 @@
                         <td>
                             <mat-form-field id="t-inputs">
                                 <input matInput placeholder="Buscar" (keypress)="IngresarSoloLetras($event)"
-                                    [formControl]="provinciaF" [(ngModel)]="filtroProvincia">
+                                    [formControl]="provinciaF" [(ngModel)]="filtroProvincias">
                             </mat-form-field>
                         </td>
                         <td>
@@ -52,9 +52,9 @@
                         </td>
                     </tr>
                     <tr
-                        *ngFor="let ciudad of datosCiudades | provincia: filtroProvincia | filtroNombre: filtroCiudad | paginate:tamanio_pagina:numero_pagina">
+                        *ngFor="let ciudad of datosCiudades | filtroProvincia: filtroProvincias | filtrosNombres: filtroCiudad | paginate:tamanio_pagina:numero_pagina">
+                        <td>{{ciudad.provincia}}</td>
                         <td>{{ciudad.nombre}}</td>
-                        <td>{{ciudad.descripcion}}</td>
                         <td class="d-flex justify-content-center">
                             <i (click)="ConfirmarDelete(ciudad)" class="far fa-trash-alt" matSuffix
                                 matTooltipPosition="right" matTooltip="Eliminar este registro.">
@@ -68,5 +68,23 @@
         <mat-paginator id="pagina" [length]="datosCiudades.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 5%;">
+            <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Ciudades en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel()" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Ciudades en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS()" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Ciudades en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML()" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Ciudades en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
     </div>
 </div>

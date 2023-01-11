@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ProvinciaService } from 'src/app/servicios/catalogos/catProvincias/provincia.service';
 import { CiudadService } from 'src/app/servicios/ciudad/ciudad.service';
 
@@ -48,6 +49,7 @@ export class RegistrarCiudadComponent implements OnInit {
     private restP: ProvinciaService,
     private toastr: ToastrService,
     public ventana: MatDialogRef<RegistrarCiudadComponent>,
+    public validar: ValidacionesService,
   ) { }
 
   ngOnInit(): void {
@@ -234,25 +236,7 @@ export class RegistrarCiudadComponent implements OnInit {
 
   // METODO PARA VALIDAR INGRESO DE LETRAS
   IngresarSoloLetras(e: any) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    return this.validar.IngresarSoloLetras(e);
   }
 
 }
