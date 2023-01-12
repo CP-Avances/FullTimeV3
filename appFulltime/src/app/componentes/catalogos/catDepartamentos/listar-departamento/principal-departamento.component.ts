@@ -207,7 +207,7 @@ export class PrincipalDepartamentoComponent implements OnInit {
     sessionStorage.setItem('Departamentos', this.departamentos);
     return {
       // ENCABEZADO DE LA PÁGINA
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
@@ -254,7 +254,7 @@ export class PrincipalDepartamentoComponent implements OnInit {
             widths: [30, 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'Código', style: 'tableHeader' },
                 { text: 'Empresa', style: 'tableHeader' },
                 { text: 'Establecimiento', style: 'tableHeader' },
                 { text: 'Departamento', style: 'tableHeader' },

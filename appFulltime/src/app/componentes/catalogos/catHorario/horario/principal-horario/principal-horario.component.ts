@@ -392,15 +392,15 @@ export class PrincipalHorarioComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: [30, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'Código', style: 'tableHeader' },
                 { text: 'Nombre', style: 'tableHeader' },
                 { text: 'Minutos de almuerzo', style: 'tableHeader' },
                 { text: 'Horas de trabajo', style: 'tableHeader' },
-                { text: 'Horario Flexibe', style: 'tableHeader' },
-                { text: 'Horario por horas', style: 'tableHeader' },
+                { text: 'Horario noturno', style: 'tableHeader' },
+                { text: 'Requiere detalle', style: 'tableHeader' },
                 { text: 'Documento', style: 'tableHeader' },
               ],
               ...this.horarios.map(obj => {
@@ -409,8 +409,8 @@ export class PrincipalHorarioComponent implements OnInit {
                   { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.min_almuerzo, style: 'itemsTableC' },
                   { text: obj.hora_trabajo, style: 'itemsTableC' },
-                  { text: obj.flexible, style: 'itemsTableC' },
-                  { text: obj.por_horas, style: 'itemsTableC' },
+                  { text: obj.noturno==true?'Sí':'No', style: 'itemsTableC' },
+                  { text: obj.detalle==true?'Sí':'No', style: 'itemsTableC' },
                   { text: obj.doc_nombre, style: 'itemsTableC' },
                 ];
               })
@@ -467,10 +467,10 @@ export class PrincipalHorarioComponent implements OnInit {
           "nombre": obj.nombre,
           "min_almuerzo": obj.min_almuerzo,
           "hora_trabajo": obj.hora_trabajo,
-          "flexible": obj.flexible,
-          "por_horas": obj.por_horas,
-          "doc_nombre": obj.doc_nombre,
+          "noturno": obj.nocturno,
+          "requiere_detalle": obj.detalle,
           "documento": obj.documento,
+          "doc_nombre": obj.doc_nombre,
         }
       }
       arregloHorarios.push(objeto)
