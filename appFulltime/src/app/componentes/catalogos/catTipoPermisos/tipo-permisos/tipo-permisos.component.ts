@@ -1,27 +1,31 @@
-import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { MAT_MOMENT_DATE_FORMATS, MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import * as moment from 'moment';
 
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { Router } from '@angular/router';
 
+// TIPO DE DESCUENTO
 interface TipoDescuentos {
   value: string;
   viewValue: string;
 }
 
+// TIPOS DE PERMISOS
 interface opcionesPermisos {
   valor: string;
   nombre: string
 }
 
+// SOLICITAR USUARIO
 interface opcionesSolicitud {
   valor: number;
   nombre: string
 }
 
+// PERMISO POR HORAS - DIAS
 interface opcionesDiasHoras {
   valor: string;
   nombre: string
@@ -31,35 +35,32 @@ interface opcionesDiasHoras {
   selector: 'app-tipo-permisos',
   templateUrl: './tipo-permisos.component.html',
   styleUrls: ['./tipo-permisos.component.css'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'es' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-  ]
 })
 
 export class TipoPermisosComponent implements OnInit {
 
+  // DEFINIR TIPO DE DESCUENTOS
   descuentos: TipoDescuentos[] = [
     { value: '1', viewValue: 'Vacaciones' },
     { value: '2', viewValue: 'Ninguno' },
   ];
 
+  // DEFINIR ACCESO USUARIO
   solicitudes: opcionesSolicitud[] = [
     { valor: 1, nombre: 'Si' },
     { valor: 2, nombre: 'No' },
   ];
 
+  // DEFINIR DIAS - HORAS
   diasHoras: opcionesDiasHoras[] = [
-    { valor: 'Días', nombre: 'Días' },
+    { valor: 'Dias', nombre: 'Dias' },
     { valor: 'Horas', nombre: 'Horas' },
-    { valor: 'Días y Horas', nombre: 'Días y Horas' },
+    { valor: 'Dias y Horas', nombre: 'Dias y Horas' },
   ];
 
   validarGuardar: boolean = false;
 
-  // Arreglo de opcionesPermisos existentes
+  // ARREGLO DE OPCIONES DE PERMISOS EXISTENTES
   permisos: opcionesPermisos[] = [
     { valor: 'Seleccionar', nombre: 'Seleccionar' },
     { valor: 'Asuntos Personales', nombre: 'Asuntos Personales' },
@@ -74,6 +75,7 @@ export class TipoPermisosComponent implements OnInit {
   ];
   seleccionarPermiso: string = this.permisos[0].valor;
 
+  // FORMULARIOS
   isLinear = true;
   primeroFormGroup: FormGroup;
   segundoFormGroup: FormGroup;
@@ -81,144 +83,97 @@ export class TipoPermisosComponent implements OnInit {
   constructor(
     private rest: TipoPermisosService,
     private toastr: ToastrService,
+    private validar: ValidacionesService,
     private _formBuilder: FormBuilder,
+    public router: Router,
   ) { }
 
-  HabilitarOtro: boolean = true;
-  estiloOtro: any;
+  // CONTROLES DE CAMPOS OCULTOS
   HabilitarJustifica: boolean = true;
-  estiloJustifica: any;
-  HabilitarDias: boolean = true;
-  estiloDias: any;
   HabilitarHoras: boolean = true;
-  estiloHoras: any;
+  HabilitarOtro: boolean = true;
+  HabilitarDias: boolean = true;
 
   ngOnInit(): void {
+    this.ValidarFormulario();
+  }
+
+  // METODO PARA VALIDAR FORMULARIO
+  ValidarFormulario() {
     this.primeroFormGroup = this._formBuilder.group({
-      descripcionForm: ['', Validators.required],
       nombreForm: [''],
+      diasHorasForm: ['', Validators.required],
+      descripcionForm: ['', Validators.required],
+      acceEmpleadoForm: ['', Validators.required],
       numDiaMaximoForm: [''],
       numHoraMaximoForm: [''],
       numDiaIngresoForm: ['', Validators.required],
-      acceEmpleadoForm: ['', Validators.required],
-      almuIncluirForm: ['', Validators.required],
-      diasHorasForm: ['', Validators.required]
+      tipoDescuentoForm: ['', Validators.required],
     });
     this.segundoFormGroup = this._formBuilder.group({
-      vacaAfectaForm: ['', Validators.required],
-      anioAcumulaForm: ['', Validators.required],
+      fechaForm: [''],
+      documentoForm: [''],
       legalizarForm: ['', Validators.required],
       fecValidarForm: ['', Validators.required],
-      tipoDescuentoForm: ['', Validators.required],
-      geneJustificacionForm: ['', Validators.required],
+      almuIncluirForm: ['', Validators.required],
       numDiaJustificaForm: [''],
-      fechaForm: [''],
-      documentoForm: ['']
+      geneJustificacionForm: ['', Validators.required],
     });
   }
 
-  insertarTipoPermiso(form1, form2) {
-    var nombrePermiso = form1.descripcionForm;
-    var nuevoPermiso = form1.nombreForm;
-    let dataTipoPermiso = {
-      descripcion: form1.descripcionForm,
-      tipo_descuento: form2.tipoDescuentoForm,
-      num_dia_maximo: form1.numDiaMaximoForm,
-      num_dia_ingreso: form1.numDiaIngresoForm,
-      vaca_afecta: form2.vacaAfectaForm,
-      anio_acumula: form2.anioAcumulaForm,
-      gene_justificacion: form2.geneJustificacionForm,
-      fec_validar: form2.fecValidarForm,
-      acce_empleado: form1.acceEmpleadoForm,
-      legalizar: form2.legalizarForm,
-      almu_incluir: form1.almuIncluirForm,
-      num_dia_justifica: form2.numDiaJustificaForm,
-      num_hora_maximo: form1.numHoraMaximoForm,
-      fecha: form2.fechaForm,
-      documento: form2.documentoForm
-    }
-    if (nombrePermiso === 'OTRO') {
-      if (nuevoPermiso === '') {
-        this.toastr.info('Ingresar nombre del nuevo Tipo de Permiso', 'Información General', {
-          timeOut: 6000,
-        });
-      }
-      else {
-        dataTipoPermiso.descripcion = nuevoPermiso;
-        this.VerificarJustificacion(form1, dataTipoPermiso, form2);
-      }
-    }
-    else if (nombrePermiso === 'Seleccionar') {
-      this.toastr.info('Seleccionar o definir una descripción del nuevo tipo de permiso', 'Información General', {
-        timeOut: 6000,
-      });
-    }
-    else {
-      this.VerificarJustificacion(form1, dataTipoPermiso, form2);
-    }
-  }
-
-  IngresarDatos(datos) {
-    this.validarGuardar = true;
-    this.rest.postTipoPermisoRest(datos).subscribe(res => {
-      console.log('permisos', res.message)
-      if (res.message === 'error') {
-        this.toastr.error('Revisarlo en la lista de Tipo de Permisos y actualizar los datos si desea realizar cambios en la configuración del permiso', 'Tipo de Permiso ya esta configurado', {
-          timeOut: 6000,
-        });
-      }
-      else {
-        this.toastr.success('Operación Exitosa', 'Tipo Permiso guardado', {
-          timeOut: 6000,
-        });
-        window.location.reload();
-      }
-    }, error => { });
-  }
-
-  ActivarDesactivarNombre(form1) {
+  // METODO PARA ACTIVAR CAMPO NOMBRE
+  ActivarDesactivarNombre(form1: any) {
     var nombreTipoPermiso = form1.descripcionForm;
     if (nombreTipoPermiso === 'OTRO') {
-      this.estiloOtro = { 'visibility': 'visible' }; this.HabilitarOtro = false;
-      this.toastr.info('Ingresar nombre del nuevo Tipo de Permiso', 'Etiqueta Descripción activa', {
+      this.HabilitarOtro = false;
+      this.toastr.info('Ingresar nombre del nuevo tipo de permiso.', 'Etiqueta Descripción activa.', {
         timeOut: 6000,
       })
     }
     else if (nombreTipoPermiso === 'Seleccionar') {
       this.LimpiarCampoNombre();
-      this.estiloOtro = { 'visibility': 'hidden' }; this.HabilitarOtro = true;
-      this.toastr.info('No ha seleccionado ninguna opción', '', {
+      this.HabilitarOtro = true;
+      this.toastr.info('No ha seleccionado ninguna opción.', '', {
         timeOut: 6000,
       });
     }
     else {
       this.LimpiarCampoNombre();
-      this.estiloOtro = { 'visibility': 'hidden' }; this.HabilitarOtro = true;
+      this.HabilitarOtro = true;
     }
-
   }
 
+  // METODO PARA LIMPIAR CAMPO NOMBRE
+  LimpiarCampoNombre() {
+    this.primeroFormGroup.patchValue({
+      nombreForm: '',
+    });
+  }
+
+  // METODO PARA CONTROLAR ACTIVACION DE INGRESO DE JUSTIFICACION
   ActivarJustificacion() {
     if ((<HTMLInputElement>document.getElementById('si')).value = 'true') {
-      this.estiloJustifica = { 'visibility': 'visible' }; this.HabilitarJustifica = false;
+      this.HabilitarJustifica = false;
       this.toastr.info('Ingresar número de días para presentar justificación', '', {
         timeOut: 6000,
       })
     }
   }
 
+  // METODO PARA CONTROLAR DESACTIVACION DE INGRESO DE JUSTIFICACION
   DesactivarJustificacion() {
     if ((<HTMLInputElement>document.getElementById('no')).value = 'false') {
-      this.estiloJustifica = { 'visibility': 'hidden' }; this.HabilitarJustifica = true;
+      this.HabilitarJustifica = true;
       this.segundoFormGroup.patchValue({
         numDiaJustificaForm: '',
       })
     }
   }
 
-  VerificarJustificacion(form1, datos, form2) {
+  // 
+  VerificarJustificacion(form1: any, datos: any, form2: any) {
     if (datos.num_dia_justifica === '' && datos.gene_justificacion === 'true') {
-      this.toastr.info('Ingresar número de días para presentar justificación', '', {
+      this.toastr.info('Ingresar número de días para presentar justificación.', '', {
         timeOut: 6000,
       })
     }
@@ -231,14 +186,15 @@ export class TipoPermisosComponent implements OnInit {
     }
   }
 
-  ActivarDiasHoras(form) {
-    if (form.diasHorasForm === 'Días') {
+  // METODO PARA ACTIVAR DIAS - HORAS
+  ActivarDiasHoras(form: any) {
+    if (form.diasHorasForm === 'Dias') {
       this.primeroFormGroup.patchValue({
         numDiaMaximoForm: '',
       });
-      this.estiloDias = { 'visibility': 'visible' }; this.HabilitarDias = false;
-      this.estiloHoras = { 'visibility': 'hidden' }; this.HabilitarHoras = true;
-      this.toastr.info('Ingresar número de días máximos de permiso', '', {
+      this.HabilitarDias = false;
+      this.HabilitarHoras = true;
+      this.toastr.info('Ingresar número de días máximos de permiso.', '', {
         timeOut: 6000,
       });
     }
@@ -246,9 +202,9 @@ export class TipoPermisosComponent implements OnInit {
       this.primeroFormGroup.patchValue({
         numHoraMaximoForm: '',
       });
-      this.estiloHoras = { 'visibility': 'visible' }; this.HabilitarHoras = false;
-      this.estiloDias = { 'visibility': 'hidden' }; this.HabilitarDias = true;
-      this.toastr.info('Ingresar número de horas y minutos máximos de permiso', '', {
+      this.HabilitarHoras = false;
+      this.HabilitarDias = true;
+      this.toastr.info('Ingresar número de horas y minutos máximos de permiso.', '', {
         timeOut: 6000,
       });
     }
@@ -257,18 +213,19 @@ export class TipoPermisosComponent implements OnInit {
         numHoraMaximoForm: '',
         numDiaMaximoForm: ''
       });
-      this.estiloHoras = { 'visibility': 'visible' }; this.HabilitarHoras = false;
-      this.estiloDias = { 'visibility': 'visible' }; this.HabilitarDias = false;
+      this.HabilitarHoras = false;
+      this.HabilitarDias = false;
       this.toastr.info('Ingresar número de días máximos y horas permitidas de permiso', '', {
         timeOut: 6000,
       });
     }
   }
 
-  CambiarValoresDiasHoras(form, datos) {
-    if (form.diasHorasForm === 'Días') {
+  // METODO PARA CAMBIAR VALORES DIAS - HORAS
+  CambiarValoresDiasHoras(form: any, datos: any) {
+    if (form.diasHorasForm === 'Dias') {
       if (datos.num_dia_maximo === '') {
-        this.toastr.info('Ingresar número de días máximos de permiso', '', {
+        this.toastr.info('Ingresar número de días máximos de permiso.', '', {
           timeOut: 6000,
         });
       }
@@ -279,7 +236,7 @@ export class TipoPermisosComponent implements OnInit {
     }
     else if (form.diasHorasForm === 'Horas') {
       if (datos.num_hora_maximo === '') {
-        this.toastr.info('Ingresar número de horas y minutos máximos de permiso', '', {
+        this.toastr.info('Ingresar número de horas y minutos máximos de permiso.', '', {
           timeOut: 6000,
         });
       }
@@ -288,9 +245,9 @@ export class TipoPermisosComponent implements OnInit {
         this.IngresarDatos(datos);
       }
     }
-    else if (form.diasHorasForm === 'Días y Horas') {
+    else if (form.diasHorasForm === 'Dias y Horas') {
       if (datos.num_hora_maximo === '' || datos.num_dia_maximo === '') {
-        this.toastr.info('Ingresar número de días, horas y minutos máximos de permiso', '', {
+        this.toastr.info('Ingresar número de días, horas y minutos máximos de permiso.', '', {
           timeOut: 6000,
         });
       }
@@ -300,66 +257,22 @@ export class TipoPermisosComponent implements OnInit {
     }
   }
 
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    //Se define todo el abecedario que se va a usar.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    //Es la validación del KeyCodes, que teclas recibe el campo de texto.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
-  }
-
-  IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // Comprobamos si se encuentra en el rango numérico y que teclas no recibirá.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      });
-      return false;
-    }
-  }
-
-  LimpiarCampoNombre() {
-    this.primeroFormGroup.patchValue({
-      nombreForm: '',
-    });
-  }
-
+  // METODO PARA ACTIVAR CALENDARIO
   calendario: boolean = false;
-  verCalendario() {
+  VerCalendario() {
     this.calendario = true;
   }
 
-  ocultarCalendario() {
+  // METODO PARA OCULTAR CALENDARIO
+  OcultarCalendario() {
     this.calendario = false;
     this.segundoFormGroup.patchValue({
       fechaForm: ''
     })
   }
 
-  VerificarFecha(event) {
+  // METODO PARA VERIFICAR QUE LA FECHA SEA CORRECTA
+  VerificarFecha(event: any) {
     var f = moment();
     var FechaActual = f.format('YYYY-MM-DD');
     var leer_fecha = event.value._i;
@@ -368,7 +281,7 @@ export class TipoPermisosComponent implements OnInit {
     if (Date.parse(ingreso) >= Date.parse(FechaActual)) {
     }
     else {
-      this.toastr.info('La fecha ingresada no puede ser anterior a la fecha actual', 'Verificar Fecha', {
+      this.toastr.info('La fecha ingresada no puede ser anterior a la fecha actual.', 'Verificar fecha.', {
         timeOut: 6000,
       });
       this.segundoFormGroup.patchValue({
@@ -377,13 +290,11 @@ export class TipoPermisosComponent implements OnInit {
     }
   }
 
-  VerificarIngresoFecha(form2, datos, form1) {
-    console.log('entra0', form2.fecValidarForm, form2.fechaForm)
+  // METODO PARA VERIFICAR QUE FECHA NO ESTE VACIA
+  VerificarIngresoFecha(form2: any, datos: any, form1: any) {
     if (form2.fecValidarForm === 'true') {
-      console.log('entra1', form2.fecValidarForm, form2.fechaForm)
       if (form2.fechaForm === '') {
-        console.log('entra2')
-        this.toastr.info('Ingresar fecha en la que no podrá solicitar permisos.', 'Verificar Fecha', {
+        this.toastr.info('Ingresar fecha en la que no podrá solicitar permisos.', 'Verificar fecha.', {
           timeOut: 6000,
         });
       }
@@ -392,13 +303,83 @@ export class TipoPermisosComponent implements OnInit {
       }
     }
     else {
-      console.log('entra2')
       if (form2.fechaForm === '') {
         datos.fecha = null;
       }
       this.CambiarValoresDiasHoras(form1, datos);
     }
-
   }
+
+  // METODO PARA CAPTURAR DATOS DE FORMULARIO
+  InsertarTipoPermiso(form1: any, form2: any) {
+    var nombrePermiso = form1.descripcionForm;
+    var nuevoPermiso = form1.nombreForm;
+    let permiso = {
+      // FORMULARIO UNO
+      descripcion: form1.descripcionForm,
+      acce_empleado: form1.acceEmpleadoForm,
+      tipo_descuento: form1.tipoDescuentoForm,
+      num_dia_maximo: form1.numDiaMaximoForm,
+      num_dia_ingreso: form1.numDiaIngresoForm,
+      num_hora_maximo: form1.numHoraMaximoForm,
+
+      // FORMULARIO DOS
+      fecha: form2.fechaForm,
+      legalizar: form2.legalizarForm,
+      documento: form2.documentoForm,
+      fec_validar: form2.fecValidarForm,
+      almu_incluir: form2.almuIncluirForm,
+      num_dia_justifica: form2.numDiaJustificaForm,
+      gene_justificacion: form2.geneJustificacionForm,
+    }
+    if (nombrePermiso === 'OTRO') {
+      if (nuevoPermiso === '') {
+        this.toastr.info('Ingresar nombre del nuevo tipo de permiso.', '', {
+          timeOut: 6000,
+        });
+      }
+      else {
+        permiso.descripcion = nuevoPermiso;
+        this.VerificarJustificacion(form1, permiso, form2);
+      }
+    }
+    else if (nombrePermiso === 'Seleccionar') {
+      this.toastr.info('Seleccionar o definir una descripción del nuevo tipo de permiso.', '', {
+        timeOut: 6000,
+      });
+    }
+    else {
+      this.VerificarJustificacion(form1, permiso, form2);
+    }
+  }
+
+  // METODO PARA CREAR REGISTRO
+  IngresarDatos(datos: any) {
+    this.validarGuardar = true;
+    this.rest.RegistrarTipoPermiso(datos).subscribe(res => {
+      if (res.message === 'error') {
+        this.toastr.warning('Tipo de permiso ya se encuentra registrado.', 'Ups!!! algo salio mal.', {
+          timeOut: 6000,
+        });
+      }
+      else {
+        this.toastr.success('Operación exitosa.', 'Registro guardado.', {
+          timeOut: 6000,
+        });
+        this.router.navigate(['/vistaPermiso/', res.id]);
+      }
+    });
+  }
+
+  // METODO PARA INGRESAR SOLO LETRAS
+  IngresarSoloLetras(e: any) {
+    return this.validar.IngresarSoloLetras(e);
+  }
+
+  // METODO PARA INGRESAR SOLO NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
+  }
+
 
 }

@@ -1,26 +1,24 @@
 // IMPORTACION DE LIBRERIAS
-import { environment } from 'src/environments/environment';
-import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import * as FileSaver from 'file-saver';
 import * as moment from 'moment';
-
+import * as xlsx from 'xlsx';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import * as xlsx from 'xlsx';
-import * as FileSaver from 'file-saver';
 
-import { EditarTipoPermisosComponent } from '../editar-tipo-permisos/editar-tipo-permisos.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
-import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 @Component({
@@ -34,29 +32,30 @@ export class VistaElementosComponent implements OnInit {
   tipoPermiso: any = [];
   filtroDescripcion = '';
 
-  // items de paginacion de la tabla
-  tamanio_pagina: number = 5;
+  // ITEMS DE PAGINACION DE LA TABLA
   numero_pagina: number = 1;
+  tamanio_pagina: number = 5;
   pageSizeOptions = [5, 10, 20, 50];
 
   empleado: any = [];
   idEmpleado: number;
 
-  // Control de campos y validaciones del formulario
+  // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
   nombreF = new FormControl('', [Validators.minLength(2)]);
 
-  // Asignación de validaciones a inputs del formulario
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
   public BuscarTipoPermisoForm = new FormGroup({
     nombreForm: this.nombreF,
   });
 
+  // CONSULTAR MODULOS ACTIVOS
   get habilitarPermiso(): boolean { return this.funciones.permisos; }
 
   constructor(
-    private rest: TipoPermisosService,
-    public restE: EmpleadoService,
     public restEmpre: EmpresaService,
-    public vistaTipoPermiso: MatDialog,
+    public ventana: MatDialog,
+    public restE: EmpleadoService,
+    private rest: TipoPermisosService,
     private toastr: ToastrService,
     private router: Router,
     private validar: ValidacionesService,
@@ -83,7 +82,7 @@ export class VistaElementosComponent implements OnInit {
     }
   }
 
-  // METODO para ver la información del empleado 
+  // METODO PARA VER LA INFORMACION DEL EMPLEADO 
   ObtenerEmpleados(idemploy: any) {
     this.empleado = [];
     this.restE.BuscarUnEmpleado(idemploy).subscribe(data => {
@@ -91,7 +90,7 @@ export class VistaElementosComponent implements OnInit {
     })
   }
 
-  // METODO para obtener el logo de la empresa
+  // METODO PARA OBTENER EL LOGO DE LA EMPRESA
   logo: any = String;
   ObtenerLogo() {
     this.restEmpre.LogoEmpresaImagenBase64(localStorage.getItem('empresa')).subscribe(res => {
@@ -111,19 +110,20 @@ export class VistaElementosComponent implements OnInit {
     });
   }
 
+  // EVENTOS DE PAGINACION
   ManejarPagina(e: PageEvent) {
     this.tamanio_pagina = e.pageSize;
     this.numero_pagina = e.pageIndex + 1;
   }
 
+  // METODO DE BUSQUEDA DE TIPOS DE PERMISOS
   ObtenerTipoPermiso() {
-    this.rest.getTipoPermisoRest().subscribe(datos => {
+    this.rest.BuscarTipoPermiso().subscribe(datos => {
       this.tipoPermiso = datos;
-      console.log(this.tipoPermiso);
-    }, error => {
     });
   }
 
+  // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
     this.BuscarTipoPermisoForm.setValue({
       nombreForm: '',
@@ -131,16 +131,8 @@ export class VistaElementosComponent implements OnInit {
     this.ObtenerTipoPermiso();
   }
 
-  AbrirVentanaEditarTipoPermisos(tipoPermiso: any): void {
-    const DIALOG_REF = this.vistaTipoPermiso.open(EditarTipoPermisosComponent,
-      { width: '900px', data: tipoPermiso }).afterClosed().subscribe(item => {
-        this.ObtenerTipoPermiso();
-      });
-  }
-
-  /** FUNCION para eliminar registro seleccionado */
+  // FUNCION PARA ELIMINAR REGISTRO SELECCIONADO 
   Eliminar(id_permiso: number) {
-    //console.log("probando id", id_prov)
     this.rest.EliminarRegistro(id_permiso).subscribe(res => {
       this.toastr.error('Registro eliminado.', '', {
         timeOut: 6000,
@@ -149,9 +141,9 @@ export class VistaElementosComponent implements OnInit {
     });
   }
 
-  /** FUNCION para confirmar si se elimina o no un registro */
+  // FUNCION PARA CONFIRMAR SI SE ELIMINA O NO UN REGISTRO 
   ConfirmarDelete(datos: any) {
-    this.vistaTipoPermiso.open(MetodosComponent, { width: '450px' }).afterClosed()
+    this.ventana.open(MetodosComponent, { width: '450px' }).afterClosed()
       .subscribe((confirmado: Boolean) => {
         if (confirmado) {
           this.Eliminar(datos.id);
@@ -161,9 +153,9 @@ export class VistaElementosComponent implements OnInit {
       });
   }
 
-  /****************************************************************************************************** 
- *                                         METODO PARA EXPORTAR A PDF
- ******************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                                  METODO PARA EXPORTAR A PDF                                  ** **
+   ** ************************************************************************************************** **/
   generarPdf(action = 'open') {
     const documentDefinition = this.getDocumentDefinicion();
 
@@ -181,12 +173,12 @@ export class VistaElementosComponent implements OnInit {
     sessionStorage.setItem('TipoPermisos', this.tipoPermiso);
     return {
 
-      // Encabezado de la página
+      // ENCABEZADO DE LA PAGINA
       pageOrientation: 'landscape',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
-      // Pie de página
+      // PIE DE PAGINA
       footer: function (currentPage: any, pageCount: any, fecha: any, hora: any) {
         var f = moment();
         fecha = f.format('YYYY-MM-DD');
@@ -285,9 +277,9 @@ export class VistaElementosComponent implements OnInit {
     };
   }
 
-  /****************************************************************************************************** 
-   *                                       METODO PARA EXPORTAR A EXCEL
-   ******************************************************************************************************/
+  /** ************************************************************************************************* ** 
+   ** **                                 METODO PARA EXPORTAR A EXCEL                                ** **
+   ** ************************************************************************************************* **/
   exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipoPermiso);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
@@ -295,9 +287,9 @@ export class VistaElementosComponent implements OnInit {
     xlsx.writeFile(wb, "TipoPermisos" + new Date().getTime() + '.xlsx');
   }
 
-  /****************************************************************************************************** 
-   *                                        METODO PARA EXPORTAR A CSV 
-   ******************************************************************************************************/
+  /** ************************************************************************************************** ** 
+   ** **                               METODO PARA EXPORTAR A CSV                                     ** **
+   ** ************************************************************************************************** **/
 
   exportToCVS() {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipoPermiso);
@@ -306,9 +298,9 @@ export class VistaElementosComponent implements OnInit {
     FileSaver.saveAs(data, "TipoPermisosCSV" + new Date().getTime() + '.csv');
   }
 
-  /* ****************************************************************************************************
-   *                                 PARA LA EXPORTACIÓN DE ARCHIVOS XML
-   * ****************************************************************************************************/
+  /** ************************************************************************************************* **
+   ** **                              PARA LA EXPORTACIÓN DE ARCHIVOS XML                            ** **
+   ** ************************************************************************************************* **/
 
   urlxml: string;
   data: any = [];

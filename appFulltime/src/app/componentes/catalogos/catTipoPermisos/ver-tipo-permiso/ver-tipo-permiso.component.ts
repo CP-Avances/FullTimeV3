@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
-import { EditarTipoPermisosComponent } from 'src/app/componentes/catalogos/catTipoPermisos/editar-tipo-permisos/editar-tipo-permisos.component';
 import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service'
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 
 @Component({
   selector: 'app-ver-tipo-permiso',
@@ -15,10 +16,13 @@ export class VerTipoPermisoComponent implements OnInit {
 
   idPermiso: string;
   datosPermiso: any = [];
+
   constructor(
-    public router: Router,
-    public vistaRegistrarDatos: MatDialog,
     public rest: TipoPermisosService,
+    public router: Router,
+    public ventana: MatDialog,
+    public validar: ValidacionesService,
+    public parametro: ParametrosService,
   ) {
     var cadena = this.router.url;
     var aux = cadena.split("/");
@@ -26,23 +30,37 @@ export class VerTipoPermisoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.CargarDatosPermiso();
+    this.BuscarParametro();
   }
 
-  CargarDatosPermiso() {
+  /** **************************************************************************************** **
+   ** **                          BUSQUEDA DE FORMATOS DE FECHAS                            ** ** 
+   ** **************************************************************************************** **/
+
+   formato_fecha: string = 'DD/MM/YYYY';
+
+   // METODO PARA BUSCAR PARÁMETRO DE FORMATO DE FECHA
+   BuscarParametro() {
+     // id_tipo_parametro Formato fecha = 25
+     this.parametro.ListarDetalleParametros(25).subscribe(
+       res => {
+         this.formato_fecha = res[0].descripcion;
+         this.CargarDatosPermiso(this.formato_fecha);
+       },
+       vacio => {
+        this.CargarDatosPermiso(this.formato_fecha);
+       });
+   }
+
+   // METODO PARA LISTAR DATOS DE PERMISO
+  CargarDatosPermiso(formato: string) {
     this.datosPermiso = [];
     this.rest.BuscarUnTipoPermiso(parseInt(this.idPermiso)).subscribe(datos => {
       this.datosPermiso = datos;
+      this.datosPermiso.forEach(data => {
+        data.fecha_ = this.validar.FormatearFecha(data.fecha, formato, this.validar.dia_abreviado);
+      })
     })
-  }
-
-  /* Ventana para editar datos de dispositivo seleccionado */
-  EditarDatosPermiso(datosSeleccionados: any): void {
-    console.log(datosSeleccionados);
-    this.vistaRegistrarDatos.open(EditarTipoPermisosComponent, { width: '900px', data: datosSeleccionados })
-      .afterClosed().subscribe(item => {
-        this.CargarDatosPermiso();
-      });
   }
 
 }

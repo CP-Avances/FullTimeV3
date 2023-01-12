@@ -1,25 +1,44 @@
 import { Router } from 'express';
 
-import TIPO_PERMISOS_CONTROLADOR from  '../../controlador/catalogos/catTipoPermisosControlador';
+import TIPO_PERMISOS_CONTROLADOR from '../../controlador/catalogos/catTipoPermisosControlador';
 import { TokenValidation } from '../../libs/verificarToken';
 
 class TipoPermisosRutas {
     public router: Router = Router();
-    
+
 
     constructor() {
         this.configuracion();
     }
 
     configuracion(): void {
+
+        // METODO PARA BUSCAR TIPOS DE PERMISOS
         this.router.get('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.Listar);
-        this.router.get('/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.getOne);
-        this.router.post('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.create);
-        this.router.put('/editar/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.editar);
-        this.router.post('/xmlDownload/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.FileXML);
-        this.router.get('/download/:nameXML', TIPO_PERMISOS_CONTROLADOR.downloadXML);
-        this.router.get('/acceso/:acce_empleado', TokenValidation, TIPO_PERMISOS_CONTROLADOR.listAccess);
+        // METODO PARA ELIMINAR REGISTROS
         this.router.delete('/eliminar/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.EliminarRegistros);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', TIPO_PERMISOS_CONTROLADOR.downloadXML);
+        // METODO PARA BUSCAR DATOS DE UN TIPO DE PERMISO
+        this.router.get('/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.BuscarUnTipoPermiso);
+        // METODO PARA REGISTRAR TIPO DE PERMISO
+        this.router.post('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.Crear);
+        // METODO PARA EDITAR REGISTRO
+        this.router.put('/editar/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.Editar);
+
+
+
+
+
+
+
+
+
+
+        this.router.get('/acceso/:acce_empleado', TokenValidation, TIPO_PERMISOS_CONTROLADOR.listAccess);
+
     }
 }
 

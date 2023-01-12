@@ -73,7 +73,8 @@
                         </div>
 
                         <div class="col-md" id="verticalLine">
-                            <div class="espacio d-flex justify-content-start">
+                            <div class="espacio d-flex justify-content-start"
+                                *ngIf="regimen.contar_feriados === true || regimen.contar_dias_libres === true || regimen.contar_licencias === true || regimen.contar_faltas === true || regimen.contar_permiso === true">
                                 <label id="datosF">Solicitudes de vacaciones contabiliza:</label>
                             </div>
                             <div class="espacio d-flex justify-content-start" style="position: relative; left: 40px;"
@@ -230,7 +231,7 @@
 
             <div style="padding-top: 25px; text-align: right;">
                 <button [routerLink]="['/listarRegimen/']" class="btn btn-sm">
-                    Ir a lista Régimen laboral
+                    Ir a lista régimen laboral
                 </button>
             </div>
         </mat-card-content>

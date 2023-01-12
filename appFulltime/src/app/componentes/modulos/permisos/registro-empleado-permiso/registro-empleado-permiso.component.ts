@@ -705,7 +705,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         this.tipoPermisos = res;
       });
     } else {
-      this.tipoPermiso.getTipoPermisoRest().subscribe(datos => {
+      this.tipoPermiso.BuscarTipoPermiso().subscribe(datos => {
         this.tipoPermisos = datos;
         console.log('ver tipo permisos 1...', this.tipoPermisos)
       });

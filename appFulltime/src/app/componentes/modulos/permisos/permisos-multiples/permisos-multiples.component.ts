@@ -164,7 +164,7 @@ export class PermisosMultiplesComponent implements OnInit {
         this.tipoPermisos = res;
       });
     } else {
-      this.restTipoP.getTipoPermisoRest().subscribe(datos => {
+      this.restTipoP.BuscarTipoPermiso().subscribe(datos => {
         this.tipoPermisos = datos;
       });
     }

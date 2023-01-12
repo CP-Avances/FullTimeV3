@@ -12,34 +12,57 @@ export class TipoPermisosService {
     private http: HttpClient
   ) { }
 
-  // catalogo de TIPO PERMISOS
-
-  getTipoPermisoRest() {
+  // METODO PARA BUSCAR TIPOS DE PERMISOS
+  BuscarTipoPermiso() {
     return this.http.get(`${environment.url}/tipoPermisos`);
   }
 
-  getListAccesoTipoPermisoRest(access: number) {
-    return this.http.get(`${environment.url}/tipoPermisos/acceso/${access}`);
+  // ELIMINAR REGISTRO
+  EliminarRegistro(id: number) {
+    return this.http.delete(`${environment.url}/tipoPermisos/eliminar/${id}`);
   }
 
-  BuscarUnTipoPermiso(id: number) {
-    return this.http.get(`${environment.url}/tipoPermisos/${id}`);
-  }
-
-  postTipoPermisoRest(data: any) {
-    return this.http.post(`${environment.url}/tipoPermisos`, data).pipe(
-      catchError(data));
-  }
-
-  putTipoPermisoRest(id: number, data: any) {
-    return this.http.put(`${environment.url}/tipoPermisos/editar/${id}`, data);
-  }
-
+  // METODO PARA CREAR ARCHIVO XML
   CrearXML(data: any) {
     return this.http.post(`${environment.url}/tipoPermisos/xmlDownload`, data);
   }
 
-  EliminarRegistro(id: number) {
-    return this.http.delete(`${environment.url}/tipoPermisos/eliminar/${id}`);
+  // METODO PARA LISTAR DATOS DE UN TIPO DE PERMISO
+  BuscarUnTipoPermiso(id: number) {
+    return this.http.get(`${environment.url}/tipoPermisos/${id}`);
   }
+
+  // METODO PARA REGISTRAR TIPO PERMISO
+  RegistrarTipoPermiso(data: any) {
+    return this.http.post(`${environment.url}/tipoPermisos`, data).pipe(
+      catchError(data));
+  }
+
+  // ACTUALIZAR REGISTRO TIPO PERMISO
+  ActualizarTipoPermiso(id: number, data: any) {
+    return this.http.put(`${environment.url}/tipoPermisos/editar/${id}`, data);
+  }
+
+
+
+
+
+
+  // catalogo de TIPO PERMISOS
+
+
+
+  getListAccesoTipoPermisoRest(access: number) {
+    return this.http.get(`${environment.url}/tipoPermisos ${access}`);
+  }
+
+
+
+
+
+
+
+
+
+
 }

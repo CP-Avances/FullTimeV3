@@ -54,7 +54,7 @@ export class RegistrarAsistenciaComponent implements OnInit {
     }
   
     IngresarDatos(datos) {
-      this.rest.postTipoPermisoRest(datos).subscribe(res => {
+      this.rest.RegistrarTipoPermiso(datos).subscribe(res => {
         this.toastr.success('Operación Exitosa', 'Tipo Permiso guardado', {
           timeOut: 6000,
         });

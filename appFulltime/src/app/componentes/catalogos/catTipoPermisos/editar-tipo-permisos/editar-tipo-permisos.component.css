@@ -24,12 +24,8 @@ mat-radio-group {
 }
 
 mat-form-field {
-    width: 230px;
+    width: 250px;
     padding: 10px 10px 0px 10px;
-}
-
-#selec {
-    font-size: 12px;
 }
 
 .btn {
@@ -39,7 +35,7 @@ mat-form-field {
     margin: 5px 10px 5px 10px;
 }
 
-#emple_solicitar {
+#usuario {
     font-size: 13px;
 }
 
@@ -54,10 +50,4 @@ mat-form-field {
 
 #seccion_permiso {
     color: rgba(8, 10, 124, 0.828);
-}
-
-#cerrar {
-    cursor: pointer;
-    color: red;
-    margin-left: 801px;
 }

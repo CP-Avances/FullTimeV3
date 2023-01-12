@@ -71,7 +71,7 @@ export class CancelarPermisoComponent implements OnInit {
   tipoPermisos: any = [];
   ObtenerTiposPermiso() {
     this.tipoPermisos = [];
-    this.restTipoP.getTipoPermisoRest().subscribe(datos => {
+    this.restTipoP.BuscarTipoPermiso().subscribe(datos => {
       this.tipoPermisos = datos;
     });
   }
