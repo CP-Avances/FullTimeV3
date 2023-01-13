@@ -1,17 +1,28 @@
+// IMPORTACION DE LIBRERIAS
 import { Component, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
+import { environment } from 'src/environments/environment';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import * as moment from 'moment';
+import * as FileSaver from "file-saver";
+import * as moment from "moment";
+import * as xlsx from "xlsx";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import pdfMake from "pdfmake/build/pdfmake";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
+// IMPORTACION DE COMPONENTES
 import { PlanHoraExtraService } from 'src/app/servicios/planHoraExtra/plan-hora-extra.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { RealTimeService } from 'src/app/servicios/notificaciones/real-time.service';
 
-import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+// IMPORTACION DE SERVICIOS
 import { EditarPlanHoraExtraComponent } from '../editar-plan-hora-extra/editar-plan-hora-extra.component';
+import { PlantillaReportesService } from "src/app/componentes/reportes/plantilla-reportes.service";
+import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
+import { EmpleadoService } from "src/app/servicios/empleado/empleadoRegistro/empleado.service";
 import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
 
 // EXPORTACIÓN DE DATOS A SER LEIDOS EN COMPONENTE DE EMPLEADOS PLANIFICACIÓN
@@ -60,17 +71,26 @@ export class ListaPlanificacionesComponent implements OnInit {
   ver_eliminar: boolean = true; // ÍCONO ELIMINAR LISTA PLANIFICACIONES EMPLEADO
 
   idEmpleadoLogueado: number; // VARIABLE PARA ALMACENAR ID DE EMPLEADO QUE INICIA SESIÓN
+  empleado: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE EMPLEADO
 
   get habilitarHorasE(): boolean { return this.funciones.horasExtras; }
 
+    // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+    get s_color(): string {return this.plantilla.color_Secundary;}
+    get p_color(): string {return this.plantilla.color_Primary;}
+    get logoE(): string {return this.plantilla.logoBase64;}
+    get frase(): string {return this.plantilla.marca_Agua;}
+
   constructor(
+    private plantilla: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
     public restPlan: PlanHoraExtraService,
     public ventana: MatDialog,
     public aviso: RealTimeService,
     private parametro: ParametrosService,
     private toastr: ToastrService,
     private validar: ValidacionesService,
-    private funciones: MainNavService
+    private funciones: MainNavService,
+    public restEmpleado: EmpleadoService
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
@@ -88,10 +108,19 @@ export class ListaPlanificacionesComponent implements OnInit {
     }
     else {
       var f = moment();
+      this.ObtenerEmpleados(this.idEmpleadoLogueado);
       this.fecha = f.format('YYYY-MM-DD');
       this.BuscarParametro();
       this.BuscarFecha();
     }
+  }
+
+   // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO
+   ObtenerEmpleados(idemploy: any) {
+    this.empleado = [];
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe((data) => {
+      this.empleado = data;
+    });
   }
 
   ManejarPagina(e: PageEvent) {
@@ -524,6 +553,225 @@ export class ListaPlanificacionesComponent implements OnInit {
         this.info_correo = this.info_correo + ', ' + obj.correo;
       }
     })
+  }
+
+  /** ************************************************************************************************* **
+   ** **                            PARA LA EXPORTACIÓN DE ARCHIVOS PDF                              ** **
+   ** ************************************************************************************************* **/
+
+  // METODO PARA CREAR ARCHIVO PDF
+  generarPdf(action = "open") {
+    const documentDefinition = this.getDocumentDefinicion();
+    switch (action) {
+      case "open":
+        pdfMake.createPdf(documentDefinition).open();
+        break;
+      case "print":
+        pdfMake.createPdf(documentDefinition).print();
+        break;
+      case "download":
+        pdfMake.createPdf(documentDefinition).download();
+        break;
+      default:
+        pdfMake.createPdf(documentDefinition).open();
+        break;
+    }
+  }
+
+  getDocumentDefinicion() {
+    sessionStorage.setItem("PlanificacionesHE", this.listaPlan);
+    return {
+      // ENCABEZADO DE LA PÁGINA
+      watermark: {
+        text: this.frase,
+        color: "blue",
+        opacity: 0.1,
+        bold: true,
+        italics: false,
+      },
+      header: {
+        text:
+          "Impreso por: " +
+          this.empleado[0].nombre +
+          " " +
+          this.empleado[0].apellido,
+        margin: 10,
+        fontSize: 9,
+        opacity: 0.3,
+        alignment: "right",
+      },
+      // PIE DE LA PÁGINA
+      footer: function (
+        currentPage: any,
+        pageCount: any,
+        fecha: any,
+        hora: any
+      ) {
+        var f = moment();
+        fecha = f.format("YYYY-MM-DD");
+        hora = f.format("HH:mm:ss");
+        return {
+          margin: 10,
+          columns: [
+            { text: "Fecha: " + fecha + " Hora: " + hora, opacity: 0.3 },
+            {
+              text: [
+                {
+                  text: "© Pag " + currentPage.toString() + " of " + pageCount,
+                  alignment: "right",
+                  opacity: 0.3,
+                },
+              ],
+            },
+          ],
+          fontSize: 10,
+        };
+      },
+      content: [
+        { image: this.logoE, width: 150, margin: [10, -25, 0, 5] },
+        {
+          text: "Planificaciones de horas extras",
+          bold: true,
+          fontSize: 16,
+          alignment: "center",
+          margin: [0, -10, 0, 10],
+        },
+        this.PresentarDataPDFHoras(),
+      ],
+      styles: {
+        tableHeader: {
+          fontSize: 12,
+          bold: true,
+          alignment: "center",
+          fillColor: this.p_color,
+        },
+        itemsTable: { fontSize: 10, alignment: "center" },
+      },
+    };
+  }
+
+  // ESTRUCTURA DEL ARCHIVO PDF
+  PresentarDataPDFHoras() {
+    return {
+      columns: [
+        { width: "*", text: "" },
+        {
+          width: "auto",
+          table: {
+            widths: ["auto", "auto", "auto", "auto", "auto", "auto", "auto"],
+            body: [
+              [
+                { text: "Código", style: "tableHeader" },
+                { text: "Descripción", style: "tableHeader" },
+                { text: "Fecha inicio", style: "tableHeader" },
+                { text: "Fecha Final", style: "tableHeader" },
+                { text: "Hora inicio", style: "tableHeader" },
+                { text: "Hora Final", style: "tableHeader" },
+                { text: "Horas Totales", style: "tableHeader" },
+              ],
+              ...this.listaPlan.map((obj) => {
+                return [
+                  { text: obj.id, style: "itemsTable" },
+                  { text: obj.descripcion, style: "itemsTable" },
+                  { text: obj.fecha_desde_, style: "itemsTable" },
+                  { text: obj.fecha_hasta_, style: "itemsTable" },
+                  { text: obj.hora_inicio_, style: "itemsTable" },
+                  { text: obj.hora_fin_, style: "itemsTable" },
+                  { text: obj.horas_totales, style: "itemsTable" },
+                ];
+              }),
+            ],
+          },
+          // ESTILO DE COLORES FORMATO ZEBRA
+          layout: {
+            fillColor: function (i: any) {
+              return i % 2 === 0 ? "#CCD1D1" : null;
+            },
+          },
+        },
+        { width: "*", text: "" },
+      ],
+    };
+  }
+
+
+   /** ************************************************************************************************* **
+   ** **                             PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL                           ** **
+   ** ************************************************************************************************* **/
+
+   exportToExcel() {
+    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.listaPlan.map(obj => {
+      return {
+        Codigo: obj.id,
+        Descripcion: obj.descripcion,
+        Fecha_Inicio: obj.fecha_desde_,
+        Fecha_Fin: obj.fecha_hasta_,
+        Hora_Inicio: obj.hora_inicio_,
+        Hora_Fin: obj.hora_fin_,
+        Horas_Totales: obj.horas_totales,
+      }
+    }));
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    const header = Object.keys(this.listaPlan[0]); // NOMBRE DE CABECERAS DE COLUMNAS
+    var wscols = [];
+    for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
+      wscols.push({ wpx: 100 })
+    }
+    wsr["!cols"] = wscols;
+    const wb: xlsx.WorkBook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, wsr, 'LISTA ROLES');
+    xlsx.writeFile(wb, 'PlanificacionesHorasEXCEL' + new Date().getTime() + '.xlsx');
+  }
+
+   /** ************************************************************************************************** ** 
+   ** **                                     METODO PARA EXPORTAR A CSV                               ** **
+   ** ************************************************************************************************** **/
+
+   exportToCVS() {
+    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.listaPlan.map(obj => {
+      return {
+        Codigo: obj.id,
+        Descripcion: obj.descripcion,
+        Fecha_Inicio: obj.fecha_desde_,
+        Fecha_Fin: obj.fecha_hasta_,
+        Hora_Inicio: obj.hora_inicio_,
+        Hora_Fin: obj.hora_fin_,
+        Horas_Totales: obj.horas_totales,
+      }
+    }));
+    const csvDataC = xlsx.utils.sheet_to_csv(wsr);
+    const data: Blob = new Blob([csvDataC], { type: 'text/csv;charset=utf-8;' });
+    FileSaver.saveAs(data, 'PlanificacionesHorasCSV'  + new Date().getTime() + '.csv');
+  }
+
+  /** ************************************************************************************************* **
+   ** **                               PARA LA EXPORTACION DE ARCHIVOS XML                           ** **
+   ** ************************************************************************************************* **/
+
+  urlxml: string;
+  data: any = [];
+  exportToXML() {
+    var objeto: any;
+    var arregloPlanificacion = [];
+    this.listaPlan.forEach(obj => {
+      objeto = {
+        "lista_planificaciones": {
+        '@id': obj.id,
+        "descripcion": obj.descripcion,
+        "fecha_inicio": obj.fecha_desde_,
+        "fecha_fin": obj.fecha_hasta_,
+        "hora_inicio": obj.hora_inicio_,
+        "hora_fin": obj.hora_fin_,
+        "horas_totales": obj.horas_totales,
+        }
+      }
+      arregloPlanificacion.push(objeto)
+    });
+    this.restPlan.CrearXML(arregloPlanificacion).subscribe(res => {
+      this.data = res;
+      this.urlxml = `${environment.url}/planificacionHoraExtra/download/` + this.data.name;
+      window.open(this.urlxml, "_blank");
+    });
   }
 
 }
