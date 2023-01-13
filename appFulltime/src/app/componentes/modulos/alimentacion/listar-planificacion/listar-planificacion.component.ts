@@ -1,15 +1,23 @@
 // LLAMADO DE LIBRERIAS
 import { Component, OnInit } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
+import { environment } from 'src/environments/environment';
 import { ToastrService } from 'ngx-toastr';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import * as FileSaver from "file-saver";
+import * as moment from "moment";
+import * as xlsx from "xlsx";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import pdfMake from "pdfmake/build/pdfmake";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 // LLAMADO A COMPONENTES
 import { EditarPlanComidasComponent } from '../editar-plan-comidas/editar-plan-comidas.component';
 
 // LLAMADO A SERVICIOS
+import { PlantillaReportesService } from "src/app/componentes/reportes/plantilla-reportes.service";
 import { PlanComidasService } from 'src/app/servicios/planComidas/plan-comidas.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
@@ -81,10 +89,18 @@ export class ListarPlanificacionComponent implements OnInit {
   numero_pagina_empleado: number = 1;
 
   idEmpleadoLogueado: number; // VARIABLE PARA ALMACENAR ID DE EMPLEADO QUE INICIA SESIÓN
+  empleado: any = []; // VARIABLE DE ALMACENAMIENTO DE DATOS DE EMPLEADO
 
   get habilitarComida(): boolean { return this.funciones.alimentacion; }
 
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  get s_color(): string {return this.plantilla.color_Secundary;}
+  get p_color(): string {return this.plantilla.color_Primary;}
+  get logoE(): string {return this.plantilla.logoBase64;}
+  get frase(): string {return this.plantilla.marca_Agua;}
+
   constructor(
+    private plantilla: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
     public restEmpleado: EmpleadoService, // SERVICIO DATOS EMPLEADO
     public validar: ValidacionesService,
     public toastr: ToastrService, // VARIABLE PARA MOSTRAR NOTIFICACIONES
@@ -110,10 +126,19 @@ export class ListarPlanificacionComponent implements OnInit {
       return this.validar.RedireccionarHomeAdmin(mensaje);
     }
     else {
+      this.ObtenerEmpleados(this.idEmpleadoLogueado);
       this.BuscarParametro();
-    this.BuscarFecha();
+      this.BuscarFecha();
     }
   }
+
+     // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO
+     ObtenerEmpleados(idemploy: any) {
+      this.empleado = [];
+      this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe((data) => {
+        this.empleado = data;
+      });
+    }
 
   /** **************************************************************************************** **
    ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 
@@ -692,5 +717,223 @@ export class ListarPlanificacionComponent implements OnInit {
     })
   }
 
+    /** ************************************************************************************************* **
+   ** **                            PARA LA EXPORTACIÓN DE ARCHIVOS PDF                              ** **
+   ** ************************************************************************************************* **/
+
+  // METODO PARA CREAR ARCHIVO PDF
+  generarPdf(action = "open") {
+    const documentDefinition = this.getDocumentDefinicion();
+    switch (action) {
+      case "open":
+        pdfMake.createPdf(documentDefinition).open();
+        break;
+      case "print":
+        pdfMake.createPdf(documentDefinition).print();
+        break;
+      case "download":
+        pdfMake.createPdf(documentDefinition).download();
+        break;
+      default:
+        pdfMake.createPdf(documentDefinition).open();
+        break;
+    }
+  }
+
+  getDocumentDefinicion() {
+    sessionStorage.setItem("PlanificacionesA", this.planificaciones);
+    return {
+      // ENCABEZADO DE LA PÁGINA
+      watermark: {
+        text: this.frase,
+        color: "blue",
+        opacity: 0.1,
+        bold: true,
+        italics: false,
+      },
+      header: {
+        text:
+          "Impreso por: " +
+          this.empleado[0].nombre +
+          " " +
+          this.empleado[0].apellido,
+        margin: 10,
+        fontSize: 9,
+        opacity: 0.3,
+        alignment: "right",
+      },
+      // PIE DE LA PÁGINA
+      footer: function (
+        currentPage: any,
+        pageCount: any,
+        fecha: any,
+        hora: any
+      ) {
+        var f = moment();
+        fecha = f.format("YYYY-MM-DD");
+        hora = f.format("HH:mm:ss");
+        return {
+          margin: 10,
+          columns: [
+            { text: "Fecha: " + fecha + " Hora: " + hora, opacity: 0.3 },
+            {
+              text: [
+                {
+                  text: "© Pag " + currentPage.toString() + " of " + pageCount,
+                  alignment: "right",
+                  opacity: 0.3,
+                },
+              ],
+            },
+          ],
+          fontSize: 10,
+        };
+      },
+      content: [
+        { image: this.logoE, width: 150, margin: [10, -25, 0, 5] },
+        {
+          text: "Planificaciones de alimentación",
+          bold: true,
+          fontSize: 16,
+          alignment: "center",
+          margin: [0, -10, 0, 10],
+        },
+        this.PresentarDataPDFAlimentacion(),
+      ],
+      styles: {
+        tableHeader: {
+          fontSize: 12,
+          bold: true,
+          alignment: "center",
+          fillColor: this.p_color,
+        },
+        itemsTable: { fontSize: 10, alignment: "center" },
+      },
+    };
+  }
+
+  // ESTRUCTURA DEL ARCHIVO PDF
+  PresentarDataPDFAlimentacion() {
+    return {
+      columns: [
+        { width: "*", text: "" },
+        {
+          width: "auto",
+          table: {
+            widths: ["auto", "auto", "auto", "auto", "auto", "auto", "auto"],
+            body: [
+              [
+                { text: "Código", style: "tableHeader" },
+                { text: "Servicio", style: "tableHeader" },
+                { text: "Menú", style: "tableHeader" },
+                { text: "Fecha inicio", style: "tableHeader" },
+                { text: "Fecha Final", style: "tableHeader" },
+                { text: "Hora inicio", style: "tableHeader" },
+                { text: "Hora Final", style: "tableHeader" },
+              ],
+              ...this.planificaciones.map((obj) => {
+                return [
+                  { text: obj.id, style: "itemsTable" },
+                  { text: obj.nombre_servicio, style: "itemsTable" },
+                  { text: obj.nombre_menu, style: "itemsTable" },
+                  { text: obj.fecInicio, style: "itemsTable" },
+                  { text: obj.fecFinal, style: "itemsTable" },
+                  { text: obj.horaInicio, style: "itemsTable" },
+                  { text: obj.horaFin, style: "itemsTable" },
+                ];
+              }),
+            ],
+          },
+          // ESTILO DE COLORES FORMATO ZEBRA
+          layout: {
+            fillColor: function (i: any) {
+              return i % 2 === 0 ? "#CCD1D1" : null;
+            },
+          },
+        },
+        { width: "*", text: "" },
+      ],
+    };
+  }
+
+
+   /** ************************************************************************************************* **
+   ** **                             PARA LA EXPORTACIÓN DE ARCHIVOS EXCEL                           ** **
+   ** ************************************************************************************************* **/
+
+   exportToExcel() {
+    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.planificaciones.map(obj => {
+      return {
+        Codigo: obj.id,
+        Servicio: obj.nombre_servicio,
+        Menu: obj.nombre_menu,
+        Fecha_Inicio: obj.fecInicio,
+        Fecha_Fin: obj.fecFinal,
+        Hora_Inicio: obj.horaInicio,
+        Hora_Fin: obj.horaFin,
+      }
+    }));
+    // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
+    const header = Object.keys(this.planificaciones[0]); // NOMBRE DE CABECERAS DE COLUMNAS
+    var wscols = [];
+    for (var i = 0; i < header.length; i++) {  // CABECERAS AÑADIDAS CON ESPACIOS
+      wscols.push({ wpx: 100 })
+    }
+    wsr["!cols"] = wscols;
+    const wb: xlsx.WorkBook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, wsr, 'LISTA ROLES');
+    xlsx.writeFile(wb, 'PAlimentacionEXCEL' + new Date().getTime() + '.xlsx');
+  }
+
+   /** ************************************************************************************************** ** 
+   ** **                                     METODO PARA EXPORTAR A CSV                               ** **
+   ** ************************************************************************************************** **/
+
+   exportToCVS() {
+    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.planificaciones.map(obj => {
+      return {
+        Codigo: obj.id,
+        Servicio: obj.nombre_servicio,
+        Menu: obj.nombre_menu,
+        Fecha_Inicio: obj.fecInicio,
+        Fecha_Fin: obj.fecFinal,
+        Hora_Inicio: obj.horaInicio,
+        Hora_Fin: obj.horaFin,
+      }
+    }));
+    const csvDataC = xlsx.utils.sheet_to_csv(wsr);
+    const data: Blob = new Blob([csvDataC], { type: 'text/csv;charset=utf-8;' });
+    FileSaver.saveAs(data, 'PAlimentacionCSV'  + new Date().getTime() + '.csv');
+  }
+
+  /** ************************************************************************************************* **
+   ** **                               PARA LA EXPORTACION DE ARCHIVOS XML                           ** **
+   ** ************************************************************************************************* **/
+
+  urlxml: string;
+  data: any = [];
+  exportToXML() {
+    var objeto: any;
+    var arregloPlanificacion = [];
+    this.planificaciones.forEach(obj => {
+      objeto = {
+        "lista_planificaciones": {
+        '@id': obj.id,
+        "servicio": obj.nombre_servicio,
+        "menu": obj.nombre_menu,
+        "fecha_inicio": obj.fecInicio,
+        "fecha_fin": obj.fecFinal,
+        "hora_inicio": obj.horaInicio,
+        "hora_fin": obj.horaFin,
+        }
+      }
+      arregloPlanificacion.push(objeto)
+    });
+    this.restC.CrearXML(arregloPlanificacion).subscribe(res => {
+      this.data = res;
+      this.urlxml = `${environment.url}/planComidas/download/` + this.data.name;
+      window.open(this.urlxml, "_blank");
+    });
+  }
 
 }
