@@ -13,10 +13,29 @@ export class PermisosService {
     private socket: Socket
   ) { }
 
-  // realtime
+  // ENVIO DE NOTIFICACIONES DE PERMISOS EN TIEMPO REAL
   sendNotiRealTime(data: any) {
     this.socket.emit('nueva_notificacion', data);
   }
+
+  // METODO DE BUSQUEDA DEL NUMERO DE PERMISO
+  BuscarNumPermiso(id: number) {
+    return this.http.get(`${environment.url}/empleadoPermiso/numPermiso/${id}`);
+  }
+
+  // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
+  BuscarPermisosSolicitados(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados`, datos);
+  }
+
+
+
+
+
+
+
+
+
 
   // Permisos Empleado
 
@@ -52,9 +71,7 @@ export class PermisosService {
     return this.http.get(`${environment.url}/empleadoPermiso/permiso/editar/${id}`)
   }
 
-  BuscarNumPermiso(id: number) {
-    return this.http.get(`${environment.url}/empleadoPermiso/numPermiso/${id}`);
-  }
+
 
   BuscarPermisoContrato(id: any) {
     return this.http.get(`${environment.url}/empleadoPermiso/permisoContrato/${id}`);
@@ -74,9 +91,6 @@ export class PermisosService {
     return this.http.post(`${environment.url}/empleadoPermiso/fechas_permiso/${codigo}`, datos);
   }
 
-  BuscarPermisosSolicitados(datos: any) {
-    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados`, datos);
-  }
 
   // METODO USADO PAR EDITAR DATOS DE PERMISO
   EditarPermiso(id: number, datos: any) {

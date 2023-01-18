@@ -48,7 +48,7 @@ import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horario
 import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizaciones/autorizaDepartamentos/registro-autorizacion-depa/registro-autorizacion-depa.component';
 import { EditarPeriodoVacacionesComponent } from '../../modulos/vacaciones/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
-import { RegistroEmpleadoPermisoComponent } from '../../modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
+import { RegistroEmpleadoPermisoComponent } from '../../modulos/permisos/individual/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizaciones/autorizaDepartamentos/editar-autorizacion-depa/editar-autorizacion-depa.component';
 import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/horarios/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
 import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
@@ -1151,28 +1151,25 @@ export class VerEmpleadoComponent implements OnInit {
   }
 
   // VENTANA PARA REGISTRAR PERMISOS DEL EMPLEADO 
+  solicita_permiso: any = [];
+  solicitudes_permiso: boolean = true;
+  formulario_permiso: boolean = false;
   AbrirVentanaPermiso(): void {
     if (this.datoActual.id_contrato != undefined && this.datoActual.id_cargo != undefined) {
-      this.restPerV.BuscarIDPerVacaciones(parseInt(this.idEmpleado)).subscribe(datos => {
-        this.idPerVacacion = datos;
-        this.ventana.open(RegistroEmpleadoPermisoComponent,
-          {
-            width: '1200px',
-            data: {
-              idEmpleado: this.idEmpleado, idContrato: this.datoActual.id_contrato,
-              idPerVacacion: this.idPerVacacion[0].id, idCargo: this.datoActual.id_cargo
-            }
-          }).afterClosed().subscribe(item => {
-            this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
-          });
-      }, error => {
-        this.toastr.info('El empleado no tiene registrado Periodo de Vacaciones', 'Primero Registrar Periodo de Vacaciones', {
-          timeOut: 6000,
-        })
-      });
+      this.formulario_permiso = true;
+      this.solicitudes_permiso = false;
+      this.solicita_permiso = [
+        {
+          id_empleado: parseInt(this.idEmpleado),
+          id_contrato: this.datoActual.id_contrato,
+          id_cargo: this.datoActual.id_cargo
+        }
+      ]
     }
     else {
-      this.toastr.info('El usuario no tiene registrado un Contrato o Crago.', '', {
+      this.formulario_permiso = false;
+      this.solicitudes_permiso = true;
+      this.toastr.info('El usuario no tiene registrado un Contrato o Cargo.', '', {
         timeOut: 6000,
       })
     }

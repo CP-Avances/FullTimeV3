@@ -44,25 +44,9 @@ export class TipoPermisosService {
   }
 
 
-
-
-
-
-  // catalogo de TIPO PERMISOS
-
-
-
-  getListAccesoTipoPermisoRest(access: number) {
+  // LISTAR PERMISOS DE ACUERDO AL ROL
+  ListarTipoPermisoRol(access: number) {
     return this.http.get(`${environment.url}/tipoPermisos ${access}`);
   }
-
-
-
-
-
-
-
-
-
 
 }

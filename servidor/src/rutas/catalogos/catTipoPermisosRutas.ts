@@ -27,17 +27,8 @@ class TipoPermisosRutas {
         this.router.post('/', TokenValidation, TIPO_PERMISOS_CONTROLADOR.Crear);
         // METODO PARA EDITAR REGISTRO
         this.router.put('/editar/:id', TokenValidation, TIPO_PERMISOS_CONTROLADOR.Editar);
-
-
-
-
-
-
-
-
-
-
-        this.router.get('/acceso/:acce_empleado', TokenValidation, TIPO_PERMISOS_CONTROLADOR.listAccess);
+        // METODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL
+        this.router.get('/acceso/:acce_empleado', TokenValidation, TIPO_PERMISOS_CONTROLADOR.ListarTipoPermisoRol);
 
     }
 }

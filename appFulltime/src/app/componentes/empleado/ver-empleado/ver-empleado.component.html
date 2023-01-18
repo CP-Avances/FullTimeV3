@@ -934,7 +934,9 @@
             Permisos
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
-            <mat-card class="mat-elevation-z8">
+            <app-registro-empleado-permiso [solicita_permiso]="solicita_permiso" *ngIf="formulario_permiso">
+            </app-registro-empleado-permiso>
+            <mat-card class="mat-elevation-z8" *ngIf="solicitudes_permiso">
                 <div class="d-flex bd-highlight" id="titulo">
                     <div class="w-100 bd-highlight">
                         <h5>SOLICITUDES DE PERMISO</h5>

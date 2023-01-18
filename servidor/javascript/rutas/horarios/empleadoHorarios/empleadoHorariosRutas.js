@@ -24,9 +24,9 @@ class EmpleadoHorariosRutas {
         this.router.post('/horarios-existentes/:empl_id', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.VerificarHorariosExistentes);
         // METODO PARA BUSCAR HORARIOS EXISTENTES DEL USUARIO EN FECHAS DETERMINADAS ACTUALIZACION
         this.router.post('/horarios-existentes-edicion/:empl_id', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.VerificarHorariosExistentesEdicion);
+        this.router.post('/horas', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerNumeroHoras);
         this.router.get('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ListarEmpleadoHorarios);
         this.router.post('/cargaMultiple', [verificarToken_1.TokenValidation, multipartMiddleware], empleadoHorariosControlador_1.default.CargarMultiplesHorariosEmpleadosPlantilla);
-        this.router.post('/horas', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerNumeroHoras);
         this.router.put('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ActualizarEmpleadoHorarios);
         this.router.delete('/eliminar/:id', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.EliminarRegistros);
         this.router.post('/fechas_horario/:id_empleado', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerHorariosEmpleadoFechas);

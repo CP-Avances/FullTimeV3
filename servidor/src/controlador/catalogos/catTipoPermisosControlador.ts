@@ -105,20 +105,14 @@ class TipoPermisosControlador {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-  public async listAccess(req: Request, res: Response) {
+  // METODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL
+  public async ListarTipoPermisoRol(req: Request, res: Response) {
     const acce_empleado = req.params.acce_empleado;
-    const rolPermisos = await pool.query('SELECT * FROM cg_tipo_permisos WHERE acce_empleado = $1 ORDER BY ' +
-      'descripcion', [acce_empleado]);
+    const rolPermisos = await pool.query(
+      `
+      SELECT * FROM cg_tipo_permisos WHERE acce_empleado = $1 ORDER BY descripcion
+      `
+      , [acce_empleado]);
     res.json(rolPermisos.rows);
   }
 

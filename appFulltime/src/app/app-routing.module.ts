@@ -130,7 +130,7 @@ import { RetrasosMacroComponent } from './componentes/reportes/graficas-macro/re
 import { TiempoJornadaVsHoraExtMacroComponent } from './componentes/reportes/graficas-macro/tiempo-jornada-vs-hora-ext-macro/tiempo-jornada-vs-hora-ext-macro.component';
 import { SalidasAntesMacroComponent } from './componentes/reportes/graficas-macro/salidas-antes-macro/salidas-antes-macro.component';
 import { ListarCiudadComponent } from './componentes/catalogos/catCiudad/listar-ciudad/listar-ciudad.component';
-import { ListarEmpleadoPermisoComponent } from './componentes/modulos/permisos/listar-empleado-permiso/listar-empleado-permiso.component';
+import { ListarEmpleadoPermisoComponent } from './componentes/modulos/permisos/listar/listar-empleado-permiso/listar-empleado-permiso.component';
 import { ListarVacacionesComponent } from './componentes/modulos/vacaciones/listar-vacaciones/listar-vacaciones.component';
 import { ListaPedidoHoraExtraComponent } from './componentes/modulos/horasExtras/lista-pedido-hora-extra/lista-pedido-hora-extra.component';
 import { CalculoHoraExtraComponent } from './componentes/modulos/horasExtras/calculos/calculo-hora-extra/calculo-hora-extra.component';
@@ -142,7 +142,7 @@ import { PlanComidasComponent } from './componentes/modulos/alimentacion/plan-co
 import { ListarPlanificacionComponent } from './componentes/modulos/alimentacion/listar-planificacion/listar-planificacion.component';
 import { ListaAppComponent } from './componentes/modulos/appMovil/lista-app/lista-app.component';
 import { ListarSolicitudComponent } from './componentes/modulos/alimentacion/listar-solicitud/listar-solicitud.component';
-import { VerEmpleadoPermisoComponent } from './componentes/modulos/permisos/ver-empleado-permiso/ver-empleado-permiso.component';
+import { VerEmpleadoPermisoComponent } from './componentes/modulos/permisos/listar/ver-empleado-permiso/ver-empleado-permiso.component';
 import { VerVacacionComponent } from './componentes/modulos/vacaciones/ver-vacacion/ver-vacacion.component';
 import { VerPedidoHoraExtraComponent } from './componentes/modulos/horasExtras/ver-pedido-hora-extra/ver-pedido-hora-extra.component';
 import { ListarTipoAccionComponent } from './componentes/modulos/accionesPersonal/tipoAccionesPersonal/listar-tipo-accion/listar-tipo-accion.component';
@@ -151,7 +151,7 @@ import { CrearPedidoAccionComponent } from './componentes/modulos/accionesPerson
 import { ListarPedidoAccionComponent } from './componentes/modulos/accionesPersonal/pedirAccionPersonal/listar-pedido-accion/listar-pedido-accion.component';
 import { EditarPedidoAccionComponent } from './componentes/modulos/accionesPersonal/pedirAccionPersonal/editar-pedido-accion/editar-pedido-accion.component';
 import { VerPedidoAccionComponent } from './componentes/modulos/accionesPersonal/pedirAccionPersonal/ver-pedido-accion/ver-pedido-accion.component';
-import { PermisosMultiplesEmpleadosComponent } from './componentes/modulos/permisos/permisos-multiples-empleados/permisos-multiples-empleados.component';
+import { PermisosMultiplesEmpleadosComponent } from './componentes/modulos/permisos/multiples/permisos-multiples-empleados/permisos-multiples-empleados.component';
 import { RealtimeNotificacionComponent } from './componentes/notificaciones/realtime-notificacion/realtime-notificacion.component';
 import { RealtimeAvisosComponent } from './componentes/notificaciones/realtime-avisos/realtime-avisos.component';
 import { HorasPlanificadasEmpleadoComponent } from './componentes/rolEmpleado/horasExtras-empleado/horas-planificadas-empleado/horas-planificadas-empleado.component';

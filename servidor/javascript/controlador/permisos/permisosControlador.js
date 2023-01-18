@@ -18,6 +18,40 @@ const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
 class PermisosControlador {
+    // METODO PARA BUSCAR NUEMRO DE PERMISO
+    ObtenerNumPermiso(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado } = req.params;
+            const NUMERO_PERMISO = yield database_1.default.query(`
+            SELECT MAX(p.num_permiso) FROM permisos AS p, empleados AS e 
+            WHERE p.codigo::character = e.codigo AND e.id = $1
+            `, [id_empleado]);
+            if (NUMERO_PERMISO.rowCount > 0) {
+                return res.jsonp(NUMERO_PERMISO.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' }).end;
+            }
+        });
+    }
+    // CONSULTA DE PERMISOS SOLICITADOS POR DIAS
+    BuscarPermisos_Fechas(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { fec_inicio, fec_final, codigo } = req.body;
+                const PERMISO = yield database_1.default.query(`
+                SELECT id FROM permisos 
+                    WHERE ((fec_inicio::date BETWEEN $1 AND $2) 
+	                OR (fec_final::date BETWEEN $1 AND $2)) 
+                    AND codigo::varchar = $3 AND dia != 0
+                `, [fec_inicio, fec_final, codigo]);
+                return res.jsonp(PERMISO.rows);
+            }
+            catch (error) {
+                return res.jsonp({ message: 'error' });
+            }
+        });
+    }
     ListarPermisos(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const PERMISOS = yield database_1.default.query('SELECT * FROM permisos');
@@ -70,18 +104,6 @@ class PermisosControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    ObtenerNumPermiso(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado } = req.params;
-            const NUMERO_PERMISO = yield database_1.default.query('SELECT MAX(p.num_permiso) FROM permisos AS p, empl_contratos AS ec, empleados AS e WHERE p.id_empl_contrato = ec.id AND ec.id_empleado = e.id AND e.id = $1', [id_empleado]);
-            if (NUMERO_PERMISO.rowCount > 0) {
-                return res.jsonp(NUMERO_PERMISO.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' }).end;
             }
         });
     }
@@ -156,21 +178,6 @@ class PermisosControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'No se encuentran registros' });
-            }
-        });
-    }
-    // CONSULTA DE SOLICITUDES DENTRO DE UN RANGO DE FECHAS
-    BuscarPermisos_Fechas(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { fec_inicio, fec_final, codigo } = req.body;
-                const PERMISO = yield database_1.default.query('SELECT id FROM permisos ' +
-                    'WHERE ((fec_inicio between $1 AND $2) OR (fec_final between $1 AND $2)) ' +
-                    'AND codigo = $3', [fec_inicio, fec_final, codigo]);
-                return res.jsonp(PERMISO.rows);
-            }
-            catch (error) {
-                return res.jsonp(null);
             }
         });
     }

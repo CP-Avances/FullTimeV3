@@ -26,7 +26,8 @@ class TipoPermisosRutas {
         this.router.post('/', verificarToken_1.TokenValidation, catTipoPermisosControlador_1.default.Crear);
         // METODO PARA EDITAR REGISTRO
         this.router.put('/editar/:id', verificarToken_1.TokenValidation, catTipoPermisosControlador_1.default.Editar);
-        this.router.get('/acceso/:acce_empleado', verificarToken_1.TokenValidation, catTipoPermisosControlador_1.default.listAccess);
+        // METODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL
+        this.router.get('/acceso/:acce_empleado', verificarToken_1.TokenValidation, catTipoPermisosControlador_1.default.ListarTipoPermisoRol);
     }
 }
 const TIPO_PERMISOS_RUTAS = new TipoPermisosRutas();

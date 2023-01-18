@@ -7,16 +7,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
 // IMPORTAR PLANTILLA DE MODELO DE DATOS
-import { ITableEmpleados } from 'src/app/model/reportes.model';
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
+import { ITableEmpleados } from 'src/app/model/reportes.model';
 
-import { RegistroEmpleadoPermisoComponent } from '../registro-empleado-permiso/registro-empleado-permiso.component';
+import { RegistroEmpleadoPermisoComponent } from '../../individual/registro-empleado-permiso/registro-empleado-permiso.component';
 import { PermisosMultiplesComponent } from '../permisos-multiples/permisos-multiples.component';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
-import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 
 @Component({
   selector: 'app-permisos-multiples-empleados',
@@ -36,10 +36,9 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   nombre_suc = new FormControl('', [Validators.minLength(2)]);
   seleccion = new FormControl('');
 
+  // VARIABLES DE FILTROS DE BUSQUEDA
   filtroNombreSuc_: string = '';
-
   filtroNombreDep_: string = '';
-
   filtroCodigo_: number;
   filtroCedula_: string = '';
   filtroNombreEmp_: string = '';
@@ -65,7 +64,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   selectionDep = new SelectionModel<ITableEmpleados>(true, []);
   selectionEmp = new SelectionModel<ITableEmpleados>(true, []);
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA SUCURSAL
+  // ITEMS DE PAGINACION DE LA TABLA SUCURSAL
   pageSizeOptions_suc = [5, 10, 20, 50];
   tamanio_pagina_suc: number = 5;
   numero_pagina_suc: number = 1;
@@ -80,27 +79,32 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   tamanio_pagina_emp: number = 5;
   numero_pagina_emp: number = 1;
 
+  // APLICACION DE FILTROS
   get filtroNombreSuc() { return this.restR.filtroNombreSuc }
-
   get filtroNombreDep() { return this.restR.filtroNombreDep }
-
   get filtroNombreEmp() { return this.restR.filtroNombreEmp };
   get filtroCodigo() { return this.restR.filtroCodigo };
   get filtroCedula() { return this.restR.filtroCedula };
 
-  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACIÓN INDIVIDUAL
+  // HABILITAR O DESHABILITAR EL ICONO DE AUTORIZACION INDIVIDUAL
   auto_individual: boolean = true;
 
+  // BUSQUEDA DE MODULOS ACTIVOS
   get habilitarPermiso(): boolean { return this.funciones.permisos; }
+
+  // ACTIVAR VISTA DE REGISTRO DE PERMISOS
+  activar_permisos: boolean = false;
+  activar_busqueda: boolean = true;
+  data: any = [];
 
   constructor(
     public informacion: DatosGeneralesService,
     public restPerV: PeriodoVacacionesService,
     public restR: ReportesService,
-    private ventana: MatDialog,
-    private toastr: ToastrService,
     private funciones: MainNavService,
+    private ventana: MatDialog,
     private validar: ValidacionesService,
+    private toastr: ToastrService,
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
   }
@@ -128,10 +132,10 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.origen = [];
   }
 
+  // BUSCAR DATOS DE USUARIOS
   BuscarInformacion() {
     this.origen = [];
     this.informacion.ObtenerInformacion().subscribe((res: any[]) => {
-      
       this.origen = JSON.stringify(res);
 
       res.forEach(obj => {
@@ -145,7 +149,8 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
         obj.departamentos.forEach(ele => {
           this.departamentos.push({
             id: ele.id_depa,
-            nombre: ele.name_dep
+            nombre: ele.name_dep,
+            sucursal: ele.sucursal
           })
         })
       })
@@ -171,7 +176,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
       console.log('EMPLEADOS', this.empleados);
 
     }, err => {
-      this.toastr.error(err.error.message)
+      this.toastr.info(err.error.message);
     })
   }
 
@@ -188,7 +193,6 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   activar_boton: boolean = false;
   activar_seleccion: boolean = true;
   BuscarPorTipo(e: MatRadioChange) {
-    console.log('CHECK ', e.value);
     this.opcion = e.value;
     this.activar_boton = true;
     switch (this.opcion) {
@@ -231,7 +235,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
   }
 
   // METODO PARA FILTRAR DATOS DE BUSQUEDA
-  Filtrar(e, orden: number) {
+  Filtrar(e: any, orden: number) {
     switch (orden) {
       case 1: this.restR.setFiltroNombreSuc(e); break;
       case 2: this.restR.setFiltroNombreDep(e); break;
@@ -247,20 +251,20 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
    ** **                   METODOS DE SELECCION DE DATOS DE USUARIOS                      ** **
    ** ************************************************************************************** **/
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedSuc() {
     const numSelected = this.selectionSuc.selected.length;
     return numSelected === this.sucursales.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleSuc() {
     this.isAllSelectedSuc() ?
       this.selectionSuc.clear() :
       this.sucursales.forEach(row => this.selectionSuc.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelSuc(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedSuc() ? 'select' : 'deselect'} all`;
@@ -268,20 +272,20 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     return `${this.selectionSuc.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedDep() {
     const numSelected = this.selectionDep.selected.length;
     return numSelected === this.departamentos.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleDep() {
     this.isAllSelectedDep() ?
       this.selectionDep.clear() :
       this.departamentos.forEach(row => this.selectionDep.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelDep(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedDep() ? 'select' : 'deselect'} all`;
@@ -289,20 +293,20 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     return `${this.selectionDep.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
-  // SI EL NÚMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NÚMERO TOTAL DE FILAS. 
+  // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 
   isAllSelectedEmp() {
     const numSelected = this.selectionEmp.selected.length;
     return numSelected === this.empleados.length
   }
 
-  // SELECCIONA TODAS LAS FILAS SI NO ESTÁN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCIÓN CLARA. 
+  // SELECCIONA TODAS LAS FILAS SI NO ESTAN TODAS SELECCIONADAS; DE LO CONTRARIO, SELECCION CLARA. 
   masterToggleEmp() {
     this.isAllSelectedEmp() ?
       this.selectionEmp.clear() :
       this.empleados.forEach(row => this.selectionEmp.select(row));
   }
 
-  // LA ETIQUETA DE LA CASILLA DE VERIFICACIÓN EN LA FILA PASADA
+  // LA ETIQUETA DE LA CASILLA DE VERIFICACION EN LA FILA PASADA
   checkboxLabelEmp(row?: ITableEmpleados): string {
     if (!row) {
       return `${this.isAllSelectedEmp() ? 'select' : 'deselect'} all`;
@@ -310,6 +314,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     return `${this.selectionEmp.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
   }
 
+  //EVENTO DE PAGINACION
   ManejarPaginaResultados(e: PageEvent) {
     if (this._booleanOptions.bool_suc === true) {
       this.tamanio_pagina_suc = e.pageSize;
@@ -323,6 +328,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     }
   }
 
+  // MODELO PARA MOSTRAR DATOS DE SUCURSALES
   ModelarSucursal(id: number) {
     let usuarios: any = [];
     let respuesta = JSON.parse(this.origen)
@@ -354,6 +360,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.RegistrarMultiple(usuarios);
   }
 
+  // METODO PARA MOSTRAR DATOS DE DEPARTAMENTOS
   ModelarDepartamentos(id: number) {
     let usuarios: any = [];
     let respuesta = JSON.parse(this.origen)
@@ -386,6 +393,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.RegistrarMultiple(usuarios);
   }
 
+  // METODO PARA MOSTRAR DATOS DE EMPLEADO
   ModelarEmpleados() {
     let respuesta: any = [];
     this.empleados.forEach((obj: any) => {
@@ -403,25 +411,26 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
    ** **                       METODOS DE REGISTRO DE PERMISOS                            ** ** 
    ** ************************************************************************************** **/
 
+  // METODO PARA ABRIR FORMULARIO DE PERMISO
   RegistrarPermiso(usuario: any) {
-    this.restPerV.BuscarIDPerVacaciones(parseInt(usuario.id)).subscribe(datos => {
-      this.ventana.open(RegistroEmpleadoPermisoComponent,
-        {
-          width: '1200px',
-          data: {
-            idEmpleado: usuario.id, idContrato: usuario.id_contrato,
-            idPerVacacion: datos[0].id, idCargo: usuario.id_cargo
-          }
-        }).afterClosed().subscribe(item => {
-          this.auto_individual = true;
-          this.LimpiarFormulario();
-        });
-    }, error => {
-      this.toastr.info('El empleado no tiene registrado Periodo de Vacaciones',
-        'Primero Registrar Periodo de Vacaciones', {
-        timeOut: 6000,
-      })
-    });
+    this.data = [usuario];
+    this.activar_busqueda = false;
+    this.activar_permisos = true;
+
+    /*
+    this.ventana.open(RegistroEmpleadoPermisoComponent,
+      {
+        width: '1200px',
+        data: {
+          idEmpleado: usuario.id, idContrato: usuario.id_contrato,
+          idPerVacacion: 0, idCargo: usuario.id_cargo
+        }
+      }).afterClosed().subscribe(item => {
+        this.auto_individual = true;
+        this.LimpiarFormulario();
+      });
+
+      */
   }
 
   // METODO DE VALIDACION DE SELECCION MULTIPLE
@@ -436,7 +445,12 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     }
   }
 
+  // METODO PARA ABRIR FORMULARIO DE REGISTRO MULTIPLE DE PERMISOS
   Registrar(seleccionados: any) {
+    this.data = seleccionados;
+    this.activar_busqueda = false;
+    this.activar_permisos = true;
+    /*
     this.ventana.open(PermisosMultiplesComponent,
       {
         width: '1200px',
@@ -445,7 +459,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
         this.auto_individual = true;
         this.LimpiarFormulario();
       });
-
+      */
   }
 
   // METODO PARA TOMAR DATOS SELECCIONADOS
@@ -490,6 +504,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.activar_boton = false;
   }
 
+  // METODO PARA MOSTRAR LISTA DE DATOS
   MostrarLista() {
     if (this.opcion === 1) {
       this.nombre_suc.reset();
@@ -509,45 +524,14 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     }
   }
 
-  IngresarSoloLetras(e) {
-    let key = e.keyCode || e.which;
-    let tecla = String.fromCharCode(key).toString();
-    // SE DEFINE TODO EL ABECEDARIO QUE SE VA A USAR.
-    let letras = " áéíóúabcdefghijklmnñopqrstuvwxyzÁÉÍÓÚABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    // ES LA VALIDACIÓN DEL KEYCODES, QUE TECLAS RECIBE EL CAMPO DE TEXTO.
-    let especiales = [8, 37, 39, 46, 6, 13];
-    let tecla_especial = false
-    for (var i in especiales) {
-      if (key == especiales[i]) {
-        tecla_especial = true;
-        break;
-      }
-    }
-    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-      this.toastr.info('No se admite datos numéricos', 'Usar solo letras', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA INGRESAR SOLO LETRAS
+  IngresarSoloLetras(e: any) {
+    return this.validar.IngresarSoloLetras(e);
   }
 
-  IngresarSoloNumeros(evt) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+  // METODO PARA INGRESAR SOLO NUMEROS
+  IngresarSoloNumeros(evt: any) {
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
 }

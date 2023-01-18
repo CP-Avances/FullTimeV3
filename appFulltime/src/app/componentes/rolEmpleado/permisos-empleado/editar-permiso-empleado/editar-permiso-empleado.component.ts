@@ -277,7 +277,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     this.tipoPermisos = [];
     let rol = this.loginServise.getRol();
     if (rol >= 2) {
-      this.restTipoP.getListAccesoTipoPermisoRest(1).subscribe(res => {
+      this.restTipoP.ListarTipoPermisoRol(1).subscribe(res => {
         this.tipoPermisos = res;
       });
     } else {

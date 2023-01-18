@@ -81,7 +81,7 @@ class EmpleadoHorariosControlador {
             FROM empl_horarios AS eh, empleados AS e, cg_horarios AS ch
             WHERE NOT eh.id = $4 AND ($1 BETWEEN fec_inicio AND fec_final
                 OR $2 BETWEEN fec_inicio AND fec_final OR fec_inicio BETWEEN $1 AND $2
-                OR fec_final BETWEEN $1 AND $2) AND eh.codigo = e.codigo::int AND e.estado = 1
+                OR fec_final BETWEEN $1 AND $2) AND eh.codigo::varchar = e.codigo AND e.estado = 1
                 AND eh.id_horarios = ch.id AND e.id = $3
             `, [fechaInicio, fechaFinal, empl_id, id]);
             if (HORARIO.rowCount > 0) {
@@ -89,6 +89,42 @@ class EmpleadoHorariosControlador {
             }
             else {
                 return res.status(404).jsonp({ text: 'Registros no encontrados' });
+            }
+        });
+    }
+    // METODO PARA CONSULTAR NUMERO DE HORAS DE TRABAJO
+    ObtenerNumeroHoras(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { codigo, fecha_inicio, fecha_final } = req.body;
+            // CONSULTA DE HORARIOS FIJOS DEL EMPLEADO
+            let fijo = yield database_1.default.query(`
+            SELECT eh.fec_inicio, eh.fec_final, ec.hora_trabaja
+            FROM empl_horarios AS eh, empl_cargos AS ec
+            WHERE eh.id_empl_cargo = ec.id AND eh.codigo::varchar = $1
+			    AND ($2 BETWEEN eh.fec_inicio AND eh.fec_final)
+			    AND ($3 BETWEEN eh.fec_inicio AND eh.fec_final)
+            `, [codigo, fecha_inicio, fecha_final])
+                .then(result => { return result.rows; });
+            if (fijo.length === 0) {
+                // METODO PARA BUSCAR HORARIOS ROTATIVOS
+                let rotativo = yield database_1.default.query(`
+                SELECT ph.fec_inicio, ph.fec_final, ec.hora_trabaja
+                FROM plan_horarios AS ph, empl_cargos AS ec
+                WHERE ph.id_cargo = ec.id AND ph.estado = true 
+                    AND ph.codigo::varchar = $1
+                    AND ($2 BETWEEN ph.fec_inicio AND ph.fec_final)
+                    AND ($3 BETWEEN ph.fec_inicio AND ph.fec_final)
+                `, [codigo, fecha_inicio, fecha_final])
+                    .then(result => { return result.rows; });
+                if (rotativo.length === 0) {
+                    return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+                }
+                else {
+                    return res.status(200).jsonp(rotativo);
+                }
+            }
+            else {
+                return res.status(200).jsonp(fijo);
             }
         });
     }
@@ -390,18 +426,6 @@ class EmpleadoHorariosControlador {
             }));
             res.jsonp({ message: 'La plantilla a sido receptada' });
             fs_1.default.unlinkSync(filePath);
-        });
-    }
-    ObtenerNumeroHoras(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_emple, fecha } = req.body;
-            const HORAS = yield database_1.default.query('SELECT * FROM VistaNumeroHoras WHERE id_emple = $1 AND $2 BETWEEN fec_inicio AND fec_final', [id_emple, fecha]);
-            if (HORAS.rowCount > 0) {
-                return res.jsonp(HORAS.rows);
-            }
-            else {
-                return res.status(404).jsonp({ text: 'Registros no encontrados' });
-            }
         });
     }
     ActualizarEmpleadoHorarios(req, res) {

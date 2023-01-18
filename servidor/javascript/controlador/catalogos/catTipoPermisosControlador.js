@@ -110,11 +110,13 @@ class TipoPermisosControlador {
             }
         });
     }
-    listAccess(req, res) {
+    // METODO PARA LISTAR TIPO DE PERMISOS DE ACUERDO AL ROL
+    ListarTipoPermisoRol(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const acce_empleado = req.params.acce_empleado;
-            const rolPermisos = yield database_1.default.query('SELECT * FROM cg_tipo_permisos WHERE acce_empleado = $1 ORDER BY ' +
-                'descripcion', [acce_empleado]);
+            const rolPermisos = yield database_1.default.query(`
+      SELECT * FROM cg_tipo_permisos WHERE acce_empleado = $1 ORDER BY descripcion
+      `, [acce_empleado]);
             res.json(rolPermisos.rows);
         });
     }

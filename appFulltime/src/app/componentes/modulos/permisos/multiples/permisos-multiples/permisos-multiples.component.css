@@ -4,17 +4,13 @@
     color: white;
 }
 
-#boton {
-    background-color: rgb(80, 87, 97);
-    color: white;
-}
-
 mat-form-field {
     padding: 10px 10px 0px 10px;
+    width: 300px;
 }
 
-#letras {
-    font-size: 14px;
+mat-label {
+    font-size: 13px;
 }
 
 [type="file"] {
@@ -70,22 +66,38 @@ mat-form-field {
     right: 80%
 }
 
-#respaldo {
+#fuente-certificado {
     font-size: 13px;
     display: inline-block;
 }
 
-.scrollbar {
-    float: left;
-    height: 400px;
-    width: 100%;
-    background: #fff;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    margin-bottom: 25px;
+#formulario {
+    width: 150px;
 }
 
-.scrollbar-primary::-webkit-scrollbar {
-    width: 12px;
-    background-color: #F5F5F5;
+#calculos {
+    width: 160px;
+}
+
+::ng-deep.mat-checkbox-checked.mat-accent.mat-checkbox-disabled .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    background-color: rgb(73, 123, 230) !important;
+    color: rgb(20, 19, 20);
+}
+
+#color_fuente {
+    color: rgb(8, 8, 8);
+    font-size: 14px;
+}
+
+#datosF {
+    padding-right: 5px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+#nota_certificado {
+    font-size: x-small;
+    padding-left: 10px;
+    color: rgb(15, 0, 228);
 }

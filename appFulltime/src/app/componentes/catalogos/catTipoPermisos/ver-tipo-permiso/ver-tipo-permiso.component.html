@@ -54,7 +54,7 @@
                                                 <label class="col-sm col-form-label" *ngIf="p.fec_validar == false">
                                                         <b>Restricción por fecha:</b> No
                                                 </label>
-                                                <br>
+                                                <br *ngIf="p.fec_validar == true">
                                                 <label class="col-sm col-form-label" *ngIf="p.fec_validar == true">
                                                         <b>Fecha no permitida:</b> {{p.fecha_}}
                                                 </label>

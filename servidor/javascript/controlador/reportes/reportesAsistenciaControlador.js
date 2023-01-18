@@ -43,9 +43,7 @@ class ReportesAsistenciaControlador {
                 WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
                 `, [dep.id_suc])
                     .then(result => {
-                    return result.rows.filter(obj => {
-                        return obj.name_dep != 'Ninguno';
-                    });
+                    return result.rows;
                 });
                 return dep;
             })));

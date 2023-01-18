@@ -46,7 +46,6 @@ export class EditarTipoPermisosComponent implements OnInit {
   diasHoras: opcionesDiasHoras[] = [
     { valor: 'Dias', nombre: 'Dias' },
     { valor: 'Horas', nombre: 'Horas' },
-    { valor: 'Dias y Horas', nombre: 'Dias y Horas' },
   ];
 
   validarGuardar: boolean = false;
@@ -195,15 +194,6 @@ export class EditarTipoPermisosComponent implements OnInit {
         timeOut: 4000,
       });
     }
-    else if (form.diasHorasForm === 'Dias y Horas') {
-      this.primeroFormGroup.patchValue({ numHoraMaximoForm: this.tipoPermiso.num_hora_maximo, numDiaMaximoForm: this.tipoPermiso.num_dia_maximo });
-      this.primeroFormGroup.patchValue({ numDiaMaximoForm: 0, numHoraMaximoForm: '00:00' });
-      this.HabilitarDias = false;
-      this.HabilitarHoras = false;
-      this.toastr.info('Ingresar número de días, horas y minutos máximos de permiso.', '', {
-        timeOut: 6000,
-      });
-    }
   }
 
   // METODO PARA IMPRIMIR DATOS DE HORAS - DIAS DE PERMISO
@@ -218,10 +208,6 @@ export class EditarTipoPermisosComponent implements OnInit {
       this.selectDiasHoras = this.diasHoras[0].valor;
       this.HabilitarDias = false;
       this.HabilitarHoras = true;
-    } else {
-      this.selectDiasHoras = this.diasHoras[2].valor;
-      this.HabilitarDias = false;
-      this.HabilitarHoras = false;
     }
   }
 
