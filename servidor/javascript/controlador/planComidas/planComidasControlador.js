@@ -599,7 +599,7 @@ class PlanComidasControlador {
         return __awaiter(this, void 0, void 0, function* () {
             var xml = builder.create('root').ele(req.body).end({ pretty: true });
             console.log(req.body.userName);
-            let filename = "Roles-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+            let filename = "PlanComidas-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
             fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
             });
             res.jsonp({ text: 'XML creado', name: filename });

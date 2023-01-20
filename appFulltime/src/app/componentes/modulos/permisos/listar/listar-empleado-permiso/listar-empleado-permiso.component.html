@@ -61,7 +61,7 @@
         <mat-paginator id="pagina" [length]="listaPermisosFiltradas.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
-        <div class="d-flex justify-content-end" style="margin-right: 5%;">
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
             <i (click)="generarPdf('download','Permisos solicitados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
                 matTooltip="Descargar Lista de Tipo de Permisos en formato PDF.">
                 <p>PDF</p>
@@ -79,7 +79,9 @@
                 <p>XML</p>
             </i>
         </div>
-
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de permisos solicitados. </p>
+        </div>
     </div>
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista_autorizados">
@@ -124,7 +126,7 @@
             [pageSize]="tamanio_pagina_autorizado" [pageSizeOptions]="pageSizeOptions_autorizado" id="pagina"
             (page)="ManejarPaginaAutorizados($event)" showFirstLastButtons>
         </mat-paginator>
-        <div class="d-flex justify-content-end" style="margin-right: 5%;">
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
             <i (click)="generarPdf('download','Permisos autorizados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
                 matTooltip="Descargar Lista de Tipo de Permisos en formato PDF.">
                 <p>PDF</p>
@@ -141,6 +143,9 @@
                 matTooltip="Descargar Lista de Tipo de Permisos en formato XML.">
                 <p>XML</p>
             </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de permisos autorizados o negados. </p>
         </div>
     </div>
 </div>

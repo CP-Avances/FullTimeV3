@@ -136,7 +136,7 @@ export class ListarTipoComidasComponent implements OnInit {
   // LECTURA DE DATOS
   ObtenerTipoComidas(formato_hora: string) {
     this.tipoComidas = [];
-    this.rest.ConsultarTipoComida().subscribe(datos => {
+    this.rest.ConsultarTipoComidaDetalle().subscribe(datos => {
       this.tipoComidas = datos;
       console.log('tipo_comidas', this.tipoComidas)
       this.tipoComidas.forEach(data => {
@@ -257,22 +257,28 @@ export class ListarTipoComidasComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto','auto', 'auto', 'auto'],
             body: [
               [
                 { text: 'Código', style: 'tableHeader' },
                 { text: 'Servicio', style: 'tableHeader' },
                 { text: 'Menú', style: 'tableHeader' },
+                { text: 'Nombre del plato', style: 'tableHeader' },
+                { text: 'Valor', style: 'tableHeader' },
                 { text: 'Hora Inicia', style: 'tableHeader' },
                 { text: 'Hora Finaliza', style: 'tableHeader' },
+                { text: 'Observaciones', style: 'tableHeader' },
               ],
               ...this.tipoComidas.map(obj => {
                 return [
                   { text: obj.id, style: 'itemsTableD' },
-                  { text: obj.tipo, style: 'itemsTable' },
-                  { text: obj.nombre, style: 'itemsTable' },
-                  { text: obj.hora_inicio, style: 'itemsTable' },
-                  { text: obj.hora_fin, style: 'itemsTable' },
+                  { text: obj.tipo, style: 'itemsTableD' },
+                  { text: obj.nombre, style: 'itemsTableD' },
+                  { text: obj.nombre_plato, style: 'itemsTableD' },
+                  { text: obj.valor, style: 'itemsTableD' },
+                  { text: obj.hora_inicio, style: 'itemsTableD' },
+                  { text: obj.hora_fin, style: 'itemsTableD' },
+                  { text: obj.observacion, style: 'itemsTableD' },
                 ];
               })
             ]
@@ -298,8 +304,11 @@ export class ListarTipoComidasComponent implements OnInit {
         CODIGO: obj.id,
         SERVICIO: obj.tipo,
         MENU: obj.nombre,
+        NOMBRE_PLATO: obj.nombre_plato,
+        VALOR: obj.valor,
         HORA_INICIA: obj.hora_inicio,
-        HORA_FINALIZA: obj.hora_fin
+        HORA_FINALIZA: obj.hora_fin,
+        OBSERVACIONES: obj.observa_menu
       }
     }));
     // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE

@@ -29,6 +29,20 @@ class TipoComidasControlador {
             }
         });
     }
+    ListarTipoComidasDetalles(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const TIPO_COMIDAS = yield database_1.default.query('SELECT ctc.id, ctc.nombre, ctc.tipo_comida, ctc.hora_inicio, ' +
+                'ctc.hora_fin, tc.nombre AS tipo, dm.nombre AS nombre_plato, dm.valor, dm.observacion ' +
+                'FROM cg_tipo_comidas AS ctc, tipo_comida AS tc, detalle_menu AS dm ' +
+                'WHERE ctc.tipo_comida = tc.id AND dm.id_menu = ctc.id ORDER BY tc.nombre ASC, ctc.id ASC');
+            if (TIPO_COMIDAS.rowCount > 0) {
+                return res.jsonp(TIPO_COMIDAS.rows);
+            }
+            else {
+                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+            }
+        });
+    }
     VerUnMenu(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;

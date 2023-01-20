@@ -439,8 +439,8 @@ export class ListarFeriadosComponent implements OnInit {
                 return [
                   { text: obj.id, style: 'itemsTable' },
                   { text: obj.descripcion, style: 'itemsTableD' },
-                  { text: obj.fecha, style: 'itemsTable' },
-                  { text: obj.fec_recuperacion, style: 'itemsTable' },
+                  { text: obj.fecha_, style: 'itemsTable' },
+                  { text: obj.fec_recuperacion_, style: 'itemsTable' },
                 ];
               })
             ]
@@ -467,8 +467,8 @@ export class ListarFeriadosComponent implements OnInit {
       return {
         CODIGO: obj.id,
         FERIADO: obj.descripcion,
-        FECHA: obj.fecha,
-        FECHA_RECUPERA: obj.fec_recuperacion
+        FECHA: obj.fecha_,
+        FECHA_RECUPERA: obj.fec_recuperacion_
       }
     }));
     // METODO PARA DEFINIR TAMAÑO DE LAS COLUMNAS DEL REPORTE
@@ -499,8 +499,8 @@ export class ListarFeriadosComponent implements OnInit {
         "roles": {
           '@id': obj.id,
           "descripcion": obj.descripcion,
-          "fecha": obj.fecha,
-          "fec_recuperacion": obj.fec_recuperacion,
+          "fecha": obj.fecha_,
+          "fec_recuperacion": obj.fec_recuperacion_,
         }
       }
       arregloFeriados.push(objeto)

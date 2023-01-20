@@ -54,7 +54,6 @@ export class ListarParametroComponent implements OnInit {
     public restE: EmpleadoService,
     public ventana: MatDialog,
     public restEmpre: EmpresaService,
-    private rest: TipoPermisosService,
     private restP: ParametrosService,
     private toastr: ToastrService,
     private router: Router,
@@ -189,7 +188,7 @@ export class ListarParametroComponent implements OnInit {
     return {
 
       // Encabezado de la página
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
@@ -225,8 +224,6 @@ export class ListarParametroComponent implements OnInit {
     };
   }
 
-  DescuentoSelect: any = ['Vacaciones', 'Ninguno'];
-  AccesoEmpleadoSelect: any = ['Si', 'No'];
   presentarDataPDFTipoPermisos() {
     return {
       columns: [
@@ -234,48 +231,18 @@ export class ListarParametroComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
-                { text: 'Permiso', style: 'tableHeader' },
-                { text: 'Días de permiso', style: 'tableHeader' },
-                { text: 'Horas de permiso', style: 'tableHeader' },
-                { text: 'Solicita Empleado', style: 'tableHeader' },
-                { text: 'Días para solicitar', style: 'tableHeader' },
-                { text: 'Incluye almuerzo', style: 'tableHeader' },
-                { text: 'Afecta Vacaciones', style: 'tableHeader' },
-                { text: 'Acumular', style: 'tableHeader' },
-                { text: 'Notificar por correo', style: 'tableHeader' },
-                { text: 'Descuento', style: 'tableHeader' },
-                { text: 'Actualizar', style: 'tableHeader' },
-                { text: 'Eliminar', style: 'tableHeader' },
-                { text: 'Preautorizar', style: 'tableHeader' },
-                { text: 'Autorizar', style: 'tableHeader' },
-                { text: 'Legalizar', style: 'tableHeader' },
-                { text: 'Días para Justificar', style: 'tableHeader' }
+                { text: 'Código', style: 'tableHeader' },
+                { text: 'Descripción', style: 'tableHeader' },
+                { text: 'Detalle', style: 'tableHeader' },
               ],
               ...this.parametros.map(obj => {
-                var descuento = this.DescuentoSelect[obj.tipo_descuento - 1];
-                var acceso = this.AccesoEmpleadoSelect[obj.acce_empleado - 1];
                 return [
                   { text: obj.id, style: 'itemsTable' },
                   { text: obj.descripcion, style: 'itemsTable' },
-                  { text: obj.num_dia_maximo, style: 'itemsTable' },
-                  { text: obj.num_hora_maximo, style: 'itemsTable' },
-                  { text: acceso, style: 'itemsTable' },
-                  { text: obj.num_dia_ingreso, style: 'itemsTable' },
-                  { text: obj.almu_incluir, style: 'itemsTable' },
-                  { text: obj.vaca_afecta, style: 'itemsTable' },
-                  { text: obj.anio_acumula, style: 'itemsTable' },
-                  { text: obj.correo, style: 'itemsTable' },
-                  { text: descuento, style: 'itemsTable' },
-                  { text: obj.actualizar, style: 'itemsTable' },
-                  { text: obj.eliminar, style: 'itemsTable' },
-                  { text: obj.preautorizar, style: 'itemsTable' },
-                  { text: obj.autorizar, style: 'itemsTable' },
-                  { text: obj.legalizar, style: 'itemsTable' },
-                  { text: obj.gene_justificacion, style: 'itemsTable' },
+                  { text: obj.detalle, style: 'itemsTable' },
                 ];
               })
             ]
@@ -299,7 +266,7 @@ export class ListarParametroComponent implements OnInit {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.parametros);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, wsr, 'ParametrosGenerales');
-    xlsx.writeFile(wb, "ParametrosGenerales" + new Date().getTime() + '.xlsx');
+    xlsx.writeFile(wb, "ParametrosGeneralesEXCEL" + new Date().getTime() + '.xlsx');
   }
 
   /****************************************************************************************************** 
@@ -321,39 +288,21 @@ export class ListarParametroComponent implements OnInit {
   data: any = [];
   exportToXML() {
     var objeto;
-    var arregloTipoPermisos = [];
+    var arregloParametrosGenerales = [];
     this.parametros.forEach(obj => {
-      var descuento = this.DescuentoSelect[obj.tipo_descuento - 1];
-      var acceso = this.AccesoEmpleadoSelect[obj.acce_empleado - 1];
       objeto = {
-        "tipo_permiso": {
+        "tipo_parametro": {
           '@id': obj.id,
           "descripcion": obj.descripcion,
-          "num_dia_maximo": obj.num_dia_maximo,
-          "num_hora_maximo": obj.num_hora_maximo,
-          "acce_empleado": acceso,
-          "num_dia_ingreso": obj.num_dia_ingreso,
-          "almu_incluir": obj.almu_incluir,
-          "vaca_afecta": obj.vaca_afecta,
-          "anio_acumula": obj.anio_acumula,
-          "correo": obj.correo,
-          "tipo_descuento": descuento,
-          "actualizar": obj.actualizar,
-          "eliminar": obj.eliminar,
-          "preautorizar": obj.preautorizar,
-          "autorizar": obj.autorizar,
-          "legalizar": obj.legalizar,
-          "fec_validar": obj.fec_validar,
-          "gene_justificacion": obj.gene_justificacion,
+          "detalle": obj.detalle,
         }
       }
-      arregloTipoPermisos.push(objeto)
+      arregloParametrosGenerales.push(objeto)
     });
 
-    this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
+    this.restP.CrearXML(arregloParametrosGenerales).subscribe(res => {
       this.data = res;
-      console.log("prueba data", res)
-      this.urlxml = `${environment.url}/departamento/download/` + this.data.name;
+      this.urlxml = `${environment.url}/parametrizacion/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });
   }

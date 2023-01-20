@@ -658,10 +658,9 @@ export class ListaPlanificacionesComponent implements OnInit {
         {
           width: "auto",
           table: {
-            widths: ["auto", "auto", "auto", "auto", "auto", "auto", "auto"],
+            widths: ["auto", "auto", "auto", "auto", "auto", "auto"],
             body: [
               [
-                { text: "Código", style: "tableHeader" },
                 { text: "Descripción", style: "tableHeader" },
                 { text: "Fecha inicio", style: "tableHeader" },
                 { text: "Fecha Final", style: "tableHeader" },
@@ -671,7 +670,6 @@ export class ListaPlanificacionesComponent implements OnInit {
               ],
               ...this.listaPlan.map((obj) => {
                 return [
-                  { text: obj.id, style: "itemsTable" },
                   { text: obj.descripcion, style: "itemsTable" },
                   { text: obj.fecha_desde_, style: "itemsTable" },
                   { text: obj.fecha_hasta_, style: "itemsTable" },
@@ -702,7 +700,6 @@ export class ListaPlanificacionesComponent implements OnInit {
    exportToExcel() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.listaPlan.map(obj => {
       return {
-        Codigo: obj.id,
         Descripcion: obj.descripcion,
         Fecha_Inicio: obj.fecha_desde_,
         Fecha_Fin: obj.fecha_hasta_,
@@ -730,7 +727,6 @@ export class ListaPlanificacionesComponent implements OnInit {
    exportToCVS() {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.listaPlan.map(obj => {
       return {
-        Codigo: obj.id,
         Descripcion: obj.descripcion,
         Fecha_Inicio: obj.fecha_desde_,
         Fecha_Fin: obj.fecha_hasta_,

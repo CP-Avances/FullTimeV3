@@ -21,23 +21,11 @@ class UbicacionRutas {
          ** **                     CONSULTAS DE COORDENADAS DE UBICACION DEL USUARIO                     ** **
          ** *********************************************************************************************** **/
          
-         // LISTAR COORDENADAS DE UBICACION DEL USUARIO
-         this.router.get('/coordenadas-usuario/:id_empl', TokenValidation, UBICACION_CONTROLADOR.ListarRegistroUsuario);
+        // LISTAR COORDENADAS DE UBICACION DEL USUARIO
+        this.router.get('/coordenadas-usuario/:id_empl', TokenValidation, UBICACION_CONTROLADOR.ListarRegistroUsuario);
        
-
-
-
-
-
-
-
-
-
-
-
-
         this.router.post('/coordenadas-usuario', TokenValidation, UBICACION_CONTROLADOR.RegistrarCoordenadasUsuario);
-       this.router.get('/coordenadas-usuarios/general/:id_ubicacion', UBICACION_CONTROLADOR.ListarRegistroUsuarioU);
+        this.router.get('/coordenadas-usuarios/general/:id_ubicacion', UBICACION_CONTROLADOR.ListarRegistroUsuarioU);
         this.router.delete('/eliminar-coordenadas-usuario/:id', TokenValidation, UBICACION_CONTROLADOR.EliminarCoordenadasUsuario);
 
 
@@ -53,7 +41,10 @@ class UbicacionRutas {
         this.router.get('/ultimo-registro', UBICACION_CONTROLADOR.BuscarUltimoRegistro);
         this.router.delete('/eliminar/:id', TokenValidation, UBICACION_CONTROLADOR.EliminarCoordenadas);
 
-
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, UBICACION_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', UBICACION_CONTROLADOR.downloadXML);
     }
 }
 

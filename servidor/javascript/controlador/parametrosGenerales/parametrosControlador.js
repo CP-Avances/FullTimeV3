@@ -21,7 +21,9 @@ class ParametrosControlador {
     ListarParametros(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const PARAMETRO = yield database_1.default.query(`
-            SELECT * FROM tipo_parametro ORDER BY id DESC
+            SELECT tp.id, tp.descripcion, dtp.descripcion AS detalle
+            FROM tipo_parametro AS tp, detalle_tipo_parametro AS dtp
+            WHERE tp.id = dtp.id_tipo_parametro
             `);
             if (PARAMETRO.rowCount > 0) {
                 return res.jsonp(PARAMETRO.rows);

@@ -341,14 +341,14 @@ export class ListarRelojesComponent implements OnInit {
             widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'ID', style: 'tableHeader' },
                 { text: 'Nombre', style: 'tableHeader' },
                 { text: 'IP', style: 'tableHeader' },
                 { text: 'Puerto', style: 'tableHeader' },
                 { text: 'Marca', style: 'tableHeader' },
                 { text: 'Modelo', style: 'tableHeader' },
                 { text: 'Serie', style: 'tableHeader' },
-                { text: 'ID Fabricante', style: 'tableHeader' },
+                { text: 'ID Fabricanción', style: 'tableHeader' },
                 { text: 'Fabricante', style: 'tableHeader' },
                 { text: 'Mac', style: 'tableHeader' },
                 { text: 'Departamento', style: 'tableHeader' },
@@ -407,7 +407,7 @@ export class ListarRelojesComponent implements OnInit {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.relojes);
     const csvDataR = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataR], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "DispositivosCSV" + new Date().getTime() + '.csv');
+    FileSaver.saveAs(data, "RelojesCSV" + new Date().getTime() + '.csv');
   }
 
   /** ********************************************************************************************** **
@@ -421,7 +421,7 @@ export class ListarRelojesComponent implements OnInit {
     var arregloDispositivos = [];
     this.relojes.forEach(obj => {
       objeto = {
-        "dispositivo": {
+        "reloj": {
           '@id': obj.id,
           "nombre": obj.nombre,
           "ip": obj.ip,
@@ -432,10 +432,10 @@ export class ListarRelojesComponent implements OnInit {
           "id_fabricacion": obj.id_fabricacion,
           "fabricante": obj.fabricante,
           "mac": obj.mac,
-          "nomdepar": obj.nomdepar,
-          "nomsucursal": obj.nomsucursal,
-          "nomempresa": obj.nomempresa,
-          "nomciudad": obj.nomciudad,
+          "nombre_departamento": obj.nomdepar,
+          "nombre_sucursal": obj.nomsucursal,
+          "nombre_empresa": obj.nomempresa,
+          "nombre_ciudad": obj.nomciudad,
         }
       }
       arregloDispositivos.push(objeto)

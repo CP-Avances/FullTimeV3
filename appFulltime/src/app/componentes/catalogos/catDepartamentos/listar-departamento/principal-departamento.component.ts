@@ -251,7 +251,7 @@ export class PrincipalDepartamentoComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: [30, 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
                 { text: 'Código', style: 'tableHeader' },

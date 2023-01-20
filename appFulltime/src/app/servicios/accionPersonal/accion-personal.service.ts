@@ -112,4 +112,9 @@ export class AccionPersonalService {
   Buscarprocesos(id: any) {
     return this.http.get(`${environment.url}/accionPersonal/lista/procesos/${id}`);
   }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/accionPersonal/xmlDownload`, data);
+  }
 }

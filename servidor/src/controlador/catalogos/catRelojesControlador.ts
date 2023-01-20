@@ -42,7 +42,7 @@ class RelojesControlador {
     // METODO PARA CREAR ARCHIVO XML
     public async FileXML(req: Request, res: Response): Promise<any> {
         var xml = builder.create('root').ele(req.body).end({ pretty: true });
-        let filename = "Dispositivos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+        let filename = "Relojes-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
         fs.writeFile(`xmlDownload/${filename}`, xml, function (err) {
         });
         res.jsonp({ text: 'XML creado', name: filename });

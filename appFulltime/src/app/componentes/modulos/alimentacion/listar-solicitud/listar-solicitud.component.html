@@ -64,6 +64,27 @@
         <mat-paginator id="pagina" [length]="lista_solicitudes_filtradas.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Servicios de alimentación solicitados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación solicitados en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Servicios de alimentación solicitados')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación solicitados en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Servicios de alimentación solicitados')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación solicitados en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Servicios de alimentación solicitados')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación solicitados en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de servicios de alimentación solicitados. </p>
+        </div>
     </div>
 </div>
 <!-- TABLA CON LISTA DE SOLICITUDES DE SERVICIO DE ALIMENTACIÓN AUTORIZADAS O NEGADAS -->
@@ -134,6 +155,27 @@
             [pageSizeOptions]="pageSizeOptions_autorizado" id="pagina" (page)="ManejarPaginaAutorizados($event)"
             showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Servicios de alimentación aprobados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación aprobados en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Servicios de alimentación aprobados')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación aprobados en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Servicios de alimentación aprobados')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación aprobados en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Servicios de alimentación aprobados')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación aprobados en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de servicios de alimentación aprobados. </p>
+        </div>
     </div>
 </div>
 <!-- TABLA CON LISTA DE SOLICITUDES DE SERVICIO DE ALIMENTACIÓN EXPIRADAS -->
@@ -170,6 +212,27 @@
             [pageSizeOptions]="pageSizeOptions_expirada" id="pagina" (page)="ManejarPaginaExpiradas($event)"
             showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Servicios de alimentación finalizados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación finalizados en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Servicios de alimentación finalizados')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación finalizados en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Servicios de alimentación finalizados')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación finalizados en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Servicios de alimentación finalizados')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de servicios de alimentación finalizados en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de servicios de alimentación finalizados. </p>
+        </div>
     </div>
 </div>
 
