@@ -146,10 +146,10 @@ export class PlanComidasService {
     return this.http.post(`${environment.url}/planComidas/empleado/plan`, datos);
   }
 
-     // METODO PARA CREAR ARCHIVO XML
-     CrearXML(data: any) {
-      return this.http.post(`${environment.url}/planComidas/xmlDownload`, data);
-    }
+   // METODO PARA CREAR ARCHIVO XML
+   CrearXML(data: any) {
+    return this.http.post(`${environment.url}/planComidas/xmlDownload`, data);
+  }
 
 
   /** *********************************************************************************************** **

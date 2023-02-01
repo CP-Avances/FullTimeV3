@@ -70,6 +70,27 @@
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)"
             (click)="calcularHoraPaginacion()" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Solicitudes de horas extras')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Solicitudes de horas extras')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Solicitudes de horas extras')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Solicitudes de horas extras')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de solicitudes de horas extras. </p>
+        </div>
     </div>
 </div>
 <!--************************** LISTA DE SOLICITUDES DE HORAS EXTRAS CON OBSERVACIONES **************************-->
@@ -147,6 +168,27 @@
             [pageSizeOptions]="pageSizeOptions_observacion" id="pagina" (page)="ManejarPaginaObservacion($event)"
             (click)="calcularHoraPaginacionObservacion()" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Solicitudes de horas extras con observaciones')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras con observaciones en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Solicitudes de horas extras con observaciones')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras con observaciones en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Solicitudes de horas extras con observaciones')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras con observaciones en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Solicitudes de horas extras con observaciones')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de solicitudes de horas extras con observaciones en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de solicitudes de horas extras con observaciones. </p>
+        </div>
     </div>
 </div>
 <!--************************** LISTA DE SOLICITUDES DE HORAS EXTRAS AUTORIZADAS O NEGADAS *************************-->
@@ -197,6 +239,27 @@
             [pageSizeOptions]="pageSizeOptions_auto" id="pagina" (page)="ManejarPaginaAutorizadas($event)"
             showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Horas extras autorizadas o negadas')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de horas extras autorizadas o negadas en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Horas extras autorizadas o negadas')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de horas extras autorizadas o negadas en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Horas extras autorizadas o negadas')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de horas extras autorizadas o negadas en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Horas extras autorizadas o negadas')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de horas extras autorizadas o negadas en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de horas extras autorizadas o negadas. </p>
+        </div>
     </div>
 </div>
 

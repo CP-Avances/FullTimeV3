@@ -123,4 +123,9 @@ export class PedHoraExtraService {
     return this.http.delete(`${environment.url}/horas-extras-pedidas/eliminar-documento-web/${documento}`,)
   }
 
+   // METODO PARA CREAR ARCHIVO XML
+   CrearXML(data: any) {
+    return this.http.post(`${environment.url}/horas-extras-pedidas/xmlDownload`, data);
+  }
+
 }

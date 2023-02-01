@@ -91,5 +91,9 @@ export class VacacionesService {
     return this.http.post<any>(`${environment.url}/vacaciones/mail-noti`, datos);
   }
 
+   // METODO PARA CREAR ARCHIVO XML
+   CrearXML(data: any) {
+    return this.http.post(`${environment.url}/vacaciones/xmlDownload`, data);
+  }
 
 }

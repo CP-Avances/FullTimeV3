@@ -86,11 +86,11 @@ export class ListarSolicitudComponent implements OnInit {
 
   get habilitarComida(): boolean { return this.funciones.alimentacion; }
 
-    // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
-    get s_color(): string {return this.plantilla.color_Secundary;}
-    get p_color(): string {return this.plantilla.color_Primary;}
-    get logoE(): string {return this.plantilla.logoBase64;}
-    get frase(): string {return this.plantilla.marca_Agua;}
+  // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
+  get s_color(): string {return this.plantilla.color_Secundary;}
+  get p_color(): string {return this.plantilla.color_Primary;}
+  get logoE(): string {return this.plantilla.logoBase64;}
+  get frase(): string {return this.plantilla.marca_Agua;}
 
   constructor(
     private plantilla: PlantillaReportesService, // SERVICIO DATOS DE EMPRESA
@@ -120,13 +120,13 @@ export class ListarSolicitudComponent implements OnInit {
     }
   }
 
-    // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO
-    ObtenerEmpleados(idemploy: any) {
-      this.empleado = [];
-      this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe((data) => {
-        this.empleado = data;
-      });
-    }
+  // METODO PARA VER LA INFORMACIÓN DEL EMPLEADO
+  ObtenerEmpleados(idemploy: any) {
+    this.empleado = [];
+    this.restEmpleado.BuscarUnEmpleado(idemploy).subscribe((data) => {
+      this.empleado = data;
+    });
+  }
 
   /** **************************************************************************************** **
    ** **                   BUSQUEDA DE FORMATOS DE FECHAS Y HORAS                           ** ** 

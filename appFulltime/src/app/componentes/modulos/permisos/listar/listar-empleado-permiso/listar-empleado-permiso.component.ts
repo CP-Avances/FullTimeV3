@@ -541,7 +541,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
     }
     wsr["!cols"] = wscols;
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, wsr, 'LISTA ROLES');
+    xlsx.utils.book_append_sheet(wb, wsr, 'LISTA PERMISOS');
     xlsx.writeFile(wb, `${opcion}EXCEL` + new Date().getTime() + '.xlsx');
   }
 
