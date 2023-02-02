@@ -17,6 +17,7 @@ class TipoComidasRuta {
     }
     configuracion() {
         this.router.get('/', verificarToken_1.TokenValidation, catTipoComidasControlador_1.default.ListarTipoComidas);
+        this.router.get('/detalle', verificarToken_1.TokenValidation, catTipoComidasControlador_1.default.ListarTipoComidasDetalles);
         this.router.get('/:id', verificarToken_1.TokenValidation, catTipoComidasControlador_1.default.ListarUnTipoComida);
         this.router.get('/buscar/menu/:id', verificarToken_1.TokenValidation, catTipoComidasControlador_1.default.VerUnMenu);
         this.router.post('/', verificarToken_1.TokenValidation, catTipoComidasControlador_1.default.CrearTipoComidas);

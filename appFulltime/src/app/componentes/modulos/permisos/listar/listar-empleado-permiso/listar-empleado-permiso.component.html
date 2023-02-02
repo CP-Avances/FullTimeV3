@@ -61,6 +61,27 @@
         <mat-paginator id="pagina" [length]="listaPermisosFiltradas.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Permisos solicitados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Permisos solicitados')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Permisos solicitados')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Permisos solicitados')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de permisos solicitados. </p>
+        </div>
     </div>
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;" *ngIf="lista_autorizados">
@@ -101,14 +122,36 @@
                 </tbody>
             </table>
         </div>
-        <mat-paginator id="pagina" [length]="listaPermisosAutorizadosFiltrados.length" [pageSize]="tamanio_pagina_autorizado"
-            [pageSizeOptions]="pageSizeOptions_autorizado" id="pagina" (page)="ManejarPaginaAutorizados($event)"
-            showFirstLastButtons>
+        <mat-paginator id="pagina" [length]="listaPermisosAutorizadosFiltrados.length"
+            [pageSize]="tamanio_pagina_autorizado" [pageSizeOptions]="pageSizeOptions_autorizado" id="pagina"
+            (page)="ManejarPaginaAutorizados($event)" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="generarPdf('download','Permisos autorizados')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="exportToExcel('Permisos autorizados')" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="exportToCVS('Permisos autorizados')" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="exportToXML('Permisos autorizados')" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de Tipo de Permisos en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de permisos autorizados o negados. </p>
+        </div>
     </div>
 </div>
 
-<div *ngIf="(validarMensaje1) && (validarMensaje2)" class="container" style="padding-bottom: 50px; text-align: center; padding-top: 20px;" >
+<div *ngIf="(validarMensaje1) && (validarMensaje2)" class="container"
+    style="padding-bottom: 50px; text-align: center; padding-top: 20px;">
     <div class="mat-elevation-z8" style="color: rgb(158, 154, 154); padding: 2%;">
         <h5> Por el Momento no tiene Solicitudes de Permisos para Aprobar </h5>
     </div>

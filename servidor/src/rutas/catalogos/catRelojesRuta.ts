@@ -24,7 +24,7 @@ class RelojesRuta {
         // METODO PARA CREAR ARCHIVO XML
         this.router.post('/xmlDownload/', TokenValidation, RELOJES_CONTROLADOR.FileXML);
         // METODO PARA DESCARGAR ARCHIVO XML
-        this.router.get('/xmlDownload/:nameXML', RELOJES_CONTROLADOR.downloadXML);
+        this.router.get('/download/:nameXML', RELOJES_CONTROLADOR.downloadXML);
         // METODO PARA REGISTRAR DISPOSITIVO
         this.router.post('/', TokenValidation, RELOJES_CONTROLADOR.CrearRelojes);
         // METODO PARA VER DATOS DE UN DISPOSITIVO
@@ -37,12 +37,6 @@ class RelojesRuta {
         this.router.post('/xmlDownloadIdDispositivos/', TokenValidation, RELOJES_CONTROLADOR.FileXMLDispositivos);
         // METODO PARA DESCARGAR ARCHIVO XML
         this.router.get('/downloadIdDispositivos/:nameXML', RELOJES_CONTROLADOR.downloadXMLIdDispositivos);
-
-
-
-
-
-
 
 
         this.router.post('/plantillaExcel/', [TokenValidation, multipartMiddlewarePlantilla], RELOJES_CONTROLADOR.CargaPlantillaRelojes);

@@ -62,18 +62,6 @@ export class ParametrosService {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   CrearXML(data: any) {
     return this.http.post(`${environment.url}/parametrizacion/xmlDownload`, data);
   }

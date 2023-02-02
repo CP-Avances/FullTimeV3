@@ -22,24 +22,9 @@ export class EmpleadoUbicacionService {
     return this.http.get(`${environment.url}/ubicacion/coordenadas-usuario/${id_empl}`);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  
   RegistrarCoordenadasUsuario(data: any) {
     return this.http.post<any>(`${environment.url}/ubicacion/coordenadas-usuario`, data);
   }
-
-
 
   ListarCoordenadasUsuarioU(id_ubicacion: number) {
     return this.http.get(`${environment.url}/ubicacion/coordenadas-usuarios/general/${id_ubicacion}`);
@@ -48,15 +33,6 @@ export class EmpleadoUbicacionService {
   EliminarCoordenadasUsuario(id: number) {
     return this.http.delete<any>(`${environment.url}/ubicacion/eliminar-coordenadas-usuario/${id}`);
   }
-
-
-
-
-
-
-
-
-
 
 
   /** ***************************************************************************************** **
@@ -91,6 +67,8 @@ export class EmpleadoUbicacionService {
     return this.http.delete<any>(`${environment.url}/ubicacion/eliminar/${id}`);
   }
 
-
-
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/ubicacion/xmlDownload`, data);
+  }
 }

@@ -227,8 +227,6 @@ export class ListarTipoAccionComponent implements OnInit {
     };
   }
 
-  DescuentoSelect: any = ['Vacaciones', 'Ninguno'];
-  AccesoEmpleadoSelect: any = ['Si', 'No'];
   presentarDataPDFTipoPermisos() {
     return {
       columns: [
@@ -236,48 +234,22 @@ export class ListarTipoAccionComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
-                { text: 'Permiso', style: 'tableHeader' },
-                { text: 'Días de permiso', style: 'tableHeader' },
-                { text: 'Horas de permiso', style: 'tableHeader' },
-                { text: 'Solicita Empleado', style: 'tableHeader' },
-                { text: 'Días para solicitar', style: 'tableHeader' },
-                { text: 'Incluye almuerzo', style: 'tableHeader' },
-                { text: 'Afecta Vacaciones', style: 'tableHeader' },
-                { text: 'Acumular', style: 'tableHeader' },
-                { text: 'Notificar por correo', style: 'tableHeader' },
-                { text: 'Descuento', style: 'tableHeader' },
-                { text: 'Actualizar', style: 'tableHeader' },
-                { text: 'Eliminar', style: 'tableHeader' },
-                { text: 'Preautorizar', style: 'tableHeader' },
-                { text: 'Autorizar', style: 'tableHeader' },
-                { text: 'Legalizar', style: 'tableHeader' },
-                { text: 'Días para Justificar', style: 'tableHeader' }
+                { text: 'Código', style: 'tableHeader' },
+                { text: 'Tipo de acción de personal', style: 'tableHeader' },
+                { text: 'Descripción', style: 'tableHeader' },
+                { text: 'Base Legal', style: 'tableHeader' },
+                { text: 'Tipo', style: 'tableHeader' },
               ],
               ...this.tipo_acciones.map(obj => {
-                var descuento = this.DescuentoSelect[obj.tipo_descuento - 1];
-                var acceso = this.AccesoEmpleadoSelect[obj.acce_empleado - 1];
                 return [
                   { text: obj.id, style: 'itemsTable' },
+                  { text: obj.nombre, style: 'itemsTable' },
                   { text: obj.descripcion, style: 'itemsTable' },
-                  { text: obj.num_dia_maximo, style: 'itemsTable' },
-                  { text: obj.num_hora_maximo, style: 'itemsTable' },
-                  { text: acceso, style: 'itemsTable' },
-                  { text: obj.num_dia_ingreso, style: 'itemsTable' },
-                  { text: obj.almu_incluir, style: 'itemsTable' },
-                  { text: obj.vaca_afecta, style: 'itemsTable' },
-                  { text: obj.anio_acumula, style: 'itemsTable' },
-                  { text: obj.correo, style: 'itemsTable' },
-                  { text: descuento, style: 'itemsTable' },
-                  { text: obj.actualizar, style: 'itemsTable' },
-                  { text: obj.eliminar, style: 'itemsTable' },
-                  { text: obj.preautorizar, style: 'itemsTable' },
-                  { text: obj.autorizar, style: 'itemsTable' },
-                  { text: obj.legalizar, style: 'itemsTable' },
-                  { text: obj.gene_justificacion, style: 'itemsTable' },
+                  { text: obj.base_legal, style: 'itemsTable' },
+                  { text: (obj.tipo_permiso==true?'Permiso':obj.tipo_vacacion==true?'Vacación':'Situación propuesta'), style: 'itemsTable' },
                 ];
               })
             ]
@@ -301,7 +273,7 @@ export class ListarTipoAccionComponent implements OnInit {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipo_acciones);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, wsr, 'TipoPermisos');
-    xlsx.writeFile(wb, "TipoPermisos" + new Date().getTime() + '.xlsx');
+    xlsx.writeFile(wb, "TipoAccionesPersonalEXCEL" + new Date().getTime() + '.xlsx');
   }
 
   /****************************************************************************************************** 
@@ -312,7 +284,7 @@ export class ListarTipoAccionComponent implements OnInit {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.tipo_acciones);
     const csvDataH = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataH], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "TipoPermisosCSV" + new Date().getTime() + '.csv');
+    FileSaver.saveAs(data, "TipoAccionesPersonalCSV" + new Date().getTime() + '.csv');
   }
 
   /* ****************************************************************************************************
@@ -323,39 +295,24 @@ export class ListarTipoAccionComponent implements OnInit {
   data: any = [];
   exportToXML() {
     var objeto;
-    var arregloTipoPermisos = [];
+    var arregloTipoAcciones = [];
     this.tipo_acciones.forEach(obj => {
-      var descuento = this.DescuentoSelect[obj.tipo_descuento - 1];
-      var acceso = this.AccesoEmpleadoSelect[obj.acce_empleado - 1];
       objeto = {
-        "tipo_permiso": {
+        "tipo_accion_personal": {
           '@id': obj.id,
+          "nombre":obj.nombre,
           "descripcion": obj.descripcion,
-          "num_dia_maximo": obj.num_dia_maximo,
-          "num_hora_maximo": obj.num_hora_maximo,
-          "acce_empleado": acceso,
-          "num_dia_ingreso": obj.num_dia_ingreso,
-          "almu_incluir": obj.almu_incluir,
-          "vaca_afecta": obj.vaca_afecta,
-          "anio_acumula": obj.anio_acumula,
-          "correo": obj.correo,
-          "tipo_descuento": descuento,
-          "actualizar": obj.actualizar,
-          "eliminar": obj.eliminar,
-          "preautorizar": obj.preautorizar,
-          "autorizar": obj.autorizar,
-          "legalizar": obj.legalizar,
-          "fec_validar": obj.fec_validar,
-          "gene_justificacion": obj.gene_justificacion,
+          "base_legal":obj.base_legal,
+          "tipo_permiso": obj.tipo_permiso==true?'Permiso':obj.tipo_vacacion==true?'Vacación':'Situación propuesta'
         }
       }
-      arregloTipoPermisos.push(objeto)
+      arregloTipoAcciones.push(objeto)
     });
-    // this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
-    //   this.data = res;
-    //   console.log("prueba data", res)
-    //   this.urlxml = `${environment.url}/departamento/download/` + this.data.name;
-    //   window.open(this.urlxml, "_blank");
-    // });
+    this.rest.CrearXML(arregloTipoAcciones).subscribe(res => {
+      this.data = res;
+      console.log("prueba data", res)
+      this.urlxml = `${environment.url}/departamento/download/` + this.data.name;
+      window.open(this.urlxml, "_blank");
+    });
   }
 }

@@ -56,6 +56,10 @@ class PermisosRutas {
         this.router.get('/documentos/:docs', permisosControlador_1.default.getDoc);
         // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
         this.router.delete('/eliminar-movil/:documento', permisosControlador_1.default.EliminarPermisoMovil);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, permisosControlador_1.default.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', permisosControlador_1.default.downloadXML);
         /** ************************************************************************************************* **
          ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** **
          ** ************************************************************************************************* **/

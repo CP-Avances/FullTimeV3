@@ -17,9 +17,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
-import { TipoPermisosService } from 'src/app/servicios/catalogos/catTipoPermisos/tipo-permisos.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
-import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { CrearCoordenadasComponent } from '../crear-coordenadas/crear-coordenadas.component';
 import { EditarCoordenadasComponent } from '../editar-coordenadas/editar-coordenadas.component';
 import { EmpleadoUbicacionService } from 'src/app/servicios/empleadoUbicacion/empleado-ubicacion.service';
@@ -55,7 +53,6 @@ export class ListarCoordenadasComponent implements OnInit {
   get habilitarGeolocalizacion(): boolean { return this.funciones.geolocalizacion; }
 
   constructor(
-    private rest: TipoPermisosService,
     public restE: EmpleadoService,
     public restEmpre: EmpresaService,
     public ventana: MatDialog,
@@ -204,7 +201,7 @@ export class ListarCoordenadasComponent implements OnInit {
     return {
 
       // Encabezado de la página
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
       watermark: { text: this.frase, color: 'blue', opacity: 0.1, bold: true, italics: false },
       header: { text: 'Impreso por:  ' + this.empleado[0].nombre + ' ' + this.empleado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
 
@@ -230,7 +227,7 @@ export class ListarCoordenadasComponent implements OnInit {
       },
       content: [
         { image: this.logo, width: 150, margin: [10, -25, 0, 5] },
-        { text: 'Lista de Tipos de Permisos', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
+        { text: 'Lista de coordenadas geográficas', bold: true, fontSize: 20, alignment: 'center', margin: [0, -30, 0, 10] },
         this.presentarDataPDFTipoPermisos(),
       ],
       styles: {
@@ -240,8 +237,7 @@ export class ListarCoordenadasComponent implements OnInit {
     };
   }
 
-  DescuentoSelect: any = ['Vacaciones', 'Ninguno'];
-  AccesoEmpleadoSelect: any = ['Si', 'No'];
+
   presentarDataPDFTipoPermisos() {
     return {
       columns: [
@@ -249,48 +245,20 @@ export class ListarCoordenadasComponent implements OnInit {
         {
           width: 'auto',
           table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
-                { text: 'Permiso', style: 'tableHeader' },
-                { text: 'Días de permiso', style: 'tableHeader' },
-                { text: 'Horas de permiso', style: 'tableHeader' },
-                { text: 'Solicita Empleado', style: 'tableHeader' },
-                { text: 'Días para solicitar', style: 'tableHeader' },
-                { text: 'Incluye almuerzo', style: 'tableHeader' },
-                { text: 'Afecta Vacaciones', style: 'tableHeader' },
-                { text: 'Acumular', style: 'tableHeader' },
-                { text: 'Notificar por correo', style: 'tableHeader' },
-                { text: 'Descuento', style: 'tableHeader' },
-                { text: 'Actualizar', style: 'tableHeader' },
-                { text: 'Eliminar', style: 'tableHeader' },
-                { text: 'Preautorizar', style: 'tableHeader' },
-                { text: 'Autorizar', style: 'tableHeader' },
-                { text: 'Legalizar', style: 'tableHeader' },
-                { text: 'Días para Justificar', style: 'tableHeader' }
+                { text: 'Código', style: 'tableHeader' },
+                { text: 'Descripción', style: 'tableHeader' },
+                { text: 'Latitud', style: 'tableHeader' },
+                { text: 'Longitud', style: 'tableHeader' },
               ],
               ...this.coordenadas.map(obj => {
-                var descuento = this.DescuentoSelect[obj.tipo_descuento - 1];
-                var acceso = this.AccesoEmpleadoSelect[obj.acce_empleado - 1];
                 return [
                   { text: obj.id, style: 'itemsTable' },
                   { text: obj.descripcion, style: 'itemsTable' },
-                  { text: obj.num_dia_maximo, style: 'itemsTable' },
-                  { text: obj.num_hora_maximo, style: 'itemsTable' },
-                  { text: acceso, style: 'itemsTable' },
-                  { text: obj.num_dia_ingreso, style: 'itemsTable' },
-                  { text: obj.almu_incluir, style: 'itemsTable' },
-                  { text: obj.vaca_afecta, style: 'itemsTable' },
-                  { text: obj.anio_acumula, style: 'itemsTable' },
-                  { text: obj.correo, style: 'itemsTable' },
-                  { text: descuento, style: 'itemsTable' },
-                  { text: obj.actualizar, style: 'itemsTable' },
-                  { text: obj.eliminar, style: 'itemsTable' },
-                  { text: obj.preautorizar, style: 'itemsTable' },
-                  { text: obj.autorizar, style: 'itemsTable' },
-                  { text: obj.legalizar, style: 'itemsTable' },
-                  { text: obj.gene_justificacion, style: 'itemsTable' },
+                  { text: obj.latitud, style: 'itemsTable' },
+                  { text: obj.longitud, style: 'itemsTable' },
                 ];
               })
             ]
@@ -314,7 +282,7 @@ export class ListarCoordenadasComponent implements OnInit {
     const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.coordenadas);
     const wb: xlsx.WorkBook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, wsr, 'ParametrosGenerales');
-    xlsx.writeFile(wb, "ParametrosGenerales" + new Date().getTime() + '.xlsx');
+    xlsx.writeFile(wb, "CoordenadasGeograficasEXCEL" + new Date().getTime() + '.xlsx');
   }
 
   /****************************************************************************************************** 
@@ -325,7 +293,7 @@ export class ListarCoordenadasComponent implements OnInit {
     const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.coordenadas);
     const csvDataH = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataH], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "ParametrosGeneralesCSV" + new Date().getTime() + '.csv');
+    FileSaver.saveAs(data, "CoordenadasGeograficasCSV" + new Date().getTime() + '.csv');
   }
 
   /* ****************************************************************************************************
@@ -336,39 +304,23 @@ export class ListarCoordenadasComponent implements OnInit {
   data: any = [];
   exportToXML() {
     var objeto;
-    var arregloTipoPermisos = [];
+    var arregloCoordenadas = [];
     this.coordenadas.forEach(obj => {
-      var descuento = this.DescuentoSelect[obj.tipo_descuento - 1];
-      var acceso = this.AccesoEmpleadoSelect[obj.acce_empleado - 1];
       objeto = {
         "tipo_permiso": {
           '@id': obj.id,
           "descripcion": obj.descripcion,
-          "num_dia_maximo": obj.num_dia_maximo,
-          "num_hora_maximo": obj.num_hora_maximo,
-          "acce_empleado": acceso,
-          "num_dia_ingreso": obj.num_dia_ingreso,
-          "almu_incluir": obj.almu_incluir,
-          "vaca_afecta": obj.vaca_afecta,
-          "anio_acumula": obj.anio_acumula,
-          "correo": obj.correo,
-          "tipo_descuento": descuento,
-          "actualizar": obj.actualizar,
-          "eliminar": obj.eliminar,
-          "preautorizar": obj.preautorizar,
-          "autorizar": obj.autorizar,
-          "legalizar": obj.legalizar,
-          "fec_validar": obj.fec_validar,
-          "gene_justificacion": obj.gene_justificacion,
+          "latitud": obj.latitud,
+          "longitud": obj.longitud,        
         }
       }
-      arregloTipoPermisos.push(objeto)
+      arregloCoordenadas.push(objeto)
     });
 
-    this.rest.CrearXML(arregloTipoPermisos).subscribe(res => {
+    this.restU.CrearXML(arregloCoordenadas).subscribe(res => {
       this.data = res;
       console.log("prueba data", res)
-      this.urlxml = `${environment.url}/departamento/download/` + this.data.name;
+      this.urlxml = `${environment.url}/ubicacion/download/` + this.data.name;
       window.open(this.urlxml, "_blank");
     });
   }

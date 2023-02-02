@@ -17,6 +17,7 @@ class TipoComidasRuta {
 
     configuracion(): void {
         this.router.get('/', TokenValidation, TIPO_COMIDAS_CONTROLADOR.ListarTipoComidas);
+        this.router.get('/detalle', TokenValidation, TIPO_COMIDAS_CONTROLADOR.ListarTipoComidasDetalles);
         this.router.get('/:id', TokenValidation, TIPO_COMIDAS_CONTROLADOR.ListarUnTipoComida);
         this.router.get('/buscar/menu/:id', TokenValidation, TIPO_COMIDAS_CONTROLADOR.VerUnMenu);
         this.router.post('/', TokenValidation, TIPO_COMIDAS_CONTROLADOR.CrearTipoComidas);

@@ -9,7 +9,9 @@ class ParametrosControlador {
     public async ListarParametros(req: Request, res: Response) {
         const PARAMETRO = await pool.query(
             `
-            SELECT * FROM tipo_parametro ORDER BY id DESC
+            SELECT tp.id, tp.descripcion, dtp.descripcion AS detalle
+            FROM tipo_parametro AS tp, detalle_tipo_parametro AS dtp
+            WHERE tp.id = dtp.id_tipo_parametro
             `
         );
         if (PARAMETRO.rowCount > 0) {

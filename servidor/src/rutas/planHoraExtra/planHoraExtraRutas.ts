@@ -47,6 +47,12 @@ class DepartamentoRutas {
         // BUSQUEDA DE DATOS DE PLANIFICACION POR ID DE USUARIO
         this.router.get('/listar-plan/:id', [TokenValidation, ModuloHoraExtraValidation], PLAN_HORA_EXTRA_CONTROLADOR.BuscarPlanUsuario);
 
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, PLAN_HORA_EXTRA_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', PLAN_HORA_EXTRA_CONTROLADOR.downloadXML);
+        
+
         /** ******************************************************************************************** **
          ** *             ENVIO DE CORREO ELECTRONICO DE PLANIFICACIONES DE HORAS EXTRAS               * **
          ** ******************************************************************************************** **/

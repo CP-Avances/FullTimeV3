@@ -23,7 +23,7 @@ class RelojesRuta {
         // METODO PARA CREAR ARCHIVO XML
         this.router.post('/xmlDownload/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.FileXML);
         // METODO PARA DESCARGAR ARCHIVO XML
-        this.router.get('/xmlDownload/:nameXML', catRelojesControlador_1.default.downloadXML);
+        this.router.get('/download/:nameXML', catRelojesControlador_1.default.downloadXML);
         // METODO PARA REGISTRAR DISPOSITIVO
         this.router.post('/', verificarToken_1.TokenValidation, catRelojesControlador_1.default.CrearRelojes);
         // METODO PARA VER DATOS DE UN DISPOSITIVO

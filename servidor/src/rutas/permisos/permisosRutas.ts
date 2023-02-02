@@ -27,19 +27,12 @@ class PermisosRutas {
         this.router.post('/permisos-solicitados-horas', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosHoras);
 
 
-
-
-
-
-
+        
         this.router.get('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisos);
         this.router.get('/lista/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarEstadosPermisos);
         this.router.get('/lista-autorizados/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisosAutorizados);
         this.router.get('/:id', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerUnPermiso);
         this.router.get('/permiso/editar/:id', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEditar);
-
-
-
         this.router.get('/permisoContrato/:id_empl_contrato', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoContrato);
         this.router.get('/datosSolicitud/:id_emple_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerDatosSolicitud);
         this.router.get('/datosAutorizacion/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerDatosAutorizacion);
@@ -74,6 +67,11 @@ class PermisosRutas {
         this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
         // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
         this.router.delete('/eliminar-movil/:documento', PERMISOS_CONTROLADOR.EliminarPermisoMovil);
+
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, PERMISOS_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', PERMISOS_CONTROLADOR.downloadXML);
 
 
         /** ************************************************************************************************* **

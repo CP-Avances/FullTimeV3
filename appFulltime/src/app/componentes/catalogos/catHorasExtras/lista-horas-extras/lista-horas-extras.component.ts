@@ -217,14 +217,18 @@ export class ListaHorasExtrasComponent implements OnInit {
    ** **                           METODO PARA EXPORTAR A PDF                                   ** **
    ** ******************************************************************************************** **/
   generarPdf(action = 'open') {
-    const documentDefinition = this.getDocumentDefinicion();
+    if (Object.keys(this.horasExtras).length===0) {
+      this.toastr.error('No se ha encontrado registro de horas extras.')
+    } else {
+      const documentDefinition = this.getDocumentDefinicion();
 
-    switch (action) {
-      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
-      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-      case 'download': pdfMake.createPdf(documentDefinition).download(); break;
-
-      default: pdfMake.createPdf(documentDefinition).open(); break;
+      switch (action) {
+        case 'open': pdfMake.createPdf(documentDefinition).open(); break;
+        case 'print': pdfMake.createPdf(documentDefinition).print(); break;
+        case 'download': pdfMake.createPdf(documentDefinition).download(); break;
+  
+        default: pdfMake.createPdf(documentDefinition).open(); break;
+      }
     }
 
   }
@@ -289,7 +293,7 @@ export class ListaHorasExtrasComponent implements OnInit {
             widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'Id', style: 'tableHeader' },
+                { text: 'Código', style: 'tableHeader' },
                 { text: 'Descripción', style: 'tableHeader' },
                 { text: 'Tipo Recargo', style: 'tableHeader' },
                 { text: 'Recargo Porcentual', style: 'tableHeader' },
@@ -331,10 +335,14 @@ export class ListaHorasExtrasComponent implements OnInit {
    ** **                                  METODO PARA EXPORTAR A EXCEL                            ** **
    ** ********************************************************************************************** **/
   exportToExcel() {
-    const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
-    const wb: xlsx.WorkBook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, wsr, 'HorasExtras');
-    xlsx.writeFile(wb, "HorasExtras" + new Date().getTime() + '.xlsx');
+    if (Object.keys(this.horasExtras).length===0) {
+      this.toastr.error('No se ha encontrado registro de horas extras.')
+    } else {
+      const wsr: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
+      const wb: xlsx.WorkBook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(wb, wsr, 'HorasExtras');
+      xlsx.writeFile(wb, "HorasExtras" + new Date().getTime() + '.xlsx');
+    }
   }
 
   /** ********************************************************************************************** ** 
@@ -342,10 +350,14 @@ export class ListaHorasExtrasComponent implements OnInit {
    ** ********************************************************************************************** **/
 
   exportToCVS() {
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
-    const csvDataH = xlsx.utils.sheet_to_csv(wse);
-    const data: Blob = new Blob([csvDataH], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(data, "HorasExtrasCSV" + new Date().getTime() + '.csv');
+    if (Object.keys(this.horasExtras).length===0) {
+      this.toastr.error('No se ha encontrado registro de horas extras.')
+    } else {
+      const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.horasExtras);
+      const csvDataH = xlsx.utils.sheet_to_csv(wse);
+      const data: Blob = new Blob([csvDataH], { type: 'text/csv;charset=utf-8;' });
+      FileSaver.saveAs(data, "HorasExtrasCSV" + new Date().getTime() + '.csv');
+    }
   }
 
   /** ********************************************************************************************** **
@@ -355,34 +367,38 @@ export class ListaHorasExtrasComponent implements OnInit {
   urlxml: string;
   data: any = [];
   exportToXML() {
-    var objeto;
-    var arreglohorasExtras = [];
-    this.horasExtras.forEach(obj => {
-      var incluirAlmuerzo = this.Almuerzo[obj.incl_almuerzo - 1];
-      objeto = {
-        "horas_extras": {
-          '@id': obj.id,
-          "descripcion": obj.descripcion,
-          "tipo_descuento": obj.tipo_descuento,
-          "reca_porcentaje": obj.reca_porcentaje,
-          "hora_inicio": obj.hora_inicio,
-          "hora_final": obj.hora_final,
-          "hora_jornada": obj.hora_jornada,
-          "tipo_dia": obj.tipo_dia,
-          "incl_almuerzo": incluirAlmuerzo,
+    if (Object.keys(this.horasExtras).length===0) {
+      this.toastr.error('No se ha encontrado registro de horas extras.')
+    } else {
+      var objeto;
+      var arreglohorasExtras = [];
+      this.horasExtras.forEach(obj => {
+        var incluirAlmuerzo = this.Almuerzo[obj.incl_almuerzo - 1];
+        objeto = {
+          "horas_extras": {
+            '@id': obj.id,
+            "descripcion": obj.descripcion,
+            "tipo_descuento": obj.tipo_descuento,
+            "reca_porcentaje": obj.reca_porcentaje,
+            "hora_inicio": obj.hora_inicio,
+            "hora_final": obj.hora_final,
+            "hora_jornada": obj.hora_jornada,
+            "tipo_dia": obj.tipo_dia,
+            "incl_almuerzo": incluirAlmuerzo,
+          }
         }
-      }
-      arreglohorasExtras.push(objeto)
-    });
+        arreglohorasExtras.push(objeto)
+      });
 
-    this.rest.CrearXML(arreglohorasExtras).subscribe(res => {
-      this.data = res;
-      console.log("prueba data", res)
-      this.urlxml = `${environment.url}/horasExtras/download/` + this.data.name;
-      window.open(this.urlxml, "_blank");
-    }, err => {
-      return this.validar.RedireccionarHomeAdmin(err.error)
-    });
-  }
+      this.rest.CrearXML(arreglohorasExtras).subscribe(res => {
+        this.data = res;
+        console.log("prueba data", res)
+        this.urlxml = `${environment.url}/horasExtras/download/` + this.data.name;
+        window.open(this.urlxml, "_blank");
+      }, err => {
+        return this.validar.RedireccionarHomeAdmin(err.error)
+      });
+    }
+  }  
 
 }

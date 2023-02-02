@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../../database"));
 const fs_1 = __importDefault(require("fs"));
-const builder = require('xmlbuilder');
+const builder = require("xmlbuilder");
 class RegimenControlador {
     /** ** ************************************************************************************************ **
      ** **                                  CONSULTAS REGIMEN LABORAL                                    ** **
@@ -23,7 +23,7 @@ class RegimenControlador {
     CrearRegimen(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas, continuidad_laboral, vacacion_dias_laboral, vacacion_dias_libre, vacacion_dias_calendario, acumular, dias_max_acumulacion, contar_feriados, contar_dias_libres, contar_licencias, contar_faltas, contar_permiso, vacacion_divisible, antiguedad, antiguedad_fija, anio_antiguedad, dias_antiguedad, antiguedad_variable, vacacion_dias_calendario_mes, vacacion_dias_laboral_mes, calendario_dias, laboral_dias } = req.body;
+                const { id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas, continuidad_laboral, vacacion_dias_laboral, vacacion_dias_libre, vacacion_dias_calendario, acumular, dias_max_acumulacion, contar_feriados, contar_dias_libres, contar_licencias, contar_faltas, contar_permiso, vacacion_divisible, antiguedad, antiguedad_fija, anio_antiguedad, dias_antiguedad, antiguedad_variable, vacacion_dias_calendario_mes, vacacion_dias_laboral_mes, calendario_dias, laboral_dias, } = req.body;
                 const response = yield database_1.default.query(`
                 INSERT INTO cg_regimenes 
                     (id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas,
@@ -34,30 +34,53 @@ class RegimenControlador {
                     vacacion_dias_laboral_mes, calendario_dias, laboral_dias)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,
                     $20, $21, $22, $23, $24, $25, $26, $27) RETURNING *
-                `, [id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas,
-                    continuidad_laboral, vacacion_dias_laboral, vacacion_dias_libre, vacacion_dias_calendario,
-                    acumular, dias_max_acumulacion, contar_feriados, contar_dias_libres, contar_licencias,
-                    contar_faltas, contar_permiso, vacacion_divisible, antiguedad, antiguedad_fija,
-                    anio_antiguedad, dias_antiguedad, antiguedad_variable, vacacion_dias_calendario_mes,
-                    vacacion_dias_laboral_mes, calendario_dias, laboral_dias]);
+                `, [
+                    id_pais,
+                    descripcion,
+                    mes_periodo,
+                    dias_mes,
+                    trabajo_minimo_mes,
+                    trabajo_minimo_horas,
+                    continuidad_laboral,
+                    vacacion_dias_laboral,
+                    vacacion_dias_libre,
+                    vacacion_dias_calendario,
+                    acumular,
+                    dias_max_acumulacion,
+                    contar_feriados,
+                    contar_dias_libres,
+                    contar_licencias,
+                    contar_faltas,
+                    contar_permiso,
+                    vacacion_divisible,
+                    antiguedad,
+                    antiguedad_fija,
+                    anio_antiguedad,
+                    dias_antiguedad,
+                    antiguedad_variable,
+                    vacacion_dias_calendario_mes,
+                    vacacion_dias_laboral_mes,
+                    calendario_dias,
+                    laboral_dias,
+                ]);
                 const [regimen] = response.rows;
                 if (regimen) {
                     return res.status(200).jsonp(regimen);
                 }
                 else {
-                    return res.status(404).jsonp({ message: 'mal_registro' });
+                    return res.status(404).jsonp({ message: "mal_registro" });
                 }
             }
             catch (error) {
-                console.log('regimen ', error);
-                return res.jsonp({ message: 'error' });
+                console.log("regimen ", error);
+                return res.jsonp({ message: "error" });
             }
         });
     }
     // ACTUALIZAR REGISTRO DE REGIMEN LABORAL
     ActualizarRegimen(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas, continuidad_laboral, vacacion_dias_laboral, vacacion_dias_libre, vacacion_dias_calendario, acumular, dias_max_acumulacion, contar_feriados, contar_dias_libres, contar_licencias, contar_faltas, contar_permiso, vacacion_divisible, antiguedad, antiguedad_fija, anio_antiguedad, dias_antiguedad, antiguedad_variable, vacacion_dias_calendario_mes, vacacion_dias_laboral_mes, calendario_dias, laboral_dias, id } = req.body;
+            const { id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas, continuidad_laboral, vacacion_dias_laboral, vacacion_dias_libre, vacacion_dias_calendario, acumular, dias_max_acumulacion, contar_feriados, contar_dias_libres, contar_licencias, contar_faltas, contar_permiso, vacacion_divisible, antiguedad, antiguedad_fija, anio_antiguedad, dias_antiguedad, antiguedad_variable, vacacion_dias_calendario_mes, vacacion_dias_laboral_mes, calendario_dias, laboral_dias, id, } = req.body;
             yield database_1.default.query(`
             UPDATE cg_regimenes SET id_pais = $1, descripcion = $2, mes_periodo = $3, dias_mes = $4, 
             trabajo_minimo_mes = $5, trabajo_minimo_horas = $6, continuidad_laboral = $7, 
@@ -67,13 +90,37 @@ class RegimenControlador {
             antiguedad_fija = $20, anio_antiguedad = $21, dias_antiguedad = $22, antiguedad_variable = $23, 
             vacacion_dias_calendario_mes = $24, vacacion_dias_laboral_mes = $25, calendario_dias = $26,
             laboral_dias = $27 WHERE id = $28
-            `, [id_pais, descripcion, mes_periodo, dias_mes, trabajo_minimo_mes, trabajo_minimo_horas,
-                continuidad_laboral, vacacion_dias_laboral, vacacion_dias_libre, vacacion_dias_calendario,
-                acumular, dias_max_acumulacion, contar_feriados, contar_dias_libres, contar_licencias,
-                contar_faltas, contar_permiso, vacacion_divisible, antiguedad, antiguedad_fija, anio_antiguedad,
-                dias_antiguedad, antiguedad_variable, vacacion_dias_calendario_mes, vacacion_dias_laboral_mes,
-                calendario_dias, laboral_dias, id]);
-            res.jsonp({ message: 'Regimen guardado' });
+            `, [
+                id_pais,
+                descripcion,
+                mes_periodo,
+                dias_mes,
+                trabajo_minimo_mes,
+                trabajo_minimo_horas,
+                continuidad_laboral,
+                vacacion_dias_laboral,
+                vacacion_dias_libre,
+                vacacion_dias_calendario,
+                acumular,
+                dias_max_acumulacion,
+                contar_feriados,
+                contar_dias_libres,
+                contar_licencias,
+                contar_faltas,
+                contar_permiso,
+                vacacion_divisible,
+                antiguedad,
+                antiguedad_fija,
+                anio_antiguedad,
+                dias_antiguedad,
+                antiguedad_variable,
+                vacacion_dias_calendario_mes,
+                vacacion_dias_laboral_mes,
+                calendario_dias,
+                laboral_dias,
+                id,
+            ]);
+            res.jsonp({ message: "Regimen guardado" });
         });
     }
     // METODO PARA BUSCAR DESCRIPCION DE REGIMEN LABORAL
@@ -86,7 +133,7 @@ class RegimenControlador {
                 return res.jsonp(REGIMEN.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }
@@ -94,13 +141,13 @@ class RegimenControlador {
     ListarRegimen(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const REGIMEN = yield database_1.default.query(`
-            SELECT * FROM cg_regimenes ORDER BY descripcion ASC
+            SELECT  r.*, p.nombre AS pais FROM cg_regimenes r INNER JOIN cg_paises p ON r.id_pais = p.id ORDER BY r.descripcion ASC
             `);
             if (REGIMEN.rowCount > 0) {
                 return res.jsonp(REGIMEN.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }
@@ -115,7 +162,7 @@ class RegimenControlador {
                 return res.jsonp(REGIMEN.rows[0]);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }
@@ -130,7 +177,7 @@ class RegimenControlador {
                 return res.jsonp(REGIMEN.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }
@@ -141,7 +188,7 @@ class RegimenControlador {
             yield database_1.default.query(`
             DELETE FROM cg_regimenes WHERE id = $1
             `, [id]);
-            res.jsonp({ message: 'Registro eliminado.' });
+            res.jsonp({ message: "Registro eliminado." });
         });
     }
     /** ** ************************************************************************************************ **
@@ -161,12 +208,12 @@ class RegimenControlador {
                     return res.status(200).jsonp(periodo);
                 }
                 else {
-                    return res.status(404).jsonp({ message: 'mal_registro' });
+                    return res.status(404).jsonp({ message: "mal_registro" });
                 }
             }
             catch (error) {
-                console.log('periodo ', error);
-                return res.jsonp({ message: 'error' });
+                console.log("periodo ", error);
+                return res.jsonp({ message: "error" });
             }
         });
     }
@@ -177,7 +224,7 @@ class RegimenControlador {
             yield database_1.default.query(`
             UPDATE dividir_vacaciones SET descripcion = $1, dias_vacacion = $2 WHERE id = $3
             `, [descripcion, dias_vacacion, id]);
-            res.jsonp({ message: 'Periodo guardado' });
+            res.jsonp({ message: "Periodo guardado" });
         });
     }
     // BUSCAR UN REGISTRO DE PERIODO DE VACACIONES POR REGIMEN LABORAL
@@ -191,7 +238,7 @@ class RegimenControlador {
                 return res.jsonp(PERIODO.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }
@@ -202,7 +249,7 @@ class RegimenControlador {
             yield database_1.default.query(`
                 DELETE FROM dividir_vacaciones WHERE id = $1
                 `, [id]);
-            res.jsonp({ message: 'Registro eliminado.' });
+            res.jsonp({ message: "Registro eliminado." });
         });
     }
     /** ** ********************************************************************************************** **
@@ -222,12 +269,12 @@ class RegimenControlador {
                     return res.status(200).jsonp(antiguedad);
                 }
                 else {
-                    return res.status(404).jsonp({ message: 'mal_registro' });
+                    return res.status(404).jsonp({ message: "mal_registro" });
                 }
             }
             catch (error) {
-                console.log('antiguedad ', error);
-                return res.jsonp({ message: 'error' });
+                console.log("antiguedad ", error);
+                return res.jsonp({ message: "error" });
             }
         });
     }
@@ -238,7 +285,7 @@ class RegimenControlador {
             yield database_1.default.query(`
             UPDATE antiguedad SET anio_desde = $1, anio_hasta = $2, dias_antiguedad = $3 WHERE id = $4
             `, [anio_desde, anio_hasta, dias_antiguedad, id]);
-            res.jsonp({ message: 'Antiguedad guardada' });
+            res.jsonp({ message: "Antiguedad guardada" });
         });
     }
     // BUSCAR UN REGISTRO DE ANTIGUEDAD
@@ -252,7 +299,7 @@ class RegimenControlador {
                 return res.jsonp(ANTIGUO.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }
@@ -263,18 +310,23 @@ class RegimenControlador {
             yield database_1.default.query(`
             DELETE FROM antiguedad WHERE id = $1
             `, [id]);
-            res.jsonp({ message: 'Registro eliminado.' });
+            res.jsonp({ message: "Registro eliminado." });
         });
     }
     // METODO PARA CREAR ARCHIVO XML
     FileXML(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            var xml = builder.create("root").ele(req.body).end({ pretty: true });
             console.log(req.body.userName);
-            let filename = "RegimenLaboral-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
-            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
-            });
-            res.jsonp({ text: 'XML creado', name: filename });
+            let filename = "RegimenLaboral-" +
+                req.body.userName +
+                "-" +
+                req.body.userId +
+                "-" +
+                new Date().getTime() +
+                ".xml";
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) { });
+            res.jsonp({ text: "XML creado", name: filename });
         });
     }
     // METODO PARA DESCARGAR XML
@@ -288,14 +340,14 @@ class RegimenControlador {
     ListarRegimenSucursal(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const REGIMEN = yield database_1.default.query(' SELECT r.id, r.descripcion FROM cg_regimenes AS r, empl_cargos AS ec, ' +
-                'empl_contratos AS c WHERE c.id_regimen = r.id AND c.id = ec.id_empl_contrato AND ec.id_sucursal = $1 ' +
-                'GROUP BY r.id, r.descripcion', [id]);
+            const REGIMEN = yield database_1.default.query(" SELECT r.id, r.descripcion FROM cg_regimenes AS r, empl_cargos AS ec, " +
+                "empl_contratos AS c WHERE c.id_regimen = r.id AND c.id = ec.id_empl_contrato AND ec.id_sucursal = $1 " +
+                "GROUP BY r.id, r.descripcion", [id]);
             if (REGIMEN.rowCount > 0) {
                 return res.jsonp(REGIMEN.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: "No se encuentran registros" });
             }
         });
     }

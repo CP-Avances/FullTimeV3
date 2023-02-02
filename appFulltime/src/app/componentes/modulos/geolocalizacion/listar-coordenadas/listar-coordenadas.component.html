@@ -24,7 +24,7 @@
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
                     <tr style="text-align: center;">
-                        <th scope="col">Id </th>
+                        <th scope="col">Código</th>
                         <th scope="col">Descripción</th>
                         <th scope="col">Latitud</th>
                         <th scope="col">Longitud</th>
@@ -67,7 +67,7 @@
         <mat-paginator id="pagina" [length]="coordenadas.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
-        <div class="d-flex justify-content-end" style="margin-right: 5%;">
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
             <i (click)="generarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
                 matTooltip="Descargar Lista de Tipo de Permisos en formato PDF.">
                 <p>PDF</p>
@@ -84,6 +84,9 @@
                 matTooltip="Descargar Lista de Tipo de Permisos en formato XML.">
                 <p>XML</p>
             </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de coordenadas geográficas. </p>
         </div>
     </div>
 </div>

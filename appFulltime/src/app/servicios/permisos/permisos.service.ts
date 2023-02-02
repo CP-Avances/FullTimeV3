@@ -124,4 +124,9 @@ export class PermisosService {
     return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento/${documento}`, formData)
   }
 
+   // METODO PARA CREAR ARCHIVO XML
+   CrearXML(data: any) {
+    return this.http.post(`${environment.url}/empleadoPermiso/xmlDownload`, data);
+  }
+
 }

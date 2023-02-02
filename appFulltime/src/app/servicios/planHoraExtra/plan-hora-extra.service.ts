@@ -74,6 +74,11 @@ export class PlanHoraExtraService {
     return this.http.get(`${environment.url}/planificacionHoraExtra/listar-plan/${id_empleado}`);
   }
 
+   // METODO PARA CREAR ARCHIVO XML
+   CrearXML(data: any) {
+    return this.http.post(`${environment.url}/planificacionHoraExtra/xmlDownload`, data);
+  }
+
 
   /** *************************************************************************************************** **
    ** *                 ENVIO DE CORREO ELECTRONICO DE PLANIFICACIÓN DE HORAS EXTRAS                    * ** 
@@ -93,17 +98,6 @@ export class PlanHoraExtraService {
   EnviarNotiPlanificacion(data: any) {
     return this.http.post<any>(`${environment.url}/planificacionHoraExtra/send/noti-planifica`, data);
   }
-
-
-
-
-
-
-
-
-
-
-
 
   BuscarDatosAutorizacion(id_hora_extra: number) {
     return this.http.get(`${environment.url}/planificacionHoraExtra/datosAutorizacion/${id_hora_extra}`);

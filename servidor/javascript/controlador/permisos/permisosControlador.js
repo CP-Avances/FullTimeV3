@@ -17,6 +17,7 @@ const settingsMail_1 = require("../../libs/settingsMail");
 const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("../../database"));
 const path_1 = __importDefault(require("path"));
+const builder = require('xmlbuilder');
 class PermisosControlador {
     // METODO PARA BUSCAR NUEMRO DE PERMISO
     ObtenerNumPermiso(req, res) {
@@ -464,6 +465,25 @@ class PermisosControlador {
             else {
                 return res.status(404).jsonp({ message: 'Solicitud no eliminada.' });
             }
+        });
+    }
+    // METODO PARA CREAR ARCHIVO XML
+    FileXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var xml = builder.create('root').ele(req.body).end({ pretty: true });
+            console.log(req.body.userName);
+            let filename = "Permisos-" + req.body.userName + '-' + req.body.userId + '-' + new Date().getTime() + '.xml';
+            fs_1.default.writeFile(`xmlDownload/${filename}`, xml, function (err) {
+            });
+            res.jsonp({ text: 'XML creado', name: filename });
+        });
+    }
+    // METODO PARA DESCARGAR ARCHIVO XML
+    downloadXML(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.nameXML;
+            let filePath = `servidor\\xmlDownload\\${name}`;
+            res.sendFile(__dirname.split("servidor")[0] + filePath);
         });
     }
     // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
