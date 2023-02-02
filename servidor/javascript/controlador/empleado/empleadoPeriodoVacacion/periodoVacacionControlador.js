@@ -16,6 +16,23 @@ const database_1 = __importDefault(require("../../../database"));
 const xlsx_1 = __importDefault(require("xlsx"));
 const fs_1 = __importDefault(require("fs"));
 class PeriodoVacacionControlador {
+    // METODO PARA BUSCAR ID DE PERIODO DE VACACIONES
+    EncontrarIdPerVacaciones(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_empleado } = req.params;
+            const VACACIONES = yield database_1.default.query(`
+            SELECT pv.id, pv.id_empl_contrato
+            FROM peri_vacaciones AS pv
+            WHERE pv.id = (SELECT MAX(pv.id) AS id 
+                           FROM peri_vacaciones AS pv, empleados AS e 
+                           WHERE pv.codigo::varchar = e.codigo AND e.id = $1 )
+            `, [id_empleado]);
+            if (VACACIONES.rowCount > 0) {
+                return res.jsonp(VACACIONES.rows);
+            }
+            res.status(404).jsonp({ text: 'Registro no encontrado' });
+        });
+    }
     ListarPerVacaciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const VACACIONES = yield database_1.default.query('SELECT * FROM peri_vacaciones WHERE estado = 1 ORDER BY fec_inicio DESC');
@@ -35,18 +52,6 @@ class PeriodoVacacionControlador {
                 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)', [id_empl_contrato, descripcion, dia_vacacion, dia_antiguedad, estado, fec_inicio, fec_final,
                 dia_perdido, horas_vacaciones, min_vacaciones, codigo]);
             res.jsonp({ message: 'Período de Vacación guardado' });
-        });
-    }
-    EncontrarIdPerVacaciones(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_empleado } = req.params;
-            const VACACIONES = yield database_1.default.query('SELECT pv.id, ce.id AS idContrato FROM peri_vacaciones AS pv, ' +
-                'empl_contratos AS ce, empleados AS e WHERE ce.id_empleado = e.id AND pv.id_empl_contrato = ce.id ' +
-                'AND e.id = $1 ORDER BY pv.fec_final DESC', [id_empleado]);
-            if (VACACIONES.rowCount > 0) {
-                return res.jsonp(VACACIONES.rows);
-            }
-            res.status(404).jsonp({ text: 'Registro no encontrado' });
         });
     }
     EncontrarPerVacaciones(req, res) {

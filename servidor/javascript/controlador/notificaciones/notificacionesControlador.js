@@ -17,6 +17,26 @@ const database_1 = __importDefault(require("../../database"));
 const settingsMail_1 = require("../../libs/settingsMail");
 const path_1 = __importDefault(require("path"));
 class NotificacionTiempoRealControlador {
+    // METODO PARA LISTAR CONFIGURACION DE RECEPCION DE NOTIFICACIONES
+    ObtenerConfigEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_empleado = req.params.id;
+            if (id_empleado != 'NaN') {
+                const CONFIG_NOTI = yield database_1.default.query(`
+        SELECT * FROM config_noti WHERE id_empleado = $1
+        `, [id_empleado]);
+                if (CONFIG_NOTI.rowCount > 0) {
+                    return res.jsonp(CONFIG_NOTI.rows);
+                }
+                else {
+                    return res.status(404).jsonp({ text: 'Registro no encontrados.' });
+                }
+            }
+            else {
+                res.status(404).jsonp({ text: 'Sin registros encontrados.' });
+            }
+        });
+    }
     ListarNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const REAL_TIME_NOTIFICACION = yield database_1.default.query('SELECT * FROM realtime_noti ORDER BY id DESC');
@@ -132,33 +152,12 @@ class NotificacionTiempoRealControlador {
                 'permiso_noti = $4, hora_extra_mail = $5, hora_extra_noti = $6, comida_mail = $7, comida_noti = $8, ' +
                 'comunicado_mail = $9, comunicado_noti = $10 WHERE id_empleado = $11', [vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail, hora_extra_noti,
                 comida_mail, comida_noti, comunicado_mail, comunicado_noti, id_empleado]);
-            res.jsonp({ message: 'Configuración Actualizada' });
+            res.jsonp({ message: 'Configuración actualizada.' });
         });
     }
     /** ******************************************************************************************** **
      ** **                               CONSULTAS DE NOTIFICACIONES                              ** **
      ** ******************************************************************************************** **/
-    // METODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
-    ObtenerConfigEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const id_empleado = req.params.id;
-            console.log(id_empleado);
-            if (id_empleado != 'NaN') {
-                const CONFIG_NOTI = yield database_1.default.query(`
-        SELECT * FROM config_noti WHERE id_empleado = $1
-        `, [id_empleado]);
-                if (CONFIG_NOTI.rowCount > 0) {
-                    return res.jsonp(CONFIG_NOTI.rows);
-                }
-                else {
-                    return res.status(404).jsonp({ text: 'Registro no encontrados.' });
-                }
-            }
-            else {
-                res.status(404).jsonp({ text: 'Sin registros encontrados.' });
-            }
-        });
-    }
     ListarNotificacionUsuario(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_receive;

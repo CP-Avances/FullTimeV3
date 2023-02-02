@@ -238,6 +238,19 @@
                                     help_outline
                                 </mat-icon>
                             </mat-form-field>
+                            <br>
+                            <div class="d-flex flex-wrap justify-content-start">
+                                <label style="padding-top: 10px; position: relative; font-size: 12px;">
+                                    Incluir en la solicitud:
+                                </label>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 20px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right" formControlName="feriadosForm"
+                                    matTooltip="Si en la solicitud se encuentran días de feriado estos serán considerados como días normales.">
+                                    Feriados
+                                </mat-checkbox>
+                            </div>
                         </div>
                     </div>
                 </form>

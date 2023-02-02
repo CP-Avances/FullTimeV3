@@ -23,13 +23,20 @@ export class PermisosService {
     return this.http.get(`${environment.url}/empleadoPermiso/numPermiso/${id}`);
   }
 
+  // METODO PARA BUSCAR PERMISOS SOLICITADOS 
+  BuscarPermisosSolicitadosTotales(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados-totales`, datos);
+  }
+
   // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
-  BuscarPermisosSolicitados(datos: any) {
+  BuscarPermisosSolicitadosDias(datos: any) {
     return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados`, datos);
   }
 
-
-
+  // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
+  BuscarPermisosSolicitadosHoras(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados-horas`, datos);
+  }
 
 
 

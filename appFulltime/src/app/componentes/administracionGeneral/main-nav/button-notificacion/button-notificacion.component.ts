@@ -163,9 +163,11 @@ export class ButtonNotificacionComponent implements OnInit {
     }, error => {
       this.router.url
       if (this.router.url !== '/login') {
-        this.toaster.info('Configure si desea que le lleguen notficaciones y avisos al correo electrónico',
-          'Falta Ajustes del Sistema').onTap.subscribe(items => {
-            this.AbrirSettings();
+        this.toaster.info(
+          'De clic aquí para configurar envio y recepción de notficaciones y avisos al correo electrónico.',
+          'Faltan ajustes del sistema.',
+          { timeOut: 9000 }).onTap.subscribe(items => {
+            this.ConfigurarNotificaciones();
           });
       }
     });
@@ -212,7 +214,7 @@ export class ButtonNotificacionComponent implements OnInit {
     }
   }
 
-  AbrirSettings() {
+  ConfigurarNotificaciones() {
     const id_empleado = parseInt(localStorage.getItem('empleado'));
     this.ventana.open(SettingsComponent, { width: '350px', data: { id_empleado } });
   }

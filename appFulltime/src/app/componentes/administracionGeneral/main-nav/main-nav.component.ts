@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Location } from '@angular/common';
 import * as moment from 'moment';
 
+import { PlantillaReportesService } from '../../reportes/plantilla-reportes.service';
 import { FuncionesService } from 'src/app/servicios/funciones/funciones.service';
 import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
 import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
@@ -19,8 +20,6 @@ import { LoginService } from 'src/app/servicios/login/login.service';
 import { FraseSeguridadComponent } from 'src/app/componentes/administracionGeneral/frase-seguridad/frase-seguridad/frase-seguridad.component';
 
 import { MenuNode } from 'src/app/model/menu.model';
-import { PlantillaReportesService } from '../../reportes/plantilla-reportes.service';
-import { VerEmpleadoComponent } from '../../empleado/ver-empleado/ver-empleado.component';
 
 @Component({
   selector: 'app-main-nav',
@@ -255,7 +254,7 @@ export class MainNavComponent implements OnInit {
         ]
       },
       {
-        name: 'Planificación',
+        name: 'Horarios',
         accion: true,
         estado: true,
         color: true,

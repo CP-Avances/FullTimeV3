@@ -10,6 +10,40 @@ import { QueryResult } from 'pg';
 
 class NotificacionTiempoRealControlador {
 
+
+  // METODO PARA LISTAR CONFIGURACION DE RECEPCION DE NOTIFICACIONES
+  public async ObtenerConfigEmpleado(req: Request, res: Response): Promise<any> {
+    const id_empleado = req.params.id;
+    if (id_empleado != 'NaN') {
+      const CONFIG_NOTI = await pool.query(
+        `
+        SELECT * FROM config_noti WHERE id_empleado = $1
+        `
+        , [id_empleado]);
+      if (CONFIG_NOTI.rowCount > 0) {
+        return res.jsonp(CONFIG_NOTI.rows);
+      }
+      else {
+        return res.status(404).jsonp({ text: 'Registro no encontrados.' });
+      }
+    } else {
+      res.status(404).jsonp({ text: 'Sin registros encontrados.' });
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   public async ListarNotificacion(req: Request, res: Response) {
     const REAL_TIME_NOTIFICACION = await pool.query('SELECT * FROM realtime_noti ORDER BY id DESC');
 
@@ -131,7 +165,7 @@ class NotificacionTiempoRealControlador {
       'comunicado_mail = $9, comunicado_noti = $10 WHERE id_empleado = $11',
       [vaca_mail, vaca_noti, permiso_mail, permiso_noti, hora_extra_mail, hora_extra_noti,
         comida_mail, comida_noti, comunicado_mail, comunicado_noti, id_empleado]);
-    res.jsonp({ message: 'Configuración Actualizada' });
+    res.jsonp({ message: 'Configuración actualizada.' });
   }
 
 
@@ -141,26 +175,7 @@ class NotificacionTiempoRealControlador {
    ** **                               CONSULTAS DE NOTIFICACIONES                              ** ** 
    ** ******************************************************************************************** **/
 
-  // METODO PARA LISTAR CONFIGURACIÓN DE RECEPCIÓN DE NOTIFICACIONES
-  public async ObtenerConfigEmpleado(req: Request, res: Response): Promise<any> {
-    const id_empleado = req.params.id;
-    console.log(id_empleado);
-    if (id_empleado != 'NaN') {
-      const CONFIG_NOTI = await pool.query(
-        `
-        SELECT * FROM config_noti WHERE id_empleado = $1
-        `
-        , [id_empleado]);
-      if (CONFIG_NOTI.rowCount > 0) {
-        return res.jsonp(CONFIG_NOTI.rows);
-      }
-      else {
-        return res.status(404).jsonp({ text: 'Registro no encontrados.' });
-      }
-    } else {
-      res.status(404).jsonp({ text: 'Sin registros encontrados.' });
-    }
-  }
+
 
   public async ListarNotificacionUsuario(req: Request, res: Response): Promise<any> {
     const id = req.params.id_receive;

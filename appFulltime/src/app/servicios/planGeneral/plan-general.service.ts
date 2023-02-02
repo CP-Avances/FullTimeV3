@@ -26,6 +26,10 @@ export class PlanGeneralService {
     return this.http.delete(`${environment.url}/planificacion_general/eliminar/${id}`);
   }
 
+  // METODO PARA BUSCAR HORARIO DEL USUARIO EN FECHAS ESPECIFICAS
+  BuscarHorarioFechas(datos: any) {
+    return this.http.post(`${environment.url}/planificacion_general/horario-general-fechas`, datos);
+  }
 
 
 

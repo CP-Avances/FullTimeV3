@@ -320,7 +320,7 @@ class VacacionesControlador {
         v.legalizado, v.id, v.id_peri_vacacion, v.id_empl_cargo, e.id AS id_empleado,
         (e.nombre || ' ' || e.apellido) AS fullname, e.cedula
       FROM vacaciones AS v, empleados AS e 
-      WHERE v.id = $1 AND e.codigo = v.codigo::character varying
+      WHERE v.id = $1 AND e.codigo = v.codigo::varchar
       `, [id]);
             if (VACACIONES.rowCount > 0) {
                 return res.jsonp(VACACIONES.rows);

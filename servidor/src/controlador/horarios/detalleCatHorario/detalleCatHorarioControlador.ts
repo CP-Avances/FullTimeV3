@@ -64,25 +64,25 @@ class DetalleCatalogoHorarioControlador {
 
     // METODO PARA REGISTRAR DETALLES
     public async CrearDetalleHorarios(req: Request, res: Response): Promise<void> {
-        const { orden, hora, minu_espera, id_horario, tipo_accion } = req.body;
+        const { orden, hora, minu_espera, id_horario, tipo_accion, segundo_dia, tercer_dia } = req.body;
         await pool.query(
             `
-            INSERT INTO deta_horarios (orden, hora, minu_espera, id_horario, tipo_accion) 
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO deta_horarios (orden, hora, minu_espera, id_horario, tipo_accion, segundo_dia, tercer_dia) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             `
-            , [orden, hora, minu_espera, id_horario, tipo_accion]);
+            , [orden, hora, minu_espera, id_horario, tipo_accion, segundo_dia, tercer_dia]);
         res.jsonp({ message: 'Registro guardado.' });
     }
 
     // METODO PARA ACTUALIZAR DETALLE DE HORARIO
     public async ActualizarDetalleHorarios(req: Request, res: Response): Promise<void> {
-        const { orden, hora, minu_espera, id_horario, tipo_accion, id } = req.body;
+        const { orden, hora, minu_espera, id_horario, tipo_accion, segundo_dia, tercer_dia, id } = req.body;
         await pool.query(
             `
             UPDATE deta_horarios SET orden = $1, hora = $2, minu_espera = $3, id_horario = $4,
-            tipo_accion = $5 WHERE id = $6
+            tipo_accion = $5, segundo_dia = $6, tercer_dia = $7 WHERE id = $8
             `
-            , [orden, hora, minu_espera, id_horario, tipo_accion, id]);
+            , [orden, hora, minu_espera, id_horario, tipo_accion, segundo_dia, tercer_dia, id]);
         res.jsonp({ message: 'Registro actualizado.' });
     }
 

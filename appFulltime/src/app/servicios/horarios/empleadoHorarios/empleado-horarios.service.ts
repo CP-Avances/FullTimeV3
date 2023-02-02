@@ -43,6 +43,26 @@ export class EmpleadoHorariosService {
     return this.http.post(`${environment.url}/empleadoHorario/horarios-existentes-edicion/${id_empl}`, datos);
   }
 
+  // METODO PARA BUSCAR HORARIO DEL USUARIO POR DIAS
+  BuscarHorarioDias(datos: any) {
+    return this.http.post(`${environment.url}/empleadoHorario/horario-dias`, datos);
+  }
+
+  // METODO PARA BUSCAR HORARIO DEL USUARIO POR HORAS MISMO DIA (MD)
+  BuscarHorarioHorasMD(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoHorario/horario-horas-mismo-dia`, datos);
+  }
+
+  // METODO PARA BUSCAR HORARIO DEL USUARIO POR HORAS DIAS DIFERENTES (DD)
+  BuscarHorarioHorasDD(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoHorario/horario-horas-dias-diferentes`, datos);
+  }
+
+
+
+
+
+
 
 
 
@@ -63,9 +83,7 @@ export class EmpleadoHorariosService {
     return this.http.post(`${environment.url}/empleadoHorario/cargaMultiple`, formData)
   }
 
-  BuscarNumeroHoras(datos: any) {
-    return this.http.post(`${environment.url}/empleadoHorario/horas`, datos);
-  }
+
 
   ActualizarDatos(datos: any) {
     return this.http.put(`${environment.url}/empleadoHorario`, datos);

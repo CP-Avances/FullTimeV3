@@ -31,8 +31,8 @@ export class RegistroHorarioComponent implements OnInit {
   archivoForm = new FormControl('');
   documentoF = new FormControl('');
   detalleF = new FormControl('');
-  nombre = new FormControl('', [Validators.required, Validators.minLength(2)]);
   codigoF = new FormControl('', [Validators.required]);
+  nombre = new FormControl('', [Validators.required, Validators.minLength(2)]);
   tipoF = new FormControl('');
 
   // ASIGNAR LOS CAMPOS EN UN FORMULARIO EN GRUPO
@@ -57,8 +57,8 @@ export class RegistroHorarioComponent implements OnInit {
     public ventana: MatDialogRef<RegistroHorarioComponent>, // VARIABLE MANEJO DE VENTANAS
     public validar: ValidacionesService, // SERVICIO PARA CONTROL DE VALIDACIONES
     public router: Router, // VARIABLE MANEJO DE RUTAS
-    private toastr: ToastrService, // VARIABLE PARA USO DE NOTIFICACIONES
     private rest: HorarioService, // SERVICIO DATOS DE HORARIO
+    private toastr: ToastrService, // VARIABLE PARA USO DE NOTIFICACIONES
   ) { }
 
   ngOnInit(): void {
@@ -80,17 +80,42 @@ export class RegistroHorarioComponent implements OnInit {
       codigo: form.codigoForm,
     };
 
-    if (dataHorario.detalle === false) {
-      dataHorario.hora_trabajo = moment(form.horarioHoraTrabajoForm, 'HH:mm:ss').format('HH:mm:ss');
+    // FORMATEAR HORAS
+    if (dataHorario.hora_trabajo.split(':').length === 1) {
+      if (parseInt(dataHorario.hora_trabajo) < 10) {
+        dataHorario.hora_trabajo = '0' + parseInt(dataHorario.hora_trabajo) + ':00'
+      }
+      else {
+        dataHorario.hora_trabajo = dataHorario.hora_trabajo + ':00'
+      }
     }
     else {
-      dataHorario.hora_trabajo = moment(form.horarioHoraTrabajoForm, 'HH:mm:ss').format('HH:mm');
+      if (parseInt(dataHorario.hora_trabajo.split(':')[0]) < 10) {
+        dataHorario.hora_trabajo = '0' + parseInt(dataHorario.hora_trabajo.split(':')[0]) + ':' + dataHorario.hora_trabajo.split(':')[1]
+      }
     }
 
+    // VALIDAR SI EL HORARIO REQUIERE DETALLES
+    if (dataHorario.detalle === false) {
+      dataHorario.hora_trabajo = dataHorario.hora_trabajo + ':00';
+    }
+
+    // VALIDAR SI EL HORARIO ES >= 24:00 Y < 72:00 (NO DETALLES DE ALIMENTACION)
+    if ((dataHorario.hora_trabajo >= '24:00' && dataHorario.hora_trabajo < '72:00') &&
+      (dataHorario.hora_trabajo >= '24:00:00' && dataHorario.hora_trabajo < '72:00:00')) {
+      this.minAlmuerzo.setValue(0);
+      dataHorario.min_almuerzo = 0;
+    }
+    else if (dataHorario.hora_trabajo >= '72:00' || dataHorario.hora_trabajo >= '72:00:00') {
+      dataHorario.hora_trabajo = moment(dataHorario.hora_trabajo, 'HH:mm:ss').format('HH:mm:ss');
+    }
+
+    // VERIFICAR INGRESO DE MINUTOS DE ALIMENTACION
     if (dataHorario.min_almuerzo === '' || dataHorario.min_almuerzo === null || dataHorario.min_almuerzo === undefined) {
       dataHorario.min_almuerzo = 0;
     }
 
+    // VALIDACION DE DUPLICIDAD
     this.VerificarDuplicidad(form, dataHorario);
 
   }
@@ -102,7 +127,7 @@ export class RegistroHorarioComponent implements OnInit {
       codigo: form.codigoForm
     }
     this.rest.BuscarHorarioNombre(data).subscribe(response => {
-      this.toastr.info('Nombre o código de horario ya existe.', 'Verificar Datos.', {
+      this.toastr.warning('Nombre o código de horario ya existe.', 'Verificar Datos.', {
         timeOut: 6000,
       });
       this.habilitarprogress = false;
@@ -137,7 +162,7 @@ export class RegistroHorarioComponent implements OnInit {
 
     }, error => {
       this.habilitarprogress = false;
-      this.toastr.error('Ups!!! algo salio mal.', '', {
+      this.toastr.error('Limite de horas superado.', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       })
     });
@@ -220,7 +245,7 @@ export class RegistroHorarioComponent implements OnInit {
 
   // METODO PARA VALIDAR INGRESO DE NUMEROS
   IngresarSoloNumerosEnteros(evt: any) {
-    this.validar.IngresarSoloNumeros(evt);
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
   // MENSAJE QUE INDICA FORMATO DE INGRESO DE NUMERO DE HORAS

@@ -5,6 +5,50 @@ import fs from 'fs';
 
 class PeriodoVacacionControlador {
 
+    // METODO PARA BUSCAR ID DE PERIODO DE VACACIONES
+    public async EncontrarIdPerVacaciones(req: Request, res: Response): Promise<any> {
+
+        const { id_empleado } = req.params;
+        const VACACIONES = await pool.query(
+            `
+            SELECT pv.id, pv.id_empl_contrato
+            FROM peri_vacaciones AS pv
+            WHERE pv.id = (SELECT MAX(pv.id) AS id 
+                           FROM peri_vacaciones AS pv, empleados AS e 
+                           WHERE pv.codigo::varchar = e.codigo AND e.id = $1 )
+            `
+            , [id_empleado]);
+        if (VACACIONES.rowCount > 0) {
+            return res.jsonp(VACACIONES.rows)
+        }
+        res.status(404).jsonp({ text: 'Registro no encontrado' });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public async ListarPerVacaciones(req: Request, res: Response) {
         const VACACIONES = await pool.query('SELECT * FROM peri_vacaciones WHERE estado = 1 ORDER BY fec_inicio DESC');
         if (VACACIONES.rowCount > 0) {
@@ -26,17 +70,7 @@ class PeriodoVacacionControlador {
         res.jsonp({ message: 'Período de Vacación guardado' });
     }
 
-    public async EncontrarIdPerVacaciones(req: Request, res: Response): Promise<any> {
-        
-        const { id_empleado } = req.params;
-        const VACACIONES = await pool.query('SELECT pv.id, ce.id AS idContrato FROM peri_vacaciones AS pv, ' +
-            'empl_contratos AS ce, empleados AS e WHERE ce.id_empleado = e.id AND pv.id_empl_contrato = ce.id ' +
-            'AND e.id = $1 ORDER BY pv.fec_final DESC', [id_empleado]);
-        if (VACACIONES.rowCount > 0) {
-            return res.jsonp(VACACIONES.rows)
-        }
-        res.status(404).jsonp({ text: 'Registro no encontrado' });
-    }
+
 
     public async EncontrarPerVacaciones(req: Request, res: Response): Promise<any> {
         const { codigo } = req.params;

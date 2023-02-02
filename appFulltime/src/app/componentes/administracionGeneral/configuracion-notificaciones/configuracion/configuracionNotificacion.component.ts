@@ -139,7 +139,7 @@ export class ConfiguracionNotificacionComponent implements OnInit {
                     this.contador = this.contador + 1;
                     if (this.empleados.length == this.contador) {
                         this.ventana.close(true);
-                        this.toaster.success('Operación exitosa', 'Configuración Actualizada....', {
+                        this.toaster.success('Operación exitosa', 'Configuración actualizada.', {
                             timeOut: 6000,
                         });
                     }

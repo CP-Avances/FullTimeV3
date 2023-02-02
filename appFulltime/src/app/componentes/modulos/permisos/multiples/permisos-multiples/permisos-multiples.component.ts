@@ -142,6 +142,8 @@ export class PermisosMultiplesComponent implements OnInit {
 
   // METODO PARA MOSTRAR INFORMACION DEL TIPO DE PERMISO 
   legalizar: boolean = false;
+  periodo_vacaciones: number = 0;
+  descuento: boolean = false;
   ImprimirDatos(form: any) {
     this.LimpiarInformacion();
     this.datosPermiso = [];
@@ -182,6 +184,14 @@ export class PermisosMultiplesComponent implements OnInit {
         });
         this.Tdias = this.datosPermiso[0].num_dia_maximo;
         this.seleccion_tipo = 'Días';
+      }
+      // TIPO DE DESCUENTO
+      if (this.datosPermiso.tipo_descuento === '1') {
+        this.descuento = true;
+      }
+      else {
+        this.descuento = false;
+        this.periodo_vacaciones = 0;
       }
     })
   }
@@ -733,7 +743,7 @@ export class PermisosMultiplesComponent implements OnInit {
         this.HabilitarBtn = true;
       }
       else {
-        this.toastr.info('El archivo ha excedido el tamaño permitido', 'Tamaño de archivos permitido máximo 2MB', {
+        this.toastr.info('El archivo ha excedido el tamaño permitido.', 'Tamaño de archivos permitido máximo 2MB.', {
           timeOut: 6000,
         });
       }

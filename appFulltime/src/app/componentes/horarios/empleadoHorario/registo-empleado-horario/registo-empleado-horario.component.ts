@@ -13,6 +13,7 @@ import { PlanGeneralService } from 'src/app/servicios/planGeneral/plan-general.s
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
 import { DetalleCatHorariosService } from 'src/app/servicios/horarios/detalleCatHorarios/detalle-cat-horarios.service';
+import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
 
 @Component({
   selector: 'app-registo-empleado-horario',
@@ -31,8 +32,9 @@ export class RegistoEmpleadoHorarioComponent implements OnInit {
   sabado = false;
   domingo = false;
 
-  // VARIABLE DE ALMACENAMIENTO DE HORARIOS
+  // VARIABLE DE ALMACENAMIENTO
   horarios: any = [];
+  feriados: any = [];
 
   // INICIALIZACIÓN DE CAMPOS DE FORMULARIOS
   fechaInicioF = new FormControl('', Validators.required);
@@ -69,6 +71,7 @@ export class RegistoEmpleadoHorarioComponent implements OnInit {
     public restD: DetalleCatHorariosService,
     public validar: ValidacionesService,
     public ventana: MatDialogRef<RegistoEmpleadoHorarioComponent>,
+    public feriado: FeriadosService,
     private toastr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public datoEmpleado: any,
   ) { }
@@ -236,8 +239,37 @@ export class RegistoEmpleadoHorarioComponent implements OnInit {
         horarioForm: 0
       })
     }, error => {
+      this.BuscarFeriados(form);
+      this.BuscarFeriadosRecuperar(form);
       this.ValidarHorarioByHorasTrabaja(form);
     });
+  }
+
+  // METODO PARA BUSCAR FERIADOS
+  BuscarFeriados(form: any) {
+    this.feriados = [];
+    let datos = {
+      fecha_inicio: form.fechaInicioForm,
+      fecha_final: form.fechaFinalForm,
+      id_empleado: parseInt(this.datoEmpleado.idEmpleado)
+    }
+    this.feriado.ListarFeriadosCiudad(datos).subscribe(data => {
+      this.feriados = data;
+    })
+  }
+
+  // METODO PARA BUSCAR FECHAS DE RECUPERACION DE FERIADOS
+  recuperar: any = [];
+  BuscarFeriadosRecuperar(form: any) {
+    this.recuperar = [];
+    let datos = {
+      fecha_inicio: form.fechaInicioForm,
+      fecha_final: form.fechaFinalForm,
+      id_empleado: parseInt(this.datoEmpleado.idEmpleado)
+    }
+    this.feriado.ListarFeriadosRecuperarCiudad(datos).subscribe(data => {
+      this.recuperar = data;
+    })
   }
 
   // METODO DE INGRESO DE HORARIOS PLAN GENERAL
@@ -258,26 +290,98 @@ export class RegistoEmpleadoHorarioComponent implements OnInit {
         var newDate = start.setDate(start.getDate() + 1);
         start = new Date(newDate);
       }
+      var tipo: string = '';
       this.fechasHorario.map(obj => {
+        // DEFINICION DE TIPO DE DIA SEGUN HORARIO
+        tipo = 'N';
+        var day = moment(obj).day();
+        if (moment.weekdays(day) === 'lunes') {
+          if (form.lunesForm === true) {
+            tipo = 'L';
+          }
+        }
+        if (moment.weekdays(day) === 'martes') {
+          if (form.martesForm === true) {
+            tipo = 'L';
+          }
+        }
+        if (moment.weekdays(day) === 'miércoles') {
+          if (form.miercolesForm === true) {
+            tipo = 'L';
+          }
+        }
+        if (moment.weekdays(day) === 'jueves') {
+          if (form.juevesForm === true) {
+            tipo = 'L';
+          }
+        }
+        if (moment.weekdays(day) === 'viernes') {
+          if (form.viernesForm === true) {
+            tipo = 'L';
+          }
+        }
+        if (moment.weekdays(day) === 'sábado') {
+          if (form.sabadoForm === true) {
+            tipo = 'L';
+          }
+        }
+        if (moment.weekdays(day) === 'domingo') {
+          if (form.domingoForm === true) {
+            tipo = 'L';
+          }
+        }
+
+        // BUSCAR FERIADOS 
+        if (this.feriados.length != 0) {
+          for (let i = 0; i < this.feriados.length; i++) {
+            if (moment(this.feriados[i].fecha, 'YYYY-MM-DD').format('YYYY-MM-DD') === obj) {
+              tipo = 'FD';
+              break;
+            }
+          }
+        }
+
+        // BUSCAR FECHAS DE RECUPERACION DE FERIADOS
+        if (this.recuperar.length != 0) {
+          for (let j = 0; j < this.recuperar.length; j++) {
+            if (moment(this.recuperar[j].fec_recuperacion, 'YYYY-MM-DD').format('YYYY-MM-DD') === obj) {
+              tipo = 'N';
+              break;
+            }
+          }
+        }
+
+        // COLOCAR DETALLE DE DIA SEGUN HORARIO
         this.detalles.map(element => {
           var accion = 0;
+          var nocturno: number = 0;
           if (element.tipo_accion === 'E') {
             accion = element.minu_espera;
           }
+          if (element.segundo_dia === true) {
+            nocturno = 1;
+          }
+          else if (element.tercer_dia === true) {
+            nocturno = 2;
+          }
+          else {
+            nocturno = 0;
+          }
           let plan = {
-            estado: null,
+            tipo: tipo,
+            estado: 1,
             codigo: this.empleado[0].codigo,
-            fec_horario: obj,
             id_horario: form.horarioForm,
+            fec_horario: obj,
             id_empl_cargo: this.datoEmpleado.idCargo,
             id_det_horario: element.id,
             maxi_min_espera: accion,
             tipo_entr_salida: element.tipo_accion,
             fec_hora_horario: obj + ' ' + element.hora,
+            salida_otro_dia: nocturno,
           };
           this.restP.CrearPlanGeneral(plan).subscribe(res => {
           })
-
         })
       })
       this.toastr.success('Operación Exitosa.', 'Registro guardado.', {
@@ -291,7 +395,7 @@ export class RegistoEmpleadoHorarioComponent implements OnInit {
     this.formulario.reset();
   }
 
-  // METODO PARA CERRAR VENTANA DE SELECCIÓN DE HORARIO
+  // METODO PARA CERRAR VENTANA DE SELECCION DE HORARIO
   CerrarVentana() {
     this.LimpiarCampos();
     this.ventana.close();
@@ -310,7 +414,7 @@ export class RegistoEmpleadoHorarioComponent implements OnInit {
 
     }
     else {
-      const seg = this.SegundosToStringTime(this.datoEmpleado.horas_trabaja * 3600)
+      const seg = this.datoEmpleado.horas_trabaja;
       const { hora_trabajo, id } = obj_res;
 
       // VERIFICACION DE FORMATO CORRECTO DE HORARIOS

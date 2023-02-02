@@ -32,6 +32,10 @@ class FeriadosRuta {
         this.router.put('/', verificarToken_1.TokenValidation, catFeriadosControlador_1.default.ActualizarFeriado);
         // METODO PARA BUSCAR INFORMACION DE UN FERIADO
         this.router.get('/:id', verificarToken_1.TokenValidation, catFeriadosControlador_1.default.ObtenerUnFeriado);
+        // METODO PARA BUSCAR FERIADOS POR CIUDAD Y RANGO DE FECHAS
+        this.router.post('/listar-feriados/ciudad', verificarToken_1.TokenValidation, catFeriadosControlador_1.default.FeriadosCiudad);
+        // METODO PARA BUSCAR FECHASDE RECUPERACION DE FERIADOS POR CIUDAD Y RANGO DE FECHAS
+        this.router.post('/listar-feriados-recuperar/ciudad', verificarToken_1.TokenValidation, catFeriadosControlador_1.default.FeriadosRecuperacionCiudad);
         this.router.post('/upload/revision', [verificarToken_1.TokenValidation, multipartMiddleware], catFeriadosControlador_1.default.RevisarDatos);
         this.router.post('/upload/revision_data', [verificarToken_1.TokenValidation, multipartMiddleware], catFeriadosControlador_1.default.RevisarDatos_Duplicados);
         this.router.post('/upload', [verificarToken_1.TokenValidation, multipartMiddleware], catFeriadosControlador_1.default.CrearFeriadoPlantilla);

@@ -13,7 +13,6 @@ import { DetalleCatHorariosService } from 'src/app/servicios/horarios/detalleCat
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { HorarioService } from 'src/app/servicios/catalogos/catHorarios/horario.service';
 
-
 @Component({
   selector: 'app-editar-horario',
   templateUrl: './editar-horario.component.html',
@@ -60,11 +59,11 @@ export class EditarHorarioComponent implements OnInit {
 
   constructor(
     public ventana: MatDialogRef<EditarHorarioComponent>, // VARIABLES DE NAVEGACIÓN ENTRE VENTANAS
-    public restD: DetalleCatHorariosService, // SERVICIO DE DATOS GENERALES
-    public router: Router, // VARIABLE DE MANEJO DE RUTAS
     public validar: ValidacionesService, // VARIABLE DE CONTROL DE VALIDACIONES
-    private toastr: ToastrService, // VARIABLE DE MANEJO DE NOTIFICACIONES
+    public router: Router, // VARIABLE DE MANEJO DE RUTAS
+    public restD: DetalleCatHorariosService, // SERVICIO DE DATOS GENERALES
     private rest: HorarioService, // SERVICIO DATOS DE HORARIO
+    private toastr: ToastrService, // VARIABLE DE MANEJO DE NOTIFICACIONES
     @Inject(MAT_DIALOG_DATA) public data: any, // VARIABLE DE DATOS DE VENTANAS
   ) { }
 
@@ -74,8 +73,22 @@ export class EditarHorarioComponent implements OnInit {
 
   // MOSTRAR DATOS EN FORMULARIO
   ImprimirDatos() {
+
+    // FORMATEAR HORAS
+    if (this.data.horario.hora_trabajo.split(':').length === 3) {
+      this.horaTrabajo.setValue(this.data.horario.hora_trabajo.split(':')[0] + ':' + this.data.horario.hora_trabajo.split(':')[1]);
+    }
+    else if (this.data.horario.hora_trabajo.split(':').length === 2) {
+      if (parseInt(this.data.horario.hora_trabajo.split(':')[0]) < 10) {
+        this.horaTrabajo.setValue('0' + parseInt(this.data.horario.hora_trabajo.split(':')[0]) + ':00');
+      }
+      else {
+        this.horaTrabajo.setValue(this.data.horario.hora_trabajo);
+      }
+    }
+
+
     this.formulario.patchValue({
-      horarioHoraTrabajoForm: moment(this.data.horario.hora_trabajo, 'HH:mm:ss').format('HH:mm'),
       horarioMinAlmuerzoForm: this.data.horario.min_almuerzo,
       detalleForm: this.data.horario.detalle,
       nombreForm: this.data.horario.nombre,
@@ -110,13 +123,37 @@ export class EditarHorarioComponent implements OnInit {
       codigo: form.codigoForm
     };
 
-    if (dataHorario.detalle === false) {
-      dataHorario.hora_trabajo = moment(form.horarioHoraTrabajoForm, 'HH:mm:ss').format('HH:mm:ss');
+    // FORMATEAR HORAS
+    if (dataHorario.hora_trabajo.split(':').length === 1) {
+      if (parseInt(dataHorario.hora_trabajo) < 10) {
+        dataHorario.hora_trabajo = '0' + parseInt(dataHorario.hora_trabajo) + ':00'
+      }
+      else {
+        dataHorario.hora_trabajo = dataHorario.hora_trabajo + ':00'
+      }
     }
     else {
-      dataHorario.hora_trabajo = moment(form.horarioHoraTrabajoForm, 'HH:mm:ss').format('HH:mm');
+      if (parseInt(dataHorario.hora_trabajo.split(':')[0]) < 10) {
+        dataHorario.hora_trabajo = '0' + parseInt(dataHorario.hora_trabajo.split(':')[0]) + ':' + dataHorario.hora_trabajo.split(':')[1]
+      }
     }
 
+    // VALIDAR REGISTRO DE DETALLE DE HORARIO
+    if (dataHorario.detalle === false) {
+      dataHorario.hora_trabajo = dataHorario.hora_trabajo + ':00';
+    }
+
+    // SI EL HORARIO ES >= 24:00 Y < 72:00 HORAS (NO REGISTRA ALIMENTACION)
+    if ((dataHorario.hora_trabajo >= '24:00' && dataHorario.hora_trabajo < '72:00') &&
+      (dataHorario.hora_trabajo >= '24:00:00' && dataHorario.hora_trabajo < '72:00:00')) {
+      this.minAlmuerzo.setValue(0);
+      dataHorario.min_almuerzo = 0;
+    }
+    else if (dataHorario.hora_trabajo >= '72:00' || dataHorario.hora_trabajo >= '72:00:00') {
+      dataHorario.hora_trabajo = moment(dataHorario.hora_trabajo, 'HH:mm:ss').format('HH:mm:ss');
+    }
+
+    // VALIDAR INGRESO DE MINUTOS DE ALIMENTACION
     if (dataHorario.min_almuerzo === '' || dataHorario.min_almuerzo === null || dataHorario.min_almuerzo === undefined) {
       dataHorario.min_almuerzo = 0;
     }
@@ -126,6 +163,7 @@ export class EditarHorarioComponent implements OnInit {
       this.VerificarInformacion(dataHorario, form);
     }
     else {
+      // VERIFICAR DUPLICADOS
       this.VerificarDuplicidad(form, dataHorario);
     }
   }
@@ -191,7 +229,7 @@ export class EditarHorarioComponent implements OnInit {
       this.RegistrarAuditoria(datos);
       this.SubirRespaldo(this.data.horario.id, form);
       this.habilitarprogress = false;
-      this.toastr.success('Operación Exitosa', 'Horario actualizado', {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
       if (datos.min_almuerzo === 0) {
@@ -203,7 +241,7 @@ export class EditarHorarioComponent implements OnInit {
       this.SalirActualizar(datos, response);
     }, error => {
       this.habilitarprogress = false;
-      this.toastr.error('Ups!!! algo salio mal.', '', {
+      this.toastr.error('Limite de horas superado.', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       })
       this.CerrarVentana();
@@ -215,7 +253,7 @@ export class EditarHorarioComponent implements OnInit {
     this.rest.ActualizarHorario(this.data.horario.id, datos).subscribe(response => {
       this.RegistrarAuditoria(datos);
       this.habilitarprogress = false;
-      this.toastr.success('Operación Exitosa', 'Horario actualizado', {
+      this.toastr.success('Operación Exitosa.', 'Registro actualizado.', {
         timeOut: 6000,
       });
       if (datos.min_almuerzo === 0) {
@@ -227,7 +265,7 @@ export class EditarHorarioComponent implements OnInit {
       this.SalirActualizar(datos, response);
     }, error => {
       this.habilitarprogress = false;
-      this.toastr.error('Ups! algo salio mal.', '', {
+      this.toastr.error('Limite de horas superado.', 'Ups!!! algo salio mal.', {
         timeOut: 6000,
       })
       this.CerrarVentana()
@@ -397,7 +435,7 @@ export class EditarHorarioComponent implements OnInit {
 
   // METODO PARA INGRESAR SOLO NUMEROS
   IngresarSoloNumerosEnteros(evt: any) {
-    this.validar.IngresarSoloNumeros(evt);
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
   // MENSAJE DE FORMATO DE INGRESO DE HORAS LABORABLES

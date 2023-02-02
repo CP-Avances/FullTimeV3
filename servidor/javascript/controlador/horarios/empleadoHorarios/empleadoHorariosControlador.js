@@ -92,8 +92,8 @@ class EmpleadoHorariosControlador {
             }
         });
     }
-    // METODO PARA CONSULTAR NUMERO DE HORAS DE TRABAJO
-    ObtenerNumeroHoras(req, res) {
+    // METODO PARA CONSULTAR HORARIO DEL USUARIO POR DIAS Y NUMERO DE HORAS DE TRABAJO
+    ObtenerHorarioDias(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let { codigo, fecha_inicio, fecha_final } = req.body;
             // CONSULTA DE HORARIOS FIJOS DEL EMPLEADO
@@ -101,8 +101,8 @@ class EmpleadoHorariosControlador {
             SELECT eh.fec_inicio, eh.fec_final, ec.hora_trabaja
             FROM empl_horarios AS eh, empl_cargos AS ec
             WHERE eh.id_empl_cargo = ec.id AND eh.codigo::varchar = $1
-			    AND ($2 BETWEEN eh.fec_inicio AND eh.fec_final)
-			    AND ($3 BETWEEN eh.fec_inicio AND eh.fec_final)
+			    AND (($2 BETWEEN eh.fec_inicio AND eh.fec_final)
+			    OR ($3 BETWEEN eh.fec_inicio AND eh.fec_final))
             `, [codigo, fecha_inicio, fecha_final])
                 .then(result => { return result.rows; });
             if (fijo.length === 0) {
@@ -112,8 +112,8 @@ class EmpleadoHorariosControlador {
                 FROM plan_horarios AS ph, empl_cargos AS ec
                 WHERE ph.id_cargo = ec.id AND ph.estado = true 
                     AND ph.codigo::varchar = $1
-                    AND ($2 BETWEEN ph.fec_inicio AND ph.fec_final)
-                    AND ($3 BETWEEN ph.fec_inicio AND ph.fec_final)
+                    AND (($2 BETWEEN ph.fec_inicio AND ph.fec_final)
+                    OR ($3 BETWEEN ph.fec_inicio AND ph.fec_final))
                 `, [codigo, fecha_inicio, fecha_final])
                     .then(result => { return result.rows; });
                 if (rotativo.length === 0) {
@@ -125,6 +125,91 @@ class EmpleadoHorariosControlador {
             }
             else {
                 return res.status(200).jsonp(fijo);
+            }
+        });
+    }
+    // METODO PARA CONSULTAR HORARIO DEL USUARIO POR DIAS-HORAS Y NUMERO DE HORAS DE TRABAJO EN EL MISMO DIA (MD)
+    ObtenerHorarioHorasMD(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { codigo, fecha_inicio, hora_inicio, hora_final } = req.body;
+            // CONSULTA DE HORARIO DEL USUARIO INGRESO = SALIDA
+            let CASO_1 = yield database_1.default.query(`
+            SELECT * FROM vista_horario_entrada AS he
+            JOIN vista_horario_salida AS hs ON he.codigo = hs.codigo AND he.fecha_entrada = hs.fecha_salida 
+                AND he.id_horario = hs.id_horario AND salida_otro_dia = 0 AND he.codigo::varchar = $1
+				AND he.fecha_entrada = $2
+                AND (($3 BETWEEN hora_inicio AND hora_final) AND ($4 BETWEEN hora_inicio AND hora_final))
+            `, [codigo, fecha_inicio, hora_inicio, hora_final])
+                .then(result => { return result.rows; });
+            if (CASO_1.length === 0) {
+                // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA (SEGUNDO DIA)
+                let CASO_2 = yield database_1.default.query(`
+                SELECT * FROM vista_horario_entrada AS he
+                JOIN vista_horario_salida AS hs ON he.codigo = hs.codigo 
+                    AND hs.fecha_salida = (he.fecha_entrada + interval '1 day')
+                    AND he.id_horario = hs.id_horario AND salida_otro_dia = 1 AND he.codigo::varchar = $1
+                    AND ($2 = he.fecha_entrada OR $2 = hs.fecha_salida)
+                `, [codigo, fecha_inicio])
+                    .then(result => { return result.rows; });
+                if (CASO_2.length === 0) {
+                    // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA (TERCER DIA)
+                    let CASO_3 = yield database_1.default.query(`
+                    SELECT * FROM vista_horario_entrada AS he
+                    JOIN vista_horario_salida AS hs ON he.codigo = hs.codigo 
+			            AND hs.fecha_salida = (he.fecha_entrada + interval '2 day')
+                        AND he.id_horario = hs.id_horario AND salida_otro_dia = 2 AND he.codigo::varchar = $1
+                        AND ($2 = he.fecha_entrada OR $2 = hs.fecha_salida OR $2= (he.fecha_entrada + interval '1 day'))
+                `, [codigo, fecha_inicio])
+                        .then(result => { return result.rows; });
+                    if (CASO_3.length === 0) {
+                        return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+                    }
+                    else {
+                        return res.status(200).jsonp({ message: 'CASO_3', respuesta: CASO_3 });
+                    }
+                }
+                else {
+                    return res.status(200).jsonp({ message: 'CASO_2', respuesta: CASO_2 });
+                }
+            }
+            else {
+                return res.status(200).jsonp({ message: 'CASO_1', respuesta: CASO_1 });
+            }
+        });
+    }
+    // METODO PARA CONSULTAR HORARIO DEL USUARIO POR DIAS-HORAS Y NUMERO DE HORAS DE TRABAJO EN DIAS DIFERENTES (DD)
+    ObtenerHorarioHorasDD(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { codigo, fecha_inicio, fecha_final } = req.body;
+            // CONSULTA DE HORARIO DEL USUARIO INGRESO = SALIDA
+            let CASO_4 = yield database_1.default.query(`
+            SELECT * FROM vista_horario_entrada AS he
+            JOIN vista_horario_salida AS hs ON he.codigo = hs.codigo 
+			    AND hs.fecha_salida = (he.fecha_entrada + interval '1 day')
+                AND he.id_horario = hs.id_horario AND salida_otro_dia = 1 AND he.codigo::varchar = $1
+				AND $2 = he.fecha_entrada AND $3 = hs.fecha_salida
+            `, [codigo, fecha_inicio, fecha_final])
+                .then(result => { return result.rows; });
+            if (CASO_4.length === 0) {
+                // CONSULTA DE HORARIOS MAYORES O IGUALES A 48 HORAS
+                let CASO_5 = yield database_1.default.query(`
+                SELECT * FROM vista_horario_entrada AS he
+                JOIN vista_horario_salida AS hs ON he.codigo = hs.codigo 
+			        AND hs.fecha_salida = (he.fecha_entrada + interval '2 day')
+                    AND he.id_horario = hs.id_horario AND salida_otro_dia = 2 AND he.codigo::varchar = $1
+                    AND ($2 = he.fecha_entrada OR $2 = (he.fecha_entrada + interval '1 day')) 
+                    AND ($3 = hs.fecha_salida OR $3 = (he.fecha_entrada + interval '1 day'))
+                `, [codigo, fecha_inicio, fecha_final])
+                    .then(result => { return result.rows; });
+                if (CASO_5.length === 0) {
+                    return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+                }
+                else {
+                    return res.status(200).jsonp({ message: 'CASO_5', respuesta: CASO_5 });
+                }
+            }
+            else {
+                return res.status(200).jsonp({ message: 'CASO_4', respuesta: CASO_4 });
             }
         });
     }

@@ -11,20 +11,24 @@ class HorarioControlador {
   // REGISTRAR HORARIO
   public async CrearHorario(req: Request, res: Response): Promise<Response> {
     const { nombre, min_almuerzo, hora_trabajo, nocturno, detalle, codigo } = req.body;
-    const response: QueryResult = await pool.query(
-      `
+    try {
+      const response: QueryResult = await pool.query(
+        `
       INSERT INTO cg_horarios (nombre, min_almuerzo, hora_trabajo,
       nocturno, detalle, codigo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
       `
-      , [nombre, min_almuerzo, hora_trabajo, nocturno, detalle, codigo]);
+        , [nombre, min_almuerzo, hora_trabajo, nocturno, detalle, codigo]);
 
-    const [horario] = response.rows;
+      const [horario] = response.rows;
 
-    if (horario) {
-      return res.status(200).jsonp(horario)
-    }
-    else {
-      return res.status(404).jsonp({ message: 'error' })
+      if (horario) {
+        return res.status(200).jsonp(horario)
+      }
+      else {
+        return res.status(404).jsonp({ message: 'error' })
+      }
+    } catch (error) {
+      return res.status(400).jsonp({ message: error });
     }
   }
 
@@ -79,7 +83,7 @@ class HorarioControlador {
         , [nombre, min_almuerzo, hora_trabajo, nocturno, detalle, codigo, id,])
         .then(result => { return result.rows })
 
-      if (respuesta.length === 0) return res.status(400).jsonp({ message: 'Horario no Actualizado' });
+      if (respuesta.length === 0) return res.status(400).jsonp({ message: 'error' });
 
       return res.status(200).jsonp(respuesta);
 

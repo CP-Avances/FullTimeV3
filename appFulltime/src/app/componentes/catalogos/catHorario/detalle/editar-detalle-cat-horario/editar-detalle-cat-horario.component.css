@@ -33,3 +33,8 @@ mat-progress-spinner {
     background: transparent;
     z-index: 100;
 }
+
+#color_fuente {
+    color: rgb(8, 8, 8);
+    font-size: 13px;
+}

@@ -16,7 +16,7 @@ class PermisosControlador {
         const NUMERO_PERMISO = await pool.query(
             `
             SELECT MAX(p.num_permiso) FROM permisos AS p, empleados AS e 
-            WHERE p.codigo::character = e.codigo AND e.id = $1
+            WHERE p.codigo::varchar = e.codigo AND e.id = $1
             `
             , [id_empleado]);
         if (NUMERO_PERMISO.rowCount > 0) {
@@ -28,15 +28,33 @@ class PermisosControlador {
     }
 
     // CONSULTA DE PERMISOS SOLICITADOS POR DIAS
-    public async BuscarPermisos_Fechas(req: Request, res: Response) {
+    public async BuscarPermisosTotales(req: Request, res: Response) {
+        try {
+            const { fec_inicio, fec_final, codigo } = req.body;
+            const PERMISO = await pool.query(
+                `
+                    SELECT id FROM permisos 
+                        WHERE ((fec_inicio::date BETWEEN $1 AND $2) OR (fec_final::date BETWEEN $1 AND $2)) 
+                        AND codigo::varchar = $3
+                        AND (estado = 2 OR estado = 3 OR estado = 1)
+                    `
+                , [fec_inicio, fec_final, codigo]);
+            return res.jsonp(PERMISO.rows)
+        } catch (error) {
+            return res.jsonp({ message: 'error' });
+        }
+    }
+
+    // CONSULTA DE PERMISOS SOLICITADOS POR DIAS
+    public async BuscarPermisosDias(req: Request, res: Response) {
         try {
             const { fec_inicio, fec_final, codigo } = req.body;
             const PERMISO = await pool.query(
                 `
                 SELECT id FROM permisos 
-                    WHERE ((fec_inicio::date BETWEEN $1 AND $2) 
-	                OR (fec_final::date BETWEEN $1 AND $2)) 
+                    WHERE ((fec_inicio::date BETWEEN $1 AND $2) OR (fec_final::date BETWEEN $1 AND $2)) 
                     AND codigo::varchar = $3 AND dia != 0
+                    AND (estado = 2 OR estado = 3 OR estado = 1)
                 `
                 , [fec_inicio, fec_final, codigo]);
             return res.jsonp(PERMISO.rows)
@@ -45,7 +63,27 @@ class PermisosControlador {
         }
     }
 
-
+    // CONSULTA DE PERMISOS SOLICITADOS POR DIAS
+    public async BuscarPermisosHoras(req: Request, res: Response) {
+        try {
+            const { fec_inicio, fec_final, hora_inicio, hora_final, codigo } = req.body;
+            console.log('ver data ', fec_inicio, fec_final, hora_inicio, hora_final, codigo)
+            const PERMISO = await pool.query(
+                `
+                SELECT id FROM permisos 
+                WHERE (($1 BETWEEN fec_inicio::date AND fec_final::date) 
+                    OR ($2 BETWEEN fec_inicio::date AND fec_final::date )) 
+                    AND codigo::varchar = $5 
+                    AND dia = 0
+                    AND (($3 BETWEEN hora_salida AND hora_ingreso) OR ($4 BETWEEN hora_salida AND hora_ingreso)) 
+                    AND (estado = 2 OR estado = 3 OR estado = 1)
+                `
+                , [fec_inicio, fec_final, hora_inicio, hora_final, codigo]);
+            return res.jsonp(PERMISO.rows)
+        } catch (error) {
+            return res.jsonp({ message: 'error' });
+        }
+    }
 
 
 
@@ -558,7 +596,7 @@ class PermisosControlador {
                     p.documento, p.docu_nombre, p.hora_salida, p.hora_ingreso, p.codigo, 
                     t.descripcion AS nom_permiso 
                 FROM permisos AS p, cg_tipo_permisos AS t, empleados AS e
-                WHERE p.id_tipo_permiso = t.id AND p.codigo::character varying = e.codigo AND e.id = $1 
+                WHERE p.id_tipo_permiso = t.id AND p.codigo::varchar = e.codigo AND e.id = $1 
                 ORDER BY p.num_permiso DESC
                     `, [id_empleado]);
             return res.jsonp(PERMISO.rows)

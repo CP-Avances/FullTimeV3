@@ -12,6 +12,17 @@ class NotificacionTiempoRealRutas {
 
     configuracion(): void {
 
+        // METODO PARA CONTROLAR CONFIGURACION DE RECEPCION DE NOTIFICACIONES
+        this.router.get('/config/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerConfigEmpleado);
+
+
+
+
+
+
+
+
+
 
         this.router.get('/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ListarNotificacion);
 
@@ -26,7 +37,7 @@ class NotificacionTiempoRealRutas {
         this.router.get('/receives/:id_receive', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ListarNotificacionUsuario);
 
         // RUTAS CONFIGURACION DE RECEPCION DE NOTIFICACIONES CONFIG_NOTI 
-        this.router.get('/config/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerConfigEmpleado);
+   
         this.router.post('/config/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.CrearConfiguracion);
         this.router.put('/config/noti-put/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ActualizarConfigEmpleado);
 

@@ -18,7 +18,10 @@ export class RealTimeService {
     this.socket.emit('nuevo_aviso', data);
   }
 
-
+  // METODO DE BUSQUEDA DE CONFIGURACION DE RECEPCION DE NOTIFICACIONES
+  ObtenerConfiguracionEmpleado(id_empleado: number) {
+    return this.http.get<any>(`${environment.url}/noti-real-time/config/${id_empleado}`);
+  }
 
 
 
@@ -67,10 +70,7 @@ export class RealTimeService {
    ** **                        METODOS PARA CONFIG_NOTI                                ** ** 
    ** ************************************************************************************ **/
 
-  // METODO DE BUSQUEDA DE CONFIGURACION DE RECEPCION DE NOTIFICACIONES
-  ObtenerConfiguracionEmpleado(id_empleado: number) {
-    return this.http.get<any>(`${environment.url}/noti-real-time/config/${id_empleado}`);
-  }
+
 
   IngresarConfigNotiEmpleado(datos: any) {
     return this.http.post(`${environment.url}/noti-real-time/config`, datos);

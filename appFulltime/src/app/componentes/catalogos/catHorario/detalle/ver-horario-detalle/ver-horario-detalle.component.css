@@ -39,3 +39,8 @@ hr {
     font-weight: bold;
     font-size: 15px;
 }
+
+table {
+    width: 100%;
+    font-size: 14px;
+}

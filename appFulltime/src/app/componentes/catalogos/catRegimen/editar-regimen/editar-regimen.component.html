@@ -204,8 +204,9 @@
                         </div>
                         <div class="col-md">
                             <div class="d-flex flex-wrap justify-content-start">
-                                <label style="padding-top: 10px; position: relative; left:10px;">Solicitudes de
-                                    vacaciones contabiliza:</label>
+                                <label style="padding-top: 10px; position: relative; left:10px;">
+                                    Solicitudes de vacaciones contabiliza:
+                                </label>
                             </div>
 
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
@@ -281,8 +282,9 @@
                                         (click)="EliminarPeriodo(1)" matTooltip="Eliminar Registro.">
                                         cancel
                                     </mat-icon>
-                                    <mat-hint align="start" id="error" *ngIf="mensaje1_"><strong>Dias de vacaciones
-                                            deben ser mayores a 5 días.</strong></mat-hint>
+                                    <mat-hint align="start" id="error" *ngIf="mensaje1_">
+                                        <strong>Dias de vacaciones deben ser mayores a 5 días.</strong>
+                                    </mat-hint>
                                 </mat-form-field>
                                 <mat-form-field *ngIf="periodo_dos">
                                     <mat-label id="letras_4">2º Periodo</mat-label>
@@ -293,8 +295,9 @@
                                         (click)="EliminarPeriodo(2)" matTooltip="Eliminar Registro.">
                                         cancel
                                     </mat-icon>
-                                    <mat-hint align="start" id="error" *ngIf="mensaje2_"><strong>Dias de vacaciones
-                                            deben ser mayores a 5 días.</strong></mat-hint>
+                                    <mat-hint align="start" id="error" *ngIf="mensaje2_">
+                                        <strong>Dias de vacaciones deben ser mayores a 5 días.</strong>
+                                    </mat-hint>
                                 </mat-form-field>
                                 <mat-form-field *ngIf="periodo_tres">
                                     <mat-label id="letras_4">3º Periodo</mat-label>
@@ -305,8 +308,9 @@
                                         (click)="EliminarPeriodo(3)" matTooltip="Eliminar Registro.">
                                         cancel
                                     </mat-icon>
-                                    <mat-hint align="start" id="error" *ngIf="mensaje3_"><strong>Dias de vacaciones
-                                            deben ser mayores a 5 días.</strong></mat-hint>
+                                    <mat-hint align="start" id="error" *ngIf="mensaje3_">
+                                        <strong>Dias de vacaciones deben ser mayores a 5 días.</strong>
+                                    </mat-hint>
                                 </mat-form-field>
                             </div>
                         </div>
@@ -341,8 +345,8 @@
                                 <mat-checkbox class="check" matSuffix matTooltipPosition="right"
                                     [formControl]="antiguedadActivaF" style="position: relative; left:10px;"
                                     (change)="ActivarAntiguedad($event, tercerFormulario.value)"
-                                    matTooltip="Activar vacaciones por antiguedad laboral.">Antigüedad
-                                    laboral
+                                    matTooltip="Activar vacaciones por antiguedad laboral.">
+                                    Antigüedad laboral
                                 </mat-checkbox>
                             </div>
 
@@ -513,8 +517,8 @@
                                     style="position: relative; left:10px;"
                                     (change)="ValidarRequerido($event, primerFormulario.value, segundoFormulario.value, tercerFormulario.value)"
                                     [formControl]="calculoF"
-                                    matTooltip="Dar click para realizar cálculo y completar todos los datos.">Realizar
-                                    cálculos *
+                                    matTooltip="Dar click para realizar cálculo y completar todos los datos.">
+                                    Realizar cálculos *
                                 </mat-checkbox>
 
                                 <mat-icon *ngIf="limpiar_calcular" id="i-cursor" matSuffix matTooltipPosition="right"
@@ -529,14 +533,16 @@
                                     <input matInput [formControl]="diasMesLaborableF" readonly>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Días laborables de vacaciones ganados por mes.">
-                                        help_outline</mat-icon>
+                                        help_outline
+                                    </mat-icon>
                                 </mat-form-field>
                                 <mat-form-field>
                                     <mat-label id="letras_3">Calendario: Vacaciones por mes</mat-label>
                                     <input matInput [formControl]="diasMesCalendarioF" readonly>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Días calendario de vacaciones ganados por mes.">
-                                        help_outline</mat-icon>
+                                        help_outline
+                                    </mat-icon>
                                 </mat-form-field>
 
                                 <mat-form-field>
@@ -544,14 +550,16 @@
                                     <input matInput [formControl]="dias_LaborableF" readonly>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Días labaorables de vacaciones ganados por día.">
-                                        help_outline</mat-icon>
+                                        help_outline
+                                    </mat-icon>
                                 </mat-form-field>
                                 <mat-form-field>
                                     <mat-label id="letras_3">Calendario: Vacaciones por día</mat-label>
                                     <input matInput [formControl]="dias_CalendarioF" readonly>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Dias calendario de vacaciones ganados por día.">
-                                        help_outline</mat-icon>
+                                        help_outline
+                                    </mat-icon>
                                 </mat-form-field>
                             </div>
                         </div>

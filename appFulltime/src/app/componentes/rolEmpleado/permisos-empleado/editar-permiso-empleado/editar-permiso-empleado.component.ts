@@ -376,7 +376,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
         }
         console.log('fechas', datosFechas)
         this.dIngreso = event.value;
-        this.restH.BuscarNumeroHoras(datosFechas).subscribe(datos => {
+        this.restH.BuscarHorarioDias(datosFechas).subscribe(datos => {
           this.horasTrabajo = datos;
           console.log("horas", this.horasTrabajo[0].horas, datos);
           this.VerificarDiasHoras(form, this.horasTrabajo[0].horas);

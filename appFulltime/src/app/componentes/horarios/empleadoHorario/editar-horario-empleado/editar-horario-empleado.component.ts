@@ -12,6 +12,7 @@ import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHora
 import { PlanGeneralService } from 'src/app/servicios/planGeneral/plan-general.service';
 import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/empleado.service';
 import { HorarioService } from 'src/app/servicios/catalogos/catHorarios/horario.service';
+import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
 
 @Component({
   selector: 'app-editar-horario-empleado',
@@ -67,6 +68,7 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
     public restD: DetalleCatHorariosService,
     public router: Router,
     public ventana: MatDialogRef<EditarHorarioEmpleadoComponent>,
+    public feriado: FeriadosService,
     private toastr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
@@ -204,8 +206,38 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
         horarioForm: 0
       })
     }, error => {
+      this.BuscarFeriados(form);
+      this.BuscarFeriadosRecuperar(form);
       this.ValidarHorarioByHorasTrabaja(form);
     });
+  }
+
+  // METODO PARA BUSCAR FERIADOS
+  feriados: any = [];
+  BuscarFeriados(form: any) {
+    this.feriados = [];
+    let datos = {
+      fecha_inicio: form.fechaInicioForm,
+      fecha_final: form.fechaFinalForm,
+      id_empleado: parseInt(this.data.idEmpleado)
+    }
+    this.feriado.ListarFeriadosCiudad(datos).subscribe(data => {
+      this.feriados = data;
+    })
+  }
+
+  // METODO PARA BUSCAR FECHAS DE RECUPERACION DE FERIADOS
+  recuperar: any = [];
+  BuscarFeriadosRecuperar(form: any) {
+    this.recuperar = [];
+    let datos = {
+      fecha_inicio: form.fechaInicioForm,
+      fecha_final: form.fechaFinalForm,
+      id_empleado: parseInt(this.data.idEmpleado)
+    }
+    this.feriado.ListarFeriadosRecuperarCiudad(datos).subscribe(data => {
+      this.recuperar = data;
+    })
   }
 
   // METODO PARA GUARDAR REGISTROS
@@ -270,13 +302,75 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
       // INICIALIZAR DATOS DE FECHA
       var start = new Date(this.inicioDate);
       var end = new Date(this.finDate);
-      // LÓGICA PARA OBTENER EL NOMBRE DE CADA UNO DE LOS DÍA DEL PERIODO INDICADO
+      // LOGICA PARA OBTENER EL NOMBRE DE CADA UNO DE LOS DIA DEL PERIODO INDICADO
       while (start <= end) {
         this.fechasHorario.push(moment(start).format('YYYY-MM-DD'));
         var newDate = start.setDate(start.getDate() + 1);
         start = new Date(newDate);
       }
+      var tipo: string = '';
+      
       this.fechasHorario.map(obj => {
+        // DEFINICION DE TIPO DE DIA SEGUN HORARIO
+        tipo = 'N'
+        var day = moment(obj).day();
+        if (moment.weekdays(day) === 'lunes') {
+          if (form.lunesForm === true) {
+            tipo = 'L'
+          }
+        }
+        if (moment.weekdays(day) === 'martes') {
+          if (form.martesForm === true) {
+            tipo = 'L'
+          }
+        }
+        if (moment.weekdays(day) === 'miércoles') {
+          if (form.miercolesForm === true) {
+            tipo = 'L'
+          }
+        }
+        if (moment.weekdays(day) === 'jueves') {
+          if (form.juevesForm === true) {
+            tipo = 'L'
+          }
+        }
+        if (moment.weekdays(day) === 'viernes') {
+          if (form.viernesForm === true) {
+            tipo = 'L'
+          }
+        }
+        if (moment.weekdays(day) === 'sábado') {
+          if (form.sabadoForm === true) {
+            tipo = 'L'
+          }
+        }
+        if (moment.weekdays(day) === 'domingo') {
+          if (form.domingoForm === true) {
+            tipo = 'L'
+          }
+        }
+
+        // BUSCAR FERIADOS 
+        if (this.feriados.length != 0) {
+          for (let i = 0; i < this.feriados.length; i++) {
+            if (moment(this.feriados[i].fecha, 'YYYY-MM-DD').format('YYYY-MM-DD') === obj) {
+              tipo = 'FD';
+              break;
+            }
+          }
+        }
+
+        // BUSCAR FECHAS DE RECUPERACION DE FERIADOS
+        if (this.recuperar.length != 0) {
+          for (let j = 0; j < this.recuperar.length; j++) {
+            if (moment(this.recuperar[j].fec_recuperacion, 'YYYY-MM-DD').format('YYYY-MM-DD') === obj) {
+              tipo = 'N';
+              break;
+            }
+          }
+        }
+
+        // COLOCAR DETALLE DE DIA SEGUN HORARIO
         this.detalles.map(element => {
           var accion = 0;
           if (element.tipo_accion === 'E') {
@@ -291,7 +385,8 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
             fec_horario: obj,
             id_horario: form.horarioForm,
             codigo: this.empleado[0].codigo,
-            estado: null,
+            estado: form.estadoForm,
+            tipo: tipo,
           };
           this.restP.CrearPlanGeneral(plan).subscribe(res => {
           })
@@ -347,7 +442,7 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
     if (obj_res.detalle === false) {
     }
     else {
-      const seg = this.SegundosToStringTime(this.data.horas_trabaja * 3600)
+      const seg = this.data.horas_trabaja;
       const { hora_trabajo, id } = obj_res;
 
       // VERIFICACIÓN DE FORMATO CORRECTO DE HORARIOS

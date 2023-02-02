@@ -125,6 +125,56 @@ class FeriadosControlador {
     }
 
 
+    // METODO PARA BUSCAR FERIADOS SEGUN CIUDAD Y RANGO DE FECHAS
+    public async FeriadosCiudad(req: Request, res: Response) {
+        try {
+            const { fecha_inicio, fecha_final, id_empleado } = req.body;
+            const FERIADO = await pool.query(
+                `
+                SELECT f.fecha, f.fec_recuperacion, cf.id_ciudad, c.descripcion, s.nombre
+                FROM cg_feriados AS f, ciud_feriados AS cf, ciudades AS c, sucursales AS s, datos_actuales_empleado AS de
+                WHERE cf.id_feriado = f.id AND (f.fecha BETWEEN $1 AND $2) AND c.id = cf.id_ciudad 
+                    AND s.id_ciudad = cf.id_ciudad AND de.id_sucursal = s.id AND de.id = $3
+                `
+                , [fecha_inicio, fecha_final, id_empleado]);
+
+            if (FERIADO.rowCount > 0) {
+                return res.jsonp(FERIADO.rows)
+            }
+            else {
+                res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
+        }
+        catch (error) {
+            return res.jsonp({ message: 'error' });
+        }
+    }
+
+    // METODO PARA BUSCAR FERIADOS SEGUN CIUDAD Y RANGO DE FECHAS
+    public async FeriadosRecuperacionCiudad(req: Request, res: Response) {
+        try {
+            const { fecha_inicio, fecha_final, id_empleado } = req.body;
+            const FERIADO = await pool.query(
+                `
+                SELECT f.fecha, f.fec_recuperacion, cf.id_ciudad, c.descripcion, s.nombre
+                FROM cg_feriados AS f, ciud_feriados AS cf, ciudades AS c, sucursales AS s, datos_actuales_empleado AS de
+                WHERE cf.id_feriado = f.id AND (f.fecha BETWEEN $1 AND $2) AND c.id = cf.id_ciudad 
+                    AND s.id_ciudad = cf.id_ciudad AND de.id_sucursal = s.id AND de.id = $3
+                    AND f.fec_recuperacion IS NOT null
+                `
+                , [fecha_inicio, fecha_final, id_empleado]);
+
+            if (FERIADO.rowCount > 0) {
+                return res.jsonp(FERIADO.rows)
+            }
+            else {
+                res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
+        }
+        catch (error) {
+            return res.jsonp({ message: 'error' });
+        }
+    }
 
 
 

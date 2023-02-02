@@ -27,7 +27,7 @@ export class VerHorarioDetalleComponent implements OnInit {
   datosHorario: any = [];
   datosDetalle: any = [];
 
-  // ITEMS DE PAGINACIÓN DE LA TABLA
+  // ITEMS DE PAGINACION DE LA TABLA
   tamanio_pagina: number = 5;
   numero_pagina: number = 1;
   pageSizeOptions = [5, 10, 20, 50];
@@ -87,13 +87,17 @@ export class VerHorarioDetalleComponent implements OnInit {
   }
 
   // METODO PARA BUSCAR DETALES DE UN HORARIO
+  detalles: any = [];
   ListarDetalles(id_horario: any, formato_hora: string) {
     this.datosDetalle = [];
+    this.detalles = [];
     this.restD.ConsultarUnDetalleHorario(id_horario).subscribe(datos => {
       this.datosDetalle = datos;
+      this.detalles = datos;
       this.datosDetalle.forEach(data => {
         data.hora_ = this.validar.FormatearHora(data.hora, formato_hora);
       });
+      console.log('ver detales ', this.datosDetalle)
     })
   }
 
@@ -162,45 +166,88 @@ export class VerHorarioDetalleComponent implements OnInit {
 
       // SI NO EXISTEN DETALLES DE HORARIO
       if (this.datosDetalle.length === 0) return this.toastr.error(
-        'Por favor primero ingrese detalle de horario.'
+        'Ingresar detalles de horario para continuar.'
       );
 
       // REGISTROS INCOMPLETOS DE DETALLE DE HORARIOS
       if (this.datosDetalle.length === 1) return this.toastr.error(
-        `Falta ingresar el detalle de horario. Debe tener al menos 2 detalles de 
-        horario (Entrada - Salida).`
+        `El horario debe tener al menos 2 detalles (Entrada - Salida).`, 'Detalle de horario incompleto.'
       );
 
       // VALIDAR SI EXISTE REGISTRO MINUTOS DE ALMUERZO
       if (min_almuerzo != 0) {
         if (this.datosDetalle.length != 4) return this.toastr.error(
-          `Falta ingresar el detalle de horario. Debe tener al menos 4 detalles de 
-          horario (Entrada - Inicio alimentación - Fin alimentación - Salida)'`
+          `El horario debe tener 4 detalles. (Entrada - Inicio alimentación - Fin alimentación - Salida)`,
+          'Detalle de horario incompleto.'
         );
+
+        if (nocturno === true) {
+          var [det_uno, det_dos, det_tres, det_cuatro] = this.datosDetalle;
+
+          // HORARIOS CON FINALIZACION DE JORNADA Y ALIMENTACION EL MISMO DIA
+          if (det_cuatro.segundo_dia === false && det_tres.segundo_dia === false && det_dos.segundo_dia === false) {
+            if (det_dos.hora < det_tres.hora) {
+              if (det_dos.hora > det_uno.hora && det_dos.hora < det_cuatro.hora &&
+                det_tres.hora > det_uno.hora && det_tres.hora < det_cuatro.hora) {
+              }
+              else {
+                return this.EmitirMensajeErrorAlimentacion();
+              }
+            }
+            else {
+              return this.EmitirMensajeErrorAlimentacion();
+            }
+          }
+
+          // HORARIOS CON FINALIZACION DE JORNADA EN OTRO DIA
+          else if (det_cuatro.segundo_dia === true && det_tres.segundo_dia === false && det_dos.segundo_dia === false) {
+            if (det_dos.hora < det_tres.hora) {
+              if (det_dos.hora > det_uno.hora && det_dos.hora < '24:00:00' &&
+                det_tres.hora > det_uno.hora && det_tres.hora < '24:00:00') {
+              }
+              else {
+                return this.EmitirMensajeErrorAlimentacion();
+              }
+            }
+            else {
+              return this.EmitirMensajeErrorAlimentacion();
+            }
+          }
+
+          // HORARIOS CON FINALIZACION DE JORNADA Y ALIMENTACION EN OTRO DIA
+          else if (det_cuatro.segundo_dia === true && det_tres.segundo_dia === true && det_dos.segundo_dia === false) {
+            if (det_dos.hora < '24:00:00') {
+              if (det_dos.hora > det_uno.hora &&
+                det_tres.hora > '00:00:00' && det_tres.hora < det_cuatro.hora) {
+              }
+              else {
+                return this.EmitirMensajeErrorAlimentacion();
+              }
+            }
+            else {
+              return this.EmitirMensajeErrorAlimentacion();
+            }
+          }
+
+          // HORARIOS CON FINALIZACION DE JORNADA E INICIO Y FINALIZACION DE ALIMENTACION EL OTRO DIA
+          else if (det_cuatro.segundo_dia === true && det_tres.segundo_dia === true && det_dos.segundo_dia === true) {
+            if (det_dos.hora < det_tres.hora) {
+              if (det_dos.hora < det_cuatro.hora && det_tres.hora < det_cuatro.hora) {
+              }
+              else {
+                return this.EmitirMensajeErrorAlimentacion();
+              }
+            }
+            else {
+              return this.EmitirMensajeErrorAlimentacion();
+            }
+          }
+        }
       }
 
-      // VALIDAR HORARIOS NOCTURNOS
-      if (nocturno === true) {
-        const hora_ini_horario_nocturno = this.StringTimeToSegundosTime('19:00:00');
-        const median_noche = this.StringTimeToSegundosTime('24:00:00');
-        const detalleNocturno = this.datosDetalle.map(o => {
-          let tiempo = this.StringTimeToSegundosTime(o.hora);
-          let value = (hora_ini_horario_nocturno <= tiempo && median_noche > tiempo) ? tiempo : tiempo + median_noche
-          return {
-            orden: o.orden,
-            hora: value
-          }
-        })
-        this.ActualizarHorasTrabajaSegunHorario(detalleNocturno, id, min_almuerzo)
-      } else {
-        const detalleDiurno = this.datosDetalle.map(o => {
-          return {
-            orden: o.orden,
-            hora: this.StringTimeToSegundosTime(o.hora)
-          }
-        })
-        this.ActualizarHorasTrabajaSegunHorario(detalleDiurno, id, min_almuerzo)
-      }
+      // VALIDAR HORAS TOTALES DE HORARIO
+      this.ValidarHorario(nocturno, id, min_almuerzo);
+
     }
     // VERIFICADO QUE LAS HORAS TENGAN EL FORMATO HH:mm:ss
     else {
@@ -210,50 +257,153 @@ export class VerHorarioDetalleComponent implements OnInit {
     }
   }
 
+  // MENSAJE DE ERRORES EN CONFIGURACION DE DETALLE DE HORARIO
+  EmitirMensajeErrorAlimentacion() {
+    return this.toastr.warning(
+      `Horas de entra, salida o alimentación no son correctas.`,
+      'Revisar detalle de horario.')
+  }
+
+  // METODO PARA VERIFICAR HORAS INGRESADAS Y FORMATEAR LAS MISMAS
+  ValidarHorario(nocturno: boolean, id: number, min_almuerzo: any) {
+    // VALIDAR HORARIOS NOCTURNOS
+    if (nocturno === true) {
+      this.CalcularMetodoNocturno(id, min_almuerzo);
+    } else {
+      if (this.datosHorario[0].hora_trabajo >= '24:00') {
+        this.toastr.warning('Horarios de horas superiores o iguales a 24:00 horas deben ser configurados como horarios nocturnos.',
+          'Ups!!! algo salio mal.', {
+          timeOut: 6000
+        });
+      }
+      else {
+        const detalleDiurno = this.datosDetalle.map(o => {
+          if (o.orden === 4 && o.hora === '00:00:00') {
+            o.hora = '24:00:00';
+          }
+          if (o.orden === 3 && o.hora === '00:00:00') {
+            o.hora = '24:00:00';
+          }
+          return {
+            orden: o.orden,
+            segundo: o.segundo_dia,
+            tercero: o.tercer_dia,
+            hora: this.StringTimeToSegundosTime(o.hora)
+          }
+        })
+        this.ActualizarHorasTrabajaSegunHorario(detalleDiurno, id, min_almuerzo)
+      }
+    }
+  }
+
+  CalcularMetodoNocturno(id: number, min_almuerzo: any) {
+    const detalleNocturno = this.datosDetalle.map(o => {
+      if ((o.orden === 4 || o.orden === 3) && o.hora === '00:00:00') {
+        o.hora = '24:00:00';
+      }
+      let tiempo = this.StringTimeToSegundosTime(o.hora);
+      return {
+        orden: o.orden,
+        hora: tiempo,
+        segundo: o.segundo_dia,
+        tercero: o.tercer_dia,
+      }
+    })
+    this.ActualizarHorasTrabajaSegunHorario(detalleNocturno, id, min_almuerzo);
+  }
+
   // METODO PARA ACTUALIZAR HORAS TRABAJADAS DE ACUERDO AL HORARIO - NOCTURNO
   ActualizarHorasTrabajaSegunHorario(detalle: any[], id: number, min_almuerzo: number) {
+
+    const median_noche = this.StringTimeToSegundosTime('24:00:00');
+
+    var horasT = '';
+    var horario = 0;
+    var diferencia = 0;
+    var alimentacion = 0;
+    var entrada = 0;
+
     if (min_almuerzo === 0) {
       var [det_uno, det_cuatro] = detalle;
+
+      if (det_cuatro.segundo === true) {
+        if (det_uno.hora === 0) {
+          entrada = det_uno.hora;
+        }
+        else {
+          entrada = median_noche - det_uno.hora;
+        }
+
+        horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora + entrada;
+        horasT = this.SegundosToStringTime(horario);
+
+      }
+      else if (det_cuatro.tercero === true) {
+
+        if (det_uno.hora === 0) {
+          entrada = det_uno.hora;
+        }
+        else {
+          entrada = median_noche - det_uno.hora;
+        }
+
+        if (this.datosHorario[0].hora_trabajo + ':00' === '48:00:00') {
+          horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora + entrada + median_noche;
+        }
+        else {
+          horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora + entrada + median_noche + median_noche;
+        }
+        horasT = this.SegundosToStringTime(horario);
+
+      }
+      else {
+        horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora - det_uno.hora;
+        horasT = this.SegundosToStringTime(horario);
+      }
     }
     else {
       var [det_uno, det_dos, det_tres, det_cuatro] = detalle;
+      if (det_tres.segundo === true && det_dos.segundo === false) {
+        var inicio = median_noche - det_dos.hora;
+        alimentacion = (det_tres === undefined) ? 0 : det_tres.hora + inicio;
+      }
+      else if ((det_tres.segundo === true && det_dos.segundo === true) ||
+        (det_tres.segundo === false && det_dos.segundo === false)) {
+        alimentacion = (det_tres === undefined) ? 0 : det_tres.hora - det_dos.hora;
+      }
+
+      let minutos: number = Math.floor((alimentacion / 60));
+
+      // VALIDAR MINUTOS DE ALIMENTACION
+      if (minutos < min_almuerzo) return this.toastr.warning(
+        `El detalle de inicio y fin de alimentación tiene registrado menos minutos de alimentación 
+                de lo establecido en el horario.`,
+        'Por favor revisar detalle de alimentación.', {
+        timeOut: 6000
+      });
+
+      if (det_cuatro.segundo === true) {
+        entrada = median_noche - det_uno.hora;
+        horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora + entrada;
+        diferencia = horario - Math.floor((min_almuerzo * 60));
+        horasT = this.SegundosToStringTime(diferencia);
+      }
+      else if (det_cuatro.tercero === true) {
+        horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora + det_uno.hora;
+        diferencia = horario - Math.floor((min_almuerzo * 60));
+        horasT = this.SegundosToStringTime(diferencia);
+      }
+      else {
+        horario = (det_cuatro === undefined) ? 0 : det_cuatro.hora - det_uno.hora;
+        diferencia = horario - Math.floor((min_almuerzo * 60));
+        horasT = this.SegundosToStringTime(diferencia);
+      }
     }
-
-    const diferencia2 = (det_tres === undefined) ? 0 : det_tres.hora - det_dos.hora;
-
-    let minutos: number = Math.floor((diferencia2 / 60));
-
-    // VALIDAR HORARIO SIN MINUTOS DE ALIMENTACION
-    if (min_almuerzo === 0 && minutos != 0) return this.toastr.warning(
-      `Por favor eliminar detalle de salida e ingreso de alimentación o configurar 
-      minutos de alimentación en el horario.`,
-      'El horario registrado indica que no tiene asignado minutos de alimentación.', {
-      timeOut: 6000
-    });
-
-    // VALIDAR HORARIO CON MINUTOS DE ALIMENTACION
-    if (min_almuerzo != 0 && minutos === 0) return this.toastr.warning(
-      'El horario registra minutos de alimentación que no han sido establecidos en el detalle.',
-      'Por favor ingresar detalle de salida de alimentación.', {
-      timeOut: 6000
-    });
-
-    // VALIDAR MINUTOS DE ALIMENTACION
-    if (min_almuerzo != 0 && minutos < min_almuerzo) return this.toastr.warning(
-      `El detalle de entrada y salida alimentación tiene menos minutos de alimentación 
-      de lo establecido en el horario.`,
-      'Por favor revisar detalle de alimentación.', {
-      timeOut: 6000
-    });
-
-    // METODO LECTURA DE HORAS ACORDE AL DETALLE INGRESADO
-    const diferencia1 = (det_cuatro === undefined) ? 0 : det_cuatro.hora - det_uno.hora;
-    const diferenciaTotal = diferencia1 - Math.floor((min_almuerzo * 60));
-    const horasT = this.SegundosToStringTime(diferenciaTotal);
 
     if (horasT < (this.datosHorario[0].hora_trabajo + ':00')) {
       this.toastr.warning(
-        'Las horas totales de trabajo definidas en su detalle son menores a las horas de trabajo establecidas en el horario. ' + horasT + ' < ' + this.datosHorario[0].hora_trabajo + ':00',
+        `Las horas totales de trabajo definidas en su detalle son menores a las horas de trabajo establecidas en el horario. 
+        ${horasT} < ${this.datosHorario[0].hora_trabajo}:00`,
         'Por favor revisar detalle de horario.', {
         timeOut: 6000
       });
@@ -261,7 +411,8 @@ export class VerHorarioDetalleComponent implements OnInit {
 
     else if (horasT > (this.datosHorario[0].hora_trabajo + ':00')) {
       this.toastr.warning(
-        'Las horas totales de trabajo definidas en su detalle son mayores a las horas de trabajo establecidas en el horario. ' + horasT + ' > ' + this.datosHorario[0].hora_trabajo + ':00',
+        `Las horas totales de trabajo definidas en su detalle son mayores a las horas de trabajo establecidas en el horario. 
+        ${horasT} > ${this.datosHorario[0].hora_trabajo}:00`,
         'Por favor revisar detalle de horario.', {
         timeOut: 6000
       });
@@ -287,7 +438,6 @@ export class VerHorarioDetalleComponent implements OnInit {
     m = (m < 10) ? '0' + m : m;
     let s: string | number = segundos % 60;
     s = (s < 10) ? '0' + s : s;
-
     return h + ':' + m + ':' + s;
   }
 

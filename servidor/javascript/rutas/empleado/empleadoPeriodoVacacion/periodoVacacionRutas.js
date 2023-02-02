@@ -16,9 +16,10 @@ class DepartamentoRutas {
         this.configuracion();
     }
     configuracion() {
+        // METODO PARA BUSCAR PERIODO DE VACACIONES
+        this.router.get('/buscar/:id_empleado', verificarToken_1.TokenValidation, periodoVacacionControlador_1.default.EncontrarIdPerVacaciones);
         this.router.get('/', verificarToken_1.TokenValidation, periodoVacacionControlador_1.default.ListarPerVacaciones);
         this.router.get('/infoPeriodo/:codigo', verificarToken_1.TokenValidation, periodoVacacionControlador_1.default.EncontrarPerVacaciones);
-        this.router.get('/buscar/:id_empleado', verificarToken_1.TokenValidation, periodoVacacionControlador_1.default.EncontrarIdPerVacaciones);
         this.router.post('/', verificarToken_1.TokenValidation, periodoVacacionControlador_1.default.CrearPerVacaciones);
         this.router.put('/', verificarToken_1.TokenValidation, periodoVacacionControlador_1.default.ActualizarPeriodo);
         // Verificar datos de la plantilla de de periodo de vacaciones antes de subir al sistema

@@ -16,15 +16,10 @@ p {
     margin-left: 15px;
 }
 
-#datosF {
-    font-weight: bold;
-    font-size: 18px;
+label {
+    font-size: 14px;
 }
 
 #verticalLine {
     border-left: 1px solid rgb(52, 65, 84);
-}
-
-b {
-    font-size: 14px;
 }

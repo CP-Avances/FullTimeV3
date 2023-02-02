@@ -95,6 +95,7 @@ export class EditarTipoPermisosComponent implements OnInit {
     });
     this.segundoFormGroup = this._formBuilder.group({
       fechaForm: [''],
+      feriadosForm: [false],
       documentoForm: [''],
       legalizarForm: ['', Validators.required],
       fecValidarForm: ['', Validators.required],
@@ -143,12 +144,13 @@ export class EditarTipoPermisosComponent implements OnInit {
     });
     // SEGUNDO FORMULARIO
     this.segundoFormGroup.patchValue({
-      almuIncluirForm: this.tipoPermiso.almu_incluir,
+      feriadosForm: this.tipoPermiso.contar_feriados,
+      documentoForm: this.tipoPermiso.documento,
       legalizarForm: this.tipoPermiso.legalizar,
       fecValidarForm: this.tipoPermiso.fec_validar,
-      geneJustificacionForm: this.tipoPermiso.gene_justificacion,
+      almuIncluirForm: this.tipoPermiso.almu_incluir,
       numDiaJustificaForm: this.tipoPermiso.num_dia_justifica,
-      documentoForm: this.tipoPermiso.documento
+      geneJustificacionForm: this.tipoPermiso.gene_justificacion,
     });
     // DESCUENTO DE PERMISO
     let j = 0;
@@ -318,6 +320,7 @@ export class EditarTipoPermisosComponent implements OnInit {
       legalizar: form2.legalizarForm,
       fec_validar: form2.fecValidarForm,
       almu_incluir: form2.almuIncluirForm,
+      contar_feriados: form2.feriadosForm,
       num_dia_justifica: form2.numDiaJustificaForm,
       gene_justificacion: form2.geneJustificacionForm,
     }

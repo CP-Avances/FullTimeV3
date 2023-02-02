@@ -6,16 +6,16 @@ class PlanGeneralControlador {
     // METODO PARA REGISTRAR PLAN GENERAL
     public async CrearPlanificacion(req: Request, res: Response): Promise<any> {
         const { fec_hora_horario, maxi_min_espera, estado, id_det_horario,
-            fec_horario, id_empl_cargo, tipo_entr_salida, codigo, id_horario } = req.body;
+            fec_horario, id_empl_cargo, tipo_entr_salida, codigo, id_horario, tipo, salida_otro_dia } = req.body;
         try {
             const [result] = await pool.query(
                 `
                 INSERT INTO plan_general (fec_hora_horario, maxi_min_espera, estado, id_det_horario,
-                fec_horario, id_empl_cargo, tipo_entr_salida, codigo, id_horario) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *
+                fec_horario, id_empl_cargo, tipo_entr_salida, codigo, id_horario, tipo, salida_otro_dia) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
                 `
                 , [fec_hora_horario, maxi_min_espera, estado, id_det_horario, fec_horario, id_empl_cargo,
-                    tipo_entr_salida, codigo, id_horario])
+                    tipo_entr_salida, codigo, id_horario, tipo, salida_otro_dia])
                 .then(result => { return result.rows })
 
             if (result === undefined) return res.status(404).jsonp({ message: 'error' })
@@ -23,7 +23,7 @@ class PlanGeneralControlador {
             return res.jsonp({ message: 'Registro guardado.' });
 
         } catch (error) {
-            return res.status(500).jsonp({ message: 'Registros no encontrados' });
+            return res.status(500).jsonp({ message: 'Registros no encontrados.' });
         }
     }
 
@@ -54,6 +54,33 @@ class PlanGeneralControlador {
             , [id]);
         res.jsonp({ message: 'Registro eliminado.' });
     }
+
+    // METODO PARA BUSCAR PLANIFICACION EN UN RANGO DE FECHAS
+    public async BuscarHorarioFechas(req: Request, res: Response) {
+        try {
+            const { fecha_inicio, fecha_final, codigo } = req.body;
+            const HORARIO = await pool.query(
+                `
+                SELECT DISTINCT (fec_horario), tipo
+                FROM plan_general 
+                WHERE codigo::varchar = $3 AND fec_horario BETWEEN $1 AND $2
+                ORDER BY fec_horario ASC
+                `
+                , [fecha_inicio, fecha_final, codigo]);
+
+            if (HORARIO.rowCount > 0) {
+                return res.jsonp(HORARIO.rows)
+            }
+            else {
+                res.status(404).jsonp({ text: 'Registros no encontrados.' });
+            }
+        }
+        catch (error) {
+            return res.jsonp({ message: 'error' });
+        }
+    }
+
+
 
 
 

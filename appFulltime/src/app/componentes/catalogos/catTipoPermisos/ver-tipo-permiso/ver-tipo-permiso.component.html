@@ -79,6 +79,13 @@
                                                 <label class="col-sm col-form-label" *ngIf="p.legalizar == false">
                                                         <b>Legalizar permiso:</b> No
                                                 </label>
+                                                <br>
+                                                <label class="col-sm col-form-label" *ngIf="p.contar_feriados == true">
+                                                        <b>En la solicitud se incluira:</b> Feriados como días normales
+                                                </label>
+                                                <label class="col-sm col-form-label" *ngIf="p.contar_feriados == false">
+                                                        <b>En la solicitud se incluira:</b> Feriados como días libres
+                                                </label>
                                         </div>
                                 </div>
                                 <div style="text-align: right;">

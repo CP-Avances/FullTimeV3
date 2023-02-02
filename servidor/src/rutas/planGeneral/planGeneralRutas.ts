@@ -16,8 +16,8 @@ class DepartamentoRutas {
         this.router.post('/buscar_fechas', TokenValidation, PLAN_GENERAL_CONTROLADOR.BuscarFechas);
         // METODO PARA ELIMINAR REGISTROS
         this.router.delete('/eliminar/:id', TokenValidation, PLAN_GENERAL_CONTROLADOR.EliminarRegistros);
-
-
+        // METODO PARA BUSCAR HORARIO DE UN USUARIO POR FECHAS
+        this.router.post('/horario-general-fechas', TokenValidation, PLAN_GENERAL_CONTROLADOR.BuscarHorarioFechas);
 
 
 

@@ -19,9 +19,12 @@ class PermisosRutas {
 
         // METODO PARA BUSCAR NUMERO DE PERMISO
         this.router.get('/numPermiso/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerNumPermiso);
-
+        // METODO PARA BUSCAR PERMISOS SOLICITADOS 
+        this.router.post('/permisos-solicitados-totales', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosTotales);
         // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
-        this.router.post('/permisos-solicitados', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisos_Fechas);
+        this.router.post('/permisos-solicitados', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosDias);
+        // METODO PARA BUSCAR PERMISOS SOLICITADOS POR HORAS
+        this.router.post('/permisos-solicitados-horas', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosHoras);
 
 
 
@@ -42,7 +45,13 @@ class PermisosRutas {
         this.router.get('/datosAutorizacion/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerDatosAutorizacion);
 
         this.router.post('/fechas_permiso/:codigo', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerFechasPermiso);
-        this.router.post('/permisos-solicitados/movil', PERMISOS_CONTROLADOR.BuscarPermisos_Fechas);
+
+
+
+        this.router.post('/permisos-solicitados/movil', PERMISOS_CONTROLADOR.BuscarPermisosDias);
+
+
+
         /** ************************************************************************************************** **
          ** **                         METODOS PARA MANEJO DE PERMISOS                                      ** **
          ** ************************************************************************************************** **/

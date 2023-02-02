@@ -7,6 +7,7 @@ import { ThemePalette } from '@angular/material/core';
 import { Router } from '@angular/router';
 
 import { DetalleCatHorariosService } from 'src/app/servicios/horarios/detalleCatHorarios/detalle-cat-horarios.service';
+import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { HorarioService } from 'src/app/servicios/catalogos/catHorarios/horario.service';
 
 const OPTIONS_HORARIOS = [
@@ -24,7 +25,13 @@ const OPTIONS_HORARIOS = [
 
 export class DetalleCatHorarioComponent implements OnInit {
 
+  segundo: boolean = false;
+  tercero: boolean = false;
+  comida: boolean = false;
+
   minEsperaF = new FormControl('');
+  segundoF = new FormControl(false);
+  terceroF = new FormControl(false);
   accionF = new FormControl('', [Validators.required]);
   ordenF = new FormControl('', [Validators.required]);
   horaF = new FormControl('', [Validators.required]);
@@ -32,6 +39,8 @@ export class DetalleCatHorarioComponent implements OnInit {
   // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
   public formulario = new FormGroup({
     minEsperaForm: this.minEsperaF,
+    segundoForm: this.segundoF,
+    terceroForm: this.terceroF,
     accionForm: this.accionF,
     ordenForm: this.ordenF,
     horaForm: this.horaF,
@@ -49,11 +58,12 @@ export class DetalleCatHorarioComponent implements OnInit {
   mode: ProgressSpinnerMode = 'indeterminate';
 
   constructor(
-    public rest: DetalleCatHorariosService,
+    public ventana: MatDialogRef<DetalleCatHorarioComponent>,
+    public validar: ValidacionesService,
     public restH: HorarioService,
+    public rest: DetalleCatHorariosService,
     private toastr: ToastrService,
     private router: Router,
-    public ventana: MatDialogRef<DetalleCatHorarioComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
@@ -82,6 +92,25 @@ export class DetalleCatHorarioComponent implements OnInit {
     else {
       this.espera = false;
     }
+
+    if (orden === 4 && this.datosHorario[0].nocturno === true &&
+      (this.datosHorario[0].hora_trabajo >= '48:00' || this.datosHorario[0].hora_trabajo >= '48:00:00')) {
+      this.segundo = false;
+      this.tercero = true;
+    }
+    else if (orden === 4 && this.datosHorario[0].nocturno === true &&
+      ((this.datosHorario[0].hora_trabajo >= '00:00' && this.datosHorario[0].hora_trabajo < '48:00') ||
+        (this.datosHorario[0].hora_trabajo >= '00:00:00' && this.datosHorario[0].hora_trabajo < '48:00:00'))) {
+      this.segundo = true;
+      this.tercero = false;
+    }
+
+    if ((orden === 3 || orden === 2) && this.datosHorario[0].nocturno === true) {
+      this.comida = true;
+    }
+    else {
+      this.comida = false;
+    }
   }
 
   // METODO PARA VALIDAR INGRESO DE MINUTOS DE ESPERA
@@ -94,11 +123,13 @@ export class DetalleCatHorarioComponent implements OnInit {
   // METODO PARA REGISTRAR DETALLE
   InsertarDetalleHorario(form: any) {
     let detalle = {
-      orden: form.ordenForm,
       hora: form.horaForm,
-      minu_espera: form.minEsperaForm,
+      orden: form.ordenForm,
+      tercer_dia: form.terceroForm,
       id_horario: this.data.datosHorario.id,
+      minu_espera: form.minEsperaForm,
       tipo_accion: form.accionForm,
+      segundo_dia: form.segundoForm,
     };
     this.ValidarMinEspera(form, detalle);
     if (this.datosHorario[0].min_almuerzo === 0) {
@@ -274,6 +305,7 @@ export class DetalleCatHorarioComponent implements OnInit {
         if (datos.orden === 2 || datos.orden === 3) {
           comida = comida + 1;
         }
+
         if (datos.orden === 1 && (datos.hora + ':00') > obj.hora && this.datosHorario[0].nocturno === false) {
           entrada = entrada + 1;
         }
@@ -337,27 +369,15 @@ export class DetalleCatHorarioComponent implements OnInit {
 
   // METODO PARA VALIDAR SOLO INGRESO DE NUMEROS
   IngresarSoloNumeros(evt: any) {
-    if (window.event) {
-      var keynum = evt.keyCode;
-    }
-    else {
-      keynum = evt.which;
-    }
-    // COMPROBAMOS SI SE ENCUENTRA EN EL RANGO NUMÉRICO Y QUE TECLAS NO RECIBIRÁ.
-    if ((keynum > 47 && keynum < 58) || keynum == 8 || keynum == 13 || keynum == 6) {
-      return true;
-    }
-    else {
-      this.toastr.info('No se admite el ingreso de letras', 'Usar solo números', {
-        timeOut: 6000,
-      })
-      return false;
-    }
+    return this.validar.IngresarSoloNumeros(evt);
   }
 
   // METODO PARA LIMPIAR FORMULARIO
   LimpiarCampos() {
     this.formulario.reset();
+    this.segundoF.setValue(false);
+    this.terceroF.setValue(false);
+    this.ListarDetalles(this.data.datosHorario.id);
   }
 
   // METODO PARA CERRAR VENTANA DE REGISTRO
