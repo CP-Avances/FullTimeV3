@@ -1,0 +1,189 @@
+mat-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.mat-mini-fab {
+  padding: -20px;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.noti_menu {
+  text-decoration: none;
+}
+
+mat-tree {
+  background: transparent;
+}
+
+.example-tree-invisible {
+  display: none;
+}
+
+.btn-sm {
+  margin-left: -35px;
+  width: 100%;
+}
+
+a.mat-menu-item {
+  width: 210%;
+  height: 100%;
+}
+
+#iconos-navegador {
+  color: rgb(232, 238, 243);
+}
+
+.mat-tree-node {
+  margin-bottom: -17px;
+  margin-top: -17px;
+}
+
+.divider {
+  margin-top: -9%;
+  margin-left: -25%;
+  width: 150%;
+}
+
+.sidenav {
+  background: rgb(255, 255, 255);
+  width: 260px;
+}
+
+#avatarImagen {
+  border-radius: 100%;
+  height: 35px;
+  width: 35px;
+}
+
+#icono-menu {
+  margin: 8px 0px 0px 0px;
+  color: rgb(5, 162, 253);
+}
+
+
+#icono-menu_ {
+  font-size: 12px;
+  color: rgb(5, 162, 253);
+}
+
+#icono-menu_x {
+  font-size: 12px;
+  color: rgb(99, 105, 107);
+}
+
+.uno {
+  margin-bottom: 15px;
+  background: white;
+  text-align: center;
+}
+
+.mostrar-noti {
+  text-decoration: none;
+  padding-top: 5px;
+  color: #000;
+}
+
+#icono-despliega {
+  margin: 8px 0px 0px 10px;
+  color: rgb(5, 162, 253);
+}
+
+.sidenav-container {
+  background-color: rgb(255, 255, 255);
+  height: 100%;
+}
+
+.mat-toolbar.mat-toolbar-multiple-rows {
+  background: rgb(255, 255, 255);
+}
+
+.btn:focus,
+.btn-sm:focus .btn-block:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+#logo {
+  margin-bottom: 10px;
+  background: white;
+  margin-top: 10px;
+  width: 52%;
+}
+
+.name-uno {
+  font-size: 15px;
+  margin: 10px 0px 0px 10px;
+  color: rgb(40, 40, 40);
+}
+
+.subtitulo {
+  font-size: 14px;
+  margin: 10px 0px 0px 20px;
+  color: rgb(3, 85, 51);
+}
+
+#icono-subtitulo {
+  margin: 8px 0px 0px 10px;
+  color: rgb(3, 85, 51);
+  font-size: 15px;
+}
+
+.iniciales {
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  color: white;
+}
+
+.example-tree ul,
+.example-tree li {
+  list-style-type: none;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.mostrar-noti:hover {
+  background-color: rgb(255, 255, 255);
+  text-decoration: none;
+  color: rgb(31, 31, 31);
+}
+
+
+a.mat-menu-item.noti_menu:hover {
+  background: rgba(236, 236, 236, 0.643);
+  color: rgba(17, 113, 192, 0.952);
+}
+
+#avatar {
+  background-color: rgb(126, 126, 126);
+  border-radius: 100%;
+  margin-left: 10px;
+  height: 35px;
+  width: 35px;
+}
+
+.material-tree-node {
+  border-left: 3px solid rgb(5, 162, 253);
+  margin-left: 10px;
+  background: transparent;
+  width: 100%;
+}
+
+.degradado {
+  background: rgb(232, 232, 232);
+  background: radial-gradient(circle, rgba(232, 232, 232, 0.8883928571428571) 0%, rgba(249, 249, 249, 1) 100%);
+}
+
+.active {
+  border-radius: 25px;
+  margin-left: -30px;
+  background: rgba(226, 226, 226, 0.739);
+  box-shadow: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  width: 100%;
+}

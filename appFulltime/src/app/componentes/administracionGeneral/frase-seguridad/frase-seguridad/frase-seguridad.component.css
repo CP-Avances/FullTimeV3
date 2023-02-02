@@ -1,0 +1,14 @@
+img {
+    width: 100%;
+}
+
+mat-form-field {
+    width: 230px;
+}
+
+.btn {
+    background-color: rgb(80, 87, 97);
+    margin-left: 15px;
+    width: 190px;
+    color: white;
+}
