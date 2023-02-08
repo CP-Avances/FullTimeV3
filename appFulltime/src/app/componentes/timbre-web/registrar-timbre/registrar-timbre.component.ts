@@ -144,11 +144,11 @@ export class RegistrarTimbreComponent implements OnInit {
         this.teclaFuncionF = 1;
         break;
       case 3:
-        this.accionF = 'S/A';
+        this.accionF = 'I/A';
         this.teclaFuncionF = 2;
         break;
       case 4:
-        this.accionF = 'E/A';
+        this.accionF = 'F/A';
         this.teclaFuncionF = 3;
         break;
       case 5:

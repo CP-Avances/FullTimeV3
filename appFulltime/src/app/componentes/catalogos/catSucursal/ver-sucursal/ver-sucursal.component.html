@@ -6,17 +6,17 @@
         <mat-card-content>
             <div class="container" style="padding-top: 15px;">
                 <div class="row">
-                    <div class="col-3" id="verticalLine">
-                        <label id="datosF" class="col-sm col-form-label">Empresa:</label>
+                    <div class="col-md" id="verticalLine">
+                        <div class="caja d-flex justify-content-start">
+                            <label id="datosF">Empresa:</label>
+                            <label>{{s.nomempresa}}</label>
+                        </div>
                     </div>
-                    <div class="col-3">
-                        <label class="col-sm col-form-label">{{s.nomempresa}}</label>
-                    </div>
-                    <div class="col-3" id="verticalLine">
-                        <label id="datosF" class="col-sm col-form-label">Ciudad:</label>
-                    </div>
-                    <div class="col-3">
-                        <label class="col-sm col-form-label">{{s.descripcion}}</label>
+                    <div class="col-md" id="verticalLine">
+                        <div class="caja d-flex justify-content-start">
+                            <label id="datosF">Ciudad:</label>
+                            <label>{{s.descripcion}}</label>
+                        </div>
                     </div>
                 </div>
                 <div style="text-align: right;">

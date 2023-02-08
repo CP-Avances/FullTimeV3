@@ -318,7 +318,7 @@ export class ReporteTimbresComponent implements OnInit {
                       moment(aux.fec_hora_horario).subtract(20,'m').format('YYYY-MM-DD HH:mm:ss') <= moment(this.timbresLimpios[j].fec_hora_timbre).format('YYYY-MM-DD HH:mm:ss') &&
                       moment(aux.fec_hora_horario).add((parseInt(this.timbresLimpios[j].min_almuerzo)),'m').format('YYYY-MM-DD HH:mm:ss') >= moment(this.timbresLimpios[j].fec_hora_timbre).format('YYYY-MM-DD HH:mm:ss') &&
                       moment(aux.fec_horario).format('YYYY-MM-DD') === moment(this.timbresLimpios[j].fec_hora_timbre).format('YYYY-MM-DD')
-                      && aux.tipo_entr_salida === 'S/A'
+                      && aux.tipo_entr_salida === 'I/A'
                       && this.timbresLimpios[j].accion != 'PES' && this.timbresLimpios[j].accion != 'S/P'
                       )
                   );
@@ -333,7 +333,7 @@ export class ReporteTimbresComponent implements OnInit {
                         moment(aux.fec_hora_horario).add(20,'m').format('YYYY-MM-DD HH:mm:ss') >= moment(this.timbresLimpios[j].fec_hora_timbre).format('YYYY-MM-DD HH:mm:ss') &&
                         moment(aux.fec_hora_horario).subtract((parseInt(this.timbresLimpios[j].min_almuerzo)),'m').format('YYYY-MM-DD HH:mm:ss') <= moment(this.timbresLimpios[j].fec_hora_timbre).format('YYYY-MM-DD HH:mm:ss') &&
                         moment(aux.fec_horario).format('YYYY-MM-DD') === moment(this.timbresLimpios[j].fec_hora_timbre).format('YYYY-MM-DD')
-                        && aux.tipo_entr_salida === 'E/A'
+                        && aux.tipo_entr_salida === 'F/A'
                         && this.timbresLimpios[j].accion != 'PES' && this.timbresLimpios[j].accion != 'E/P'
                         )
                     );
@@ -397,7 +397,7 @@ export class ReporteTimbresComponent implements OnInit {
               let index99_Posterior = index99 + 1;
               switch (this.timbresLimpios[index99_Anterior].accion){
                 case 'E':
-                  if(this.timbresLimpios[index99_Posterior].accion === 'E/A'){
+                  if(this.timbresLimpios[index99_Posterior].accion === 'F/A'){
                     this.timbresLimpios[index99].accion = 'AES';
                   }else{
                     if(this.timbresLimpios[index99_Posterior].accion === 'NA'){
@@ -407,10 +407,10 @@ export class ReporteTimbresComponent implements OnInit {
                     }
                   }
                 break;
-                case 'S/A':
+                case 'I/A':
                   this.timbresLimpios[index99].accion = 'AES';
                 break;
-                case 'E/A':
+                case 'F/A':
                   this.timbresLimpios[index99].accion = 'S';
                 break;
                 case 'S':
@@ -469,10 +469,10 @@ export class ReporteTimbresComponent implements OnInit {
               let indexSA_Destiempo = this.timbresLimpios.indexOf(busquedaSA_Destiempo);
               let indexSA_Destiempo_Anterior = indexSA_Destiempo - 1;
               let indexSA_Destiempo_Posterior = indexSA_Destiempo + 1;
-              if(this.timbresLimpios[indexSA_Destiempo_Anterior].accion != 'AES' && this.timbresLimpios[indexSA_Destiempo_Anterior].accion != 'S/A'){
-                this.timbresLimpios[indexSA_Destiempo].accion = 'S/A';
+              if(this.timbresLimpios[indexSA_Destiempo_Anterior].accion != 'AES' && this.timbresLimpios[indexSA_Destiempo_Anterior].accion != 'I/A'){
+                this.timbresLimpios[indexSA_Destiempo].accion = 'I/A';
               }else{
-                this.timbresLimpios[indexSA_Destiempo].accion = 'E/A';
+                this.timbresLimpios[indexSA_Destiempo].accion = 'F/A';
               }
             }
           } while (busquedaSA_Destiempo != undefined);
@@ -491,8 +491,8 @@ export class ReporteTimbresComponent implements OnInit {
               let index99_Anterior = index99 - 1;
               let index99_Posterior = index99 + 1;
               switch (this.timbresLimpios[index99_Anterior].accion){
-                case 'S/A':
-                  this.timbresLimpios[index99].accion = 'E/A';
+                case 'I/A':
+                  this.timbresLimpios[index99].accion = 'F/A';
                 break;
                 default:
                   this.timbresLimpios[index99].accion = 'NM';
@@ -732,8 +732,8 @@ export class ReporteTimbresComponent implements OnInit {
               case 'PES': this.accionT = 'Inicio o Fin Permiso'; break;
               case 'E': this.accionT = 'Entrada'; break;
               case 'S': this.accionT = 'Salida'; break;
-              case 'E/A': this.accionT = 'Fin Alimentación'; break;
-              case 'S/A': this.accionT = 'Inicio Alimentación'; break;
+              case 'F/A': this.accionT = 'Fin Alimentación'; break;
+              case 'I/A': this.accionT = 'Inicio Alimentación'; break;
               case 'E/P': this.accionT = 'Fin Permiso'; break;
               case 'S/P': this.accionT = 'Inicio Permiso'; break;
               default: this.accionT = 'Desconocido'; break;

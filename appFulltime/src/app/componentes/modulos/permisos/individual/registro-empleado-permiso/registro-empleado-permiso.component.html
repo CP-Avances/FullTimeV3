@@ -18,7 +18,8 @@
                 <div class="info" *ngIf="informacion">
                     <span>
                         <b>INFORMACIÓN DEL PERMISO:</b> &nbsp;&nbsp; <i>{{informacion1}}</i> &nbsp;&nbsp;
-                        <i>{{informacion2}}</i>
+                        <i>{{informacion2}}</i> <br>
+                        <i>{{informacion3}}</i>
                     </span>
                 </div>
                 <div>
@@ -44,7 +45,8 @@
                                     <mat-label>Solicitud por:</mat-label>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                         matTooltip="Indicar si va a realizar una solicitud de permiso por días o una soliictud de permiso por horas.">
-                                        help_outline</mat-icon>
+                                        help_outline
+                                    </mat-icon>
                                     <mat-select [formControl]="solicitarF" required>
                                         <mat-option *ngFor="let dh of diasHoras" [value]="dh.valor"
                                             (click)="ActivarDiasHoras(formulario.value)">
@@ -123,6 +125,18 @@
                                 <mat-form-field *ngIf="habilitarDias" id="calculos">
                                     <mat-label>Días calendario</mat-label>
                                     <input matInput [formControl]="diasF" id="dias" readonly>
+                                </mat-form-field>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-start" *ngIf="activar_comida">
+                                <mat-form-field id="calculos">
+                                    <mat-label>Horas y minutos solicitados</mat-label>
+                                    <input matInput type="time" [formControl]="horas_solicitadasF" id="horas" readonly>
+                                </mat-form-field>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-start" *ngIf="activar_comida">
+                                <mat-form-field id="calculos">
+                                    <mat-label>Descuento alimentación</mat-label>
+                                    <input matInput type="time" [formControl]="horas_alimentacionF" id="horas" readonly>
                                 </mat-form-field>
                             </div>
                             <div class="d-flex flex-wrap justify-content-start">

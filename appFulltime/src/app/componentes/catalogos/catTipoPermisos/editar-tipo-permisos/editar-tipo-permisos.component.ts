@@ -59,6 +59,7 @@ export class EditarTipoPermisosComponent implements OnInit {
   isLinear = true;
   primeroFormGroup: FormGroup;
   segundoFormGroup: FormGroup;
+  tercerFormGroup: FormGroup;
 
   // VARIABLES DE CONTROL
   HabilitarJustifica: boolean = true;
@@ -102,6 +103,15 @@ export class EditarTipoPermisosComponent implements OnInit {
       almuIncluirForm: ['', Validators.required],
       numDiaJustificaForm: [''],
       geneJustificacionForm: ['', Validators.required],
+    });
+    this.tercerFormGroup = this._formBuilder.group({
+      correo_crearForm: [false],
+      correo_editarForm: [false],
+      correo_eliminarForm: [false],
+      correo_negarForm: [false],
+      correo_autorizarForm: [false],
+      correo_preautorizarForm: [false],
+      correo_legalizarForm: [false],
     });
   }
 
@@ -151,6 +161,15 @@ export class EditarTipoPermisosComponent implements OnInit {
       almuIncluirForm: this.tipoPermiso.almu_incluir,
       numDiaJustificaForm: this.tipoPermiso.num_dia_justifica,
       geneJustificacionForm: this.tipoPermiso.gene_justificacion,
+    });
+    this.tercerFormGroup.patchValue({
+      correo_crearForm: this.tipoPermiso.correo_crear,
+      correo_editarForm: this.tipoPermiso.correo_editar,
+      correo_eliminarForm: this.tipoPermiso.correo_eliminar,
+      correo_negarForm: this.tipoPermiso.correo_negar,
+      correo_autorizarForm: this.tipoPermiso.correo_autorizar,
+      correo_preautorizarForm: this.tipoPermiso.correo_preautorizar,
+      correo_legalizarForm: this.tipoPermiso.correo_legalizar,
     });
     // DESCUENTO DE PERMISO
     let j = 0;
@@ -263,7 +282,7 @@ export class EditarTipoPermisosComponent implements OnInit {
   }
 
   // METODO PARA VERIFICAR INGRESO DE FECHA
-  VerificarFecha(event) {
+  VerificarFecha(event: any) {
     var f = moment();
     var FechaActual = f.format('YYYY-MM-DD');
     var leer_fecha = event.value._i;
@@ -303,7 +322,7 @@ export class EditarTipoPermisosComponent implements OnInit {
 
   // METODO PARA CAPTURAR DATOS DE FORMULARIO
   contador: number = 0;
-  ModificarTipoPermiso(form1: any, form2: any) {
+  ModificarTipoPermiso(form1: any, form2: any, form3: any) {
     this.contador = 0;
     let permiso = {
       // FORMULARIO UNO
@@ -323,6 +342,15 @@ export class EditarTipoPermisosComponent implements OnInit {
       contar_feriados: form2.feriadosForm,
       num_dia_justifica: form2.numDiaJustificaForm,
       gene_justificacion: form2.geneJustificacionForm,
+
+      // FORMULARIO TRES
+      correo_crear: form3.correo_crearForm,
+      correo_editar: form3.correo_editarForm,
+      correo_eliminar: form3.correo_eliminarForm,
+      correo_preautorizar: form3.correo_preautorizarForm,
+      correo_autorizar: form3.correo_autorizarForm,
+      correo_negar: form3.correo_negarForm,
+      correo_legalizar: form3.correo_legalizarForm,
     }
 
     if (this.tipoPermiso.descripcion.toUpperCase() === permiso.descripcion.toUpperCase()) {

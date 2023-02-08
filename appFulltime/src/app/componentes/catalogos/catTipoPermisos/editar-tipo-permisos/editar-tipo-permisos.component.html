@@ -254,12 +254,110 @@
                         </div>
                     </div>
                 </form>
-                <div class="d-flex flex-wrap justify-content-between">
+                <br>
+                <div class="d-flex justify-content-between">
+                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
+                    <button [routerLink]="['/vistaPermiso/', idPermiso]" class="btn btn-sm">Cancelar</button>
+                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                </div>
+            </mat-step>
+            <mat-step [stepControl]="tercerFormGroup">
+                <ng-template matStepLabel>
+                    <mat-icon id="seccion_permiso" matSuffix matTooltipPosition="right"
+                        matTooltip="Sección 3: Notificar solicitudes">
+                        mail_outline
+                    </mat-icon>
+                </ng-template>
+                <div class="subtitulo">
+                    <span>Notificaciones</span>
+                </div>
+                <br>
+                <div class="nota">
+                    <span>Por favor llenar todos los campos obligatorios (*) del formulario y dar click en Guardar
+                        para continuar.
+                    </span>
+                </div>
+                <form [formGroup]="tercerFormGroup">
+                    <div class="row">
+                        <div class="col" id="fuente">
+                            <div class="d-flex flex-wrap justify-content-start">
+                                <label style="padding-top: 10px; position: relative; left:10px;">
+                                    Notificar solicitud de permiso al:
+                                </label>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_crearForm"
+                                    matTooltip="">
+                                    Crear
+                                </mat-checkbox>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_editarForm"
+                                    matTooltip="">
+                                    Editar
+                                </mat-checkbox>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_eliminarForm"
+                                    matTooltip="">
+                                    Eliminar
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                        <div class="col" id="fuente">
+                            <div class="d-flex flex-wrap justify-content-start">
+                                <label style="padding-top: 10px; position: relative; left:10px;">
+                                    Notificar aprobación de solicitud de permiso al:
+                                </label>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right"
+                                    formControlName="correo_preautorizarForm" matTooltip="">
+                                    Pre-autorizar
+                                </mat-checkbox>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right"
+                                    formControlName="correo_autorizarForm" matTooltip="">
+                                    Autorizar
+                                </mat-checkbox>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_negarForm"
+                                    matTooltip="">
+                                    Negar
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                        <div class="col" id="fuente">
+                            <div class="d-flex flex-wrap justify-content-start">
+                                <label style="padding-top: 10px; position: relative; left:10px;">
+                                    Notificar aprobación de solicitud de permiso al:
+                                </label>
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
+                                <mat-checkbox matSuffix matTooltipPosition="right"
+                                    formControlName="correo_legalizarForm" matTooltip="">
+                                    Legalizar
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <br>
+                <div class="d-flex justify-content-between">
                     <button matStepperPrevious class="btn btn-sm">Atrás</button>
                     <input type="submit" class="btn btn-sm"
-                        (click)="ModificarTipoPermiso(primeroFormGroup.value, segundoFormGroup.value)" value="Guardar">
-                    <button [routerLink]="['/vistaPermiso/', idPermiso]"
-                        class="btn btn-sm float-right">Cancelar</button>
+                        (click)="ModificarTipoPermiso(primeroFormGroup.value, segundoFormGroup.value, tercerFormGroup.value);"
+                        [disabled]="!tercerFormGroup.valid" value="Guardar">
+                    <button [routerLink]="['/vistaPermiso/', idPermiso]" class="btn btn-sm">Cancelar</button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>

@@ -58,6 +58,15 @@ export class EmpleadoHorariosService {
     return this.http.post<any>(`${environment.url}/empleadoHorario/horario-horas-dias-diferentes`, datos);
   }
 
+  // METODO PARA BUSCAR HORARIO DEL USUARIO POR HORAS MISMO DIA (MD)
+  BuscarComidaHorarioHorasMD(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoHorario/horario-comida-horas-mismo-dia`, datos);
+  }
+
+  // METODO PARA BUSCAR HORARIO DEL USUARIO POR HORAS DIAS DIFERENTES (DD)
+  BuscarComidaHorarioHorasDD(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoHorario/horario-comida-horas-dias-diferentes`, datos);
+  }
 
 
 

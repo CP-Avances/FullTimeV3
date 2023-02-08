@@ -35,8 +35,8 @@ export class CrearTimbreComponent implements OnInit {
   accion: any = [
     { value: 'E', name: 'Entrada' },
     { value: 'S', name: 'Salida' },
-    { value: 'S/A', name: 'Inicio Alimentación' },
-    { value: 'E/A', name: 'Fin Alimentación' },
+    { value: 'I/A', name: 'Inicio Alimentación' },
+    { value: 'F/A', name: 'Fin Alimentación' },
     { value: 'S/P', name: 'Inicio Permiso' },
     { value: 'E/P', name: 'Fin Permiso' },
   ]
@@ -120,10 +120,10 @@ export class CrearTimbreComponent implements OnInit {
     else if (opcion == 'S') {
       return 1
     }
-    else if (opcion == 'S/A') {
+    else if (opcion == 'I/A') {
       return 2
     }
-    else if (opcion == 'E/A') {
+    else if (opcion == 'F/A') {
       return 3
     }
     else if (opcion == 'S/P') {

@@ -988,6 +988,11 @@
                             </div>
                             <div class="col-md">
                                 <div class="espacio d-flex justify-content-start">
+                                    <label id="datosF">Descuento:</label>
+                                    <label *ngIf="pt.tipo_descuento === '1'">Vacaciones</label>
+                                    <label *ngIf="pt.tipo_descuento === '2'">Ninguno</label>
+                                </div>
+                                <div class="espacio d-flex justify-content-start">
                                     <label id="datosF">Estado:</label>
                                     <label *ngIf="pt.estado === 1">Pendiente</label>
                                     <label *ngIf="pt.estado === 2">Pre-autorizado</label>

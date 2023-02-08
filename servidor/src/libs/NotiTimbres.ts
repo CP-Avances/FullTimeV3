@@ -72,13 +72,13 @@ async function CalcularHoras(fecha: string, hora: string) {
                         estado = Atrasos(tiempo_horario.tiempo, h)
                     }
                     break;
-                case 'S/A':
+                case 'I/A':
                     tiempo_horario = await HorarioEmpleado(id_empleado, 2, fecha);
                     if (!tiempo_horario.err) {
                         estado = SalidasAntesAlmuerzo(tiempo_horario.tiempo, h)
                     }
                     break;
-                case 'E/A':
+                case 'F/A':
                     tiempo_horario = await HorarioEmpleado(id_empleado, 3, fecha);
                     if (!tiempo_horario.err) {
                         estado = AtrasosAlmuerzo(tiempo_horario.tiempo, h)

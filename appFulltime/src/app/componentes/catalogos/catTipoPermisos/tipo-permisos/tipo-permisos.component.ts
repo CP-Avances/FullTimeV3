@@ -78,6 +78,7 @@ export class TipoPermisosComponent implements OnInit {
   isLinear = true;
   primeroFormGroup: FormGroup;
   segundoFormGroup: FormGroup;
+  tercerFormGroup: FormGroup;
 
   constructor(
     private rest: TipoPermisosService,
@@ -118,6 +119,15 @@ export class TipoPermisosComponent implements OnInit {
       almuIncluirForm: ['', Validators.required],
       numDiaJustificaForm: [''],
       geneJustificacionForm: ['', Validators.required],
+    });
+    this.tercerFormGroup = this._formBuilder.group({
+      correo_crearForm: [false],
+      correo_editarForm: [false],
+      correo_eliminarForm: [false],
+      correo_negarForm: [false],
+      correo_autorizarForm: [false],
+      correo_preautorizarForm: [false],
+      correo_legalizarForm: [false],
     });
   }
 
@@ -170,7 +180,7 @@ export class TipoPermisosComponent implements OnInit {
     }
   }
 
-  // 
+  // METODO PARA SOLICITAR INGRESO DE JUSTIFICACION
   VerificarJustificacion(form1: any, datos: any, form2: any) {
     if (datos.num_dia_justifica === '' && datos.gene_justificacion === 'true') {
       this.toastr.info('Ingresar número de días para presentar justificación.', '', {
@@ -290,7 +300,7 @@ export class TipoPermisosComponent implements OnInit {
   }
 
   // METODO PARA CAPTURAR DATOS DE FORMULARIO
-  InsertarTipoPermiso(form1: any, form2: any) {
+  InsertarTipoPermiso(form1: any, form2: any, form3: any) {
     var nombrePermiso = form1.descripcionForm;
     var nuevoPermiso = form1.nombreForm;
     let permiso = {
@@ -311,7 +321,17 @@ export class TipoPermisosComponent implements OnInit {
       contar_feriados: form2.feriadosForm,
       num_dia_justifica: form2.numDiaJustificaForm,
       gene_justificacion: form2.geneJustificacionForm,
+
+      // FORMULARIO TRES
+      correo_crear: form3.correo_crearForm,
+      correo_editar: form3.correo_editarForm,
+      correo_eliminar: form3.correo_eliminarForm,
+      correo_preautorizar: form3.correo_preautorizarForm,
+      correo_autorizar: form3.correo_autorizarForm,
+      correo_negar: form3.correo_negarForm,
+      correo_legalizar: form3.correo_legalizarForm,
     }
+    console.log('ver permiso ', permiso)
     if (nombrePermiso === 'OTRO') {
       if (nuevoPermiso === '') {
         this.toastr.info('Ingresar nombre del nuevo tipo de permiso.', '', {

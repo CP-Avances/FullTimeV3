@@ -27,9 +27,9 @@ export class CancelarPermisoComponent implements OnInit {
     private realTime: RealTimeService,
     private restTipoP: TipoPermisosService,
     public ventana: MatDialogRef<CancelarPermisoComponent>,
+    public validar: ValidacionesService,
     public parametro: ParametrosService,
     public informacion: DatosGeneralesService,
-    public validar: ValidacionesService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
@@ -105,22 +105,46 @@ export class CancelarPermisoComponent implements OnInit {
   }
 
   aceptarAdvertencia() {
+    var correo = 0;
     this.restP.EliminarPermiso(this.data.info.id, this.data.info.documento).subscribe(res => {
       console.log(res);
-      var datos = {
-        depa_user_loggin: parseInt(this.solInfo.id_dep),
-        objeto: res,
+
+      // VALIDAR ENVIO DE CORREO SEGUN CONFIGURACION
+      this.tipoPermisos.filter(o => {
+        if (o.id === res.id_tipo_permiso) {
+          if (o.correo_eliminar === true) {
+            correo = 1;
+          }
+          else {
+            correo = 2;
+          }
+        }
+      })
+
+      // SI CUMPLE LA CONDICION 1 ENVIA CORREO
+      if (correo === 1) {
+        var datos = {
+          depa_user_loggin: parseInt(this.solInfo.id_dep),
+          objeto: res,
+        }
+        this.informacion.BuscarJefes(datos).subscribe(permiso => {
+          console.log(permiso);
+          permiso.EmpleadosSendNotiEmail.push(this.solInfo);
+          this.EnviarCorreo(permiso);
+          this.EnviarNotificacion(permiso);
+          this.toastr.error('Solicitud de permiso eliminada.', '', {
+            timeOut: 6000,
+          });
+          this.ventana.close(true);
+        });
       }
-      this.informacion.BuscarJefes(datos).subscribe(permiso => {
-        console.log(permiso);
-        permiso.EmpleadosSendNotiEmail.push(this.solInfo);
-        this.EnviarCorreo(permiso);
-        this.EnviarNotificacion(permiso);
+      // SI NO CUMPLE LA CONDICION 2 NO SE ENVIA CORREOS
+      else {
         this.toastr.error('Solicitud de permiso eliminada.', '', {
           timeOut: 6000,
         });
         this.ventana.close(true);
-      });
+      }
     });
   }
 
@@ -263,10 +287,9 @@ export class CancelarPermisoComponent implements OnInit {
     //Listado para eliminar el usuario duplicado
     var allNotificaciones = [];
     //Ciclo por cada elemento del catalogo
-    permiso.EmpleadosSendNotiEmail.forEach(function(elemento, indice, array) {
+    permiso.EmpleadosSendNotiEmail.forEach(function (elemento, indice, array) {
       // Discriminación de elementos iguales
-      if(allNotificaciones.find(p=>p.fullname == elemento.fullname) == undefined)
-      {
+      if (allNotificaciones.find(p => p.fullname == elemento.fullname) == undefined) {
         // Nueva lista de empleados que reciben la notificacion
         allNotificaciones.push(elemento);
       }

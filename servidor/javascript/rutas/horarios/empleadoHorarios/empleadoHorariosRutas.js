@@ -30,6 +30,10 @@ class EmpleadoHorariosRutas {
         this.router.post('/horario-horas-mismo-dia', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerHorarioHorasMD);
         // METODO PARA OBTENER HORARIO DEL USUARIO POR HORAS EN DIAS DIFERENTES
         this.router.post('/horario-horas-dias-diferentes', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerHorarioHorasDD);
+        // METODO PARA OBTENER MINUTOS DE ALIMENTACION - HORARIO DEL USUARIO OPCION HORAS EN EL MISMO DIA
+        this.router.post('/horario-comida-horas-mismo-dia', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerComidaHorarioHorasMD);
+        // METODO PARA OBTENER MINUTOS DE ALIMENTACION - HORARIO DEL USUARIO OPCION HORAS EN DIAS DIFERENTES
+        this.router.post('/horario-comida-horas-dias-diferentes', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ObtenerComidaHorarioHorasDD);
         this.router.get('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ListarEmpleadoHorarios);
         this.router.post('/cargaMultiple', [verificarToken_1.TokenValidation, multipartMiddleware], empleadoHorariosControlador_1.default.CargarMultiplesHorariosEmpleadosPlantilla);
         this.router.put('/', verificarToken_1.TokenValidation, empleadoHorariosControlador_1.default.ActualizarEmpleadoHorarios);

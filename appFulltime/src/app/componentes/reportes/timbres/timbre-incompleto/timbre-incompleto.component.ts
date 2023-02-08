@@ -461,10 +461,10 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
                       if (obj5.tipo === 'S') {
                         accion = 'Salida'
                       }
-                      if (obj5.tipo === 'E/A') {
+                      if (obj5.tipo === 'F/A') {
                         accion = 'Fin Comida'
                       }
-                      if (obj5.tipo === 'S/A') {
+                      if (obj5.tipo === 'I/A') {
                         accion = 'Inicio Comida'
                       }
                       c = c + 1;
@@ -522,10 +522,10 @@ export class TimbreIncompletoComponent implements OnInit, OnDestroy {
               if (obj5.tipo === 'S') {
                 accion = 'Salida'
               }
-              if (obj5.tipo === 'E/A') {
+              if (obj5.tipo === 'F/A') {
                 accion = 'Fin Comida'
               }
-              if (obj5.tipo === 'S/A') {
+              if (obj5.tipo === 'I/A') {
                 accion = 'Inicio Comida'
               }
               let ele = {

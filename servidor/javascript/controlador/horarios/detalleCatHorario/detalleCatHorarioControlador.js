@@ -33,13 +33,13 @@ class DetalleCatalogoHorarioControlador {
                             o.tipo_accion_show = 'Entrada';
                             o.tipo_accion = 'E';
                             break;
-                        case 'S/A':
+                        case 'I/A':
                             o.tipo_accion_show = 'Inicio alimentación';
-                            o.tipo_accion = 'S/A';
+                            o.tipo_accion = 'I/A';
                             break;
-                        case 'E/A':
+                        case 'F/A':
                             o.tipo_accion_show = 'Fin alimentación';
-                            o.tipo_accion = 'E/A';
+                            o.tipo_accion = 'F/A';
                             break;
                         case 'S':
                             o.tipo_accion_show = 'Salida';

@@ -31,6 +31,10 @@ class EmpleadoHorariosRutas {
         this.router.post('/horario-horas-mismo-dia', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ObtenerHorarioHorasMD);
         // METODO PARA OBTENER HORARIO DEL USUARIO POR HORAS EN DIAS DIFERENTES
         this.router.post('/horario-horas-dias-diferentes', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ObtenerHorarioHorasDD);
+        // METODO PARA OBTENER MINUTOS DE ALIMENTACION - HORARIO DEL USUARIO OPCION HORAS EN EL MISMO DIA
+        this.router.post('/horario-comida-horas-mismo-dia', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ObtenerComidaHorarioHorasMD);
+        // METODO PARA OBTENER MINUTOS DE ALIMENTACION - HORARIO DEL USUARIO OPCION HORAS EN DIAS DIFERENTES
+        this.router.post('/horario-comida-horas-dias-diferentes', TokenValidation, EMPLEADO_HORARIOS_CONTROLADOR.ObtenerComidaHorarioHorasDD);
 
 
 

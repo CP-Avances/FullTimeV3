@@ -379,10 +379,10 @@ export class EditarHorarioComponent implements OnInit {
     this.restD.ConsultarUnDetalleHorario(this.data.horario.id).subscribe(res => {
       this.detalles_horarios = res;
       this.detalles_horarios.map(det => {
-        if (det.tipo_accion === 'E/A') {
+        if (det.tipo_accion === 'F/A') {
           this.EliminarDetalle(det.id);
         }
-        if (det.tipo_accion === 'S/A') {
+        if (det.tipo_accion === 'I/A') {
           this.EliminarDetalle(det.id);
         }
       })

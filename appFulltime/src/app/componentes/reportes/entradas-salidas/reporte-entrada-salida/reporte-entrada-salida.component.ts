@@ -709,13 +709,13 @@ export class ReporteEntradaSalidaComponent implements OnInit {
                 horarioS = element.hora;
                 timbreS = moment(element.fec_hora_timbre).format('HH:mm:ss')
               }
-              else if (dayFecha === fecha_timbre && element.accion === 'S/A') {
+              else if (dayFecha === fecha_timbre && element.accion === 'I/A') {
                 console.log('inicio comida ', fecha_timbre, element.accion);
                 almuerzoS = 'REGISTRADO'
                 horarioAS = element.hora;
                 timbreAlmuerzoS = moment(element.fec_hora_timbre).format('HH:mm:ss')
               }
-              else if (dayFecha === fecha_timbre && element.accion === 'E/A') {
+              else if (dayFecha === fecha_timbre && element.accion === 'F/A') {
                 console.log('fin comida ', fecha_timbre, element.accion);
                 almuerzoE = 'REGISTRADO'
                 horarioAE = element.hora;
@@ -1015,12 +1015,12 @@ export class ReporteEntradaSalidaComponent implements OnInit {
           horarioS = element.hora;
           timbreS = moment(element.fec_hora_timbre).format('HH:mm:ss')
         }
-        else if (dayFecha === fecha_timbre && element.accion === 'S/A') {
+        else if (dayFecha === fecha_timbre && element.accion === 'I/A') {
           almuerzoS = 'REGISTRADO'
           horarioAS = element.hora;
           timbreAlmuerzoS = moment(element.fec_hora_timbre).format('HH:mm:ss')
         }
-        else if (dayFecha === fecha_timbre && element.accion === 'E/A') {
+        else if (dayFecha === fecha_timbre && element.accion === 'F/A') {
           almuerzoE = 'REGISTRADO'
           horarioAE = element.hora;
           timbreAlmuerzoE = moment(element.fec_hora_timbre).format('HH:mm:ss')

@@ -51,3 +51,7 @@ mat-form-field {
 #seccion_permiso {
     color: rgba(8, 10, 124, 0.828);
 }
+
+#fuente {
+    font-size: 12px;
+}

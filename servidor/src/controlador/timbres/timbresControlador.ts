@@ -25,8 +25,8 @@ class TimbresControlador {
                                 case 'PES': obj.accion = 'Entrada o Salida Permiso'; break;
                                 case 'E': obj.accion = 'Entrada o Salida'; break;
                                 case 'S': obj.accion = 'Entrada o Salida'; break;
-                                case 'E/A': obj.accion = 'Entrada o Salida Alimentación'; break;
-                                case 'S/A': obj.accion = 'Entrada o Salida Alimentación'; break;
+                                case 'F/A': obj.accion = 'Entrada o Salida Alimentación'; break;
+                                case 'I/A': obj.accion = 'Entrada o Salida Alimentación'; break;
                                 case 'E/P': obj.accion = 'Entrada o Salida Permiso'; break;
                                 case 'S/P': obj.accion = 'Entrada o Salida Permiso'; break;
                                 case 'HA': obj.accion = 'Horario Abierto'; break;
@@ -362,8 +362,8 @@ class TimbresControlador {
                             case 'PES': obj.accion = 'Entrada o Salida Permiso'; break;
                             case 'E': obj.accion = 'Entrada o Salida'; break;
                             case 'S': obj.accion = 'Entrada o Salida'; break;
-                            case 'E/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
-                            case 'S/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                            case 'F/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
+                            case 'I/A': obj.accion = 'Entrada o Salida Almuerzo'; break;
                             case 'E/P': obj.accion = 'Entrada o Salida Permiso'; break;
                             case 'S/P': obj.accion = 'Entrada o Salida Permiso'; break;
                             case 'HA': obj.accion = 'Horario Abierto'; break;
@@ -396,8 +396,8 @@ class TimbresControlador {
                                 case 'PES': obj.accion = 'Inicio o Fin Permiso'; break;
                                 case 'E': obj.accion = 'Entrada'; break;
                                 case 'S': obj.accion = 'Salida'; break;
-                                case 'E/A': obj.accion = 'Fin Comida'; break;
-                                case 'S/A': obj.accion = 'Inicio Comida'; break;
+                                case 'F/A': obj.accion = 'Fin Comida'; break;
+                                case 'I/A': obj.accion = 'Inicio Comida'; break;
                                 case 'E/P': obj.accion = 'Fin Permiso'; break;
                                 case 'S/P': obj.accion = 'Inicio Permiso'; break;
                                 case 'HA': obj.accion = 'Horario Abierto'; break;

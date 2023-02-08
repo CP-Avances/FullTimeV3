@@ -46,10 +46,10 @@ class TimbresControlador {
                             case 'S':
                                 obj.accion = 'Entrada o Salida';
                                 break;
-                            case 'E/A':
+                            case 'F/A':
                                 obj.accion = 'Entrada o Salida Alimentación';
                                 break;
-                            case 'S/A':
+                            case 'I/A':
                                 obj.accion = 'Entrada o Salida Alimentación';
                                 break;
                             case 'E/P':
@@ -326,10 +326,10 @@ class TimbresControlador {
                             case 'S':
                                 obj.accion = 'Entrada o Salida';
                                 break;
-                            case 'E/A':
+                            case 'F/A':
                                 obj.accion = 'Entrada o Salida Almuerzo';
                                 break;
-                            case 'S/A':
+                            case 'I/A':
                                 obj.accion = 'Entrada o Salida Almuerzo';
                                 break;
                             case 'E/P':
@@ -383,10 +383,10 @@ class TimbresControlador {
                             case 'S':
                                 obj.accion = 'Salida';
                                 break;
-                            case 'E/A':
+                            case 'F/A':
                                 obj.accion = 'Fin Comida';
                                 break;
-                            case 'S/A':
+                            case 'I/A':
                                 obj.accion = 'Inicio Comida';
                                 break;
                             case 'E/P':

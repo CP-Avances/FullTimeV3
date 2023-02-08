@@ -15,7 +15,13 @@ td {
 
 #datosF {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 15px;
+    padding-right: 5px;
+}
+
+.caja {
+    padding: 0px 15px 0px 15px;
+
 }
 
 #verticalLine {

@@ -213,6 +213,62 @@ class EmpleadoHorariosControlador {
             }
         });
     }
+    // METODO PARA BUSCAR HORAS DE ALIMENTACION EN EL MISMO DIA (MD)
+    ObtenerComidaHorarioHorasMD(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { codigo, fecha_inicio, hora_inicio, hora_final } = req.body;
+            // CONSULTA DE HORARIO DEL USUARIO INGRESO = SALIDA
+            let CASO_1 = yield database_1.default.query(`
+            SELECT * FROM vista_comida_inicio AS ci
+            JOIN vista_comida_fin AS cf ON ci.codigo = cf.codigo AND ci.fecha_entrada = cf.fecha_salida 
+                AND ci.id_horario = cf.id_horario AND salida_otro_dia = 0 AND ci.codigo::varchar = $1
+                AND ci.fecha_entrada = $2
+                AND (($3 BETWEEN hora_inicio AND hora_final) OR ($4 BETWEEN hora_inicio AND hora_final))
+            `, [codigo, fecha_inicio, hora_inicio, hora_final])
+                .then(result => { return result.rows; });
+            if (CASO_1.length === 0) {
+                // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA (SEGUNDO DIA)
+                let CASO_2 = yield database_1.default.query(`
+                SELECT * FROM vista_comida_inicio AS ci
+                JOIN vista_comida_fin AS cf ON ci.codigo = cf.codigo 
+                    AND cf.fecha_salida = (ci.fecha_entrada + interval '1 day')
+                    AND ci.id_horario = cf.id_horario AND salida_otro_dia = 1 AND ci.codigo::varchar = $1
+                    AND ($2 = ci.fecha_entrada OR $2 = cf.fecha_salida)
+                `, [codigo, fecha_inicio])
+                    .then(result => { return result.rows; });
+                if (CASO_2.length === 0) {
+                    return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+                }
+                else {
+                    return res.status(200).jsonp({ message: 'CASO_2', respuesta: CASO_2 });
+                }
+            }
+            else {
+                return res.status(200).jsonp({ message: 'CASO_1', respuesta: CASO_1 });
+            }
+        });
+    }
+    // METODO PARA CONSULTAR MINUTOS DE ALIMENTACION EN DIAS DIFERENTES (DD)
+    ObtenerComidaHorarioHorasDD(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let { codigo, fecha_inicio, fecha_final } = req.body;
+            // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA
+            let CASO_4 = yield database_1.default.query(`
+            SELECT * FROM vista_comida_inicio AS ci
+            JOIN vista_comida_fin AS cf ON ci.codigo = cf.codigo 
+                AND cf.fecha_salida = (ci.fecha_entrada + interval '1 day')
+                AND ci.id_horario = cf.id_horario AND salida_otro_dia = 1 AND ci.codigo::varchar = $1
+                AND $2 = ci.fecha_entrada AND $3 = cf.fecha_salida
+            `, [codigo, fecha_inicio, fecha_final])
+                .then(result => { return result.rows; });
+            if (CASO_4.length === 0) {
+                return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
+            }
+            else {
+                return res.status(200).jsonp({ message: 'CASO_4', respuesta: CASO_4 });
+            }
+        });
+    }
     ListarEmpleadoHorarios(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const HORARIOS = yield database_1.default.query('SELECT * FROM empl_horarios WHERE estado = 1');

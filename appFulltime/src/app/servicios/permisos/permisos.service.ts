@@ -111,7 +111,7 @@ export class PermisosService {
 
   // METODO PARA ELIMINAR PERMISOS
   EliminarPermiso(id_permiso: number, doc: string) {
-    return this.http.delete(`${environment.url}/empleadoPermiso/eliminar/${id_permiso}/${doc}`);
+    return this.http.delete<any>(`${environment.url}/empleadoPermiso/eliminar/${id_permiso}/${doc}`);
   }
 
   // METODO PARA ENVIAR NOTIFICACION DE PERMISOS

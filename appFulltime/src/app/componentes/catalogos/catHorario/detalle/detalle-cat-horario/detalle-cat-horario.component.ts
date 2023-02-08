@@ -12,8 +12,8 @@ import { HorarioService } from 'src/app/servicios/catalogos/catHorarios/horario.
 
 const OPTIONS_HORARIOS = [
   { orden: 1, accion: 'E', view_option: 'Entrada' },
-  { orden: 2, accion: 'S/A', view_option: 'Inicio alimentación' },
-  { orden: 3, accion: 'E/A', view_option: 'Fin alimentación' },
+  { orden: 2, accion: 'I/A', view_option: 'Inicio alimentación' },
+  { orden: 3, accion: 'F/A', view_option: 'Fin alimentación' },
   { orden: 4, accion: 'S', view_option: 'Salida' }
 ]
 

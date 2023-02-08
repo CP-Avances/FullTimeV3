@@ -1081,7 +1081,7 @@ const ModelarHorasTrabajaReporte = async function (codigo: number, fec_inicio: s
                         arr_EoS.push(HHMMtoSegundos(obj2.hora_timbre));
                         break;
                     case 2:
-                        var arr4 = o.timbres.filter((t: any) => { return t.accion === 'AES' || t.accion === 'S/A' })
+                        var arr4 = o.timbres.filter((t: any) => { return t.accion === 'AES' || t.accion === 'I/A' })
                         if (arr4.length === 0) {
                             obj2.accion = 'AES';
                             obj2.hora_timbre = h.hora;
@@ -1101,7 +1101,7 @@ const ModelarHorasTrabajaReporte = async function (codigo: number, fec_inicio: s
                         arr_AES.push(HHMMtoSegundos(obj2.hora_timbre));
                         break;
                     case 3:
-                        var arr1 = o.timbres.filter((t: any) => { return t.accion === 'AES' || t.accion === 'E/A' })
+                        var arr1 = o.timbres.filter((t: any) => { return t.accion === 'AES' || t.accion === 'F/A' })
                         if (arr1.length === 0) {
                             obj2.accion = 'AES';
                             obj2.hora_timbre = h.hora;
@@ -1471,9 +1471,9 @@ const TimbresTabulados = async function (fec_inicio: string, fec_final: string, 
                 fecha: obj.Fecha,
                 entrada: obj.Timbres.filter((ele: any) => { return ele.accion === 'E' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
                 salida: obj.Timbres.filter((ele: any) => { return ele.accion === 'S' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
-                sal_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'S/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
-                ent_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'E/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
-                desconocido: obj.Timbres.filter((ele: any) => { return ele.accion != 'E' && ele.accion != 'S' && ele.accion != 'S/A' && ele.accion != 'E/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0]
+                sal_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'I/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
+                ent_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'F/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
+                desconocido: obj.Timbres.filter((ele: any) => { return ele.accion != 'E' && ele.accion != 'S' && ele.accion != 'I/A' && ele.accion != 'F/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0]
             } as tim_tabulado;
             arrayModelado.push(e)
         }
@@ -1657,10 +1657,10 @@ const TimbresSinAccionesTabulados = async function (fec_inicio: string, fec_fina
         let e = {
             fecha: obj.Fecha,
             entrada: obj.Timbres.filter((ele: any) => { return ele.accion === 'E' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
-            sal_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'S/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
-            ent_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'E/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
+            sal_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'I/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
+            ent_Alm: obj.Timbres.filter((ele: any) => { return ele.accion === 'F/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
             salida: obj.Timbres.filter((ele: any) => { return ele.accion === 'S' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0],
-            desconocido: obj.Timbres.filter((ele: any) => { return ele.accion != 'E' && ele.accion != 'S' && ele.accion != 'S/A' && ele.accion != 'E/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0]
+            desconocido: obj.Timbres.filter((ele: any) => { return ele.accion != 'E' && ele.accion != 'S' && ele.accion != 'I/A' && ele.accion != 'F/A' }).map((ele: any) => { return ele.fec_hora_timbre.split(' ')[1] })[0]
         } as tim_tabulado;
         console.log(e);
         arrayModelado.push(e)

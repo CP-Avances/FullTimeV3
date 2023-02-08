@@ -539,8 +539,8 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
                       case 'PES': accionT = 'Inicio o Fin Permiso'; break;
                       case 'E': accionT = 'Entrada'; break;
                       case 'S': accionT = 'Salida'; break;
-                      case 'E/A': accionT = 'Fin Alimentación'; break;
-                      case 'S/A': accionT = 'Inicio Alimentación'; break;
+                      case 'F/A': accionT = 'Fin Alimentación'; break;
+                      case 'I/A': accionT = 'Inicio Alimentación'; break;
                       case 'E/P': accionT = 'Fin Permiso'; break;
                       case 'S/P': accionT = 'Inicio Permiso'; break;
                       case 'HA': accionT = 'HA'; break;
@@ -600,8 +600,8 @@ export class TimbreAbiertosComponent implements OnInit, OnDestroy {
                       case 'PES': accionT = 'Inicio o Fin Permiso'; break;
                       case 'E': accionT = 'Entrada'; break;
                       case 'S': accionT = 'Salida'; break;
-                      case 'E/A': accionT = 'Fin Alimentación'; break;
-                      case 'S/A': accionT = 'Inicio Alimentación'; break;
+                      case 'F/A': accionT = 'Fin Alimentación'; break;
+                      case 'I/A': accionT = 'Inicio Alimentación'; break;
                       case 'E/P': accionT = 'Fin Permiso'; break;
                       case 'S/P': accionT = 'Inicio Permiso'; break;
                       case 'HA': accionT = 'HA'; break;
