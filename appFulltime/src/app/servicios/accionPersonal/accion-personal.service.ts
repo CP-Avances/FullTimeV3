@@ -105,6 +105,10 @@ export class AccionPersonalService {
     return this.http.get(`${environment.url}/accionPersonal/pedidos/datos/${id}`);
   }
 
+  BuscarDatosPedidoCiudades(id: any){
+    return this.http.get(`${environment.url}/accionPersonal/pedidos/ciudad/${id}`);
+  }
+
   BuscarDatosPedidoId(id: any) {
     return this.http.get(`${environment.url}/accionPersonal/pedido/informacion/${id}`);
   }

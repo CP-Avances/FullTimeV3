@@ -21,32 +21,25 @@
 </div>
 <div class="container" style="padding-bottom: 50px; text-align: center;">
     <div class="mat-elevation-z8" style="background: white;">
-        <div id="titulo">LISTA DE USUARIOS</div>
+        <div id="titulo">LISTA DE PEDIDOS DE ACCIONES DE PERSONAL</div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
                 <thead class="thead-light">
                     <tr style="text-align: center;">
                         <th scope="col">Código</th>
-                        <th scope="col">Cédula</th>
                         <th scope="col">Apellido</th>
                         <th scope="col">Nombre</th>
+                        <th scope="col">Fecha de creación</th>
+                        <th scope="col">Rige desde</th>
+                        <th scope="col">Rige hasta</th>
+                        <th scope="col">Numero de partida</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <mat-form-field id="t-inputs">
-                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
-                                    (keypress)="IngresarSoloNumeros($event)">
-                            </mat-form-field>
-                        </td>
-                        <td>
-                            <mat-form-field id="t-inputs">
-                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
-                                    oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                    [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
-                            </mat-form-field>
+                            
                         </td>
                         <td>
                             <mat-form-field id="t-inputs">
@@ -67,11 +60,14 @@
                         </td>
                     </tr>
                     <tr
-                        *ngFor="let a of listaPedidos | emplCodigo: filtroCodigo | emplCedula: filtroCedula | emplNombre: filtroNombre | emplApellido: filtroApellido  | paginate:tamanio_pagina:numero_pagina">
-                        <th scope="row">{{a.codigo}}</th>
-                        <td>{{a.cedula}}</td>
+                        *ngFor="let a of listaPedidos  | emplNombre: filtroNombre | emplApellido: filtroApellido  | paginate:tamanio_pagina:numero_pagina">
+                        <th scope="row">{{a.id}}</th>
                         <td>{{a.apellido}}</td>
                         <td>{{a.nombre}}</td>
+                        <td>{{a.fecCreacion_}}</td>
+                        <td>{{a.fecDesde_}}</td>
+                        <td>{{a.fecHasta_}}</td>
+                        <td>{{a.num_partida}}</td>
                         <td class="d-flex justify-content-center">
                             <i matSuffix matTooltipPosition="right" matTooltip="Ver datos generales de este registro."
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/verAccion/',a.id]">
@@ -95,5 +91,26 @@
         <mat-paginator id="pagina" [length]="listaPedidos.length" [pageSize]="tamanio_pagina"
             [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
         </mat-paginator>
+        <div class="d-flex justify-content-end" style="margin-right: 2%;">
+            <i (click)="GenerarPdf('download')" id="pdf" class="fas fa-file-pdf" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de pedidos de acciones de personal en formato PDF.">
+                <p>PDF</p>
+            </i>
+            <i (click)="ExportToExcel()" id="excel" class="fas fa-file-excel" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de pedidos de acciones de personal en formato EXCEL.">
+                <p>XLSL</p>
+            </i>
+            <i (click)="ExportToCVS()" id="csv" class="fas fa-file-csv" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de pedidos de acciones de personal en formato CSV.">
+                <p>CSV</p>
+            </i>
+            <i (click)="ExportToXML()" id="xml" class="fas fa-file-code" matSuffix matTooltipPosition="right"
+                matTooltip="Descargar Lista de pedidos de acciones de personal en formato XML.">
+                <p>XML</p>
+            </i>
+        </div>
+        <div class="d-flex justify-content-end" style="margin-right: 2%; margin-top: -1%; color: rgb(158, 154, 154);">
+            <p> Reporte de pedidos de acciones de personal. </p>
+        </div>
     </div>
 </div>
