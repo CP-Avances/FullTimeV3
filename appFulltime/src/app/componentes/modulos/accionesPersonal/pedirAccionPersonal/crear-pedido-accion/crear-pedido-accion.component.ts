@@ -220,7 +220,7 @@ export class CrearPedidoAccionComponent implements OnInit {
   // METODO PARA VER LISTA DE DECRETOS
   VerDecretos() {
     this.AccionPersonalForm.patchValue({
-      otroDrecretoForm: '',
+      otroDecretoForm: '',
     });
     this.estilo = { 'visibility': 'hidden' }; this.ingresoAcuerdo = false;
     this.vistaAcuerdo = true;

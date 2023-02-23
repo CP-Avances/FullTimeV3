@@ -16,6 +16,7 @@ import { PermisosService } from 'src/app/servicios/permisos/permisos.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
+import { isNullOrUndefined } from 'util';
 
 // CREACIÓN DE LISTA DE OPCIONES DE SOLICITUD DE PERMISO 
 interface opcionesDiasHoras {
@@ -82,7 +83,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   horaSalidaF = new FormControl('', Validators.required);
   idPermisoF = new FormControl('', [Validators.required]);
   solicitarF = new FormControl('', [Validators.required]);
-  diaLibreF = new FormControl('');
+  diaLibreF = new FormControl(null);
   horasF = new FormControl('');
   diasF = new FormControl('');
 

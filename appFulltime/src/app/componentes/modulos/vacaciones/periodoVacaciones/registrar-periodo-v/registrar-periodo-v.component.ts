@@ -29,14 +29,14 @@ export class RegistrarPeriodoVComponent implements OnInit {
   // Control de campos y validaciones del formulario
   nombreEmpleadoF = new FormControl('', [Validators.required]);
   descripcionF = new FormControl('', [Validators.required, Validators.minLength(4)]);
-  diaVacacionF = new FormControl('', [Validators.required]);
-  horaVacacionF = new FormControl('', [Validators.required]);
-  minVacacionF = new FormControl('', [Validators.required]);
-  diaAntiguedadF = new FormControl('', [Validators.required]);
+  diaVacacionF = new FormControl(null, [Validators.required]);
+  horaVacacionF = new FormControl(null, [Validators.required]);
+  minVacacionF = new FormControl(null, [Validators.required]);
+  diaAntiguedadF = new FormControl(null, [Validators.required]);
   estadoF = new FormControl('', [Validators.required]);
-  fechaFinF = new FormControl('');
+  fechaFinF = new FormControl(null);
   fechaInicioF = new FormControl('', [Validators.required]);
-  diaPerdidoF = new FormControl('', [Validators.required]);
+  diaPerdidoF = new FormControl(null, [Validators.required]);
 
   // Asignación de validaciones a inputs del formulario
   public PerVacacionesForm = new FormGroup({

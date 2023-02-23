@@ -77,8 +77,8 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   horaSalidaF = new FormControl('', Validators.required);
   idPermisoF = new FormControl('', [Validators.required]);
   solicitarF = new FormControl('', [Validators.required]);
-  diaLaboralF = new FormControl('');
-  diaLibreF = new FormControl('');
+  diaLaboralF = new FormControl(null);
+  diaLibreF = new FormControl(null);
   horasF = new FormControl('');
   diasF = new FormControl('');
 

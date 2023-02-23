@@ -97,8 +97,8 @@ export class PermisosMultiplesComponent implements OnInit {
   idPermisoF = new FormControl('', [Validators.required]);
   solicitarF = new FormControl('', [Validators.required]);
   legalizarF = new FormControl('', [Validators.required]);
-  diaLibreF = new FormControl('');
-  estadoF = new FormControl('');
+  diaLibreF = new FormControl(null);
+  estadoF = new FormControl(null);
   horasF = new FormControl('');
   diasF = new FormControl('');
 

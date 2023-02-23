@@ -143,7 +143,7 @@ export class PrincipalDepartamentoComponent implements OnInit {
       departamentoForm: '',
       departamentoPadreForm: '',
       buscarNombreForm: '',
-      buscarEmpresaForm: ''
+      //buscarEmpresaForm: '' --> revisar parece que no hay esta dato en el formulario
     });
     this.ListaDepartamentos();
   }

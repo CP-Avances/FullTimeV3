@@ -26,7 +26,7 @@ export class DetalleCatHorarioComponent implements OnInit {
 
   minEsperaF = new FormControl('');
   accionF = new FormControl('', [Validators.required]);
-  ordenF = new FormControl('', [Validators.required]);
+  ordenF = new FormControl(null, [Validators.required]);
   horaF = new FormControl('', [Validators.required]);
 
   // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO

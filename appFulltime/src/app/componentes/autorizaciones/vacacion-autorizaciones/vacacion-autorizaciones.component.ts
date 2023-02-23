@@ -27,8 +27,8 @@ export class VacacionAutorizacionesComponent implements OnInit {
 
   // idDocumento = new FormControl('', Validators.required);
   TipoDocumento = new FormControl('');
-  orden = new FormControl('', Validators.required);
-  estado = new FormControl('', Validators.required);
+  orden = new FormControl(null, Validators.required);
+  estado = new FormControl(null, Validators.required);
   idCatNotificacion = new FormControl('', Validators.required);
   idCatNotiAutorizacion = new FormControl('', Validators.required);
   idDepartamento = new FormControl('');

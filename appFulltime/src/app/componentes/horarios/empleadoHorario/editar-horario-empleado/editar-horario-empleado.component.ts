@@ -35,7 +35,7 @@ export class EditarHorarioEmpleadoComponent implements OnInit {
   fechaInicioF = new FormControl('', Validators.required);
   fechaFinalF = new FormControl('', Validators.required);
   miercolesF = new FormControl('');
-  horarioF = new FormControl('', Validators.required);
+  horarioF = new FormControl(null, Validators.required);
   viernesF = new FormControl('');
   domingoF = new FormControl('');
   martesF = new FormControl('');

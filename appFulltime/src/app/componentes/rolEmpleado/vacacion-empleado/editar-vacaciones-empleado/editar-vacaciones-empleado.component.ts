@@ -34,14 +34,14 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
   calcular = false;
   habilitarCalculados: boolean = false;
 
-  dialaborableF = new FormControl('', [Validators.required]);
+  dialaborableF = new FormControl(null, [Validators.required]);
   fechaIngreso = new FormControl('', Validators.required);
   fechaInicio = new FormControl('', Validators.required);
   fechaFinal = new FormControl('', Validators.required);
-  dialibreF = new FormControl('', [Validators.required]);
-  calcularF = new FormControl('');
-  totalF = new FormControl('');
-  diasTF = new FormControl('');
+  dialibreF = new FormControl(null, [Validators.required]);
+  calcularF = new FormControl(false);
+  totalF = new FormControl(null);
+  diasTF = new FormControl(null);
 
   public VacacionesForm = new FormGroup({
     fechaIngresoForm: this.fechaIngreso,
