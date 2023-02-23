@@ -1,0 +1,15 @@
+.btn {
+    margin-left: 15px;
+}
+
+#cancelar {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
+
+p {
+    font-size: 14px;
+    padding-top: 16px;
+    padding-bottom: 10px;
+    font-weight: bold;
+}

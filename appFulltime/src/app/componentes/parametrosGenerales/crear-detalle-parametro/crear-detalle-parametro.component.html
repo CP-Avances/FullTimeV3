@@ -1,0 +1,23 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR DETALLE PARÁMETRO</span>
+</div>
+<form [formGroup]="formulario">
+    <div style="text-align: center">
+        <div class="nota">
+            <span> {{nota}} </span>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center">
+            <mat-form-field>
+                <mat-label>Detalle</mat-label>
+                <input matInput [formControl]="descripcion" required>
+            </mat-form-field>
+        </div>
+    </div>
+</form>
+<div class="d-flex flex-wrap justify-content-center">
+    <input type="submit" class="btn btn-sm" [disabled]="!formulario.valid" (click)="GuardarDatos(formulario.value)"
+        value="Guardar">
+    <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Cancelar">
+</div>

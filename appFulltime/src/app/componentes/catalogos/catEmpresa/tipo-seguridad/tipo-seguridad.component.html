@@ -1,0 +1,36 @@
+<div class="container">
+    <div id="resultados">
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
+            NIVEL DE SEGURIDAD
+        </span>
+    </div>
+    <form [formGroup]="formulario">
+        <div class="d-flex flex-wrap justify-content-start" style="padding-top: 20px;">
+            <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 15px;">
+                    <mat-radio-button value="contrasena">
+                        Usar Contraseña
+                    </mat-radio-button>
+                </div>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 15px;">
+                    <mat-radio-button value="frase">Usar Frase
+                    </mat-radio-button>
+                </div>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 15px;">
+                    <mat-radio-button value="ninguna">
+                        Ninguna
+                    </mat-radio-button>
+                </div>
+            </mat-radio-group>
+        </div>
+    </form>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
+        <input type="submit" class="btn btn-sm button" [disabled]="!formulario.valid" value="Guardar"
+            (click)="InsertarEmpresa(formulario.value)">
+        <input type="submit" class="btn btn-sm button" (click)="CerrarVentana()" value="Salir">
+    </div>
+</div>
+<div class="pantalla-progress" *ngIf="habilitarprogress">
+    <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">
+    </mat-progress-spinner>
+</div>

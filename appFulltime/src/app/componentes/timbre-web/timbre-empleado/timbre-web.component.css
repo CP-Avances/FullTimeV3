@@ -1,0 +1,24 @@
+.btn {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
+
+.timbre {
+    background-color: rgb(125, 126, 128);
+    color: white;
+}
+
+#accion {
+    color: rgb(53, 95, 209);
+    cursor: pointer;
+}
+
+td {
+    padding-top: 10px;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    font-size: 12px;
+}
