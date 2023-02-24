@@ -5,12 +5,14 @@
                 <span>FERIADOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
-                <div class="d-flex flex-wrap justify-content-center">
-                    <input type="submit" class="btn btn-sm button" (click)="AbrirVentanaRegistrarFeriado()"
-                        value="Crear feriado">
-                    <input type="submit" class="btn btn-sm button" (click)="LimpiarCampos()" value="Mostrar lista"
-                        matSuffix matTooltipPosition="right"
+                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%;">
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarFeriado()">
+                        Crear feriado</button>
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix 
+                        matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
+                        Mostrar lista
+                    </button>
                 </div>
             </mat-card>
         </div>

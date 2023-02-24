@@ -25,10 +25,10 @@
             </mat-radio-group>
         </div>
     </form>
-    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
-        <input type="submit" class="btn btn-sm button" [disabled]="!formulario.valid" value="Guardar"
-            (click)="InsertarEmpresa(formulario.value)">
-        <input type="submit" class="btn btn-sm button" (click)="CerrarVentana()" value="Salir">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" [disabled]="!formulario.valid" value="Guardar"
+            (click)="InsertarEmpresa(formulario.value)">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value="Salir">Salir</button-->
     </div>
 </div>
 <div class="pantalla-progress" *ngIf="habilitarprogress">

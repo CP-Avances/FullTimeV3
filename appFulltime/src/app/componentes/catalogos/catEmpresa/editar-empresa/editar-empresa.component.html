@@ -89,8 +89,8 @@
                     </div>
                 </form>
                 <div style="text-align: center; padding-top: 25px;">
-                    <button (click)="Salir()" class="btn btn-sm float-left">Cancelar</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" (click)="Salir()" class="float-left">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
 
@@ -248,11 +248,10 @@
                     </div>
                 </form>
                 <div style="text-align: center; padding-top: 25px;">
-                    <button matStepperPrevious class="btn btn-sm float-left">Atrás</button>
-                    <button (click)="InsertarEmpresa(primerFormulario.value, segundoFormulario.value)"
-                        [disabled]="!segundoFormulario.valid" class="btn btn-sm">Guardar
-                    </button>
-                    <button (click)="Salir()" class="btn btn-sm float-right">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" (click)="InsertarEmpresa(primerFormulario.value, segundoFormulario.value)"
+                        [disabled]="!segundoFormulario.valid"> Guardar </button>
+                    <button mat-raised-button id="btn-raised" (click)="Salir()" class="float-right">Cancelar</button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>

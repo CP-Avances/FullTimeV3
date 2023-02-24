@@ -122,9 +122,8 @@
                                     <label id="datosF">Color principal:</label>
                                 </div>
                                 <div class="caja2 d-flex justify-content-center">
-                                    <input type="color" value="{{e.color_p}}" matSuffix
-                                        matTooltip="Color principal que se visualiza en cabeceras de reportes."
-                                        disabled>
+                                    <input type="color" [(ngModel)]="p_color" value="{{p_color}}" [formControl]="principal" matSuffix
+                                        matTooltip="Seleccionar color principal">
                                 </div>
                             </div>
                             <div class="col-md">
@@ -132,17 +131,14 @@
                                     <label id="datosF">Color secundario:</label>
                                 </div>
                                 <div class="caja2 d-flex justify-content-center">
-                                    <input type="color" value="{{e.color_s}}" matSuffix
-                                        matTooltip="Color secundario que se visualiza en cabeceras de reportes."
-                                        disabled>
+                                    <input type="color" [(ngModel)]="s_color" value="{{s_color}}" [formControl]="secundario" matSuffix
+                                        matTooltip="Seleccionar color secundario">
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-around text-center">
-                            <button mat-raised-button id="btn-raised" type="submit"
-                                (click)="AbrirVentanaReportes(e, 'colores')">
-                                Configurar colores
-                            </button>
+                            <button mat-raised-button id="btn-raised" type="submit" (click)="GenerarPdf('open')">Visualizar</button>
+                            <button mat-raised-button id="btn-raised" type="submit" (click)="CambiarColores()">Guardar</button>
                         </div>
                     </div>
                     <br>

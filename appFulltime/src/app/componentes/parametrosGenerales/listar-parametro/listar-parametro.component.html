@@ -3,10 +3,9 @@
         <span>PARÁMETROS GENERALES</span>
     </div>
     <mat-card class="example-card mat-elevation-z9">
-        <div class="d-flex flex-wrap justify-content-center">
-            <button mat-button type="submit" class="btn btn-sm" (click)="CrearParametro()">Crear
-            </button>
-            <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
+        <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
+            <button mat-raised-button id="btn-raised" type="submit" (click)="CrearParametro()"> Crear </button>
+            <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix
                 matTooltipPosition="right"
                 matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">Mostrar lista
             </button>
@@ -33,6 +32,12 @@
                                 <input matInput placeholder="Buscar" minlength="2" [formControl]="descripcionF"
                                     [(ngModel)]="filtroDescripcion">
                             </mat-form-field>
+                        </td>
+                        <td>
+                            <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
+                                matTooltip="Búsqueda de roles por su descripción.">
+                                help_outline</mat-icon>
+                        </td>
                     </tr>
                     <tr
                         *ngFor="let tp of parametros | filtroNombre: filtroDescripcion | paginate:tamanio_pagina:numero_pagina">

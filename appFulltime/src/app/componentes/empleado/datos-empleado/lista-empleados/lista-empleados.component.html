@@ -5,25 +5,23 @@
                 <span>USUARIOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z8">
-                <div class="d-flex flex-wrap justify-content-around">
-                    <button style="margin-bottom: 10px;" class="btn btn-sm" [routerLink]="['/registrarEmpleado']">
+                <div class="d-flex flex-wrap justify-content-around" style="margin-top: 1%;">
+                    <button mat-raised-button id="btn-raised" type="submit" [routerLink]="['/registrarEmpleado']">
                         Crear usuario
                     </button>
-                </div>
-                <div class="d-flex flex-wrap justify-content-around">
-                    <button style="margin-bottom: 10px;" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
                         Mostrar lista
                     </button>
                 </div>
-                <div class="d-flex flex-wrap justify-content-around">
-                    <button *ngIf="lista_inactivos" (click)="ListarInactivos()" class="btn btn-primary"
+                <div class="d-flex flex-wrap justify-content-around" style="margin-top: 1%;">
+                    <button mat-raised-button id="btn_listar" *ngIf="lista_inactivos" (click)="ListarInactivos()"
                         style="margin-bottom: 20px;" matSuffix matTooltipPosition="right"
                         matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">
                         LISTAR USUARIOS INACTIVOS
                     </button>
-                    <button *ngIf="lista_activos" (click)="ListarActivos()" class="btn btn-primary"
+                    <button mat-raised-button id="btn_listar" *ngIf="lista_activos" (click)="ListarActivos()"
                         style="margin-bottom: 20px;" matSuffix matTooltipPosition="right"
                         matTooltip="Mostrar u ocultar tabla con lista de empleados inactivos.">
                         LISTAR USUARIOS ACTIVOS
@@ -36,20 +34,26 @@
                 <span>REGISTRO MÚLTIPLE DE USUARIOS</span>
             </div>
             <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-around" id="carta1">
-                <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around">
-                    <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
-                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                    <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                        matTooltip="Dar click para selecionar plantilla y cargar registros.">
-                        Subir plantilla
-                    </label>
-                </form>
-                <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
-                    matTooltip="Dar click para ver o descargar el documento." href="{{link}}">
-                    <span class="material-icons">cloud_download</span>
-                    <br>
-                    Descargar plantilla usuarios
-                </a>
+                <div style="display: flex;">
+                    <div>
+                        <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around">
+                            <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                            <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
+                                matTooltip="Dar click para selecionar plantilla y cargar registros.">
+                                Subir plantilla
+                            </label>
+                        </form>
+                    </div>
+                    <div>
+                        <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
+                            matTooltip="Dar click para ver o descargar el documento." href="{{link}}">
+                            <span class="material-icons">cloud_download</span>
+                            <br>
+                            Descargar plantilla usuarios
+                        </a>
+                   </div>
+                </div>
             </mat-card>
         </div>
     </div>
@@ -175,7 +179,7 @@
                     <tr>
                         <td></td>
                         <td>
-                            <mat-form-field id="t-inputs">
+                            <mat-form-field id="t-inputs" class="input-tables codigo">
                                 <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
                                     (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
@@ -193,7 +197,7 @@
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field id="t-inputs">
+                            <mat-form-field id="t-inputs" class="input-tables cedula">
                                 <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
