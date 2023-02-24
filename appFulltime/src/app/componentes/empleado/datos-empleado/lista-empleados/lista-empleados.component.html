@@ -34,12 +34,12 @@
                 <span>REGISTRO MÚLTIPLE DE USUARIOS</span>
             </div>
             <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-around" id="carta1">
-                <div style="display: flex;">
+                <div style="display: flex; padding: 3%; margin: auto;">
                     <div>
                         <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around">
                             <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
                                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                            <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
+                            <label for="file" class="btn-2" matSuffix matTooltipPosition="right" style="height: 6px;"
                                 matTooltip="Dar click para selecionar plantilla y cargar registros.">
                                 Subir plantilla
                             </label>
@@ -179,7 +179,7 @@
                     <tr>
                         <td></td>
                         <td>
-                            <mat-form-field id="t-inputs" class="input-tables codigo">
+                            <mat-form-field class="input-tables codigo">
                                 <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
                                     (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
@@ -197,7 +197,7 @@
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field id="t-inputs" class="input-tables cedula">
+                            <mat-form-field class="input-tables cedula">
                                 <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">

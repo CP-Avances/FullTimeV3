@@ -4,13 +4,16 @@
 }
 
 mat-form-field.input-tables {
-    margin-bottom: -5px;
-    font-size: 10px;
+    background: transparent;
+    font-size: 14px;
     text-align: center;
+    outline: none;
+    fill: none;
+    height: 65px;
 }
 
-.codigo { width: 50px; }
-.cedula { width: 50px;}
+.codigo { width: 75px; }
+.cedula { width: 145px;}
 
 p {
     font-size: x-small;
@@ -47,9 +50,9 @@ td {
     font-family: "Poppins", sans-serif;
     margin-left: 5px;
     padding-top: 10px;
-    font-size: 12px;
+    font-size: 14px;
     height: 66px;
-    width: 200px;
+    width: 220px;
 }
 
 #descargar {
@@ -60,10 +63,10 @@ td {
     font-weight: bold;
     margin-left: 5px;
     padding-top: 10px;
-    font-size: 12px;
+    font-size: 14px;
     overflow: hidden;
     height: 65px;
-    width: 200px;
+    width: 220px;
 }
 
 #SelectCheck {

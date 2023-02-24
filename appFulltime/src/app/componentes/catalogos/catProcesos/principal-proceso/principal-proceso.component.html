@@ -5,13 +5,14 @@
                 <span>ACCIONES DE PERSONAL PROCESOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z8">
-                <div class="d-flex justify-content-around">
-                    <button type="button" class="btn btn-sm" (click)="AbrirVentanaRegistrarProceso()">Crear nuevo
+                <div class="d-flex justify-content-around" style="margin-top: 1%; margin-bottom: 2%;">
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarProceso()">Crear nuevo
                         proceso
                     </button>
-                    <input type="submit" class="btn btn-sm" (click)="limpiarCampoBuscar()" matSuffix
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="limpiarCampoBuscar()" matSuffix
                         matTooltipPosition="right"
-                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos." value="Mostrar lista">
+                        matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
+                        Mostrar lista</button>
                 </div>
             </mat-card>
         </div>

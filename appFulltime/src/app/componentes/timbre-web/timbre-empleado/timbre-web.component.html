@@ -36,10 +36,10 @@
         <div class="col-sm-4">
         </div>
         <div class="col-sm-4">
-            <button class="timbre btn btn-md btn-block" (click)="VerMensaje()" *ngIf="activar_timbre">
+            <button mat-raised-button id="btn-raised" (click)="VerMensaje()" *ngIf="activar_timbre">
                 Timbre Virtual
             </button>
-            <button class="btn btn-md btn-block" (click)="AbrirRegistrarTimbre()" *ngIf="!activar_timbre">
+            <button mat-raised-button id="btn-raised" (click)="AbrirRegistrarTimbre()" *ngIf="!activar_timbre">
                 Timbre Virtual
             </button>
             <br>

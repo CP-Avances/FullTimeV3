@@ -5,7 +5,7 @@
                 <span>HORARIOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
-                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%;">
+                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
                     <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarHorario()">
                         Crear horario
                     </button>
@@ -84,7 +84,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <mat-form-field id="t-inputs" class="input-tables codigo">
+                            <mat-form-field class="input-tables codigo">
                                 <input matInput placeholder="Buscar" [formControl]="nombreHorarioF"
                                     [(ngModel)]="filtroNombreHorario">
                             </mat-form-field>
