@@ -1,9 +1,10 @@
+<div id="resultados">
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
+        NIVEL DE SEGURIDAD
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
+</div>
 <div class="container">
-    <div id="resultados">
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
-            NIVEL DE SEGURIDAD
-        </span>
-    </div>
     <form [formGroup]="formulario">
         <div class="d-flex flex-wrap justify-content-start" style="padding-top: 20px;">
             <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>

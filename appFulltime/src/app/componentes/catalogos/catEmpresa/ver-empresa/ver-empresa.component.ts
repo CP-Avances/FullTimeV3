@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
@@ -12,7 +13,10 @@ import { MetodosComponent } from 'src/app/componentes/administracionGeneral/meto
 import { LogosComponent } from 'src/app/componentes/catalogos/catEmpresa/logos/logos.component';
 
 import { SucursalService } from 'src/app/servicios/sucursales/sucursal.service';
-import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service'
+import { EmpresaService } from 'src/app/servicios/catalogos/catEmpresa/empresa.service';
+
+import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'app-ver-empresa',
@@ -36,6 +40,32 @@ export class VerEmpresaComponent implements OnInit {
   sinCambios: boolean = true;
   conCambios: boolean = true;
   cambiosTodos: boolean = true;
+
+  // DATOS DE FORMULARIO DE COLORES
+  principal = new FormControl('');
+  secundario = new FormControl('');
+
+  public coloresForm = new FormGroup({
+    color_p: this.principal,
+    color_s: this.secundario
+  });
+
+  idEmpleado: number;
+  empleado: any = [];
+  p_color: any;
+  s_color: any;
+  frase: any;
+
+  verColores: boolean = false;
+  verFrase: boolean = false;
+
+  /**
+   * VARIABLES PROGRESS SPINNER
+   */
+  color: ThemePalette = 'primary';
+  mode: ProgressSpinnerMode = 'indeterminate';
+  value = 10;
+  habilitarprogress: boolean = false;
 
   constructor(
     public ventana: MatDialog,
@@ -191,12 +221,41 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA DE REGISTRO DE FRASE DE SEGURIDAD
   AbrirVentanaSeguridad(datosSeleccionados: any) {
-    this.ventana.open(TipoSeguridadComponent, { width: '400', data: datosSeleccionados })
+    this.ventana.open(TipoSeguridadComponent, { width: '450', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
         this.ObtenerSucursal();
         this.ObtenerLogotipo();
         this.CargarDatosEmpresa();
       });
+  }
+
+  // METODO DE REGISTRO DE COLORES
+  CambiarColores() {
+    this.habilitarprogress = true;
+    let datos = {
+      color_p: this.p_color,
+      color_s: this.s_color,
+      id: this.datosEmpresa.id
+    }
+    this.empresa.ActualizarColores(datos).subscribe(data => {
+      this.toastr.success('Colores de encabezados de reportes registrados.', '', {
+        timeOut: 6000,
+      });
+      this.obtenerColores();
+      this.habilitarprogress = false;
+    })
+  }
+
+  // METODO PARA OBTENER DATOS DE EMPRESA COLORES - MARCA DE AGUA
+  empresas: any = [];
+  obtenerColores() {
+    this.empresas = [];
+    this.empresa.ConsultarDatosEmpresa(this.datosEmpresa.id_empleado).subscribe(res => {
+      this.empresas = res;
+      this.p_color = this.empresas[0].color_p;
+      this.s_color = this.empresas[0].color_s;
+      this.frase = this.empresas[0].marca_agua;
+    });
   }
 
 }
