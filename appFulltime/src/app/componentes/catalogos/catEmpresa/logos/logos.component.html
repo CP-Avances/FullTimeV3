@@ -1,29 +1,35 @@
-<div id="titulo" style="height: 35px;"></div>
-<div class="container" style="padding-top: 2%;">
-    <div class="row">
-        <div class="col-md">
-            <div class="d-flex flex-wrap justify-content-center">
-                <figure>
-                    <div *ngIf="imagen_default; else logoEmpresa">
-                        <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset="" width="75%"
-                            height="75%">
-                    </div>
-                </figure>
-                <ng-template #logoEmpresa>
-                    <img src="{{logo}}" alt="logo" srcset="" width="50%" height="50%">
-                </ng-template>
+<div>
+    <div id="titulo">
+        <mat-icon class="float-right" id="cerrar" (click)="ventana.close({actualizar: false})">highlight_off</mat-icon>
+    </div>
+    <div class="container" style="padding-top: 2%;">
+        <div class="row">
+            <div class="col-md">
+                <div class="d-flex flex-wrap justify-content-center">
+                    <figure>
+                        <div *ngIf="imagen_default; else logoEmpresa">
+                            <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset="" width="75%"
+                                height="75%">
+                        </div>
+                    </figure>
+                    <ng-template #logoEmpresa>
+                        <img src="{{logo}}" alt="logo" srcset="" width="50%" height="50%">
+                    </ng-template>
+                </div>
             </div>
-        </div>
-        <div class="col-md">
-            <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
-                <form method="post" enctype="multipart/form-data">
-                    <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file"
-                        accept="image/png, image/jpeg">
-                    <label for="file" class="btn-2">{{textoBoton}}</label>
-                </form>
+            <div class="col-md">
+                <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
+                    <form method="post" enctype="multipart/form-data">
+                        <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file"
+                            accept="image/png, image/jpeg">
+                        <label for="file" class="btn-2">{{textoBoton}}</label>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
 
 
