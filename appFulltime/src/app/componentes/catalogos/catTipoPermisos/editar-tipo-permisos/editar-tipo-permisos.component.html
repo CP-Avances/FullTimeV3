@@ -1,7 +1,12 @@
 <div id="titulo">
-    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-        MODIFICAR TIPO PERMISO</span>
+    <div class="float-left">
+        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    </div>
+    <div>
+        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+            MODIFICAR TIPO PERMISO
+        </span>
+    </div>
 </div>
 <mat-horizontal-stepper [linear]="isLinear" #stepper>
     <mat-step [stepControl]="primeroFormGroup">

@@ -1,9 +1,10 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR SOLICITUD DE VACACIÓN</span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close(false)">highlight_off</mat-icon>
+</div>
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            MODIFICAR SOLICITUD DE VACACIÓN</span>
-    </div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="VacacionesForm">
         <mat-card-content>
@@ -85,9 +86,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
         <button type="submit" class="btn btn-sm" (click)="ValidarDatosVacacion(VacacionesForm.value)"
-            [disabled]="!VacacionesForm.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="ventana.close(false)">Salir</button>
+            [disabled]="!VacacionesForm.valid"> Guardar </button>
+        <!--button type="submit" class="btn btn-sm" (click)="ventana.close(false)"> Salir </button-->
     </div>
 </div>

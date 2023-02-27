@@ -1,28 +1,37 @@
-<span mat-button class="material-icons" (click)="ventana.close(false)"
-    style="float: right; margin: -15px -15px 0px 0px; color: red; cursor: pointer;">
-    highlight_off
-</span>
-<div class="row">
-    <div class="col-md">
-        <div class="d-flex flex-wrap justify-content-center">
-            <figure>
-                <div *ngIf="imagen_default; else logoEmpresa">
-                    <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset="" width="75%"
-                        height="75%">
-                </div>
-            </figure>
-            <ng-template #logoEmpresa>
-                <img src="{{logo}}" alt="logo" srcset="" width="50%" height="50%">
-            </ng-template>
+<div id="titulo">
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR LOGO EMPRESA
+    </span>
+    <mat-icon class="float-right" id="cerrar" click)="ventana.close(false)">highlight_off</mat-icon>
+    
+    <span mat-button class="material-icons" (click)="ventana.close(false)"
+        style="float: right; margin: -5px -5px 0px 0px; color: red; cursor: pointer;">highlight_off</span>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md">
+            <div class="d-flex flex-wrap justify-content-center">
+                <figure>
+                    <div *ngIf="imagen_default; else logoEmpresa">
+                        <img src="../../../../../assets/imagenes/photo.png" alt="logo_default" srcset="" width="75%"
+                            height="75%">
+                    </div>
+                </figure>
+                <ng-template #logoEmpresa>
+                    <img src="{{logo}}" alt="logo" srcset="" width="50%" height="50%">
+                </ng-template>
+            </div>
         </div>
-    </div>
-    <div class="col-md">
-        <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
-            <form method="post" enctype="multipart/form-data">
-                <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file"
-                    accept="image/png, image/jpeg">
-                <label for="file" class="btn-2">{{textoBoton}}</label>
-            </form>
+        <div class="col-md">
+            <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
+                <form method="post" enctype="multipart/form-data">
+                    <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file"
+                        accept="image/png, image/jpeg">
+                    <label for="file" class="btn-2">{{textoBoton}}</label>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+

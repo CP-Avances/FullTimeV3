@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         HABILITAR NOTIFICACIONES</span>
+    <mat-icon class="float-right" id="cerrar" (click)="this.dialogRef.close()">highlight_off</mat-icon>
 </div>
 <form class="example-form" [formGroup]="formGroup" ngNativeValidate>
     <br>
@@ -43,9 +44,10 @@
         </div>
     </div>
 </form>
-<div class="d-flex justify-content-around" style="padding-top: 10px;">
-    <button class="btn btn-primary" type="submit" *ngIf="btnActualizar"
-        (click)="ActualizarConfiguracion(formGroup.value)">Guardar</button>
-    <button class="btn" type="submit" *ngIf="btnCrear" (click)="CrearConfiguracion(formGroup.value)">Guardar</button>
-    <button class="btn" type="submit" (click)="this.dialogRef.close()">Cancelar</button>
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+    <button *ngIf="btnActualizar" mat-raised-button id="btn-raised" type="submit" (click)="ActualizarConfiguracion(formGroup.value)">
+        Guardar
+    </button>
+    <button *ngIf="btnCrear" mat-raised-button id="btn-raised" type="submit" (click)="CrearConfiguracion(formGroup.value)">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="this.dialogRef.close()">Cancelar</button-->
 </div>

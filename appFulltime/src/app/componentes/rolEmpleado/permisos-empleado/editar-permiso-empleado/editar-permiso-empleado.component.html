@@ -1,10 +1,11 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" ngDefaultControl [(ngModel)]="num"
+        [ngModelOptions]="{standalone: true}">
+        EDITAR SOLICITUD DE PERMISO N° {{num}}</span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close(false)">highlight_off</mat-icon>
+</div>
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" ngDefaultControl [(ngModel)]="num"
-            [ngModelOptions]="{standalone: true}">
-            EDITAR SOLICITUD DE PERMISO N° {{num}}</span>
-    </div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="PermisoForm">
         <mat-card-content>
@@ -124,10 +125,10 @@
     <br>
     <span class="nota">Desea editar el archivo anteriormente subido (opcional) </span>
     <mat-slide-toggle [(ngModel)]="isChecked"></mat-slide-toggle>
-    <div style="text-align: center;">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
         <br>
         <button type="submit" class="btn btn-sm" (click)="ValidarHora_Salida_Entrada(PermisoForm.value)"
             [disabled]="!PermisoForm.valid"> Guardar </button>
-        <button type="submit" class="btn btn-sm" (click)="ventana.close(false)"> Salir </button>
+        <!--button type="submit" class="btn btn-sm" (click)="ventana.close(false)"> Salir </button-->
     </div>
 </div>

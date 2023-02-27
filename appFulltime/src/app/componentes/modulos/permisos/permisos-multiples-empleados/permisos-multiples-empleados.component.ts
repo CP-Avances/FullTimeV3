@@ -407,7 +407,7 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.restPerV.BuscarIDPerVacaciones(parseInt(usuario.id)).subscribe(datos => {
       this.ventana.open(RegistroEmpleadoPermisoComponent,
         {
-          width: '1200px',
+          width: '700px',
           data: {
             idEmpleado: usuario.id, idContrato: usuario.id_contrato,
             idPerVacacion: datos[0].id, idCargo: usuario.id_cargo

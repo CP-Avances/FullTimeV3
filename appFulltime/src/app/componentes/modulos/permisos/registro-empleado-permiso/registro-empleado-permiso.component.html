@@ -1,10 +1,11 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" ngDefaultControl [(ngModel)]="num"
+        [ngModelOptions]="{standalone: true}">
+        SOLICITUD DE PERMISO N° {{num}}</span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close(false)">highlight_off</mat-icon>
+</div>
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" ngDefaultControl [(ngModel)]="num"
-            [ngModelOptions]="{standalone: true}">
-            SOLICITUD DE PERMISO N° {{num}}</span>
-    </div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="PermisoForm">
         <mat-card-content>

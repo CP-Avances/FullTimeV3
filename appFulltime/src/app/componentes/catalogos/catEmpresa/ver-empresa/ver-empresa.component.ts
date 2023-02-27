@@ -195,9 +195,7 @@ export class VerEmpresaComponent implements OnInit {
 
   // METODO PARA EDITAR LOGO DE EMPRESA
   EditarLogo() {
-    this.ventana.open(LogosComponent, {
-      width: '500px',
-      data: { empresa: parseInt(this.idEmpresa), pagina: 'empresa' }
+    this.ventana.open(LogosComponent, { width: '500px', data: { empresa: parseInt(this.idEmpresa), pagina: 'empresa' }
     }).afterClosed()
       .subscribe((res: any) => {
         this.ObtenerLogotipo();
