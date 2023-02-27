@@ -86,7 +86,7 @@ export class VerSucursalComponent implements OnInit {
   // VENTANA PARA EDITAR DATOS DE REGISTRO SELECCIONADO 
   EditarDatosSucursal(datosSeleccionados: any): void {
     console.log(datosSeleccionados);
-    this.ventana.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
+    this.ventana.open(EditarSucursalComponent, { width: '650px', data: datosSeleccionados })
       .afterClosed().subscribe(item => {
         this.CargarDatosSucursal();
       });

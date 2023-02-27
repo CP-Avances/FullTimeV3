@@ -163,7 +163,7 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA DE EDICION DE ESTABLECIMIENTOS
   AbrirVentanaEditarSucursal(datosSeleccionados: any): void {
-    this.ventana.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
+    this.ventana.open(EditarSucursalComponent, { width: '650px', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
         if (items.actualizar === true) {
           this.ObtenerSucursal();
@@ -173,8 +173,7 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA DE REGISTRO DE ESTABLECIMIENTO
   AbrirVentanaRegistrarSucursal() {
-    this.ventana.open(RegistrarSucursalesComponent,
-      { width: '900px', data: parseInt(this.idEmpresa) })
+    this.ventana.open(RegistrarSucursalesComponent, { width: '650px', data: parseInt(this.idEmpresa) })
       .afterClosed().subscribe((items: any) => {
           this.ObtenerSucursal();
       });
@@ -182,7 +181,7 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA PARA REVISAR FORMATO DE REPORTES COLORES
   AbrirVentanaReportes(datos_empresa: any, ventana: any) {
-    this.ventana.open(ColoresEmpresaComponent, {width: '600',data: { datos: datos_empresa, ventana: ventana }})
+    this.ventana.open(ColoresEmpresaComponent, {width: '400px',data: { datos: datos_empresa, ventana: ventana }})
       .afterClosed().subscribe((items: any) => {
         if (items) {
           if (items.actualizar === true) {

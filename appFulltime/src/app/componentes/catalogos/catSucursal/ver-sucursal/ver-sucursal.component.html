@@ -26,8 +26,8 @@
                     </i>
                 </div>
                 <div style="text-align: center;">
-                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarDepartamento()"
-                        value="Crear departamento">
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarDepartamento()"
+                        value="Crear departamento">Crear departamento</button>
                 </div>
             </div>
             <hr>
@@ -68,8 +68,8 @@
                 <mat-paginator id="pagina" [length]="datosDepartamentos.length" [pageSize]="tamanio_pagina"
                     [pageSizeOptions]="pageSizeOptions" id="pagina" (page)="ManejarPagina($event)" showFirstLastButtons>
                 </mat-paginator>
-                <input type="submit" class="btn btn-sm" [routerLink]="['/sucursales/']"
-                    value="Ir a lista de establecimientos">
+                <button mat-raised-button id="btn-raised" type="submit" [routerLink]="['/sucursales/']"
+                    value="Ir a lista de establecimientos">Ir a lista de establecimientos</button>
             </div>
         </mat-card-content>
     </mat-card>

@@ -114,14 +114,14 @@ export class ListaSucursalesComponent implements OnInit {
 
   // METODO PARA REGISTRAR SUCURSAL
   AbrirVentanaRegistrarSucursal() {
-    this.ventana.open(RegistrarSucursalesComponent, { width: '900px' }).afterClosed().subscribe(items => {
+    this.ventana.open(RegistrarSucursalesComponent, { width: '650px' }).afterClosed().subscribe(items => {
       this.ObtenerSucursal();
     });
   }
 
   // METODO PARA EDITAR SUCURSAL
   AbrirVentanaEditar(datosSeleccionados: any): void {
-    this.ventana.open(EditarSucursalComponent, { width: '900px', data: datosSeleccionados })
+    this.ventana.open(EditarSucursalComponent, { width: '650px', data: datosSeleccionados })
       .afterClosed().subscribe(items => {
         this.ObtenerSucursal();
       });
