@@ -37,8 +37,8 @@ export class CancelarPermisoComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.data);
+    this.ObtenerInformacionEmpleado();
     this.ObtenerTiposPermiso();
-    this.obtenerInformacionEmpleado();
     this.BuscarParametro();
     this.BuscarHora();
   }
@@ -78,7 +78,7 @@ export class CancelarPermisoComponent implements OnInit {
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
   solInfo: any;
-  obtenerInformacionEmpleado() {
+  ObtenerInformacionEmpleado() {
     this.informacion.ObtenerInfoConfiguracion(this.data.id_empleado).subscribe(
       res => {
         if (res.estado === 1) {
@@ -104,7 +104,7 @@ export class CancelarPermisoComponent implements OnInit {
       })
   }
 
-  aceptarAdvertencia() {
+  AceptarAdvertencia() {
     var correo = 0;
     this.restP.EliminarPermiso(this.data.info.id, this.data.info.documento).subscribe(res => {
       console.log(res);
@@ -240,13 +240,11 @@ export class CancelarPermisoComponent implements OnInit {
                   timeOut: 6000,
                 });
               }
-            },
-            err => {
+            }, err => {
               this.toastr.error(err.error.message, '', {
                 timeOut: 6000,
               });
-            },
-            () => { },
+            }
           )
         }
       }
@@ -302,20 +300,15 @@ export class CancelarPermisoComponent implements OnInit {
       if (e.permiso_noti) {
         this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
           resp => {
-            this.restP.sendNotiRealTime(resp.respuesta);
-          },
-          err => {
+            this.restP.EnviarNotificacionRealTime(resp.respuesta);
+          }, err => {
             this.toastr.error(err.error.message, '', {
               timeOut: 6000,
             });
-          },
-          () => { },
+          }
         )
       }
-
     })
-
   }
-
 
 }

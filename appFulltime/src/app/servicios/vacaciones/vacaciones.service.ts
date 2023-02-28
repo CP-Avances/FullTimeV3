@@ -14,7 +14,7 @@ export class VacacionesService {
   ) { }
 
   // realtime
-  sendNotiRealTime(data: any) {
+  EnviarNotificacionRealTime(data: any) {
     this.socket.emit('nueva_notificacion', data);
   }
 

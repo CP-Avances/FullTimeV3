@@ -216,7 +216,7 @@ export class AutorizacionesComponent implements OnInit {
         this.NotifiRes = res;
         notificacion.id = this.NotifiRes._id;
         if (this.NotifiRes._id > 0 && this.resEstado[0].notificacion === true) {
-          this.restP.sendNotiRealTime(notificacion);
+          this.restP.EnviarNotificacionRealTime(notificacion);
         }
       });
     }, err => {

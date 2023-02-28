@@ -1,4 +1,4 @@
-import { Validators, FormGroup, FormBuilder } from '@angular/forms';
+import { Validators, FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
@@ -119,6 +119,10 @@ export class TipoPermisosComponent implements OnInit {
       almuIncluirForm: ['', Validators.required],
       numDiaJustificaForm: [''],
       geneJustificacionForm: ['', Validators.required],
+      /**
+         start: [null],
+      end: [null],
+       */
     });
     this.tercerFormGroup = this._formBuilder.group({
       correo_crearForm: [false],
@@ -131,6 +135,12 @@ export class TipoPermisosComponent implements OnInit {
     });
   }
 
+  /*  range = new FormGroup({
+      start: new FormControl(null),
+      end: new FormControl(null),
+    });
+  */
+ 
   // METODO PARA ACTIVAR CAMPO NOMBRE
   ActivarDesactivarNombre(form1: any) {
     var nombreTipoPermiso = form1.descripcionForm;
@@ -380,6 +390,8 @@ export class TipoPermisosComponent implements OnInit {
   IngresarSoloNumeros(evt: any) {
     return this.validar.IngresarSoloNumeros(evt);
   }
+
+
 
 
 }

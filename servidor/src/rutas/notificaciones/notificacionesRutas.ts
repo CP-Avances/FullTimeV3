@@ -15,7 +15,8 @@ class NotificacionTiempoRealRutas {
         // METODO PARA CONTROLAR CONFIGURACION DE RECEPCION DE NOTIFICACIONES
         this.router.get('/config/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerConfigEmpleado);
 
-
+        // RUTA PARA CREAR NOTIFICACION
+        this.router.post('/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.CrearNotificacion);
 
 
 
@@ -46,8 +47,7 @@ class NotificacionTiempoRealRutas {
         this.router.post('/mail-comunicado-movil/:id_empresa/', NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarCorreoComunicadoMovil);
         this.router.post('/noti-comunicado-movil/', NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarNotificacionGeneral);
 
-        // RUTA PARA CREAR NOTIFICACIÓN
-        this.router.post('/', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.CrearNotificacion);
+
 
         // RUTA DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
         this.router.get('/one/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerUnaNotificacion);

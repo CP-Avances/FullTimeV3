@@ -329,7 +329,7 @@
                                                     matTooltip="Dar click para descargar carnet de vacunación."
                                                     href="{{hipervinculo}}/vacunas/documentos/{{dv.carnet}}"
                                                     target="_blank">
-                                                    <label style="font-size: 14px;">{{dv.nom_carnet}}</label>
+                                                    <label style="font-size: 13px;">{{dv.nom_carnet}}</label>
                                                 </a>
                                             </div>
                                         </div>
@@ -545,7 +545,7 @@
                                             <label id="datosF">Documento contrato:</label>
                                             <a *ngIf="ce.doc_nombre != null && ce.doc_nombre != ''"
                                                 class="fas fa-file-alt"
-                                                style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px;"
+                                                style="color:rgb(11, 70, 197); text-align: center; margin-left: 20px; font-size: 13px;"
                                                 matSuffix matTooltipPosition="right"
                                                 matTooltip="Dar click para descargar contrato de trabajo"
                                                 href="{{hipervinculo}}/contratoEmpleado/documentos/{{ce.documento}}"
@@ -555,7 +555,7 @@
                                             <a *ngIf="ce.doc_nombre === null || ce.doc_nombre === ''" mat-button
                                                 type="submit"
                                                 (click)="VerContratoEdicion(false); ObtenerIdContratoSeleccionado(ce.id)"
-                                                [disabled]="!btnActualizarContrato">
+                                                [disabled]="!btnActualizarContrato" style="font-size: 13px;">
                                                 Cargar Contrato de Trabajo
                                             </a>
                                         </div>
@@ -936,6 +936,9 @@
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <app-registro-empleado-permiso [solicita_permiso]="solicita_permiso" *ngIf="formulario_permiso">
             </app-registro-empleado-permiso>
+            <app-editar-permiso-empleado [solicita_permiso]="solicita_permiso" [id_empleado]="empleado_permiso"
+                *ngIf="formulario_editar_permiso">
+            </app-editar-permiso-empleado>
             <mat-card class="mat-elevation-z8" *ngIf="solicitudes_permiso">
                 <div class="d-flex bd-highlight" id="titulo">
                     <div class="w-100 bd-highlight">
@@ -946,7 +949,23 @@
                             (click)="AbrirVentanaPermiso()">{{btnTitulo}}</button>
                     </div>
                 </div>
-                <div *ngFor="let pt of permisosTotales | paginate:tamanio_pagina:numero_pagina"
+                <div class="d-flex justify-content-center" style="padding-top: 10px; padding-bottom: 10px;">
+                    <mat-form-field style="width: 200px; font-size: 12px;">
+                        <mat-icon id="i-cursor" matPrefix matSuffix matTooltipPosition="right"
+                            matTooltip="Búsqueda de permisos de acuerdo a la fecha ingresada en formato YYYY-MM-DD. Ejemplo: 2023-01-01">
+                            search
+                        </mat-icon>
+                        <input matInput placeholder="Fecha (YYYY-MM-DD)" [formControl]="fechaF"
+                            [(ngModel)]="filtradoFecha">
+                    </mat-form-field>
+                    <i class="fa fa-refresh" id="listar" style="padding-top: 10px;" (click)="LimpiarCamposPermisos()"
+                        matSuffix matTooltipPosition="right"
+                        matTooltip="Modificar los datos generales de este registro">
+                        <p>Mostrar lista</p>
+                    </i>
+                </div>
+                <mat-divider style="margin-bottom: 10px;"></mat-divider>
+                <div *ngFor="let pt of permisosTotales | filtroFecha: filtradoFecha | paginate:tamanio_pagina:numero_pagina"
                     style="padding-top: 15px;">
                     <div class="container">
                         <div class="row">
@@ -1013,19 +1032,25 @@
                                         matTooltip="Dar click para descargar contrato de trabajo"
                                         href="{{hipervinculo}}/empleadoPermiso/documentos/{{pt.documento}}"
                                         target="_blank">
-                                        <label style="font-size: 14px;">{{pt.docu_nombre}}</label>
+                                        <label style="font-size: 13px;">{{pt.docu_nombre}}</label>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                        <div style="text-align: right;" *ngIf="pt.estado === 1">
-                            <i class="fas fa-edit" id="edit" style="margin-right: 20px;" (click)="EditarPermiso(pt)"
-                                matSuffix matTooltipPosition="right"
-                                matTooltip="Modificar los datos generales de este registro">
+                        <div style="text-align: right;">
+                            <i id="solicitud" class="fas fa-file-pdf" style="margin-right: 20px;"
+                                (click)="ConsultarPermisoIndividual(pt.id)" matSuffix matTooltipPosition="right"
+                                matTooltip="Descargar solicitud de permiso.">
+                                <p>Descargar</p>
+                            </i>
+                            <i *ngIf="pt.estado === 1" class="fas fa-edit" id="edit" style="margin-right: 20px;"
+                                (click)="EditarPermiso(pt)" matSuffix matTooltipPosition="right"
+                                matTooltip="Modificar los datos generales de este registro.">
                                 <p>Editar</p>
                             </i>
-                            <i class="fas fa-backspace" id="cancel" (click)="CancelarPermiso(pt)" matSuffix
-                                matTooltipPosition="right" matTooltip="Cancelar solicitud de permiso">
+                            <i *ngIf="pt.estado === 1" class="fas fa-backspace" id="cancel"
+                                (click)="CancelarPermiso(pt)" matSuffix matTooltipPosition="right"
+                                matTooltip="Cancelar solicitud de permiso.">
                                 <p>Cancelar</p>
                             </i>
                         </div>
@@ -1266,7 +1291,7 @@
                                         matTooltip="Dar click para descargar documento."
                                         href="{{hipervinculo}}/horas-extras-pedidas/documentos/{{h.documento}}"
                                         target="_blank">
-                                        <label style="font-size: 14px;">{{h.docu_nombre}}</label>
+                                        <label style="font-size: 13px;">{{h.docu_nombre}}</label>
                                     </a>
                                 </div>
                             </div>

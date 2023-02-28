@@ -13,10 +13,30 @@ export class AutorizacionService {
     private socket: Socket
   ) { }
 
+
+  // METODO PARA BUSCAR APROBACIONES DE PERMISO
+  BuscarAutorizacionPermiso(id_permiso: number) {
+    return this.http.get<any>(`${environment.url}/autorizaciones/by-permiso/${id_permiso}`);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // realtime
-  sendNotiRealTimeEstado(data: any) {
+  EnviarNotificacionRealTimeEstado(data: any) {
     this.socket.emit('nueva_notificacion', data);
   }
+
 
 
   // ACTUALIZACION DE APROBACION
@@ -30,9 +50,7 @@ export class AutorizacionService {
     return this.http.get<any>(`${environment.url}/autorizaciones`);
   }
 
-  getUnaAutorizacionByPermisoRest(id_permiso: number) {
-    return this.http.get<any>(`${environment.url}/autorizaciones/by-permiso/${id_permiso}`);
-  }
+
 
   getUnaAutorizacionByVacacionRest(id_vacacion: number) {
     return this.http.get<any>(`${environment.url}/autorizaciones/by-vacacion/${id_vacacion}`);

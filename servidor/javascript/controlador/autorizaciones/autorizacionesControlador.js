@@ -18,21 +18,24 @@ const settingsMail_1 = require("../../libs/settingsMail");
 const path_1 = __importDefault(require("path"));
 const nodemailer = require("nodemailer");
 class AutorizacionesControlador {
-    ListarAutorizaciones(req, res) {
+    // METODO PARA BUSCAR AUTORIZACIONES DE PERMISOS
+    ObtenerAutorizacionPermiso(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const AUTORIZACIONES = yield database_1.default.query('SELECT * FROM autorizaciones ORDER BY id');
+            const id = req.params.id_permiso;
+            const AUTORIZACIONES = yield database_1.default.query(`
+            SELECT * FROM autorizaciones WHERE id_permiso = $1
+            `, [id]);
             if (AUTORIZACIONES.rowCount > 0) {
                 return res.jsonp(AUTORIZACIONES.rows);
             }
             else {
-                return res.status(404).jsonp({ text: 'No se encuentran registros' });
+                return res.status(404).jsonp({ text: 'No se encuentran registros.' });
             }
         });
     }
-    ObtenerAutorizacionByPermiso(req, res) {
+    ListarAutorizaciones(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = req.params.id_permiso;
-            const AUTORIZACIONES = yield database_1.default.query('SELECT * FROM autorizaciones WHERE id_permiso = $1', [id]);
+            const AUTORIZACIONES = yield database_1.default.query('SELECT * FROM autorizaciones ORDER BY id');
             if (AUTORIZACIONES.rowCount > 0) {
                 return res.jsonp(AUTORIZACIONES.rows);
             }

@@ -23,7 +23,10 @@ export class RealTimeService {
     return this.http.get<any>(`${environment.url}/noti-real-time/config/${id_empleado}`);
   }
 
-
+  // METODO PARA INGRESAR NOTIFICACIONES DE PERMISOS
+  IngresarNotificacionEmpleado(datos: any) {
+    return this.http.post<any>(`${environment.url}/noti-real-time`, datos);
+  }
 
 
 
@@ -52,9 +55,7 @@ export class RealTimeService {
     return this.http.get(`${environment.url}/noti-real-time/all-receives/${id_empleado}`);
   }
 
-  IngresarNotificacionEmpleado(datos: any) {
-    return this.http.post<any>(`${environment.url}/noti-real-time`, datos);
-  }
+
 
   PutVistaNotificacion(id_realtime: number) {
     let data = { visto: true };

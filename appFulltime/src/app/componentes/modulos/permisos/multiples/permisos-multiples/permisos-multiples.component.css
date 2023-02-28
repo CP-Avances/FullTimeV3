@@ -76,7 +76,7 @@ mat-label {
 }
 
 #calculos {
-    width: 160px;
+    width: 180px;
 }
 
 ::ng-deep.mat-checkbox-checked.mat-accent.mat-checkbox-disabled .mat-checkbox-background,
@@ -100,4 +100,14 @@ mat-label {
     font-size: x-small;
     padding-left: 10px;
     color: rgb(15, 0, 228);
+}
+
+table {
+    width: 100%;
+    font-size: 14px;
+}
+
+td {
+    padding-top: 10px;
+    text-align: center;
 }

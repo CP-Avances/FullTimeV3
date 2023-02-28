@@ -25,9 +25,51 @@ class PermisosRutas {
         this.router.post('/permisos-solicitados', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosDias);
         // METODO PARA BUSCAR PERMISOS SOLICITADOS POR HORAS
         this.router.post('/permisos-solicitados-horas', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosHoras);
+        // METODO PARA BUSCAR PERMISOS SOLICITADOS ACTUALIZAR
+        this.router.post('/permisos-solicitados-totales-editar', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosTotalesEditar);
+        // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS ACTUALIZAR
+        this.router.post('/permisos-solicitados-editar', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosDiasEditar);
+        // METODO PARA BUSCAR PERMISOS SOLICITADOS POR HORAS ACTUALIZAR
+        this.router.post('/permisos-solicitados-horas-editar', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.BuscarPermisosHorasEditar);
+        // CREAR PERMISO
+        this.router.post('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.CrearPermisos);
+        // ACTUALIZAR PERMISO
+        this.router.put('/:id/permiso-solicitado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EditarPermiso);
+        // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO
+        this.router.put('/:id/documento/:documento/archivo/:archivo', [TokenValidation, ModuloPermisosValidation, multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
+        // ELIMINAR DOCUMENTO
+        this.router.put('/eliminar-documento', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EliminarDocumentoPermiso);
+        // BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
+        this.router.get('/permiso-usuario/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEmpleado);
+        // BUSCAR INFORMACION DE UN PERMISO
+        this.router.get('/informe-un-permiso/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.InformarUnPermiso);
+        // ELIMINAR PERMISO
+        this.router.delete('/eliminar/:id_permiso/:doc', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EliminarPermiso);
+        // METODO PARA CREAR ARCHIVO XML
+        this.router.post('/xmlDownload/', TokenValidation, PERMISOS_CONTROLADOR.FileXML);
+        // METODO PARA DESCARGAR ARCHIVO XML
+        this.router.get('/download/:nameXML', PERMISOS_CONTROLADOR.downloadXML);
+        // BUSQUEDA DE RESPALDOS DE PERMISOS
+        this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.ObtenerDocumentoPermiso);
+        // ENVIAR CORREO MEDIANTE APLICACION WEB
+        this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EnviarCorreoWeb);
 
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         this.router.get('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisos);
         this.router.get('/lista/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarEstadosPermisos);
         this.router.get('/lista-autorizados/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisosAutorizados);
@@ -49,37 +91,20 @@ class PermisosRutas {
          ** **                         METODOS PARA MANEJO DE PERMISOS                                      ** **
          ** ************************************************************************************************** **/
 
-        // CREAR PERMISO
-        this.router.post('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.CrearPermisos);
-        // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO
-        this.router.put('/:id/documento/:documento', [TokenValidation, ModuloPermisosValidation, multipartMiddleware], PERMISOS_CONTROLADOR.GuardarDocumentoPermiso);
-        // ACTUALIZAR PERMISO
-        this.router.put('/:id/permiso-solicitado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EditarPermiso);
-        // ELIMINAR PERMISO
-        this.router.delete('/eliminar/:id_permiso/:doc', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EliminarPermiso);
+
+
         // ACTUALIZAR ESTADO DEL PERMISO
         this.router.put('/:id/estado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ActualizarEstado);
         // BUSCAR INFORMACION DE UN PERMISO
         this.router.get('/un-permiso/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarUnPermisoInfo);
-        // BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
-        this.router.get('/permiso-usuario/:id_empleado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ObtenerPermisoEmpleado);
-        // BUSQUEDA DE RESPALDOS D EPERMISOS
-        this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.getDoc);
+
         // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
         this.router.delete('/eliminar-movil/:documento', PERMISOS_CONTROLADOR.EliminarPermisoMovil);
 
-        // METODO PARA CREAR ARCHIVO XML
-        this.router.post('/xmlDownload/', TokenValidation, PERMISOS_CONTROLADOR.FileXML);
-        // METODO PARA DESCARGAR ARCHIVO XML
-        this.router.get('/download/:nameXML', PERMISOS_CONTROLADOR.downloadXML);
 
 
-        /** ************************************************************************************************* **
-         ** **                           ENVIO DE NOTIFICACIONES DE PERMISOS                               ** ** 
-         ** ************************************************************************************************* **/
 
-        // ENVIAR CORREO MEDIANTE APLICACION WEB
-        this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EnviarCorreoWeb);
+
         // ENVIAR CORREO MEDIANTE APLICACION MOVIL
         this.router.post('/mail-noti-permiso-movil/:id_empresa', PERMISOS_CONTROLADOR.EnviarCorreoPermisoMovil);
         // GUARDAR DOCUMENTO DE RESPALDO DE PERMISO APLICACION MOVIL

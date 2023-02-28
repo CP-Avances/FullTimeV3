@@ -142,7 +142,7 @@
                             <div class="d-flex flex-wrap justify-content-start">
                                 <mat-form-field *ngIf="activar_hora" id="calculos">
                                     <mat-label>Horas y minutos totales</mat-label>
-                                    <input matInput type="time" [formControl]="horasF" id="horas" readonly
+                                    <input matInput type="time" [formControl]="horasF" readonly
                                         [required]='activar_hora'>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Calcular"
                                         (click)="VerificarHoras(formulario.value)" style="color:blue">

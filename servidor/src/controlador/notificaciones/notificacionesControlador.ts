@@ -33,6 +33,61 @@ class NotificacionTiempoRealControlador {
 
 
 
+  // METODO PARA CREAR NOTIFICACIONES
+  public async CrearNotificacion(req: Request, res: Response): Promise<Response> {
+    try {
+      var tiempo = fechaHora();
+
+      const { id_send_empl, id_receives_empl, id_receives_depa, estado, id_permiso,
+        id_vacaciones, id_hora_extra, mensaje, tipo } = req.body;
+
+      let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
+
+      const response: QueryResult = await pool.query(
+        `
+        INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
+          id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo ) 
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING * 
+        `,
+        [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
+          id_hora_extra, mensaje, tipo]);
+
+      const [notificiacion] = response.rows;
+
+      if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+
+      const USUARIO = await pool.query(
+        `
+        SELECT (nombre || ' ' || apellido) AS usuario
+        FROM empleados WHERE id = $1
+        `,
+        [id_send_empl]);
+
+      notificiacion.usuario = USUARIO.rows[0].usuario;
+
+      return res.status(200)
+        .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
+
+    } catch (error) {
+      return res.status(500)
+        .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -313,46 +368,7 @@ class NotificacionTiempoRealControlador {
     }
   }
 
-  // METODO PARA CREAR NOTIFICACIONES
-  public async CrearNotificacion(req: Request, res: Response): Promise<Response> {
-    try {
-      var tiempo = fechaHora();
 
-      const { id_send_empl, id_receives_empl, id_receives_depa, estado, id_permiso,
-        id_vacaciones, id_hora_extra, mensaje, tipo } = req.body;
-
-      let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
-
-      const response: QueryResult = await pool.query(
-        `
-            INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
-              id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo ) 
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING * 
-        `,
-        [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
-          id_hora_extra, mensaje, tipo]);
-
-      const [notificiacion] = response.rows;
-
-      if (!notificiacion) return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
-
-      const USUARIO = await pool.query(
-        `
-        SELECT (nombre || ' ' || apellido) AS usuario
-        FROM empleados WHERE id = $1
-        `,
-        [id_send_empl]);
-
-      notificiacion.usuario = USUARIO.rows[0].usuario;
-
-      return res.status(200)
-        .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
-
-    } catch (error) {
-      return res.status(500)
-        .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
-    }
-  }
 
 
 

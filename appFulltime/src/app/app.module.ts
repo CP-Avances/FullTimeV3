@@ -201,7 +201,9 @@ import { ConfigAsistenciaComponent } from './componentes/reportes/configuracion-
 import { ImageUploadModule } from 'angular2-image-upload';
 
 //Modulos Compartidos
-import { MaterialModule } from './material/material.module'
+import { MaterialModule } from './material/material.module';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { FiltrosModule } from './filtros/filtros.module';
 
 import { ReportesModule } from './componentes/reportes/reportes.module';
@@ -258,9 +260,8 @@ import { ListarCiudadComponent } from './componentes/catalogos/catCiudad/listar-
 import { RegistrarPeriodoVComponent } from './componentes/modulos/vacaciones/periodoVacaciones/registrar-periodo-v/registrar-periodo-v.component';
 import { RegistrarEmpleProcesoComponent } from './componentes/modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { RegistrarVacacionesComponent } from './componentes/modulos/vacaciones/registrar-vacaciones/registrar-vacaciones.component';
-import { RegistroEmpleadoPermisoComponent } from './componentes/modulos/permisos/individual/registro-empleado-permiso/registro-empleado-permiso.component';
+import { RegistroEmpleadoPermisoComponent } from './componentes/modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarEmpleadoProcesoComponent } from './componentes/modulos/accionesPersonal/procesos/editar-empleado-proceso/editar-empleado-proceso.component';
-import { EditarEmpleadoPermisoComponent } from './componentes/modulos/permisos/individual/editar-empleado-permiso/editar-empleado-permiso.component';
 import { ListarEmpleadoPermisoComponent } from './componentes/modulos/permisos/listar/listar-empleado-permiso/listar-empleado-permiso.component';
 import { EditarPeriodoVacacionesComponent } from './componentes/modulos/vacaciones/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
 import { PedidoHoraExtraComponent } from './componentes/modulos/horasExtras/pedido-hora-extra/pedido-hora-extra.component';
@@ -405,7 +406,6 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     PlanificacionMultipleComponent,
     VerHorarioDetalleComponent,
     EditarHorarioComponent,
-    EditarEmpleadoPermisoComponent,
     HomeEmpleadoComponent,
     ListarEmpleadoPermisoComponent,
     EditarPeriodoVacacionesComponent,
@@ -586,6 +586,8 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
 
     FiltrosModule,
     MaterialModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     ReportesModule
   ],
   providers: [
@@ -619,6 +621,8 @@ const config: SocketIoConfig = { url: environment.url, options: {} };
     ProgressService,
     MainNavService,
     PlantillaReportesService,
+    VerEmpleadoComponent,
+    PermisosMultiplesEmpleadosComponent,
   ],
 
   bootstrap: [AppComponent]

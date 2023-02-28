@@ -159,87 +159,6 @@ class DatosGeneralesControlador {
             }
         });
     }
-    // METODO PARA BUSCAR JEFES
-    BuscarJefes(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { objeto, depa_user_loggin } = req.body;
-            const permiso = objeto;
-            console.log(permiso);
-            const JefesDepartamentos = yield database_1.default.query(`
-                    SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
-                    cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
-                    e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo,
-                    c.permiso_mail, c.permiso_noti, c.vaca_mail, c.vaca_noti, c.hora_extra_mail, 
-                    c.hora_extra_noti, c.comida_mail, c.comida_noti
-                    FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
-                    sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
-                    WHERE da.id_departamento = $1 AND 
-                    da.id_empl_cargo = ecr.id AND 
-                    da.id_departamento = cg.id AND
-                    da.estado = true AND 
-                    cg.id_sucursal = s.id AND
-                    ecr.id_empl_contrato = ecn.id AND
-                    ecn.id_empleado = e.id AND
-                    e.id = c.id_empleado
-                    `, [depa_user_loggin]).then(result => { return result.rows; });
-            if (JefesDepartamentos.length === 0)
-                return res.status(400)
-                    .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
-            const [obj] = JefesDepartamentos;
-            let depa_padre = obj.depa_padre;
-            let JefeDepaPadre;
-            if (depa_padre !== null) {
-                do {
-                    JefeDepaPadre = yield database_1.default.query(`
-                            SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, 
-                            cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, 
-                            ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, 
-                            (e.nombre || ' ' || e.apellido) as fullname, e.cedula, e.correo, c.permiso_mail, 
-                            c.permiso_noti, c.vaca_mail, c.vaca_noti, c.hora_extra_mail, 
-                            c.hora_extra_noti, c.comida_mail, c.comida_noti
-                            FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
-                            sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
-                            WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND 
-                            da.id_departamento = cg.id AND 
-                            da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND 
-                            ecn.id_empleado = e.id AND e.id = c.id_empleado
-                            `, [depa_padre]);
-                    depa_padre = JefeDepaPadre.rows[0].depa_padre;
-                    JefesDepartamentos.push(JefeDepaPadre.rows[0]);
-                } while (depa_padre !== null);
-                permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
-                return res.status(200).jsonp(permiso);
-            }
-            else {
-                permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
-                return res.status(200).jsonp(permiso);
-            }
-        });
-    }
-    BuscarConfigEmpleado(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { id_empleado } = req.params;
-                const response = yield database_1.default.query(`
-                SELECT da.id_departamento,  cn.* , (da.nombre || ' ' || da.apellido) as fullname, 
-                da.cedula, da.correo, CAST (da.codigo AS INTEGER), da.estado, da.id_sucursal, 
-                da.id_contrato,
-                (SELECT cd.nombre FROM cg_departamentos AS cd WHERE cd.id = da.id_departamento) AS ndepartamento,
-                (SELECT s.nombre FROM sucursales AS s WHERE s.id = da.id_sucursal) AS nsucursal
-                FROM datos_actuales_empleado AS da, config_noti AS cn 
-                WHERE da.id = $1 AND cn.id_empleado = da.id
-                `, [id_empleado]);
-                const [infoEmpleado] = response.rows;
-                console.log(infoEmpleado);
-                return res.status(200).jsonp(infoEmpleado);
-            }
-            catch (error) {
-                console.log(error);
-                return res.status(500).jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
-            }
-        });
-    }
-    ;
     ListarDatosEmpleadoAutoriza(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { empleado_id } = req.params;
@@ -259,6 +178,92 @@ class DatosGeneralesControlador {
             }
         });
     }
+    // METODO PARA BUSCAR JEFES
+    BuscarJefes(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { objeto, depa_user_loggin } = req.body;
+            const permiso = objeto;
+            console.log(permiso);
+            const JefesDepartamentos = yield database_1.default.query(`
+            SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc,
+                cg.nombre AS departamento, s.nombre AS sucursal, ecr.id AS cargo, ecn.id AS contrato,
+                e.id AS empleado, (e.nombre || ' ' || e.apellido) as fullname , e.cedula, e.correo,
+                c.permiso_mail, c.permiso_noti, c.vaca_mail, c.vaca_noti, c.hora_extra_mail, 
+                c.hora_extra_noti, c.comida_mail, c.comida_noti
+            FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+                sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+            WHERE da.id_departamento = $1 AND 
+                da.id_empl_cargo = ecr.id AND 
+                da.id_departamento = cg.id AND
+                da.estado = true AND 
+                cg.id_sucursal = s.id AND
+                ecr.id_empl_contrato = ecn.id AND
+                ecn.id_empleado = e.id AND
+                e.id = c.id_empleado
+            `, [depa_user_loggin]).then(result => { return result.rows; });
+            if (JefesDepartamentos.length === 0)
+                return res.status(400)
+                    .jsonp({
+                    message: `Ups!!! algo salio mal. 
+            Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.`
+                });
+            const [obj] = JefesDepartamentos;
+            let depa_padre = obj.depa_padre;
+            let JefeDepaPadre;
+            if (depa_padre !== null) {
+                do {
+                    JefeDepaPadre = yield database_1.default.query(`
+                    SELECT da.id, da.estado, cg.id AS id_dep, cg.depa_padre, 
+                        cg.nivel, s.id AS id_suc, cg.nombre AS departamento, s.nombre AS sucursal, 
+                        ecr.id AS cargo, ecn.id AS contrato, e.id AS empleado, 
+                        (e.nombre || ' ' || e.apellido) as fullname, e.cedula, e.correo, c.permiso_mail, 
+                        c.permiso_noti, c.vaca_mail, c.vaca_noti, c.hora_extra_mail, 
+                        c.hora_extra_noti, c.comida_mail, c.comida_noti
+                    FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, 
+                        sucursales AS s, empl_contratos AS ecn,empleados AS e, config_noti AS c 
+                    WHERE da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND 
+                        da.id_departamento = cg.id AND 
+                        da.estado = true AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND 
+                        ecn.id_empleado = e.id AND e.id = c.id_empleado
+                    `, [depa_padre]);
+                    depa_padre = JefeDepaPadre.rows[0].depa_padre;
+                    JefesDepartamentos.push(JefeDepaPadre.rows[0]);
+                } while (depa_padre !== null);
+                permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
+                return res.status(200).jsonp(permiso);
+            }
+            else {
+                permiso.EmpleadosSendNotiEmail = JefesDepartamentos;
+                return res.status(200).jsonp(permiso);
+            }
+        });
+    }
+    // METODO PARA BUSCAR INFORMACION DE CONFIGURACIONES DE PERMISOS
+    BuscarConfigEmpleado(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id_empleado } = req.params;
+                const response = yield database_1.default.query(`
+                SELECT da.id_departamento,  cn.* , (da.nombre || ' ' || da.apellido) as fullname, 
+                    da.cedula, da.correo, CAST (da.codigo AS INTEGER), da.estado, da.id_sucursal, 
+                    da.id_contrato,
+                    (SELECT cd.nombre FROM cg_departamentos AS cd WHERE cd.id = da.id_departamento) AS ndepartamento,
+                    (SELECT s.nombre FROM sucursales AS s WHERE s.id = da.id_sucursal) AS nsucursal
+                FROM datos_actuales_empleado AS da, config_noti AS cn 
+                WHERE da.id = $1 AND cn.id_empleado = da.id
+                `, [id_empleado]);
+                const [infoEmpleado] = response.rows;
+                console.log(infoEmpleado);
+                return res.status(200).jsonp(infoEmpleado);
+            }
+            catch (error) {
+                console.log(error);
+                return res.status(500)
+                    .jsonp({ message: `Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec` });
+            }
+        });
+    }
+    ;
     /** INICIO CONSULTAS USADAS PARA FILTRAR INFORMACIÓN */
     ListarEmpleadoSucursal(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

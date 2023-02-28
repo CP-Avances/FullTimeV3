@@ -28,18 +28,12 @@ export class DatosGeneralesService {
     return this.http.get(`${environment.url}/generalidades/info_actual`);
   }
 
+  // METODO PARA BUSCAR INFORMACION DEL USUARIO QUE APRUEBA SOLICITUDES
+  InformarEmpleadoAutoriza(id_empleado: number) {
+    return this.http.get(`${environment.url}/generalidades/empleadoAutoriza/${id_empleado}`);
+  }
 
-
-
-
-
-
-
-
-
-
-
-
+  // METODO PARA BUSCAR JEFES DE DEPARTAMENTOS
   BuscarJefes(datos: any) {
     return this.http.post<any>(`${environment.url}/generalidades/buscar-jefes`, datos);
   }
@@ -49,9 +43,25 @@ export class DatosGeneralesService {
     return this.http.get<any>(`${environment.url}/generalidades/info-configuracion/${id_empleado}`);
   }
 
-  AutorizaEmpleado(id_empleado: number) {
-    return this.http.get(`${environment.url}/generalidades/empleadoAutoriza/${id_empleado}`);
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -20,8 +20,9 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
 
-import { VerEmpleadoComponent } from 'src/app/componentes/empleado/ver-empleado/ver-empleado.component';
 import { SettingsComponent } from 'src/app/componentes/administracionGeneral/preferecias/settings/settings.component';
+import { VerEmpleadoComponent } from 'src/app/componentes/empleado/ver-empleado/ver-empleado.component';
+import { PermisosMultiplesEmpleadosComponent } from '../multiples/permisos-multiples-empleados/permisos-multiples-empleados.component';
 
 interface opcionesDiasHoras {
   valor: string;
@@ -97,7 +98,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   horasF = new FormControl('');
   diasF = new FormControl('');
 
-  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
   public formulario = new FormGroup({
     horas_alimentacionForm: this.horas_alimentacionF,
     horas_solicitadasForm: this.horas_solicitadasF,
@@ -125,14 +126,15 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     private restP: PermisosService,
     private restH: EmpleadoHorariosService,
     public restE: EmpleadoService,
-    public validar: ValidacionesService,
-    public restAutoriza: AutorizacionService,
-    public parametro: ParametrosService,
-    public componente: VerEmpleadoComponent,
-    public planificar: PlanGeneralService,
-    public restPerV: PeriodoVacacionesService,
     public feriado: FeriadosService,
     public ventana: MatDialog,
+    public validar: ValidacionesService,
+    public restPerV: PeriodoVacacionesService,
+    public parametro: ParametrosService,
+    public componente1: VerEmpleadoComponent,
+    public componente2: PermisosMultiplesEmpleadosComponent,
+    public planificar: PlanGeneralService,
+    public restAutoriza: AutorizacionService,
 
   ) {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
@@ -143,7 +145,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     console.log(this.datos)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.obtenerInformacionEmpleado();
+    this.ObtenerInformacionEmpleado();
     this.ImprimirNumeroPermiso();
     this.ObtenerTiposPermiso();
     this.ObtenerEmpleado();
@@ -316,14 +318,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   dSalida: any;
   ValidarFechaSalida(event: any, form: any) {
 
+    this.LimpiarComida(false);
+
     // LIMPIAR CAMPOS DE FECHAS
     if (form.solicitarForm === 'Dias') {
       this.LimpiarInformacion('00:00');
-      this.LimpiarComida(false);
     }
     else if (form.solicitarForm === 'Horas') {
       this.LimpiarInformacion('');
-      this.LimpiarComida(false);
     }
 
     // VALIDACION DE SELECCION DE TIPO DE PERMISOS
@@ -430,7 +432,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
                 this.LimpiarInformacion('00:00');
                 // NO EXISTEN PERMISOS SOLICITADOS POR DIAS
               } else {
-                this.ValidarConfiguracionDias(form);
+                this.ValidarConfiguracionDias();
               }
             })
           }, error => {
@@ -479,7 +481,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   // METODO PARA VALIDAR QUE SE INGRESE DIAS - HORAS DE SOLICITUD DE PERMISOS
-  ValidarConfiguracionDias(form: any) {
+  ValidarConfiguracionDias() {
     if (this.configuracion_permiso === 'Dias') {
       const resta = this.dIngreso.diff(this.dSalida, 'days');
       this.diasF.setValue(resta + 1);
@@ -493,7 +495,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         this.LimpiarComida(false);
       }
       else {
-        this.ContarDiasSolicitados(form)
+        this.ContarDiasSolicitados();
       }
     }
     else if (this.configuracion_permiso === 'Horas') {
@@ -788,7 +790,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           if (hora_inicio_ >= datos[i].hora_inicio && hora_final_ <= datos[i].hora_final) {
             verificador = 1;
             if (this.datosPermiso.almu_incluir === true) {
-              this.VerificarFechasDiferentesComida(form, datos[i], fecha_inicio, fecha_final, hora_inicio_, hora_final_);
+              this.VerificarFechasDiferentesComida(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
             }
             else {
               this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
@@ -874,6 +876,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
               ((hora_inicio_ <= datos[i].hora_inicio || hora_inicio_ >= datos[i].hora_inicio) &&
                 hora_inicio_ >= horario_.hora_inicio)) {
               console.log('entra if entrada = fecha_inicio')
+              verificador = 1;
               this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i].min_almuerzo);
               break;
             }
@@ -889,6 +892,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
                 ((hora_final_ >= datos[i].hora_final || hora_final_ <= datos[i].hora_final) &&
                   hora_final_ <= horario_.hora_final)) {
                 console.log('entra if salida = fecha_inicio')
+                verificador = 1;
                 this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i].min_almuerzo);
                 break;
               }
@@ -910,7 +914,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   // METODO PARA LEER DATOS DE HORAS - ALIMENTACION EN DIAS DIFERENTES
-  VerificarFechasDiferentesComida(form: any, horario_: any, fecha_inicio: any, fecha_final: any, hora_inicio_: any, hora_final_: any) {
+  VerificarFechasDiferentesComida(form: any, fecha_inicio: any, fecha_final: any, hora_inicio_: any, hora_final_: any) {
     let datos_ = [];
     let verificador = 0;
     // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
@@ -1171,7 +1175,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   contar_feriados: number = 0;
   contar_recuperables: number = 0;
   contar_laborables: number = 0;
-  ContarDiasSolicitados(form: any) {
+  ContarDiasSolicitados() {
     // ENCERAR VARIABLES
     this.contar_libres = 0;
     this.contar_feriados = 0;
@@ -1245,7 +1249,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
     if (total_laborables === 0) {
       this.toastr.warning(
-        `Esta realizando una solicitud de permiso en días libres o dias configurados como feriados.`,
+        `Esta realizando una solicitud de permiso en días libres o días configurados como feriados.`,
         `Ha solicitado ${total_laborables} días laborables y ${total_libres} días libres.`, {
         timeOut: 6000,
       });
@@ -1367,7 +1371,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     for (var i = 0; i < this.archivoSubido.length; i++) {
       formData.append("uploads[]", this.archivoSubido[i], this.archivoSubido[i].name);
     }
-    this.restP.SubirArchivoRespaldo(formData, id, form.nombreCertificadoForm).subscribe(res => {
+    this.restP.SubirArchivoRespaldo(formData, id, form.nombreCertificadoForm, null).subscribe(res => {
       this.toastr.success('Operación exitosa.', 'Documento registrado.', {
         timeOut: 6000,
       });
@@ -1420,7 +1424,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
   solInfo: any;
-  obtenerInformacionEmpleado() {
+  ObtenerInformacionEmpleado() {
     this.informacion_.ObtenerInfoConfiguracion(this.datos.id_empleado).subscribe(
       res => {
         if (res) {
@@ -1603,7 +1607,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       if (e.permiso_noti) {
         this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
           resp => {
-            this.restP.sendNotiRealTime(resp.respuesta);
+            this.restP.EnviarNotificacionRealTime(resp.respuesta);
           },
           err => {
             this.toastr.error(err.error.message, '', {
@@ -1662,9 +1666,15 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   // CERRAR VENTANA DE REGISTRO
   CerrarVentana() {
     this.LimpiarCampos();
-    this.componente.formulario_permiso = false;
-    this.componente.solicitudes_permiso = true;
-    this.componente.ObtenerPermisos(this.componente.formato_fecha, this.componente.formato_hora);
+    if (this.datos.ventana === 'empleado') {
+      this.componente1.formulario_permiso = false;
+      this.componente1.solicitudes_permiso = true;
+      this.componente1.ObtenerPermisos(this.componente1.formato_fecha, this.componente1.formato_hora);
+    }
+    else {
+      this.componente2.activar_busqueda = true;
+      this.componente2.permiso_individual = false;
+    }
   }
 
   // VALIDACIONES INGRESAR SOLO NUMEROS

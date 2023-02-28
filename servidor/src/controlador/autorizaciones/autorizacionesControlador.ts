@@ -6,6 +6,51 @@ const nodemailer = require("nodemailer");
 
 class AutorizacionesControlador {
 
+    // METODO PARA BUSCAR AUTORIZACIONES DE PERMISOS
+    public async ObtenerAutorizacionPermiso(req: Request, res: Response) {
+        const id = req.params.id_permiso
+        const AUTORIZACIONES = await pool.query(
+            `
+            SELECT * FROM autorizaciones WHERE id_permiso = $1
+            `
+            , [id]);
+        if (AUTORIZACIONES.rowCount > 0) {
+            return res.jsonp(AUTORIZACIONES.rows)
+        }
+        else {
+            return res.status(404).jsonp({ text: 'No se encuentran registros.' });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public async ListarAutorizaciones(req: Request, res: Response) {
         const AUTORIZACIONES = await pool.query('SELECT * FROM autorizaciones ORDER BY id');
         if (AUTORIZACIONES.rowCount > 0) {
@@ -16,16 +61,7 @@ class AutorizacionesControlador {
         }
     }
 
-    public async ObtenerAutorizacionByPermiso(req: Request, res: Response) {
-        const id = req.params.id_permiso
-        const AUTORIZACIONES = await pool.query('SELECT * FROM autorizaciones WHERE id_permiso = $1', [id]);
-        if (AUTORIZACIONES.rowCount > 0) {
-            return res.jsonp(AUTORIZACIONES.rows)
-        }
-        else {
-            return res.status(404).jsonp({ text: 'No se encuentran registros' });
-        }
-    }
+
 
     public async ObtenerAutorizacionByVacacion(req: Request, res: Response) {
         const id = req.params.id_vacacion

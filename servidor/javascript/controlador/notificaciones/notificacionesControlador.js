@@ -37,6 +37,36 @@ class NotificacionTiempoRealControlador {
             }
         });
     }
+    // METODO PARA CREAR NOTIFICACIONES
+    CrearNotificacion(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                var tiempo = (0, settingsMail_1.fechaHora)();
+                const { id_send_empl, id_receives_empl, id_receives_depa, estado, id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo } = req.body;
+                let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
+                const response = yield database_1.default.query(`
+        INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
+          id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo ) 
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING * 
+        `, [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
+                    id_hora_extra, mensaje, tipo]);
+                const [notificiacion] = response.rows;
+                if (!notificiacion)
+                    return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
+                const USUARIO = yield database_1.default.query(`
+        SELECT (nombre || ' ' || apellido) AS usuario
+        FROM empleados WHERE id = $1
+        `, [id_send_empl]);
+                notificiacion.usuario = USUARIO.rows[0].usuario;
+                return res.status(200)
+                    .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
+            }
+            catch (error) {
+                return res.status(500)
+                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
+            }
+        });
+    }
     ListarNotificacion(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const REAL_TIME_NOTIFICACION = yield database_1.default.query('SELECT * FROM realtime_noti ORDER BY id DESC');
@@ -277,36 +307,6 @@ class NotificacionTiempoRealControlador {
             }
             else {
                 res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
-            }
-        });
-    }
-    // METODO PARA CREAR NOTIFICACIONES
-    CrearNotificacion(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                var tiempo = (0, settingsMail_1.fechaHora)();
-                const { id_send_empl, id_receives_empl, id_receives_depa, estado, id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo } = req.body;
-                let create_at = tiempo.fecha_formato + ' ' + tiempo.hora;
-                const response = yield database_1.default.query(`
-            INSERT INTO realtime_noti( id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, 
-              id_permiso, id_vacaciones, id_hora_extra, mensaje, tipo ) 
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING * 
-        `, [id_send_empl, id_receives_empl, id_receives_depa, estado, create_at, id_permiso, id_vacaciones,
-                    id_hora_extra, mensaje, tipo]);
-                const [notificiacion] = response.rows;
-                if (!notificiacion)
-                    return res.status(400).jsonp({ message: 'Notificación no ingresada.' });
-                const USUARIO = yield database_1.default.query(`
-        SELECT (nombre || ' ' || apellido) AS usuario
-        FROM empleados WHERE id = $1
-        `, [id_send_empl]);
-                notificiacion.usuario = USUARIO.rows[0].usuario;
-                return res.status(200)
-                    .jsonp({ message: 'Se ha enviado la respectiva notificación.', respuesta: notificiacion });
-            }
-            catch (error) {
-                return res.status(500)
-                    .jsonp({ message: 'Contactese con el Administrador del sistema (593) 2 – 252-7663 o https://casapazmino.com.ec' });
             }
         });
     }

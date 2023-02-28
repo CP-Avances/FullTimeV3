@@ -99,7 +99,7 @@ export class EstadoHoraExtraComponent implements OnInit {
         this.NotifiRes = res1;
         notificacion.id = this.NotifiRes._id;
         if (this.NotifiRes._id > 0 && this.resEstado[0].notificacion === true) {
-          this.restH.sendNotiRealTime(notificacion);
+          this.restH.EnviarNotificacionRealTime(notificacion);
         }
       });
       this.dialogRef.close();

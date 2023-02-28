@@ -326,7 +326,7 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
       if (e.permiso_noti) {
         this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
           resp => {
-            this.restP.sendNotiRealTime(resp.respuesta);
+            this.restP.EnviarNotificacionRealTime(resp.respuesta);
           },
           err => {
             this.toastr.error(err.error.message, '', {

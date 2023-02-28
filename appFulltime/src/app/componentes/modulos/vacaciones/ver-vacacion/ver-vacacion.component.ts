@@ -218,7 +218,7 @@ export class VerVacacionComponent implements OnInit {
   cadena_texto: string = ''; // VARIABLE PARA ALMACENAR TODOS LOS USUARIOS
   VerInformacionAutoriza(array: any) {
     array.map(empl => {
-      this.restGeneral.AutorizaEmpleado(parseInt(empl.id_empleado)).subscribe(data => {
+      this.restGeneral.InformarEmpleadoAutoriza(parseInt(empl.id_empleado)).subscribe(data => {
         empl.nombre = data[0].fullname;
         empl.cargo = data[0].cargo;
         empl.departamento = data[0].departamento;

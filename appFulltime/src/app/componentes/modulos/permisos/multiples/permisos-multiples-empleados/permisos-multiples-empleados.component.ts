@@ -10,13 +10,14 @@ import { PageEvent } from '@angular/material/paginator';
 import { checkOptions, FormCriteriosBusqueda } from 'src/app/model/reportes.model';
 import { ITableEmpleados } from 'src/app/model/reportes.model';
 
-import { RegistroEmpleadoPermisoComponent } from '../../individual/registro-empleado-permiso/registro-empleado-permiso.component';
+import { RegistroEmpleadoPermisoComponent } from '../../registro-empleado-permiso/registro-empleado-permiso.component';
 import { PermisosMultiplesComponent } from '../permisos-multiples/permisos-multiples.component';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ReportesService } from 'src/app/servicios/reportes/reportes.service';
 import { MainNavService } from 'src/app/componentes/administracionGeneral/main-nav/main-nav.service';
+import { UsuarioService } from 'src/app/servicios/usuarios/usuario.service';
 
 @Component({
   selector: 'app-permisos-multiples-empleados',
@@ -357,7 +358,11 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
       })
     }
 
-    this.RegistrarMultiple(usuarios);
+    if (usuarios.length === 1) {
+      this.RegistrarPermiso(usuarios[0]);
+    } else {
+      this.RegistrarMultiple(usuarios);
+    }
   }
 
   // METODO PARA MOSTRAR DATOS DE DEPARTAMENTOS
@@ -390,7 +395,11 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
       })
     }
 
-    this.RegistrarMultiple(usuarios);
+    if (usuarios.length === 1) {
+      this.RegistrarPermiso(usuarios[0]);
+    } else {
+      this.RegistrarMultiple(usuarios);
+    }
   }
 
   // METODO PARA MOSTRAR DATOS DE EMPLEADO
@@ -403,7 +412,12 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
         }
       })
     })
-    this.RegistrarMultiple(respuesta);
+
+    if (respuesta.length === 1) {
+      this.RegistrarPermiso(respuesta[0]);
+    } else {
+      this.RegistrarMultiple(respuesta);
+    }
   }
 
 
@@ -412,25 +426,24 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
    ** ************************************************************************************** **/
 
   // METODO PARA ABRIR FORMULARIO DE PERMISO
+  permiso_individual: boolean = false;
+  solicita_permiso: any = [];
   RegistrarPermiso(usuario: any) {
+    console.log('usuario ', usuario)
     this.data = [usuario];
     this.activar_busqueda = false;
-    this.activar_permisos = true;
+    this.activar_permisos = false;
+    this.permiso_individual = true;
+    this.solicita_permiso = [];
 
-    /*
-    this.ventana.open(RegistroEmpleadoPermisoComponent,
+    this.solicita_permiso = [
       {
-        width: '1200px',
-        data: {
-          idEmpleado: usuario.id, idContrato: usuario.id_contrato,
-          idPerVacacion: 0, idCargo: usuario.id_cargo
-        }
-      }).afterClosed().subscribe(item => {
-        this.auto_individual = true;
-        this.LimpiarFormulario();
-      });
-
-      */
+        id_empleado: usuario.id,
+        id_contrato: usuario.id_contrato,
+        id_cargo: usuario.id_cargo,
+        ventana: 'multiples'
+      }
+    ]
   }
 
   // METODO DE VALIDACION DE SELECCION MULTIPLE
@@ -450,16 +463,6 @@ export class PermisosMultiplesEmpleadosComponent implements OnInit {
     this.data = seleccionados;
     this.activar_busqueda = false;
     this.activar_permisos = true;
-    /*
-    this.ventana.open(PermisosMultiplesComponent,
-      {
-        width: '1200px',
-        data: { datos: seleccionados }
-      }).afterClosed().subscribe(item => {
-        this.auto_individual = true;
-        this.LimpiarFormulario();
-      });
-      */
   }
 
   // METODO PARA TOMAR DATOS SELECCIONADOS

@@ -4,11 +4,6 @@
     color: white;
 }
 
-#boton {
-    background-color: rgb(80, 87, 97);
-    color: white;
-}
-
 mat-form-field {
     padding: 10px 10px 0px 10px;
     width: 300px;

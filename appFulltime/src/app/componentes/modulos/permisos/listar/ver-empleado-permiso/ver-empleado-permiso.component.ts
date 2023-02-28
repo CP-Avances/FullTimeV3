@@ -162,7 +162,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
     this.autorizacion = [];
     this.empleado_estado = [];
     this.lectura = 1;
-    this.restA.getUnaAutorizacionByPermisoRest(id).subscribe(res1 => {
+    this.restA.BuscarAutorizacionPermiso(id).subscribe(res1 => {
       this.autorizacion = res1;
 
       // METODO PARA OBTENER EMPLEADOS Y ESTADOS
@@ -231,7 +231,7 @@ export class VerEmpleadoPermisoComponent implements OnInit {
 
   VerInformacionAutoriza(array: any) {
     array.map(empl => {
-      this.restGeneral.AutorizaEmpleado(parseInt(empl.id_empleado)).subscribe(data => {
+      this.restGeneral.InformarEmpleadoAutoriza(parseInt(empl.id_empleado)).subscribe(data => {
         empl.nombre = data[0].fullname;
         empl.cargo = data[0].cargo;
         empl.departamento = data[0].departamento;

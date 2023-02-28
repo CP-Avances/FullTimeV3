@@ -1,7 +1,16 @@
+<!-- *** VENTANA DE SOLICITUDES MULTIPLES DE PERMISOS *** -->
 <div style="padding-top: 20px;" *ngIf="activar_permisos">
     <app-permisos-multiples [data]="data">
     </app-permisos-multiples>
 </div>
+
+<!-- *** VENTANA DE APROBACIONES MULTIPLES *** -->
+<div style="padding-top: 20px;" *ngIf="permiso_individual">
+    <app-registro-empleado-permiso [solicita_permiso]="solicita_permiso">
+    </app-registro-empleado-permiso>
+</div>
+
+<!-- *** BUSQUEDA DE USUARIOS DE QUIENES SE CREARA PERMISOS DE FORMA MASIVA *** -->
 <div style="padding-top: 20px;" *ngIf="activar_busqueda">
     <div id="titulo">REGISTRO DE PERMISOS</div>
     <mat-card class="example-card mat-elevation-z9">

@@ -361,7 +361,7 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
       if (e.hora_extra_noti) {
         this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
           resp => {
-            this.restHE.sendNotiRealTime(resp.respuesta);
+            this.restHE.EnviarNotificacionRealTime(resp.respuesta);
           },
           err => {
             this.toastr.error(err.error.message, '', {

@@ -225,7 +225,7 @@ export class ReportePermisosComponent implements OnInit {
       // OBTENEMOS EL ID DEL EMPLEADO QUE REALIZO EL CAMBIO DE ESTADO A LA AUTORIZACIÓN
       // BUSCAMOS LOS RESPECTIVOS DATOS DEL ID DEL EMPLEADO ENCONTRADO
       if (obj.estado != 'Pendiente') {
-        this.restGeneral.AutorizaEmpleado(obj.autoriza).subscribe(dataE => {
+        this.restGeneral.InformarEmpleadoAutoriza(obj.autoriza).subscribe(dataE => {
           // CREAMOS UN ARRAY DE DATO EN EL QUE INCLUIOS EL NOMBRE DEL EMPLEADO QUE AUTORIZO EL PERMISO
           obj.autorizado_por = dataE[0].e_nombre + ' ' + dataE[0].e_apellido
           // VERIFICAMOS SI YA ESTAN TODOS LOS DATOS Y PASAMOS A GENERAR LOS ARCHIVOS

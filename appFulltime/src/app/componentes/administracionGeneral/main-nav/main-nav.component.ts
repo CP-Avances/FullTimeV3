@@ -328,7 +328,7 @@ export class MainNavComponent implements OnInit {
               { name: 'Configurar HoraExtra', url: '/listaHorasExtras', color: true },
               { name: 'Planificar Hora Extra', url: '/planificaHoraExtra', color: true },
               { name: 'Listar Planificación', url: '/listadoPlanificaciones', color: true },
-              { name: 'Aprobación Múltiple', url: '/horas-extras-solicitadas', color: true },
+              { name: 'Aprobación Múltiple.', url: '/horas-extras-solicitadas', color: true },
             ]
           },
           {

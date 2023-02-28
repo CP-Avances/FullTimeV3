@@ -14,7 +14,7 @@ export class PermisosService {
   ) { }
 
   // ENVIO DE NOTIFICACIONES DE PERMISOS EN TIEMPO REAL
-  sendNotiRealTime(data: any) {
+  EnviarNotificacionRealTime(data: any) {
     this.socket.emit('nueva_notificacion', data);
   }
 
@@ -37,6 +37,71 @@ export class PermisosService {
   BuscarPermisosSolicitadosHoras(datos: any) {
     return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados-horas`, datos);
   }
+
+  // METODO PARA BUSCAR PERMISOS SOLICITADOS ACTUALIZAR
+  BuscarPermisosSolicitadosTotalesEditar(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados-totales-editar`, datos);
+  }
+
+  // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS ACTUALIZAR
+  BuscarPermisosSolicitadosDiasEditar(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados-editar`, datos);
+  }
+
+  // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS ACTUALIZAR
+  BuscarPermisosSolicitadosHorasEditar(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/permisos-solicitados-horas-editar`, datos);
+  }
+
+  // METODO PARA REGISTRAR SOLICITUD DE PERMISO
+  IngresarEmpleadoPermisos(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso`, datos);
+  }
+
+  // METODO USADO PAR EDITAR DATOS DE PERMISO
+  EditarPermiso(id: number, datos: any) {
+    return this.http.put<any>(`${environment.url}/empleadoPermiso/${id}/permiso-solicitado`, datos);
+  }
+
+  // METODO USADO PAR ELIMINAR DATOS DE PERMISO
+  EliminarDocumentoPermiso(datos: any) {
+    return this.http.put<any>(`${environment.url}/empleadoPermiso/eliminar-documento`, datos);
+  }
+
+  // SUBIR RESPALDOS DE PERMISOS
+  SubirArchivoRespaldo(formData: any, id: number, documento: string, archivo: string) {
+    return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento/${documento}/archivo/${archivo}`, formData)
+  }
+
+  // METODO DE BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
+  BuscarPermisoEmpleado(id_empleado: any) {
+    return this.http.get(`${environment.url}/empleadoPermiso/permiso-usuario/${id_empleado}`);
+  }
+
+  // METODO PARA BUSCAR INFORMACION DE UN PERMISO
+  ObtenerInformeUnPermiso(id_permiso: number) {
+    return this.http.get(`${environment.url}/empleadoPermiso/informe-un-permiso/${id_permiso}`);
+  }
+
+  // METODO PARA ELIMINAR PERMISOS
+  EliminarPermiso(id_permiso: number, doc: string) {
+    return this.http.delete<any>(`${environment.url}/empleadoPermiso/eliminar/${id_permiso}/${doc}`);
+  }
+
+  // METODO PARA CREAR ARCHIVO XML
+  CrearXML(data: any) {
+    return this.http.post(`${environment.url}/empleadoPermiso/xmlDownload`, data);
+  }
+
+  // METODO PARA ENVIAR NOTIFICACION DE PERMISOS
+  EnviarCorreoWeb(datos: any) {
+    return this.http.post<any>(`${environment.url}/empleadoPermiso/mail-noti`, datos);
+  }
+
+
+
+
+
 
 
 
@@ -66,9 +131,7 @@ export class PermisosService {
     return this.http.get(`${environment.url}/empleadoPermiso`);
   }
 
-  IngresarEmpleadoPermisos(datos: any) {
-    return this.http.post<any>(`${environment.url}/empleadoPermiso`, datos);
-  }
+
 
   ObtenerUnPermiso(id: number) {
     return this.http.get(`${environment.url}/empleadoPermiso/${id}`)
@@ -99,34 +162,16 @@ export class PermisosService {
   }
 
 
-  // METODO USADO PAR EDITAR DATOS DE PERMISO
-  EditarPermiso(id: number, datos: any) {
-    return this.http.put<any>(`${environment.url}/empleadoPermiso/${id}/permiso-solicitado`, datos);
-  }
 
-  // METODO DE BUSQUEDA DE PERMISOS POR ID DE EMPLEADO
-  BuscarPermisoEmpleado(id_empleado: any) {
-    return this.http.get(`${environment.url}/empleadoPermiso/permiso-usuario/${id_empleado}`);
-  }
 
-  // METODO PARA ELIMINAR PERMISOS
-  EliminarPermiso(id_permiso: number, doc: string) {
-    return this.http.delete<any>(`${environment.url}/empleadoPermiso/eliminar/${id_permiso}/${doc}`);
-  }
 
-  // METODO PARA ENVIAR NOTIFICACION DE PERMISOS
-  EnviarCorreoWeb(datos: any) {
-    return this.http.post<any>(`${environment.url}/empleadoPermiso/mail-noti`, datos);
-  }
 
-  // SUBIR RESPALDOS DE PERMISOS
-  SubirArchivoRespaldo(formData, id: number, documento: string) {
-    return this.http.put(`${environment.url}/empleadoPermiso/${id}/documento/${documento}`, formData)
-  }
 
-   // METODO PARA CREAR ARCHIVO XML
-   CrearXML(data: any) {
-    return this.http.post(`${environment.url}/empleadoPermiso/xmlDownload`, data);
-  }
+
+
+
+
+
+
 
 }

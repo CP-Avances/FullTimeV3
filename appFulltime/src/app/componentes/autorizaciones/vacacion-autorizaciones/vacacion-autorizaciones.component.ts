@@ -174,7 +174,7 @@ export class VacacionAutorizacionesComponent implements OnInit {
         console.log(this.NotifiRes);
         notificacion.id = this.NotifiRes._id;
         if (this.NotifiRes._id > 0 && this.resVacacion.notificacion === true) {
-          this.restV.sendNotiRealTime(notificacion);
+          this.restV.EnviarNotificacionRealTime(notificacion);
         }
       });
     });

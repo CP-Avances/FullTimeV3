@@ -42,7 +42,7 @@ mat-grid-tile:hover {
 
 #datosF {
     font-weight: bold;
-    font-size: 15px;
+    font-size: 13px;
     padding-right: 5px;
 }
 
@@ -98,6 +98,7 @@ td {
 
 .espacio {
     padding: 0px 10px 0px 10px;
+    font-size: 13px;
 }
 
 #cancel {
@@ -205,4 +206,20 @@ td {
 .mat-radio-button .mat-radio-outer-circle {
     border-color: rgb(22, 92, 125) !important;
     z-index: 3;
+}
+
+#listar {
+    font-size: 15px;
+    color: blue;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 30px;
+}
+
+#solicitud {
+    color: rgb(243, 107, 23);
+    margin-right: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: center;
 }

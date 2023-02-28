@@ -428,7 +428,7 @@ export class EditarVacacionesEmpleadoComponent implements OnInit {
         this.realTime.IngresarNotificacionEmpleado(notificacion).subscribe(
           resp => {
             console.log('ver data de notificacion', resp.respuesta)
-            this.restV.sendNotiRealTime(resp.respuesta);
+            this.restV.EnviarNotificacionRealTime(resp.respuesta);
           },
           err => {
             this.toastr.error(err.error.message, '', {

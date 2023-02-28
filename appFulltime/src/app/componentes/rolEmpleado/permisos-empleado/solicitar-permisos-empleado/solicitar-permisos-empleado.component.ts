@@ -4,7 +4,7 @@ import { environment } from '../../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
-import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/modulos/permisos/individual/registro-empleado-permiso/registro-empleado-permiso.component';
+import { RegistroEmpleadoPermisoComponent } from 'src/app/componentes/modulos/permisos/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarPermisoEmpleadoComponent } from '../editar-permiso-empleado/editar-permiso-empleado.component';
 import { CancelarPermisoComponent } from '../cancelar-permiso/cancelar-permiso.component';
 

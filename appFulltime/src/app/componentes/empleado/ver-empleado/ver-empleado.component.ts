@@ -48,10 +48,8 @@ import { RegistroDetallePlanHorarioComponent } from 'src/app/componentes/horario
 import { EditarVacacionesEmpleadoComponent } from 'src/app/componentes/rolEmpleado/vacacion-empleado/editar-vacaciones-empleado/editar-vacaciones-empleado.component';
 import { RegistroAutorizacionDepaComponent } from 'src/app/componentes/autorizaciones/autorizaDepartamentos/registro-autorizacion-depa/registro-autorizacion-depa.component';
 import { EditarPeriodoVacacionesComponent } from '../../modulos/vacaciones/periodoVacaciones/editar-periodo-vacaciones/editar-periodo-vacaciones.component';
-import { RegistroEmpleadoPermisoComponent } from '../../modulos/permisos/individual/registro-empleado-permiso/registro-empleado-permiso.component';
 import { EditarAutorizacionDepaComponent } from 'src/app/componentes/autorizaciones/autorizaDepartamentos/editar-autorizacion-depa/editar-autorizacion-depa.component';
 import { RegistoEmpleadoHorarioComponent } from 'src/app/componentes/horarios/empleadoHorario/registo-empleado-horario/registo-empleado-horario.component';
-import { EditarPermisoEmpleadoComponent } from 'src/app/componentes/rolEmpleado/permisos-empleado/editar-permiso-empleado/editar-permiso-empleado.component';
 import { RegistrarEmpleProcesoComponent } from '../../modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
 import { EditarEmpleadoProcesoComponent } from '../../modulos/accionesPersonal/procesos/editar-empleado-proceso/editar-empleado-proceso.component';
 import { EditarSolicitudComidaComponent } from '../../modulos/alimentacion/editar-solicitud-comida/editar-solicitud-comida.component';
@@ -83,6 +81,7 @@ import { CrearVacunaComponent } from '../vacunacion/crear-vacuna/crear-vacuna.co
 import { EmplCargosComponent } from 'src/app/componentes/empleado/cargo/empl-cargos/empl-cargos.component';
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { LoginService } from 'src/app/servicios/login/login.service';
+import { AutorizacionService } from 'src/app/servicios/autorizacion/autorizacion.service';
 
 @Component({
   selector: 'app-ver-empleado',
@@ -154,6 +153,7 @@ export class VerEmpleadoComponent implements OnInit {
     private scriptService: ScriptService, // SERVICIO DATOS EMPLEADO - REPORTE
     private activatedRoute: ActivatedRoute,
     private restPlanGeneral: PlanGeneralService, // SERVICIO DATOS DE PLANIFICACION
+    private aprobar: AutorizacionService, // SERVICIO DE DATOS DE AUTORIZACIONES 
 
   ) {
     this.idEmpleadoLogueado = parseInt(localStorage.getItem('empleado'));
@@ -1142,11 +1142,6 @@ export class VerEmpleadoComponent implements OnInit {
         p.hora_salida_ = this.validar.FormatearHora(p.hora_salida, formato_hora);
 
       })
-    }, err => {
-      const { access, message } = err.error.message;
-      if (access === false) {
-        // this.toastr.error(message)
-      }
     })
   }
 
@@ -1158,11 +1153,13 @@ export class VerEmpleadoComponent implements OnInit {
     if (this.datoActual.id_contrato != undefined && this.datoActual.id_cargo != undefined) {
       this.formulario_permiso = true;
       this.solicitudes_permiso = false;
+      this.solicita_permiso = [];
       this.solicita_permiso = [
         {
           id_empleado: parseInt(this.idEmpleado),
           id_contrato: this.datoActual.id_contrato,
-          id_cargo: this.datoActual.id_cargo
+          id_cargo: this.datoActual.id_cargo,
+          ventana: 'empleado'
         }
       ]
     }
@@ -1175,18 +1172,19 @@ export class VerEmpleadoComponent implements OnInit {
     }
   }
 
-  // METODO EDICION D EPERMISOS
+  // METODO EDICION DE PERMISOS
+  formulario_editar_permiso: boolean = false;
+  empleado_permiso: number = 0;
   EditarPermiso(permisos: any) {
-    this.ventana.open(EditarPermisoEmpleadoComponent, {
-      width: '1200px',
-      data: { dataPermiso: permisos, id_empleado: parseInt(this.idEmpleado) }
-    }).afterClosed().subscribe(items => {
-      this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
-    });
+    this.formulario_editar_permiso = true;
+    this.solicitudes_permiso = false;
+    this.solicita_permiso = [];
+    this.solicita_permiso = permisos;
+    this.empleado_permiso = parseInt(this.idEmpleado);
   }
 
   // METODO PARA ELIMINAR PERMISOS DEL USUARIO
-  CancelarPermiso(dataPermiso) {
+  CancelarPermiso(dataPermiso: any) {
     this.ventana.open(CancelarPermisoComponent,
       {
         width: '450px',
@@ -1195,6 +1193,409 @@ export class VerEmpleadoComponent implements OnInit {
         this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
       });
   }
+
+  // MANEJO DE FILTRO DE DATOS DE PERMISOS
+  filtradoFecha = '';
+  fechaF = new FormControl('');
+
+  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
+  public formulario = new FormGroup({
+    fechaForm: this.fechaF,
+  });
+
+  // METODO PARA LIMPIAR FORMULARIO
+  LimpiarCamposPermisos() {
+    this.fechaF.setValue('');
+    this.ObtenerPermisos(this.formato_fecha, this.formato_hora);
+  }
+
+  // METODO PARA CONSULTAR DATOS DEL USUARIO QUE SOLICITA EL PERMISO
+  unPermiso: any = [];
+  ConsultarPermisoIndividual(id: number) {
+    this.unPermiso = [];
+    this.restPermiso.ObtenerInformeUnPermiso(id).subscribe(datos => {
+      this.unPermiso = datos[0];
+      // TRATAMIENTO DE FECHAS Y HORAS
+      this.unPermiso.fec_creacion_ = this.validar.FormatearFecha(this.unPermiso.fec_creacion, this.formato_fecha, this.validar.dia_completo);
+      this.unPermiso.fec_inicio_ = this.validar.FormatearFecha(this.unPermiso.fec_inicio, this.formato_fecha, this.validar.dia_completo);
+      this.unPermiso.fec_final_ = this.validar.FormatearFecha(this.unPermiso.fec_final, this.formato_fecha, this.validar.dia_completo);
+
+      this.unPermiso.hora_ingreso_ = this.validar.FormatearHora(this.unPermiso.hora_ingreso, this.formato_hora);
+      this.unPermiso.hora_salida_ = this.validar.FormatearHora(this.unPermiso.hora_salida, this.formato_hora);
+
+      this.ConsultarAprobacionPermiso(id);
+    })
+  }
+
+  // METODO PARA VER LA INFORMACION DE LA APROBACION DEL PERMISO
+  aprobacionPermiso: any = [];
+  empleado_estado: any = [];
+  lectura: number = 0;
+  ConsultarAprobacionPermiso(id: number) {
+    this.aprobacionPermiso = [];
+    this.empleado_estado = [];
+    this.lectura = 1;
+    this.aprobar.BuscarAutorizacionPermiso(id).subscribe(data => {
+      this.aprobacionPermiso = data[0];
+      if (this.aprobacionPermiso.id_documento === '' || this.aprobacionPermiso.id_documento === null) {
+        this.GenerarPDFPermisos('open');
+      }
+      else {
+        // METODO PARA OBTENER EMPLEADOS Y ESTADOS
+        var autorizaciones = this.aprobacionPermiso.id_documento.split(',');
+        autorizaciones.map((obj: string) => {
+          this.lectura = this.lectura + 1;
+          if (obj != '') {
+            let empleado_id = obj.split('_')[0];
+            var estado_auto = obj.split('_')[1];
+
+            // CAMBIAR DATO ESTADO INT A VARCHAR
+            if (estado_auto === '1') {
+              estado_auto = 'Pendiente';
+            }
+            if (estado_auto === '2') {
+              estado_auto = 'Preautorizado';
+            }
+            if (estado_auto === '3') {
+              estado_auto = 'Autorizado';
+            }
+            if (estado_auto === '4') {
+              estado_auto = 'Permiso Negado';
+            }
+            // CREAR ARRAY DE DATOS DE COLABORADORES
+            var data = {
+              id_empleado: empleado_id,
+              estado: estado_auto
+            }
+            this.empleado_estado = this.empleado_estado.concat(data);
+            // CUANDO TODOS LOS DATOS SE HAYAN REVISADO EJECUTAR METODO DE INFORMACION DE AUTORIZACION
+            if (this.lectura === autorizaciones.length) {
+              this.VerInformacionAutoriza(this.empleado_estado);
+            }
+          }
+        })
+      }
+    });
+  }
+
+  // METODO PARA INGRESAR NOMBRE Y CARGO DEL USUARIO QUE REVIZO LA SOLICITUD 
+  cadena_texto: string = ''; // VARIABLE PARA ALMACENAR TODOS LOS USUARIOS
+  cont: number = 0;
+  VerInformacionAutoriza(array: any) {
+    this.cont = 0;
+    array.map(empl => {
+      this.informacion.InformarEmpleadoAutoriza(parseInt(empl.id_empleado)).subscribe(data => {
+        this.cont = this.cont + 1;
+        empl.nombre = data[0].fullname;
+        empl.cargo = data[0].cargo;
+        empl.departamento = data[0].departamento;
+        if (this.cadena_texto === '') {
+          this.cadena_texto = data[0].fullname + ': ' + empl.estado;
+        } else {
+          this.cadena_texto = this.cadena_texto + ' --.-- ' + data[0].fullname + ': ' + empl.estado;
+        }
+        if (this.cont === array.length) {
+          this.GenerarPDFPermisos('open');
+        }
+      })
+    })
+  }
+
+
+  /** **************************************************************************************************** ** 
+   **                        METODO PARA EXPORTAR A PDF SOLICITUDES DE PERMISOS                            **
+   ** **************************************************************************************************** **/
+
+  // METODO PARA DESCARGAR SOLICITUD DE PERMISO
+  GenerarPDFPermisos(action = 'open') {
+    var documentDefinition: any;
+    if (this.empleado_estado.length === 0) {
+      documentDefinition = this.CabeceraDocumentoPermisoEmpleado();
+    }
+    else {
+      documentDefinition = this.CabeceraDocumentoPermisoAprobacion();
+    }
+
+    switch (action) {
+      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
+      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
+      case 'download': pdfMake.createPdf(documentDefinition).download(); break;
+      default: pdfMake.createPdf(documentDefinition).open(); break;
+    }
+  }
+
+  // CABECERA Y PIE DE PAGINA DEL DOCUMENTO
+  CabeceraDocumentoPermisoEmpleado() {
+    return {
+      // ENCABEZADO DE LA PAGINA
+      pageOrientation: 'landscape',
+      watermark: { text: this.frase_m, color: 'blue', opacity: 0.1, bold: true, italics: false },
+      header: { text: 'Impreso por:  ' + this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
+
+      // PIE DE PAGINA
+      footer: function (currentPage: { toString: () => string; }, pageCount: string, fecha: string, hora: string) {
+        var f = moment();
+        fecha = f.format('DD/MM/YYYY');
+        hora = f.format('HH:mm:ss');
+        return {
+          margin: 10,
+          columns: [
+            'Fecha: ' + fecha + ' Hora: ' + hora,
+            {
+              text: [
+                {
+                  text: '© Pag ' + currentPage.toString() + ' of ' + pageCount,
+                  alignment: 'right', color: 'blue',
+                  opacity: 0.5
+                }
+              ],
+            }
+          ], fontSize: 10, color: '#A4B8FF',
+        }
+      },
+      content: [
+        { image: this.logoE, width: 150, margin: [10, -25, 0, 5] },
+        { text: this.unPermiso.empresa.toUpperCase(), bold: true, fontSize: 20, alignment: 'center', margin: [0, -25, 0, 20] },
+        { text: 'SOLICITUD DE PERMISO', fontSize: 10, alignment: 'center', margin: [0, 0, 0, 20] },
+        this.InformarEmpleado(),
+      ],
+      styles: {
+        tableHeader: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.p_color, },
+        tableHeaderA: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.s_color, margin: [20, 0, 20, 0], },
+        itemsTableD: { fontSize: 10, alignment: 'left', margin: [50, 5, 5, 5] },
+        itemsTable: { fontSize: 10, alignment: 'center', }
+      }
+    };
+  }
+
+  // METODO PARA MOSTRAR LA INFORMACION DE LA SOLICITUD DEL PERMISO
+  InformarEmpleado() {
+    return {
+      table: {
+        widths: ['*'],
+        body: [
+          [{ text: 'INFORMACIÓN GENERAL', style: 'tableHeader' }],
+          [{
+            columns: [
+              { text: [{ text: 'FECHA SOLICITUD: ' + this.unPermiso.fec_creacion_, style: 'itemsTableD' }] },
+              { text: [{ text: '', style: 'itemsTableD' }] },
+              { text: [{ text: 'CIUDAD: ' + this.unPermiso.ciudad, style: 'itemsTableD' }] }
+            ]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'APELLIDOS: ' + this.unPermiso.nombre, style: 'itemsTableD' }] },
+              { text: [{ text: 'NOMBRES: ' + this.unPermiso.apellido, style: 'itemsTableD' }] },
+              { text: [{ text: 'CÉDULA: ' + this.unPermiso.cedula, style: 'itemsTableD' }] }
+            ]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'RÉGIMEN: ' + this.unPermiso.regimen, style: 'itemsTableD' }] },
+              { text: [{ text: 'Sucursal: ' + this.unPermiso.sucursal, style: 'itemsTableD' }] },
+              { text: [{ text: 'N°. Permiso: ' + this.unPermiso.num_permiso, style: 'itemsTableD' }] }
+            ]
+          }],
+          [{ text: 'MOTIVO', style: 'tableHeader' }],
+          [{
+            columns: [
+              { text: [{ text: 'TIPO DE SOLICITUD: ' + this.unPermiso.tipo_permiso, style: 'itemsTableD' }] },
+              { text: [{ text: '', style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA DESDE: ' + this.unPermiso.fec_inicio_, style: 'itemsTableD' }] },]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'OBSERVACIÓN: ' + this.unPermiso.descripcion, style: 'itemsTableD' }] },
+              { text: [{ text: '', style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA HASTA: ' + this.unPermiso.fec_final_, style: 'itemsTableD' }] },
+            ]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'APROBACIÓN: ' + this.cadena_texto, style: 'itemsTableD' }] },
+            ]
+          }],
+          [{
+            columns: [
+              {
+                columns: [
+                  { width: '*', text: '' },
+                  {
+                    width: 'auto',
+                    layout: 'lightHorizontalLines',
+                    table: {
+                      widths: ['auto'],
+                      body: [
+                        [{ text: 'EMPLEADO', style: 'tableHeaderA' },],
+                        [{ text: ' ', style: 'itemsTable', margin: [0, 20, 0, 20] },],
+                        [{ text: this.unPermiso.nombre + ' ' + this.unPermiso.apellido + '\n' + this.unPermiso.cargo, style: 'itemsTable' },]
+                      ]
+                    }
+                  },
+                  { width: '*', text: '' },
+                ]
+              }
+            ]
+          }],
+        ]
+      },
+      layout: {
+        hLineColor: function (i: number, node: { table: { body: string | any[]; }; }) {
+          return (i === 0 || i === node.table.body.length) ? 'rgb(80,87,97)' : 'rgb(80,87,97)';
+        },
+        paddingLeft: function (i: any, node: any) { return 40; },
+        paddingRight: function (i: any, node: any) { return 40; },
+        paddingTop: function (i: any, node: any) { return 10; },
+        paddingBottom: function (i: any, node: any) { return 10; }
+      }
+    };
+  }
+
+  // CABECERA Y PIE DE PAGINA DEL DOCUMENTO
+  CabeceraDocumentoPermisoAprobacion() {
+    return {
+      // ENCABEZADO DE LA PAGINA
+      pageOrientation: 'landscape',
+      watermark: { text: this.frase_m, color: 'blue', opacity: 0.1, bold: true, italics: false },
+      header: { text: 'Impreso por:  ' + this.empleadoLogueado[0].nombre + ' ' + this.empleadoLogueado[0].apellido, margin: 10, fontSize: 9, opacity: 0.3, alignment: 'right' },
+
+      // PIE DE PAGINA
+      footer: function (currentPage: { toString: () => string; }, pageCount: string, fecha: string, hora: string) {
+        var f = moment();
+        fecha = f.format('DD/MM/YYYY');
+        hora = f.format('HH:mm:ss');
+        return {
+          margin: 10,
+          columns: [
+            'Fecha: ' + fecha + ' Hora: ' + hora,
+            {
+              text: [
+                {
+                  text: '© Pag ' + currentPage.toString() + ' of ' + pageCount,
+                  alignment: 'right', color: 'blue',
+                  opacity: 0.5
+                }
+              ],
+            }
+          ], fontSize: 10, color: '#A4B8FF',
+        }
+      },
+      content: [
+        { image: this.logoE, width: 150, margin: [10, -25, 0, 5] },
+        { text: this.unPermiso.empresa.toUpperCase(), bold: true, fontSize: 20, alignment: 'center', margin: [0, -25, 0, 20] },
+        { text: 'SOLICITUD DE PERMISO', fontSize: 10, alignment: 'center', margin: [0, 0, 0, 20] },
+        this.InformarAprobacion(),
+      ],
+      styles: {
+        tableHeader: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.p_color, },
+        tableHeaderA: { fontSize: 10, bold: true, alignment: 'center', fillColor: this.s_color, margin: [20, 0, 20, 0], },
+        itemsTableD: { fontSize: 10, alignment: 'left', margin: [50, 5, 5, 5] },
+        itemsTable: { fontSize: 10, alignment: 'center', }
+      }
+    };
+  }
+
+  // METODO PARA MOSTRAR LA INFORMACION DEL PERMISO CON APROBACION
+  InformarAprobacion() {
+    return {
+      table: {
+        widths: ['*'],
+        body: [
+          [{ text: 'INFORMACIÓN GENERAL', style: 'tableHeader' }],
+          [{
+            columns: [
+              { text: [{ text: 'FECHA SOLICITUD: ' + this.unPermiso.fec_creacion_, style: 'itemsTableD' }] },
+              { text: [{ text: '', style: 'itemsTableD' }] },
+              { text: [{ text: 'CIUDAD: ' + this.unPermiso.ciudad, style: 'itemsTableD' }] }
+            ]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'APELLIDOS: ' + this.unPermiso.nombre, style: 'itemsTableD' }] },
+              { text: [{ text: 'NOMBRES: ' + this.unPermiso.apellido, style: 'itemsTableD' }] },
+              { text: [{ text: 'CÉDULA: ' + this.unPermiso.cedula, style: 'itemsTableD' }] }
+            ]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'RÉGIMEN: ' + this.unPermiso.regimen, style: 'itemsTableD' }] },
+              { text: [{ text: 'Sucursal: ' + this.unPermiso.sucursal, style: 'itemsTableD' }] },
+              { text: [{ text: 'N°. Permiso: ' + this.unPermiso.num_permiso, style: 'itemsTableD' }] }
+            ]
+          }],
+          [{ text: 'MOTIVO', style: 'tableHeader' }],
+          [{
+            columns: [
+              { text: [{ text: 'TIPO DE SOLICITUD: ' + this.unPermiso.tipo_permiso, style: 'itemsTableD' }] },
+              { text: [{ text: '', style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA DESDE: ' + this.unPermiso.fec_inicio_, style: 'itemsTableD' }] },]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'OBSERVACIÓN: ' + this.unPermiso.descripcion, style: 'itemsTableD' }] },
+              { text: [{ text: '', style: 'itemsTableD' }] },
+              { text: [{ text: 'FECHA HASTA: ' + this.unPermiso.fec_final_, style: 'itemsTableD' }] },
+            ]
+          }],
+          [{
+            columns: [
+              { text: [{ text: 'APROBACIÓN: ', style: 'itemsTableD' }] },
+            ]
+          }],
+          [{
+            columns: [
+              {
+                columns: [
+                  { width: '*', text: '' },
+                  {
+                    width: 'auto',
+                    layout: 'lightHorizontalLines',
+                    table: {
+                      widths: ['auto'],
+                      body: [
+                        [{ text: this.empleado_estado[this.empleado_estado.length - 1].estado.toUpperCase() + ' POR', style: 'tableHeaderA' },],
+                        [{ text: ' ', style: 'itemsTable', margin: [0, 20, 0, 20] },],
+                        [{ text: this.empleado_estado[this.empleado_estado.length - 1].nombre + '\n' + this.empleado_estado[this.empleado_estado.length - 1].cargo, style: 'itemsTable' },]
+                      ]
+                    }
+                  },
+                  { width: '*', text: '' },
+                ]
+              },
+              {
+                columns: [
+                  { width: '*', text: '' },
+                  {
+                    width: 'auto',
+                    layout: 'lightHorizontalLines',
+                    table: {
+                      widths: ['auto'],
+                      body: [
+                        [{ text: 'EMPLEADO', style: 'tableHeaderA' },],
+                        [{ text: ' ', style: 'itemsTable', margin: [0, 20, 0, 20] },],
+                        [{ text: this.unPermiso.nombre + ' ' + this.unPermiso.apellido + '\n' + this.unPermiso.cargo, style: 'itemsTable' },]
+                      ]
+                    }
+                  },
+                  { width: '*', text: '' },
+                ]
+              }
+            ]
+          }],
+        ]
+      },
+      layout: {
+        hLineColor: function (i: number, node: { table: { body: string | any[]; }; }) {
+          return (i === 0 || i === node.table.body.length) ? 'rgb(80,87,97)' : 'rgb(80,87,97)';
+        },
+        paddingLeft: function (i: any, node: any) { return 40; },
+        paddingRight: function (i: any, node: any) { return 40; },
+        paddingTop: function (i: any, node: any) { return 10; },
+        paddingBottom: function (i: any, node: any) { return 10; }
+      }
+    };
+  }
+
 
   /** **************************************************************************************** **
    ** **            METODO DE PRESENTACION DE DATOS DE PERIODO DE VACACIONES                ** ** 

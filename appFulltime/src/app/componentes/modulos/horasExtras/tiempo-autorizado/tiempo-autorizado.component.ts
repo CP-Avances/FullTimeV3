@@ -341,7 +341,7 @@ export class TiempoAutorizadoComponent implements OnInit {
           resp => {
             console.log('ver data de notificacion', resp.respuesta)
             this.realTime.RecibirNuevosAvisos(resp.respuesta);
-            // this.restPH.sendNotiRealTime(resp.respuesta);
+            // this.restPH.EnviarNotificacionRealTime(resp.respuesta);
           },
           err => {
             this.toastr.error(err.error.message, '', {
