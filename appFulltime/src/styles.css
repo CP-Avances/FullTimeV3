@@ -87,7 +87,8 @@ body {
 /* ESTILO ÍCONO DE AYUDA EN BUSQUEDAS DE TABLAS */
 #i-ayuda {
     cursor: pointer;
-    padding-top: 10px;
+    padding-top: 3px;
+    margin-bottom: 1%;
 }
 
 /* ESTILOS DE ÍCONOS DE ACCIONES DE TABLAS */
@@ -128,7 +129,7 @@ body {
 #cerrar{
     color: red;
     cursor: pointer;
-    margin-right: 3%;
+    margin-right: 2%;
 }
 
 /* ESTILO PARA BARRA DE TÍTULOS */

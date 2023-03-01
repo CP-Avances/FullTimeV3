@@ -38,7 +38,7 @@
                             <label id="datosF">RUC:</label>
                             <label>{{e.ruc}}</label>
                         </div>
-                        <div class="caja1 d-flex justify-content-start">
+                        <div class="caja1 d-flex justify-content-start" style="width: 100%;">
                             <label id="datosF">Dirección:</label>
                             <label>{{e.direccion}}</label>
                         </div>
@@ -104,7 +104,7 @@
                             <label *ngIf="e.seg_contrasena === true">Usar contraseña</label>
                         </div>
                         <div class="d-flex justify-content-around text-center">
-                            <button mat-button type="submit" class="btn btn-sm"
+                            <button mat-raised-button id="btn-raised" type="submit"
                                 (click)="AbrirVentanaSeguridad(e)">Configurar seguridad</button>
                         </div>
                     </div>
@@ -122,9 +122,8 @@
                                     <label id="datosF">Color principal:</label>
                                 </div>
                                 <div class="caja2 d-flex justify-content-center">
-                                    <input type="color" value="{{e.color_p}}" matSuffix
-                                        matTooltip="Color principal que se visualiza en cabeceras de reportes."
-                                        disabled>
+                                    <input type="color" [(ngModel)]="p_color" value="{{p_color}}" [formControl]="principal" matSuffix
+                                        matTooltip="Seleccionar color principal">
                                 </div>
                             </div>
                             <div class="col-md">
@@ -132,17 +131,14 @@
                                     <label id="datosF">Color secundario:</label>
                                 </div>
                                 <div class="caja2 d-flex justify-content-center">
-                                    <input type="color" value="{{e.color_s}}" matSuffix
-                                        matTooltip="Color secundario que se visualiza en cabeceras de reportes."
-                                        disabled>
+                                    <input type="color" [(ngModel)]="s_color" value="{{s_color}}" [formControl]="secundario" matSuffix
+                                        matTooltip="Seleccionar color secundario">
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-around text-center">
-                            <button mat-button type="submit" class="btn btn-sm"
-                                (click)="AbrirVentanaReportes(e, 'colores')">
-                                Configurar colores
-                            </button>
+                            <button mat-raised-button id="btn-raised" type="submit" (click)="GenerarPdf('open')">Visualizar</button>
+                            <button mat-raised-button id="btn-raised" type="submit" (click)="CambiarColores()">Guardar</button>
                         </div>
                     </div>
                     <br>
@@ -157,7 +153,7 @@
                             <label *ngIf="e.marca_agua != ''">{{e.marca_agua}}</label>
                         </div>
                         <div class="d-flex justify-content-around text-center">
-                            <button mat-button type="submit" class="btn btn-sm"
+                            <button mat-raised-button id="btn-raised" type="submit"
                                 (click)="AbrirVentanaReportes(e, 'frase')">
                                 Configurar frase
                             </button>
