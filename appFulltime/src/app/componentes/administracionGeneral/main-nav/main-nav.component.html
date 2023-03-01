@@ -13,34 +13,30 @@
         <li class="material-tree-node" *ngIf="!barraInicial; else showItemsMenu">
           <ul>
             <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}" *ngIf="node.color === true"
-              (click)="manejarEstadoActivo(node.name);" [routerLink]="[node.url]"
-              style="text-align: left; font-size: 12px; color: rgb(17, 167, 236);">
-              <mat-icon mat-list-icon id="icono-menu_">done</mat-icon>
-              {{node.name}}
+              (click)="manejarEstadoActivo(node.name);" [routerLink]="[node.url]">
+              <mat-icon id="icono-menu_" style="float: left;">done</mat-icon>
+              <p style="float: left; margin-top: 4%; margin-bottom: -2%; margin-left: -3%;"> {{node.name}}</p>
             </a>
             <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
               *ngIf="node.color === false && node.activo === false" (click)="manejarEstadoActivo(node.name);"
-              [routerLink]="[node.url]" style="text-align: left; font-size: 12px; color: rgb(99, 105, 107);">
-              <mat-icon mat-list-icon id="icono-menu_x">phonelink_off</mat-icon>
-              {{node.name}}
+              [routerLink]="[node.url]" style="color: rgb(99, 105, 107);">
+              <mat-icon id="icono-menu_x">phonelink_off</mat-icon>
+              <p style="float: left; margin-top: 4%; margin-bottom: -2%; margin-left: -3%;"> {{node.name}}</p>
             </a>
           </ul>
         </li>
         <ng-template #showItemsMenu>
           <li class="material-tree-node">
             <ul>
-              <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
-                *ngIf="node.color === true" (click)="manejarEstadoActivo(node.name); drawer.toggle()"
-                [routerLink]="[node.url]" style="text-align: left; font-size: 12px; color: rgb(17, 167, 236);">
-                <mat-icon mat-list-icon id="icono-menu_">done</mat-icon>
-                {{node.name}}
+              <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}" *ngIf="node.color === true" 
+                (click)="manejarEstadoActivo(node.name); drawer.toggle()" [routerLink]="[node.url]" style="font-size: 12px; color: rgb(17, 167, 236);">
+                <mat-icon id="icono-menu_">done</mat-icon>
+                <p style="float: left; margin-top: 3%; margin-bottom: -2%;">{{node.name}}</p>
               </a>
-              <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}"
-                *ngIf="node.color === false && node.activo === false"
-                (click)="manejarEstadoActivo(node.name); drawer.toggle()" [routerLink]="[node.url]"
-                style="text-align: left; font-size: 12px; color: rgb(99, 105, 107);">
-                <mat-icon mat-list-icon id="icono-menu_x">phonelink_off</mat-icon>
-                {{node.name}}
+              <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}" *ngIf="node.color === false && node.activo === false"
+                (click)="manejarEstadoActivo(node.name); drawer.toggle()" [routerLink]="[node.url]" style="font-size: 12px; color: rgb(99, 105, 107);">
+                <mat-icon id="icono-menu_x">phonelink_off</mat-icon>
+                <p style="float: left; margin-top: 3%; margin-bottom: -2%;">{{node.name}}</p>
               </a>
             </ul>
           </li>
@@ -51,17 +47,17 @@
       <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
         <li *ngIf="node.accion === true && node.estado">
           <button mat-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name"
-            style="width: 100%; background: rgb(255, 255, 255)">
+            style="width: 100%; background: rgb(255, 255, 255); display: block; border: none; margin-left: 3%;">
             <div class="tree-titulos d-flex bd-highlight">
-              <div class="bd-highlight">
-                <mat-icon mat-list-icon id="icono-subtitulo" *ngIf="node.subtitulo === true">{{node.icono}}</mat-icon>
-                <mat-icon mat-list-icon id="icono-menu" *ngIf="node.subtitulo === false">{{node.icono}}</mat-icon>
+              <div class="bd-highlight" style="float: left;">
+                <mat-icon id="icono-subtitulo" *ngIf="node.subtitulo === true">{{node.icono}}</mat-icon>
+                <mat-icon id="icono-menu" *ngIf="node.subtitulo === false">{{node.icono}}</mat-icon>
               </div>
-              <div class="bd-highlight">
+              <div class="bd-highlight" style="float: left;">
                 <h5 class="subtitulo" *ngIf="node.subtitulo === true">{{node.name}}</h5>
                 <h5 class="name-uno" *ngIf="node.subtitulo === false">{{node.name}}</h5>
               </div>
-              <div class="ml-auto bd-highlight">
+              <div class="ml-auto bd-highlight" style="float: right;">
                 <mat-icon class="mat-icon-rtl-mirror" id="icono-despliega">
                   {{treeControl.isExpanded(node) ? 'remove' : 'add'}}
                 </mat-icon>
