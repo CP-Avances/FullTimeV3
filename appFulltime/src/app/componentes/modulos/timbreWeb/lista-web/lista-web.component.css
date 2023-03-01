@@ -20,13 +20,15 @@ table {
 }
 
 mat-form-field.input-tables {
-    margin-bottom: -5px;
-    font-size: 10px;
+    background: transparent;
+    font-size: 14px;
     text-align: center;
+    outline: none;
+    fill: none;
+    height: 65px;
 }
 
-.codigo { width: 60px; }
-.nombre { width: 120px; }
+.codigo { width: 70px; }
 .cedula { width: 100px; }
 
 mat-expansion-panel-header { text-align: center; background: rgb(52,65,84); }

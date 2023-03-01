@@ -39,14 +39,14 @@
                     <tr>
                         <td></td>
                         <td>
-                            <mat-form-field id="t-inputs" class="input-tables codigo">
-                                <input matInput placeholder="" [(ngModel)]="filtroCodigo" [formControl]="codigo"
+                            <mat-form-field class="input-tables codigo">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCodigo" [formControl]="codigo"
                                     (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field id="t-inputs" class="input-tables nombre">
-                                <input matInput placeholder="" [(ngModel)]="filtroNombre" [formControl]="nombre"
+                            <mat-form-field id="t-inputs">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroNombre" [formControl]="nombre"
                                     type="text" (keypress)="IngresarSoloLetras($event)">
                                 <mat-error *ngIf="nombre.invalid">
                                     Indispensable ingresar dos letras
@@ -54,8 +54,8 @@
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field id="t-inputs" class="input-tables cedula">
-                                <input matInput placeholder="" [(ngModel)]="filtroCedula" maxlength="10"
+                            <mat-form-field class="input-tables cedula">
+                                <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
                                 <mat-error *ngIf="cedula.invalid">
