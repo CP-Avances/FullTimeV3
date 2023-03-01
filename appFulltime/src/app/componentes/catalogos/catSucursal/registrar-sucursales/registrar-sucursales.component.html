@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRAR ESTABLECIMIENTO</span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close()">highlight_off</mat-icon>
 </div>
 <form [formGroup]="formulario">
     <div class="container">
@@ -80,10 +81,10 @@
         </div>
     </div>
 </form>
-<div class="d-flex flex-wrap justify-content-center">
-    <input type="submit" class="btn btn-sm button" (click)="InsertarSucursal(formulario.value)"
-        [disabled]="!formulario.valid" value="Guardar">
-    <input type="submit" class="btn btn-sm button" (click)="ventana.close()" value="Salir">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarSucursal(formulario.value)"
+        [disabled]="!formulario.valid" value="Guardar">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value="Salir">Salir</button-->
 </div>
 <div class="pantalla-progress" *ngIf="habilitarprogress">
     <mat-progress-spinner class="progress" [color]="color" [mode]="mode" [value]="value">

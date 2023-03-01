@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRAR ROL</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
 </div>
 <form [formGroup]="formulario">
     <div style="text-align: center;">
@@ -21,8 +22,8 @@
         </div>
     </div>
 </form>
-<div class="d-flex justify-content-around">
-    <input type="submit" class="btn btn-sm" (click)="InsertarRol(formulario.value)" [disabled]="!formulario.valid"
-        value="Guardar">
-    <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Salir">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarRol(formulario.value)"
+        [disabled]="!formulario.valid" value="Guardar">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value="Salir">Salir</button-->
 </div>
