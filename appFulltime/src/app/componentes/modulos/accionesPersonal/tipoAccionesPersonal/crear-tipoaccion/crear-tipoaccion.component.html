@@ -1,9 +1,10 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR TIPO DE ACCIONES DE PERSONAL</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentanaRegistro()">highlight_off</mat-icon>
+</div>
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR TIPO DE ACCIONES DE PERSONAL</span>
-    </div>
     <!-- Formulario Completo -->
     <form [formGroup]="AccionesForm">
         <div class="container">
@@ -94,9 +95,9 @@
         </div>
     </form>
     <br>
-    <div class="d-flex flex-wrap justify-content-center">
-        <input type="submit" class="btn btn-sm" [disabled]="!AccionesForm.valid"
-            (click)="InsertarAccion(AccionesForm.value)" value="Guardar">
-        <input type="submit" class="btn btn-sm" (click)="CerrarVentanaRegistro()" value=" Salir">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarAccion(AccionesForm.value)"
+            [disabled]="!AccionesForm.valid">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentanaRegistro()">Salir</button-->
     </div>
 </div>

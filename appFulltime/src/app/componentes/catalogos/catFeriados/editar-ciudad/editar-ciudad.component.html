@@ -3,6 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR DATOS
     </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
 </div>
 <div style="text-align: center">
     <form [formGroup]="asignarCiudadForm">
@@ -69,9 +70,9 @@
         </mat-card-content>
     </form>
     <mat-card-actions class="d-flex justify-content-around">
-        <input type="submit" class="btn btn-sm" [disabled]="!asignarCiudadForm.valid"
-            (click)="InsertarFeriadoCiudad(asignarCiudadForm.value)" value="Guardar">
-        <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Salir">
+        <button mat-raised-button id="btn-raised" type="submit" [disabled]="!asignarCiudadForm.valid"
+            (click)="InsertarFeriadoCiudad(asignarCiudadForm.value)" value="Guardar">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value="Salir">Cancelar</button-->
     </mat-card-actions>
 </div>
 <div class="pantalla-progress" *ngIf="habilitarprogress">

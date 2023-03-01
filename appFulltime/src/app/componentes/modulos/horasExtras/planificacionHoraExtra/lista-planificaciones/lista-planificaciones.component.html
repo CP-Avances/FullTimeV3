@@ -81,11 +81,11 @@
                 style="float: left; margin-left: 10px;">Editar</button>
             <button *ngIf="botonEliminar" class="btn btn-primary" (click)="EliminarRegistrosMultiple()"
                 style="float: left; margin-left: 10px;">Eliminar</button>
-            <mat-icon (click)="CerrarTabla()" matSuffix matTooltipPosition="right"
-                matTooltip="Cerrar lista de colaboradores con planificación de horas extras." id="cerrar">
-                close</mat-icon>
             <span class="w-100 bd-highlight">
                 LISTA DE COLABORADORES CON PLANIFICACIÓN</span>
+            <mat-icon class="float-right" (click)="CerrarTabla()" matSuffix matTooltipPosition="right"
+                matTooltip="Cerrar lista de colaboradores con planificación de horas extras." id="cerrar">
+                highlight_off</mat-icon>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">

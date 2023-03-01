@@ -132,7 +132,7 @@ export class PrincipalHorarioComponent implements OnInit {
 
   // METODO PARA ABRIR VENTANA REGISTRAR HORARIO
   AbrirVentanaRegistrarHorario(): void {
-    this.ventana.open(RegistroHorarioComponent, { width: '1200px' }).afterClosed().subscribe(items => {
+    this.ventana.open(RegistroHorarioComponent, { width: '800px' }).afterClosed().subscribe(items => {
       this.ObtenerHorarios();
     });
   }
@@ -140,7 +140,7 @@ export class PrincipalHorarioComponent implements OnInit {
   // METODO PARA ABRIR VENTANA REGISTRAR DETALLE DE HORARIO
   AbrirRegistraDetalle(datosSeleccionados: any): void {
     this.ventana.open(DetalleCatHorarioComponent,
-      { width: '600px', data: { datosHorario: datosSeleccionados, actualizar: false } })
+      { width: '610px', data: { datosHorario: datosSeleccionados, actualizar: false } })
       .afterClosed().subscribe(items => {
         this.ObtenerHorarios();
       });
