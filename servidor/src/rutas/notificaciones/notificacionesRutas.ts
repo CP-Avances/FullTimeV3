@@ -48,7 +48,6 @@ class NotificacionTiempoRealRutas {
         this.router.post('/noti-comunicado-movil/', NOTIFICACION_TIEMPO_REAL_CONTROLADOR.EnviarNotificacionGeneral);
 
 
-
         // RUTA DE BUSQUEDA DE UNA NOTIFICACION ESPECIFICA
         this.router.get('/one/:id', TokenValidation, NOTIFICACION_TIEMPO_REAL_CONTROLADOR.ObtenerUnaNotificacion);
 

@@ -43,7 +43,7 @@ const CalcularHoraExtra = function (id_empleado, fec_desde, fec_hasta) {
             // console.log('Lista de feriados ===', feriados[0]);
             let ArrayDatos = {
                 info: ids,
-                detalle: horas_extras[0].map(obj => {
+                detalle: horas_extras[0].map((obj) => {
                     return {
                         fec_inicio: obj.fec_inicio,
                         fec_final: obj.fec_final,
@@ -74,7 +74,7 @@ function FeriadosPorIdCargo(id_cargo, fec_desde, fec_hasta) {
         return yield database_1.default.query('SELECT f.fecha, f.fec_recuperacion, f.descripcion FROM empl_cargos AS ec, sucursales AS s, ciudades AS c, ' +
             'ciud_feriados AS cf, cg_feriados AS f WHERE ec.id = $1 AND ec.id_sucursal = s.id AND s.id_ciudad = c.id AND ' +
             'cf.id_ciudad = s.id AND f.id = cf.id_feriado AND f.fecha between $2 and $3', [id_cargo, fec_desde, fec_hasta])
-            .then(result => { return result.rows; });
+            .then((result) => { return result.rows; });
     });
 }
 function SumaValorPagoEmpleado(horas_extras) {
@@ -103,7 +103,7 @@ function ListaHorasExtras(cg_horas_extras, codigo, id_cargo, fec_desde, fec_hast
         // console.log('***************** array unido *****************');
         const valor_dia = sueldo / 30;
         const valor_hora = valor_dia / horas_trabaja;
-        arrayUnido.forEach(obj => {
+        arrayUnido.forEach((obj) => {
             obj.valores_calculos = cg_horas_extras.filter((res) => {
                 if (obj.nocturno === true) {
                     return res;
@@ -120,7 +120,7 @@ function ListaHorasExtras(cg_horas_extras, codigo, id_cargo, fec_desde, fec_hast
          *  2. calcular horas suplementarias de 50% y 100%;
          *  3. calcular horas extraordinarias;
          */
-        arrayUnido.forEach(obj => {
+        arrayUnido.forEach((obj) => {
             obj.calculos = obj.valores_calculos.map((res) => {
                 if (res.tipo_funcion === 1) {
                     // console.log('funcion 1');
@@ -158,7 +158,7 @@ function HorasExtrasSolicitadas(id_empleado, id_cargo, fec_desde, fec_hasta) {
         return yield database_1.default.query('SELECT h.fec_inicio, h.fec_final, h.descripcion, h.num_hora, h.tiempo_autorizado ' +
             'FROM hora_extr_pedidos AS h WHERE h.id_empl_cargo = $1 AND h.fec_inicio between $2 and $3 ' +
             'AND h.fec_final between $2 and $3 ORDER BY h.fec_inicio', [id_cargo, fec_desde, fec_hasta])
-            .then(result => {
+            .then((result) => {
             return Promise.all(result.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 var f1 = new Date(obj.fec_inicio);
                 var f2 = new Date(obj.fec_final);
@@ -192,7 +192,7 @@ function PlanificacionHorasExtrasSolicitadas(id_empleado, id_cargo, fec_desde, f
         return yield database_1.default.query('SELECT h.fecha_desde, h.hora_inicio, h.fecha_hasta, h.hora_fin, h.descripcion, h.horas_totales, ph.tiempo_autorizado ' +
             'FROM plan_hora_extra_empleado AS ph, plan_hora_extra AS h WHERE ph.id_empl_cargo = $1 AND ph.id_plan_hora = h.id ' +
             'AND h.fecha_desde between $2 and $3 AND h.fecha_hasta between $2 and $3 ORDER BY h.fecha_desde', [id_cargo, fec_desde, fec_hasta])
-            .then(result => {
+            .then((result) => {
             return Promise.all(result.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 var f1 = new Date(obj.fecha_desde.toJSON().split('T')[0] + 'T' + obj.hora_inicio);
                 var f2 = new Date(obj.fecha_hasta.toJSON().split('T')[0] + 'T' + obj.hora_fin);
@@ -225,8 +225,8 @@ function ObtenerTimbres(id_empleado, fec_desde, fec_hasta) {
     return __awaiter(this, void 0, void 0, function* () {
         // console.log('$$$$$$$$$$$$', fec_desde, fec_hasta);
         return yield database_1.default.query('SELECT fec_hora_timbre, accion FROM timbres WHERE id_empleado = $1 AND accion  in (\'EoS\', \'E\', \'S\') AND fec_hora_timbre BETWEEN $2 AND $3 ORDER BY fec_hora_timbre', [id_empleado, fec_desde, fec_hasta])
-            .then(result => {
-            return result.rows.map(obj => {
+            .then((result) => {
+            return result.rows.map((obj) => {
                 var f1 = new Date(obj.fec_hora_timbre.toJSON().split('.')[0]);
                 f1.setUTCHours(f1.getUTCHours() - 15);
                 obj.fec_hora_timbre = new Date(f1.toJSON().split('.')[0]);
@@ -241,7 +241,7 @@ function CargoContratoByFecha(id_empleado, fec_desde, fec_hasta) {
         try {
             const cargo_contrato = yield database_1.default.query('SELECT (e.nombre || \' \' || e.apellido) as nombre, e.codigo, e.cedula, ca.id AS id_cargo, ca.fec_inicio, ca.fec_final, co.id AS id_contrato, ca.sueldo, ca.hora_trabaja FROM empleados AS e, empl_contratos AS co, empl_cargos AS ca ' +
                 'WHERE e.id = co.id_empleado AND co.id_empleado = $1 AND ca.id_empl_contrato = co.id OR ca.fec_inicio BETWEEN $2 AND $3 OR ca.fec_final BETWEEN $2 AND $3 ', [id_empleado, fec_desde, fec_hasta])
-                .then(result => {
+                .then((result) => {
                 return result.rows;
             });
             console.log(cargo_contrato);
@@ -277,8 +277,8 @@ function CargoContratoByFecha(id_empleado, fec_desde, fec_hasta) {
  */
 function CatalogoHorasExtras() {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield database_1.default.query('SELECT id, descripcion, tipo_descuento, reca_porcentaje, hora_inicio, hora_final, hora_jornada, tipo_dia, tipo_funcion FROM cg_hora_extras').then(result => {
-            return result.rows.map(obj => {
+        return yield database_1.default.query('SELECT id, descripcion, tipo_descuento, reca_porcentaje, hora_inicio, hora_final, hora_jornada, tipo_dia, tipo_funcion FROM cg_hora_extras').then((result) => {
+            return result.rows.map((obj) => {
                 obj.hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_inicio);
                 obj.hora_final = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_final);
                 (obj.tipo_descuento === 1) ? obj.tipo_descuento = 'HE' : obj.tipo_descuento = 'RN';

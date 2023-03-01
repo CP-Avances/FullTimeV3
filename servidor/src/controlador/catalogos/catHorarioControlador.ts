@@ -81,7 +81,7 @@ class HorarioControlador {
         WHERE id = $7 RETURNING *
         `
         , [nombre, min_almuerzo, hora_trabajo, nocturno, detalle, codigo, id,])
-        .then(result => { return result.rows })
+        .then((result: any) => { return result.rows })
 
       if (respuesta.length === 0) return res.status(400).jsonp({ message: 'error' });
 
@@ -208,7 +208,7 @@ class HorarioControlador {
         UPDATE cg_horarios SET hora_trabajo = $1 WHERE id = $2 RETURNING *
         `
         , [hora_trabajo, id])
-        .then(result => { return result.rows })
+        .then((result: any) => { return result.rows })
 
       if (respuesta.length === 0) return res.status(400).jsonp({ message: 'No Actualizado.' });
 

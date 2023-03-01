@@ -26,8 +26,8 @@ interface Estado {
 export class HoraExtraAutorizacionesComponent implements OnInit {
 
   TipoDocumento = new FormControl('');
-  orden = new FormControl('', Validators.required);
-  estado = new FormControl('', Validators.required);
+  orden = new FormControl(null, Validators.required);
+  estado = new FormControl(null, Validators.required);
   idDepartamento = new FormControl('');
 
   public nuevaAutorizacionesForm = new FormGroup({

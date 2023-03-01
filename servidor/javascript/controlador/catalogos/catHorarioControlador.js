@@ -81,7 +81,7 @@ class HorarioControlador {
         nocturno = $4, detalle = $5, codigo = $6 
         WHERE id = $7 RETURNING *
         `, [nombre, min_almuerzo, hora_trabajo, nocturno, detalle, codigo, id,])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (respuesta.length === 0)
                     return res.status(400).jsonp({ message: 'error' });
                 return res.status(200).jsonp(respuesta);
@@ -201,7 +201,7 @@ class HorarioControlador {
                 const respuesta = yield database_1.default.query(`
         UPDATE cg_horarios SET hora_trabajo = $1 WHERE id = $2 RETURNING *
         `, [hora_trabajo, id])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (respuesta.length === 0)
                     return res.status(400).jsonp({ message: 'No Actualizado.' });
                 return res.status(200).jsonp(respuesta);

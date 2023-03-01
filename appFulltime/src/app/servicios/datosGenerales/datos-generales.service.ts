@@ -44,27 +44,6 @@ export class DatosGeneralesService {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /** INICIO CONSULTAS PARA FILTRAR INFORMACIÓN */
   VerDatosSucursal(id_sucursal: number) {
     return this.http.get(`${environment.url}/generalidades/filtros/sucursal/${id_sucursal}`);

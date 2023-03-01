@@ -54,7 +54,7 @@ class LoginControlador {
           FROM empleados AS e, usuarios AS u WHERE e.id = u.id_empleado AND u.id = $1
           `
           , [USUARIO.rows[0].id])
-          .then(result => {
+          .then((result: any) => {
             return result.rows
           });
 
@@ -73,7 +73,7 @@ class LoginControlador {
           `
           SELECT * FROM funciones LIMIT 1
           `
-        ).then(result => { return result.rows; })
+        ).then((result: any) => { return result.rows; })
 
         // BUSQUEDA DE CLAVE DE LICENCIA
         const EMPRESA = await pool.query(

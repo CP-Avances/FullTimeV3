@@ -115,7 +115,7 @@ function ObtenerPeriodosEmpleado(id_empl, diasObliga, fec_final_Rango, hora_trab
         let primerPeriodoInicio = yield database_1.default.query('SELECT pv.fec_inicio FROM empl_contratos e, ' +
             'peri_vacaciones pv WHERE e.id_empleado = $1 AND e.id = pv.id_empl_contrato ' +
             'ORDER BY e.fec_ingreso DESC, pv.fec_inicio LIMIT 1', [id_empl])
-            .then(result => {
+            .then((result) => {
             return result.rows[0].fec_inicio.toJSON().split('T')[0];
         });
         let arrayPeriodos = yield database_1.default.query(`
@@ -124,28 +124,28 @@ function ObtenerPeriodosEmpleado(id_empl, diasObliga, fec_final_Rango, hora_trab
     WHERE e.id_empleado = $1 AND e.id = pv.id_empl_contrato AND 
     CAST(pv.fec_final as VARCHAR) between $2 || \'%\' AND $3 || \'%\' 
     ORDER BY e.fec_ingreso DESC, pv.fec_inicio`, [id_empl, primerPeriodoInicio, fec_final_Rango])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
         // console.log(arrayPeriodos);
-        let acumulado = arrayPeriodos.map(obj => {
+        let acumulado = arrayPeriodos.map((obj) => {
             // return CalcularDiasAcumulados(diasObliga.dia_obli, obj.fec_inicio, obj.fec_final)
             return DiasHorMinToDecimal(obj.dia_vacacion, obj.horas_vacaciones, obj.min_vacaciones, hora_trabaja);
         });
         console.log(acumulado);
         let valorAcumulado = 0;
-        acumulado.forEach(obj => {
+        acumulado.forEach((obj) => {
             valorAcumulado = obj + valorAcumulado;
         });
         // console.log(valorAcumulado);
-        let Inicio_Ultimo_Periodo = arrayPeriodos.map(obj => {
+        let Inicio_Ultimo_Periodo = arrayPeriodos.map((obj) => {
             return obj.fec_inicio;
         });
         // console.log('Inicio Periodos ====> ',Inicio_Ultimo_Periodo);
-        let aniosInicio = arrayPeriodos.map(obj => {
+        let aniosInicio = arrayPeriodos.map((obj) => {
             return obj.fec_inicio.getFullYear();
         });
-        let aniosFinal = arrayPeriodos.map(obj => {
+        let aniosFinal = arrayPeriodos.map((obj) => {
             return obj.fec_final.getFullYear();
         });
         var nuevo = [...new Set(aniosInicio.concat(aniosFinal))];
@@ -206,7 +206,7 @@ function PeriodoVacacionContrato(id_empl, ant, pre) {
             'WHERE e.id_empleado = $1 AND e.id = pv.id_empl_contrato AND ' +
             'CAST(pv.fec_inicio as VARCHAR) like $2 || \'%\' AND CAST(pv.fec_final as VARCHAR) ' +
             'like $3 || \'%\' ORDER BY e.fec_ingreso DESC', [id_empl, ant, pre])
-            .then(result => {
+            .then((result) => {
             return result.rows[0];
         });
     });
@@ -220,7 +220,7 @@ function PeriodoVacacionContrato(id_empl, ant, pre) {
 function Vacaciones(id_peri_vac, fec_inicio, fec_final) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield database_1.default.query('SELECT v.fec_inicio, v.fec_final, v.fec_ingreso, v.dia_libre, v.dia_laborable FROM vacaciones v WHERE v.id_peri_vacacion = $1 AND v.estado = 3 AND CAST(v.fec_inicio as VARCHAR) between $2 || \'%\' AND $3 || \'%\' ORDER BY v.fec_inicio ASC', [id_peri_vac, fec_inicio, fec_final])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
     });
@@ -234,7 +234,7 @@ function Vacaciones(id_peri_vac, fec_inicio, fec_final) {
 function Permisos(id_peri_vac, fec_inicio, fec_final) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield database_1.default.query('SELECT p.descripcion, p.fec_inicio, p.fec_final, p.dia, p.dia_libre, p.hora_numero FROM permisos p WHERE p.id_peri_vacacion = $1  AND p.estado = 3 AND CAST(p.fec_final as VARCHAR) between $2 || \'%\' AND $3 || \'%\'', [id_peri_vac, fec_inicio, fec_final])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
     });
@@ -246,7 +246,7 @@ function Permisos(id_peri_vac, fec_inicio, fec_final) {
 function SueldoHorasTrabaja(id_empleado) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield database_1.default.query('SELECT ca.sueldo, ca.hora_trabaja FROM empl_contratos co, empl_cargos ca WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato ORDER BY ca.fec_inicio DESC LIMIT 1', [id_empleado])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
     });
@@ -258,7 +258,7 @@ function SueldoHorasTrabaja(id_empleado) {
 function diasObligaByRegimen(id_regimen) {
     return __awaiter(this, void 0, void 0, function* () {
         let data = yield database_1.default.query('SELECT dia_anio_vacacion, dia_libr_anio_vacacion, max_dia_acumulacion FROM cg_regimenes WHERE id = $1', [id_regimen])
-            .then(result => {
+            .then((result) => {
             return result.rows[0];
         });
         var x = data.dia_anio_vacacion + data.dia_libr_anio_vacacion;
@@ -446,7 +446,7 @@ function ObtenerInformacionEmpleado(IAcumulado, id_empl) {
             estado: 'Inactivo'
         };
         let data = yield database_1.default.query('SELECT e.nombre, e.apellido, e.cedula, e.codigo, e.estado, c.descripcion FROM empleados AS e, empl_contratos AS co, empl_cargos AS ca, sucursales AS s, ciudades AS c WHERE e.id = $1 AND e.id = co.id_empleado AND ca.id_empl_contrato = co.id AND s.id = ca.id_sucursal AND s.id_ciudad = c.id ORDER BY co.fec_ingreso DESC LIMIT 1', [id_empl])
-            .then(result => {
+            .then((result) => {
             return result.rows[0];
         });
         ObjetoEmpleado.nombre = data.nombre + ' ' + data.apellido;
@@ -545,7 +545,7 @@ function PeriodosVacacionesEmpleado(id_empleado) {
         return yield database_1.default.query('SELECT pv.descripcion, pv.dia_vacacion, pv.dia_antiguedad, pv.estado, pv.fec_inicio, pv.fec_final, ' +
             'pv.dia_perdido, pv.horas_vacaciones, pv.min_vacaciones FROM empl_contratos AS co, peri_vacaciones AS pv ' +
             'WHERE co.id_empleado = $1 AND co.id = pv.id_empl_contrato ORDER BY pv.fec_inicio ASC ', [id_empleado])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
     });

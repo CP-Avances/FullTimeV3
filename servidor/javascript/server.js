@@ -79,16 +79,21 @@ const solicitudVacacionesRutas_1 = __importDefault(require("./rutas/reportes/sol
 const parametrosRutas_1 = __importDefault(require("./rutas/parametrosGenerales/parametrosRutas"));
 const emplUbicacionRutas_1 = __importDefault(require("./rutas/empleado/empleadoUbicacion/emplUbicacionRutas"));
 const http_1 = require("http");
-const socketIo = require('socket.io');
+var io;
 class Servidor {
     constructor() {
         this.app = (0, express_1.default)();
         this.configuracion();
         this.rutas();
-        this.server = (0, http_1.createServer)(this.app);
         //this.server = require("http").createServer(this.app);
-        this.io = socketIo(this.server);
+        this.server = (0, http_1.createServer)(this.app);
         this.app.use((0, cors_1.default)());
+        io = require('socket.io')(this.server, {
+            cors: {
+                origin: '*',
+                methods: ['GET', 'POST'],
+            }
+        });
     }
     configuracion() {
         this.app.set('puerto', process.env.PORT || 3001);
@@ -98,6 +103,11 @@ class Servidor {
         this.app.use(express_1.default.urlencoded({ extended: false }));
         this.app.use(express_1.default.raw({ type: 'image/*', limit: '2Mb' }));
         this.app.set('trust proxy', true);
+        this.app.get('/', (req, res) => {
+            res.status(200).json({
+                status: 'success'
+            });
+        });
     }
     rutas() {
         this.app.use('/', indexRutas_1.default);
@@ -204,7 +214,11 @@ class Servidor {
         this.server.listen(this.app.get('puerto'), () => {
             console.log('Servidor en el puerto', this.app.get('puerto'));
         });
-        this.io.on('connection', (socket) => {
+        this.app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*:*');
+            next();
+        });
+        io.on('connection', (socket) => {
             console.log('Connected client on port %s.', this.app.get('puerto'));
             socket.on("nueva_notificacion", (data) => {
                 let data_llega = {

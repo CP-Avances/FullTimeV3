@@ -116,7 +116,7 @@ class PlanHoraExtraControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id);
             const { hora } = req.body;
-            let respuesta = yield database_1.default.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then(result => {
+            let respuesta = yield database_1.default.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then((result) => {
                 return { message: 'Tiempo de hora autorizada confirmada' };
             });
             res.jsonp(respuesta);
@@ -300,7 +300,7 @@ class PlanHoraExtraControlador {
         (SELECT cd.nombre FROM cg_departamentos AS cd WHERE cd.id = ec.id_departamento) AS departamento
         FROM datos_actuales_empleado AS da, empl_cargos AS ec
         WHERE da.id = $1 AND ec.id = da.id_cargo
-      `, [id_empl_envia]).then(resultado => { return resultado.rows[0]; });
+      `, [id_empl_envia]).then((resultado) => { return resultado.rows[0]; });
                 let data = {
                     from: settingsMail_1.email,
                     to: correos,

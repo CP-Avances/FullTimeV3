@@ -25,9 +25,9 @@ export class RegistroEnroladosComponent implements OnInit {
   nombre = new FormControl('', [Validators.required, Validators.pattern('[A-Z a-z0-9]*')]);
   contrasenia = new FormControl('', Validators.maxLength(10));
   finger = new FormControl('', Validators.pattern('[0-9]*'));
-  activo = new FormControl('', Validators.required);
+  activo = new FormControl(false, Validators.required);
   data_finger = new FormControl('', Validators.pattern('[a-zA-z 1-9]*'));
-  codigoF = new FormControl('', Validators.required);
+  codigoF = new FormControl(null, Validators.required);
 
   usuarios: any = [];
   idUltimoEnrolado: any = [];

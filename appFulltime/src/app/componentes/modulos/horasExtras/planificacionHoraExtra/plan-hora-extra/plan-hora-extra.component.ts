@@ -82,7 +82,7 @@ export class PlanHoraExtraComponent implements OnInit {
 
     this.PedirHoraExtraForm.patchValue({
       fechaSolicitudForm: this.FechaActual,
-      estadoForm: 1
+      //estadoForm: 1
     });
 
     this.BuscarParametro();

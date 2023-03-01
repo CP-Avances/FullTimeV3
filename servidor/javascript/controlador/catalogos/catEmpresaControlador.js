@@ -38,7 +38,7 @@ class EmpresaControlador {
             const file_name = yield database_1.default.query(`
             SELECT nombre, logo FROM cg_empresa WHERE id = $1
             `, [req.params.id_empresa])
-                .then(result => {
+                .then((result) => {
                 return result.rows[0];
             });
             if (file_name.logo === null) {
@@ -194,7 +194,7 @@ class EmpresaControlador {
             const file_name = yield database_1.default.query(`
                 SELECT cabecera_firma FROM cg_empresa WHERE id = $1
                 `, [req.params.id_empresa])
-                .then(result => {
+                .then((result) => {
                 return result.rows[0];
             });
             const codificado = yield (0, ImagenCodificacion_1.ImagenBase64LogosEmpresas)(file_name.cabecera_firma);
@@ -250,7 +250,7 @@ class EmpresaControlador {
             const file_name = yield database_1.default.query(`
                 SELECT pie_firma FROM cg_empresa WHERE id = $1
                 `, [req.params.id_empresa])
-                .then(result => {
+                .then((result) => {
                 return result.rows[0];
             });
             const codificado = yield (0, ImagenCodificacion_1.ImagenBase64LogosEmpresas)(file_name.pie_firma);

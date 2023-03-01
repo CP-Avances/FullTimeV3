@@ -29,7 +29,7 @@ class EmpresaControlador {
             SELECT nombre, logo FROM cg_empresa WHERE id = $1
             `
             , [req.params.id_empresa])
-            .then(result => {
+            .then((result: any) => {
                 return result.rows[0];
             });
 
@@ -62,7 +62,7 @@ class EmpresaControlador {
             , [id]);
 
         if (logo_name.rowCount > 0) {
-            logo_name.rows.map(async (obj) => {
+            logo_name.rows.map(async (obj: any) => {
 
                 console.log("logo_name: ",obj.logo);
 
@@ -171,7 +171,7 @@ class EmpresaControlador {
             , [id]);
 
         if (logo_name.rowCount > 0) {
-            logo_name.rows.map(async (obj) => {
+            logo_name.rows.map(async (obj: any) => {
                 if (obj.cabecera_firma != null) {
                     try {
                         // ELIMINAR IMAGEN DE SERVIDOR
@@ -213,7 +213,7 @@ class EmpresaControlador {
                 SELECT cabecera_firma FROM cg_empresa WHERE id = $1
                 `
                 , [req.params.id_empresa])
-                .then(result => {
+                .then((result: any) => {
                     return result.rows[0];
                 });
         const codificado = await ImagenBase64LogosEmpresas(file_name.cabecera_firma);
@@ -237,7 +237,7 @@ class EmpresaControlador {
             , [id]);
 
         if (logo_name.rowCount > 0) {
-            logo_name.rows.map(async (obj) => {
+            logo_name.rows.map(async (obj: any) => {
                 if (obj.pie_firma != null) {
                     try {
                         // ELIMINAR LOGO DE SERVIDOR
@@ -278,7 +278,7 @@ class EmpresaControlador {
                 SELECT pie_firma FROM cg_empresa WHERE id = $1
                 `
                 , [req.params.id_empresa])
-                .then(result => {
+                .then((result: any) => {
                     return result.rows[0];
                 });
         const codificado = await ImagenBase64LogosEmpresas(file_name.pie_firma);
@@ -302,39 +302,6 @@ class EmpresaControlador {
             , [correo, password_correo, servidor, puerto, id]);
         res.status(200).jsonp({ message: 'Registro actualizado.' })
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -191,18 +191,13 @@ const routes: Routes = [
   { path: 'modificarDepartamento/:id', component: RegistroDepartamentoComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'enroladoDispositivo/:id', component: DispositivosEnroladosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'verDetalles/:id/:id_empleado', component: VerDetallePlanHorariosComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-
   { path: 'verHoraExtra/:id', component: VerHorasExtrasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-
-
 
   { path: 'planificacionesHorasExtras', component: ListaPlanHoraExtraComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'horaExtraReal', component: HoraExtraRealComponent, canActivate: [AuthGuard], data: { roles: 1 } },
 
   // UBICACIÓN GEOGRÁFICA
   { path: 'detalle-coordenadas/:id', component: VerCoordenadasComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-
-
 
   // Graficas Empleado
   { path: 'macro/user/atrasos', component: MetricaAtrasosComponent, canActivate: [AuthGuard], data: { roles: 2 } },
@@ -279,14 +274,6 @@ const routes: Routes = [
   { path: 'vistaTipoAccion/:id', component: VerTipoAccionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'editarPedido/:id', component: EditarPedidoAccionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
   { path: 'verAccion/:id', component: VerPedidoAccionComponent, canActivate: [AuthGuard], data: { roles: 1 } },
-
-
-
-
-
-
-
-
 
 
   // ACCESO A RUTAS DE INICIO DE SESION

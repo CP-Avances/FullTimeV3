@@ -16,7 +16,7 @@ class PlanGeneralControlador {
                 `
                 , [fec_hora_horario, maxi_min_espera, estado, id_det_horario, fec_horario, id_empl_cargo,
                     tipo_entr_salida, codigo, id_horario, tipo, salida_otro_dia])
-                .then(result => { return result.rows })
+                .then((result: any) => { return result.rows })
 
             if (result === undefined) return res.status(404).jsonp({ message: 'error' })
 

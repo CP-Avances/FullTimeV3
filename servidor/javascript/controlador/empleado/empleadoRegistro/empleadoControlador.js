@@ -146,8 +146,8 @@ class EmpleadoControlador {
         return __awaiter(this, void 0, void 0, function* () {
             const empleado = yield database_1.default.query(`
       SELECT id, nombre, apellido FROM empleados ORDER BY apellido
-      `).then(result => {
-                return result.rows.map(obj => {
+      `).then((result) => {
+                return result.rows.map((obj) => {
                     return {
                         id: obj.id,
                         empleado: obj.apellido + ' ' + obj.nombre
@@ -203,12 +203,12 @@ class EmpleadoControlador {
                     yield database_1.default.query(`
           UPDATE empleados SET estado = 2 WHERE id = $1
           `, [obj])
-                        .then(result => { });
+                        .then((result) => { });
                     // FALSE => YA NO TIENE ACCESO
                     yield database_1.default.query(`
           UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1
           `, [obj])
-                        .then(result => { });
+                        .then((result) => { });
                 }));
                 return res.jsonp({ message: 'Usuarios inhabilitados exitosamente.' });
             }
@@ -225,12 +225,12 @@ class EmpleadoControlador {
                     yield database_1.default.query(`
           UPDATE empleados SET estado = 1 WHERE id = $1
           `, [obj])
-                        .then(result => { });
+                        .then((result) => { });
                     // TRUE => TIENE ACCESO
                     yield database_1.default.query(`
           UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1
           `, [obj])
-                        .then(result => { });
+                        .then((result) => { });
                 }));
                 return res.jsonp({ message: 'Usuarios habilitados exitosamente.' });
             }
@@ -247,12 +247,12 @@ class EmpleadoControlador {
                     yield database_1.default.query(`
           UPDATE empleados SET estado = 1 WHERE id = $1
           `, [obj])
-                        .then(result => { });
+                        .then((result) => { });
                     // TRUE => TIENE ACCESO
                     yield database_1.default.query(`
           UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1
           `, [obj])
-                        .then(result => { });
+                        .then((result) => { });
                     // REVISAR
                     //EstadoHorarioPeriVacacion(obj);
                 }));
@@ -310,7 +310,7 @@ class EmpleadoControlador {
                 yield database_1.default.query(`
         UPDATE empleados SET latitud = $1, longitud = $2 WHERE id = $3
         `, [lat, lng, id])
-                    .then(result => { });
+                    .then((result) => { });
                 res.status(200).jsonp({ message: 'Registro actualizado.' });
             }
             catch (error) {
@@ -433,7 +433,7 @@ class EmpleadoControlador {
             try {
                 yield database_1.default.query('INSERT INTO ubicacion (t_latitud, t_longitud, h_latitud, h_longitud, codigo, id_empl) ' +
                     'VALUES ($1, $2, $3, $4, $5, $6)', [t_lat, t_lng, h_lat, h_lng, codigo, id])
-                    .then(result => {
+                    .then((result) => {
                     console.log(result.command);
                 });
                 res.status(200).jsonp({ message: 'Geolocalizacion domicilio ingresada' });
@@ -451,7 +451,7 @@ class EmpleadoControlador {
             console.log(lat, lng, id);
             try {
                 yield database_1.default.query('UPDATE ubicacion SET h_latitud = $1, h_longitud = $2 WHERE id_empl = $3', [lat, lng, id])
-                    .then(result => {
+                    .then((result) => {
                     console.log(result.command);
                 });
                 res.status(200).jsonp({ message: 'Geolocalizacion domicilio actualizada' });
@@ -469,7 +469,7 @@ class EmpleadoControlador {
             console.log(lat, lng, id);
             try {
                 yield database_1.default.query('UPDATE ubicacion SET t_latitud = $1, t_longitud = $2 WHERE id_empl = $3', [lat, lng, id])
-                    .then(result => {
+                    .then((result) => {
                     console.log(result.command);
                 });
                 res.status(200).jsonp({ message: 'Geolocalización de Lugar de Trabajo registrada.' });
@@ -487,7 +487,7 @@ class EmpleadoControlador {
             try {
                 yield database_1.default.query('UPDATE ubicacion SET t_latitud = $1, t_longitud = $2, h_latitud = $3, ' +
                     'h_longitud = $4 WHERE id_empl = $5', [t_lat, t_lng, h_lat, h_lng, id])
-                    .then(result => {
+                    .then((result) => {
                     console.log(result);
                 });
                 res.status(200).jsonp({ message: 'Geolocalizacion ingresada' });

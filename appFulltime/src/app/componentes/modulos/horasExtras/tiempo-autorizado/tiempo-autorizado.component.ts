@@ -352,7 +352,6 @@ export class TiempoAutorizadoComponent implements OnInit {
         )
       }
     })
-
   }
 
 

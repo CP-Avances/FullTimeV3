@@ -143,7 +143,7 @@ export class PrincipalDepartamentoComponent implements OnInit {
       departamentoForm: '',
       departamentoPadreForm: '',
       buscarNombreForm: '',
-      buscarEmpresaForm: ''
+      //buscarEmpresaForm: ''
     });
     this.ListaDepartamentos();
   }

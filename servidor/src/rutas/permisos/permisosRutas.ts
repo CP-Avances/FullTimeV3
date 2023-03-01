@@ -97,7 +97,6 @@ class PermisosRutas {
         this.router.put('/:id/estado', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ActualizarEstado);
         // BUSCAR INFORMACION DE UN PERMISO
         this.router.get('/un-permiso/:id_permiso', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarUnPermisoInfo);
-
         // ELIMINAR DOCUMENTO DE PERMISO DESDE APLICACION MOVIL
         this.router.delete('/eliminar-movil/:documento', PERMISOS_CONTROLADOR.EliminarPermisoMovil);
 

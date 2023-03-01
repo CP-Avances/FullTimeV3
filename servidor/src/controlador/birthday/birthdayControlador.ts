@@ -49,7 +49,7 @@ class BirthdayControlador {
             `
             , [id]);
         if (unEmpleado.rowCount > 0) {
-            unEmpleado.rows.map(async (obj) => {
+            unEmpleado.rows.map(async (obj: any) => {
                 if (obj.img != null) {
 
                     try {

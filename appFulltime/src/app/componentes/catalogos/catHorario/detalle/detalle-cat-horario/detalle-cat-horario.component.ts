@@ -33,7 +33,7 @@ export class DetalleCatHorarioComponent implements OnInit {
   segundoF = new FormControl(false);
   terceroF = new FormControl(false);
   accionF = new FormControl('', [Validators.required]);
-  ordenF = new FormControl('', [Validators.required]);
+  ordenF = new FormControl(null, [Validators.required]);
   horaF = new FormControl('', [Validators.required]);
 
   // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
@@ -305,7 +305,6 @@ export class DetalleCatHorarioComponent implements OnInit {
         if (datos.orden === 2 || datos.orden === 3) {
           comida = comida + 1;
         }
-
         if (datos.orden === 1 && (datos.hora + ':00') > obj.hora && this.datosHorario[0].nocturno === false) {
           entrada = entrada + 1;
         }

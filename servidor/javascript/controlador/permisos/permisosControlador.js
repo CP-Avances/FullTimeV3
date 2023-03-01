@@ -184,7 +184,7 @@ class PermisosControlador {
                 ecr.id_empl_contrato = ecn.id AND
                 ecn.id_empleado = e.id AND
                 e.id = c.id_empleado
-            `, [depa_user_loggin]).then(result => { return result.rows; });
+            `, [depa_user_loggin]).then((result) => { return result.rows; });
             if (JefesDepartamentos.length === 0)
                 return res.status(400)
                     .jsonp({
@@ -254,7 +254,7 @@ class PermisosControlador {
                 ecr.id_empl_contrato = ecn.id AND
                 ecn.id_empleado = e.id AND
                 e.id = c.id_empleado
-            `, [depa_user_loggin]).then(result => { return result.rows; });
+            `, [depa_user_loggin]).then((result) => { return result.rows; });
             if (JefesDepartamentos.length === 0)
                 return res.status(400)
                     .jsonp({

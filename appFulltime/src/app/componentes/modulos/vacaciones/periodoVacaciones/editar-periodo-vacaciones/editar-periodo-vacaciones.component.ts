@@ -37,7 +37,7 @@ export class EditarPeriodoVacacionesComponent implements OnInit {
   minVacacionF = new FormControl('', [Validators.required]);
   diaAntiguedadF = new FormControl('', [Validators.required]);
   estadoF = new FormControl('', [Validators.required]);
-  fechaFinF = new FormControl('');
+  fechaFinF = new FormControl(null);
   fechaInicioF = new FormControl('', [Validators.required]);
   diaPerdidoF = new FormControl('', [Validators.required]);
 

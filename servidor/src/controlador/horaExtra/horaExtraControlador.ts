@@ -148,7 +148,7 @@ class HorasExtrasPedidasControlador {
       'WHERE e.id = ph.id_usua_solicita AND a.id_hora_extra = ph.id AND a.estado = 3 AND e.id = $1' +
       'ORDER BY e.nombre ASC, ph.fec_inicio ASC', [id_empleado]);
     if (HORAS_EXTRAS_PEDIDAS.rowCount > 0) {
-      HORAS_EXTRAS_PEDIDAS.rows.map(obj => {
+      HORAS_EXTRAS_PEDIDAS.rows.map((obj: any) => {
         if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
           var autorizaciones = obj.id_documento.split(',');
           let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
@@ -248,7 +248,7 @@ class HorasExtrasPedidasControlador {
       ecn.id_empleado = e.id AND 
       e.id = c.id_empleado
       `, [depa_user_loggin])
-        .then(result => {
+        .then((result: any)=> {
           return result.rows
         })
 
@@ -328,7 +328,7 @@ class HorasExtrasPedidasControlador {
         ecn.id_empleado = e.id AND 
         e.id = c.id_empleado
         `, [depa_user_loggin])
-      .then(result => {
+      .then((result: any) => {
         return result.rows
       })
 

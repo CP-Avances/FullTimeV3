@@ -51,9 +51,9 @@ const BuscarVacaciones = function (id, desde, hasta) {
             'a.id_documento, a.estado ' +
             'FROM vacaciones AS v, autorizaciones AS a ' +
             'WHERE v.id = a.id_vacacion AND v.codigo = $1 AND fec_inicio BETWEEN $2 AND $3', [id, desde, hasta])
-            .then(res => {
+            .then((res) => {
             if (res.rowCount > 0) {
-                res.rows.map(obj => {
+                res.rows.map((obj) => {
                     if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
                         var autorizaciones = obj.id_documento.split(',');
                         let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
@@ -80,7 +80,7 @@ const BuscarVacaciones = function (id, desde, hasta) {
 const BuscarAprobacion = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield database_1.default.query('SELECT e.nombre, e.apellido FROM empleados AS e WHERE e.id = $1 ', [id])
-            .then(res => {
+            .then((res) => {
             return res.rows[0].nombre + ' ' + res.rows[0].apellido;
         });
     });

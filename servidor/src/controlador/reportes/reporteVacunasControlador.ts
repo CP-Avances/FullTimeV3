@@ -53,7 +53,7 @@ const BuscarVacunas = async function (id: number) {
         'ev.dosis_3, ev.fecha_1, ev.fecha_2, ev.fecha_3 FROM empl_vacuna AS ev WHERE ev.id_empleado = $1 ' +
         'ORDER BY ev.id DESC',
         [id])
-        .then(res => {
+        .then((res: any) => {
             return res.rows;
         })
 }

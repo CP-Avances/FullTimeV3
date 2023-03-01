@@ -93,7 +93,6 @@ export class EmpleadoHorariosService {
   }
 
 
-
   ActualizarDatos(datos: any) {
     return this.http.put(`${environment.url}/empleadoHorario`, datos);
   }

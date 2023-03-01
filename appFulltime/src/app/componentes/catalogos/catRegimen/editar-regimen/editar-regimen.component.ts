@@ -44,12 +44,12 @@ export class EditarRegimenComponent implements OnInit {
 
   // SEGUNDO FORMULARIO
   diasAcumulacionF = new FormControl('');
-  diasLaborablesF = new FormControl('');
-  diasCalendarioF = new FormControl('');
+  diasLaborablesF = new FormControl(null);
+  diasCalendarioF = new FormControl(null);
   periodoTresF = new FormControl('');
   periodoUnoF = new FormControl('');
   periodoDosF = new FormControl('');
-  diasLibresF = new FormControl('');
+  diasLibresF = new FormControl(null);
   licenciasF = new FormControl(false);
   permisosF = new FormControl(false);
   feriadosF = new FormControl(false);
@@ -79,10 +79,10 @@ export class EditarRegimenComponent implements OnInit {
   variableF: boolean = false;
 
   // CALCULOS DE VACACIONES
-  diasMesCalendarioF = new FormControl('');
-  diasMesLaborableF = new FormControl('');
-  dias_CalendarioF = new FormControl('');
-  dias_LaborableF = new FormControl('');
+  diasMesCalendarioF = new FormControl(null);
+  diasMesLaborableF = new FormControl(null);
+  dias_CalendarioF = new FormControl(null);
+  dias_LaborableF = new FormControl(null);
 
   idRegimen: string;
 

@@ -156,8 +156,8 @@ class EmpleadoControlador {
       `
       SELECT id, nombre, apellido FROM empleados ORDER BY apellido
       `
-    ).then(result => {
-      return result.rows.map(obj => {
+    ).then((result: any) => {
+      return result.rows.map((obj: any) => {
         return {
           id: obj.id,
           empleado: obj.apellido + ' ' + obj.nombre
@@ -217,7 +217,7 @@ class EmpleadoControlador {
           UPDATE empleados SET estado = 2 WHERE id = $1
           `
           , [obj])
-          .then(result => { });
+          .then((result: any) => { });
 
         // FALSE => YA NO TIENE ACCESO
         await pool.query(
@@ -225,7 +225,7 @@ class EmpleadoControlador {
           UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1
           `
           , [obj])
-          .then(result => { });
+          .then((result: any) => { });
       });
 
       return res.jsonp({ message: 'Usuarios inhabilitados exitosamente.' });
@@ -246,7 +246,7 @@ class EmpleadoControlador {
           UPDATE empleados SET estado = 1 WHERE id = $1
           `
           , [obj])
-          .then(result => { });
+          .then((result: any) => { });
 
         // TRUE => TIENE ACCESO
         await pool.query(
@@ -254,7 +254,7 @@ class EmpleadoControlador {
           UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1
           `
           , [obj])
-          .then(result => { });
+          .then((result: any) => { });
       });
 
       return res.jsonp({ message: 'Usuarios habilitados exitosamente.' });
@@ -273,7 +273,7 @@ class EmpleadoControlador {
           UPDATE empleados SET estado = 1 WHERE id = $1
           `
           , [obj])
-          .then(result => { });
+          .then((result: any) => { });
 
         // TRUE => TIENE ACCESO
         await pool.query(
@@ -281,7 +281,7 @@ class EmpleadoControlador {
           UPDATE usuarios SET estado = true, app_habilita = true WHERE id_empleado = $1
           `
           , [obj])
-          .then(result => { });
+          .then((result: any) => { });
         // REVISAR
         //EstadoHorarioPeriVacacion(obj);
       });
@@ -303,7 +303,7 @@ class EmpleadoControlador {
       `
       , [id]);
     if (unEmpleado.rowCount > 0) {
-      unEmpleado.rows.map(async (obj) => {
+      unEmpleado.rows.map(async (obj: any) => {
         if (obj.imagen != null) {
           try {
             // ELIMINAR IMAGEN DE SERVIDOR
@@ -348,7 +348,7 @@ class EmpleadoControlador {
         UPDATE empleados SET latitud = $1, longitud = $2 WHERE id = $3
         `
         , [lat, lng, id])
-        .then(result => { })
+        .then((result: any) => { })
       res.status(200).jsonp({ message: 'Registro actualizado.' });
     } catch (error) {
       res.status(400).jsonp({ message: error });
@@ -440,23 +440,6 @@ class EmpleadoControlador {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // BUSQUEDA DE DATOS DE EMPLEADO INGRESANDO EL NOMBRE
   public async BuscarEmpleadoNombre(req: Request, res: Response): Promise<any> {
     const { informacion } = req.body;
@@ -472,32 +455,14 @@ class EmpleadoControlador {
 
 
 
+
+
   // BUSQUEDA DE IMAGEN DE EMPLEADO
   public async BuscarImagen(req: Request, res: Response): Promise<any> {
     const imagen = req.params.imagen;
     let filePath = `servidor\\imagenesEmpleados\\${imagen}`
     res.sendFile(__dirname.split("servidor")[0] + filePath);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -521,23 +486,6 @@ class EmpleadoControlador {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // METODO PARA INGRESAR DATOS DE UBICACIÓN DEL USUARIO
   public async IngresarGelocalizacion(req: Request, res: Response): Promise<any> {
     let id = req.params.id;
@@ -547,7 +495,7 @@ class EmpleadoControlador {
     try {
       await pool.query('INSERT INTO ubicacion (t_latitud, t_longitud, h_latitud, h_longitud, codigo, id_empl) ' +
         'VALUES ($1, $2, $3, $4, $5, $6)', [t_lat, t_lng, h_lat, h_lng, codigo, id])
-        .then(result => {
+        .then((result: any) => {
           console.log(result.command);
         })
 
@@ -566,7 +514,7 @@ class EmpleadoControlador {
     try {
       await pool.query('UPDATE ubicacion SET h_latitud = $1, h_longitud = $2 WHERE id_empl = $3',
         [lat, lng, id])
-        .then(result => {
+        .then((result: any) => {
           console.log(result.command);
         })
 
@@ -585,7 +533,7 @@ class EmpleadoControlador {
     try {
       await pool.query('UPDATE ubicacion SET t_latitud = $1, t_longitud = $2 WHERE id_empl = $3',
         [lat, lng, id])
-        .then(result => {
+        .then((result: any) => {
           console.log(result.command);
         })
 
@@ -603,7 +551,7 @@ class EmpleadoControlador {
     try {
       await pool.query('UPDATE ubicacion SET t_latitud = $1, t_longitud = $2, h_latitud = $3, ' +
         'h_longitud = $4 WHERE id_empl = $5', [t_lat, t_lng, h_lat, h_lng, id])
-        .then(result => {
+        .then((result: any ) => {
           console.log(result);
         })
 
