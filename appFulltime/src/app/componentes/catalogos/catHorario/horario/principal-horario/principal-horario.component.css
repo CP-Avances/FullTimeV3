@@ -4,6 +4,14 @@
     color: white;
 }
 
+mat-form-field.input-tables {
+    margin-bottom: -5px;
+    font-size: 10px;
+    text-align: center;
+}
+
+.codigo { width: 80px; }
+
 .btn-sm {
     background-color: rgb(80, 87, 97);
     margin: 5px 10px 5px 10px;
@@ -90,6 +98,9 @@ p {
     background-color: rgb(0, 76, 255);
     padding-top: 10px;
     padding-bottom: 6px;
+    font-style: normal;
+    letter-spacing: 0px;
+    word-wrap: break-word;
 }
 
 #descargar {
@@ -102,4 +113,7 @@ p {
     overflow: hidden;
     padding-top: 10px;
     padding-bottom: 6px;
+    font-style: normal;
+    letter-spacing: 0px;
+    word-wrap: break-word;
 }

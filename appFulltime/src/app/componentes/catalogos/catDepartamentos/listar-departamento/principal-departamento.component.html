@@ -5,13 +5,13 @@
                 <span>DEPARTAMENTOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
-                <div class="d-flex flex-wrap justify-content-center">
-                    <input type="submit" class="btn btn-sm button" (click)="AbrirVentanaRegistrarDepartamento()"
-                        value="Crear departamento">
-                    <input type="submit" class="btn btn-sm button" (click)="LimpiarCampos()" matSuffix
+                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarDepartamento()"
+                        value="Crear departamento">Crear departamento</button>
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos."
-                        value="Mostrar lista">
+                        value="Mostrar lista">Mostrar lista </button>
                 </div>
             </mat-card>
         </div>

@@ -39,13 +39,13 @@
                     <tr>
                         <td></td>
                         <td>
-                            <mat-form-field class="input-tables codigo">
+                            <mat-form-field id="t-inputs" class="input-tables codigo">
                                 <input matInput placeholder="" [(ngModel)]="filtroCodigo" [formControl]="codigo"
                                     (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field class="input-tables nombre">
+                            <mat-form-field id="t-inputs" class="input-tables nombre">
                                 <input matInput placeholder="" [(ngModel)]="filtroNombre" [formControl]="nombre"
                                     type="text" (keypress)="IngresarSoloLetras($event)">
                                 <mat-error *ngIf="nombre.invalid">
@@ -54,7 +54,7 @@
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field class="input-tables cedula">
+                            <mat-form-field id="t-inputs" class="input-tables cedula">
                                 <input matInput placeholder="" [(ngModel)]="filtroCedula" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
