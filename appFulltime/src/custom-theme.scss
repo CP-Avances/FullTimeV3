@@ -12,10 +12,17 @@
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
 $appFulltime-primary: mat.define-palette(mat.$indigo-palette);
+<<<<<<< HEAD
 $appFulltime-accent: mat.define-palette(mat.$blue-palette);
 
 // The warn palette is optional (defaults to red).
 $appFulltime-warn: mat.define-palette(mat.$red-palette);
+=======
+$appFulltime-accent: mat-palette(mat.$blue-palette);
+
+// The warn palette is optional (defaults to red).
+$appFulltime-warn: mat-palette(mat.$red-palette);
+>>>>>>> 5859528 (Actualizacion Sistemas Fulltime3.0, 23 del 02 del 2023)
 
 //html,
   //body{
