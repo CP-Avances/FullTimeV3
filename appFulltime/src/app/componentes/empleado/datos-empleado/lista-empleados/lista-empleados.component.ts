@@ -727,7 +727,29 @@ export class ListaEmpleadosComponent implements OnInit {
     else {
       arreglo = this.desactivados
     }
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(arreglo);
+    // const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(arreglo);
+    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(arreglo.map(obj => {
+      let nacionalidad: any;
+      this.nacionalidades.forEach(element => {
+        if (obj.id_nacionalidad == element.id) {
+          nacionalidad = element.nombre;
+        }
+      });
+      return {
+        CODIGO: obj.codigo,
+        CEDULA: obj.cedula,
+        APELLIDO: obj.apellido,
+        NOMBRE: obj.nombre,
+        FECHA_NACIMIENTO: obj.fec_nacimiento.split("T")[0],
+        ESTADO_CIVIL: this.EstadoCivilSelect[obj.esta_civil - 1],
+        GENERO: this.GeneroSelect[obj.genero - 1],
+        CORREO: obj.correo,
+        ESTADO: this.EstadoSelect[obj.estado - 1],
+        DOMICILIO: obj.domicilio,
+        TELEFONO: obj.telefono,
+        NACIONALIDAD: nacionalidad,
+      }
+    }));
     const csvDataC = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataC], { type: 'text/csv;charset=utf-8;' });
     FileSaver.saveAs(data, "EmpleadosCSV" + new Date().getTime() + '.csv');

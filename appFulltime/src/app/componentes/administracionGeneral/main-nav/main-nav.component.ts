@@ -494,11 +494,7 @@ export class MainNavComponent implements OnInit {
             color: true,
             subtitulo: true,
             children: [
-              { name: 'Timbres', url: '/reporteTimbres', color: true },
-              { name: 'Atrasos', url: '/reporteAtrasos', color: true },
-              { name: 'Empleados', url: '/reporteEmpleados', color: true },
               { name: 'Entradas Salidas', url: '/reporteEntradaSalida', color: true },
-              { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos', color: true },
               { name: 'Asistencia Detalle Consolidado', url: '/reporteAsistenciaConsolidado', color: true },
             ]
           },
@@ -582,12 +578,15 @@ export class MainNavComponent implements OnInit {
             icono: 'group',
             color: true,
             children: [
+              // { name: 'Atrasos', url: '/reporteAtrasos', color: true },
               { name: 'Faltas', url: '/reporte-faltas', color: true },
-              //{ name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
+              { name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
               { name: 'Timbres', url: '/reporte-timbres-multiples', color: true },
               { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto', color: true },
               { name: 'Puntualidad', url: '/reporte-puntualidad', color: true },
               //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja', color: true },
+              { name: 'Empleados Activos', url: '/reporteEmpleados', color: true },
+              { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos', color: true },
               { name: 'Empleados Vacunados', url: '/lista-vacunados', color: true },
               //{ name: 'Timbre Incompleto', url: '/reporte-timbre-incompleto', color: true },
               //{ name: 'Salidas Anticipadas', url: '/salidas-anticipadas', color: true },

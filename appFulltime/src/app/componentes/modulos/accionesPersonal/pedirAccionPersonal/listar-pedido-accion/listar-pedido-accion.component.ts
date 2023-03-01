@@ -24,6 +24,8 @@ import { MainNavService } from "src/app/componentes/administracionGeneral/main-n
 import { ValidacionesService } from "src/app/servicios/validaciones/validaciones.service";
 import { ParametrosService } from "src/app/servicios/parametrosGenerales/parametros.service";
 import { EmpleadoService } from "src/app/servicios/empleado/empleadoRegistro/empleado.service";
+import { text } from 'express';
+import { Console } from "console";
 
 @Component({
   selector: "app-listar-pedido-accion",
@@ -49,6 +51,8 @@ export class ListarPedidoAccionComponent implements OnInit {
   // ALMACENAMIENTO DE DATOS CONSULTADOS
   empleado: any = [];
   idEmpleado: number; // VARIABLE DE ALMACENAMIENTO DE ID DE EMPLEADO QUE INICIA SESION
+  decreto: string[];
+  tipoAccion: string[];
 
   // METODO DE LLAMADO DE DATOS DE EMPRESA COLORES - LOGO - MARCA DE AGUA
   get s_color(): string {
@@ -222,6 +226,7 @@ export class ListarPedidoAccionComponent implements OnInit {
   empleado_1: any = [];
   empleado_2: any = [];
   empleado_3: any = [];
+  empleado_4: any = [];
 
   buscarProcesos: any = [];
   empleadoProcesos: any = [];
@@ -238,6 +243,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     this.empleado_1 = [];
     this.empleado_2 = [];
     this.empleado_3 = [];
+    this.empleado_4 = [];
     this.procesoPropuesto = [];
     this.procesoActual = [];
     this.buscarProcesos = [];
@@ -248,6 +254,8 @@ export class ListarPedidoAccionComponent implements OnInit {
       this.datosPedido = data;
       console.log("data pedido", this.datosPedido);
       this.BuscarPedidoEmpleado(this.datosPedido);
+      this.ObtenerDecreto();
+      this.ObtenerTipoAccion();
     });
   }
 
@@ -331,7 +339,11 @@ export class ListarPedidoAccionComponent implements OnInit {
           )
           .subscribe((data3) => {
             this.empleado_3 = data3;
-            this.VerificarDatos();
+            this.restAccion.BuscarDatosPedidoEmpleados(parseInt(this.datosPedido[0].id_empl_responsable))
+            .subscribe((data4)=>{
+              this.empleado_4 = data4;
+              this.VerificarDatos();
+            });
           });
       });
   }
@@ -474,12 +486,14 @@ export class ListarPedidoAccionComponent implements OnInit {
     switch (action) {
       case "open":
         pdfMake.createPdf(documentDefinition).open();
+        this.generarExcel();
         break;
       case "print":
         pdfMake.createPdf(documentDefinition).print();
         break;
       case "download":
         pdfMake.createPdf(documentDefinition).download();
+        this.generarExcel();
         break;
       default:
         pdfMake.createPdf(documentDefinition).open();
@@ -530,6 +544,63 @@ export class ListarPedidoAccionComponent implements OnInit {
       },
     };
   }
+
+  //METODO PARA MOSTRAR EL TIPO DE DECRETO-ACUERDO-RESOLUCION
+  ObtenerDecreto() {
+    this.decreto = ["", "", "", ""];
+    let decretoTexto: string = "";
+    if (this.datosPedido[0].decre_acue_resol!==null) {
+      try {
+        this.restAccion
+          .ConsultarUnDecreto(this.datosPedido[0].decre_acue_resol)
+          .subscribe((data8) => {
+            decretoTexto = data8[0].descripcion;
+            let texto: string = decretoTexto.toUpperCase(); 
+            switch (texto) {
+              case "DECRETO":
+                this.decreto[0] = "X";
+                break;
+              case "ACUERDO":
+                this.decreto[1] = "X";
+                break;
+              case "RESOLUCIÓN" || "RESOLUCION":
+                this.decreto[2] = "X";
+                break;
+              default:
+                this.decreto[3] = texto;
+                break;
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  //METODO PARA OBTENER MOSTRAR EL TIPO DE ACCION
+  ObtenerTipoAccion(){
+    let tipoAccion: string = this.datosPedido[0].tipo.toUpperCase();
+    let cadena = this.RemoveAccents(tipoAccion);
+    this.tipoAccion = ['','','','','','','','','','','','','','','','','','','','','','',''];
+    let acciones: string[] = ['INGRESO','NOMBRAMIENTO','ASCENSO','SUBROGACION','ENCARGO:',
+    'VACACIONES','TRASLADO','TRASPASO','CAMBIO ADMINISTRATIVO','INTERCAMBIO',
+    'COMISION DE SERVICIOS','LICENCIA','REVALORIZACION','RECLASIFICACION','UBICACION',
+    'REINTEGRO','REINSTITUCIONAL','RENUNCIA','SUPRESION','DESTITUCION','REMOCION','JUBILACION'];
+    let indice = acciones.indexOf(cadena);
+    if (indice!==-1) {
+      this.tipoAccion[indice]='X';
+    } else {
+      this.tipoAccion[22]=tipoAccion;
+    }
+    console.log("Obtener tipo de accion")
+    console.log(tipoAccion);
+    console.log(cadena);
+  }
+
+  //Metodo para quitar las tildes
+  RemoveAccents = (str: string) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  } 
 
   PresentarHoja1_Parte_1() {
     return {
@@ -593,9 +664,9 @@ export class ListarPedidoAccionComponent implements OnInit {
                           style: "itemsTable",
                         },
                         {
-                          text: moment(
-                            this.datosPedido[0].fec_rige_desde
-                          ).format("DD MMMM YYYY"),
+                          text: moment(this.datosPedido[0].fec_creacion).format(
+                            "DD MMMM YYYY"
+                          ),
                           style: "itemsTable_c",
                         },
                       ],
@@ -616,6 +687,7 @@ export class ListarPedidoAccionComponent implements OnInit {
   }
 
   PresentarHoja1_Parte_2() {
+    console.log(this.decreto);
     return {
       table: {
         widths: ["*"],
@@ -627,24 +699,83 @@ export class ListarPedidoAccionComponent implements OnInit {
               table: {
                 body: [
                   [
-                    {
-                      text: [
-                        { text: "DECRETO: ", style: "itemsTable_c" },
+                    // {
+                      // text: [
+                        { text: "DECRETO: ", style: "itemsTable_c",
+                          margin: [5,5,0,0]},
                         {
-                          text: "----------------------------------------------------",
+                          border: [true,true,true,true],
+                          
+                          table:{
+                            widths: [9],
+                            heights: [9],
+                            body: [
+                              [ {text: `${this.decreto[0]}`,style: "itemsTable_c",alignment: 'center',},]
+                            ]
+                          },
+                          layout: {
+                            defaultBorder: true,
+                          },
+                        },
+                        {
+                          text: "---------------------------",
                           color: "white",
                           style: "itemsTable",
                         },
-                        { text: "ACUERDO:", style: "itemsTable_c" },
+                        { text: "ACUERDO: ", style: "itemsTable_c",
+                          margin: [5,5,0,0]},
                         {
-                          text: "----------------------------------------------------",
+                          border: [true,true,true,true],
+                          table:{
+                            widths: [9],
+                            heights: [9],
+                            body: [
+                              [ {text: `${this.decreto[1]}`,style: "itemsTable_c",alignment: 'center',},]
+                            ]
+                          },
+                          layout: {
+                            defaultBorder: true,
+                          },
+                        },
+                        {
+                          text: "---------------------------",
                           color: "white",
                           style: "itemsTable",
                         },
-                        { text: "RESOLUCIÓN:", style: "itemsTable_c" },
-                      ],
-                      margin: [85, 6, 0, 0],
-                    },
+                        { text: "RESOLUCIÓN: ", style: "itemsTable_c",margin: [5,5,0,0]},
+                        {
+                          border: [true,true,true,true],
+                          table:{
+                            widths: [9],
+                            heights: [9],
+                            body: [
+                              [ {text: `${this.decreto[2]}`,style: "itemsTable_c",alignment: 'center',},]
+                            ]
+                          },
+                          layout: {
+                            defaultBorder: true
+                          },
+                        },
+                        {
+                          text: "---------------------------",
+                          color: "white",
+                          style: "itemsTable",
+                        },
+                        { text: "OTRO: ", style: "itemsTable_c"},
+                        {
+                          border: [false,false,false,true],
+                          table:{
+                            heights: [9],
+                            body: [
+                              [{text: `${this.decreto[3]}`},],
+                              // [{text: "---------------------", color: "white"}]
+                            ]
+                          },
+                          layout: "lightHorizontalLines",
+                        },
+                      // ],
+                      // margin: [10, 6, 0, 0],
+                    // },
                   ],
                 ],
               },
@@ -663,7 +794,7 @@ export class ListarPedidoAccionComponent implements OnInit {
     return {
       table: {
         widths: ["auto", "*", "auto", "*"],
-        heights: [20],
+        heights: [10],
         body: [
           [
             {
@@ -721,6 +852,7 @@ export class ListarPedidoAccionComponent implements OnInit {
                       text: this.empleado_1[0].apellido.toUpperCase(),
                       style: "itemsTable_c",
                       margin: [0, 6, 0, 0],
+                      // alignment: 'center',
                     },
                   ],
                   [
@@ -743,6 +875,7 @@ export class ListarPedidoAccionComponent implements OnInit {
                       text: this.empleado_1[0].nombre.toUpperCase(),
                       style: "itemsTable_c",
                       margin: [0, 6, 0, 0],
+                      // alignment: 'center',
                     },
                   ],
                   [
@@ -1026,37 +1159,37 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: [{ text: "INGRESO:", style: "itemsTable" }],
+                      text: [{ text: "INGRESO: ", style: "itemsTable" }, {text:this.tipoAccion[0]}],
                       margin: [15, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "NOMBRAMIENTO:", style: "itemsTable" }],
+                      text: [{ text: "NOMBRAMIENTO: ", style: "itemsTable" }, {text:this.tipoAccion[1]}],
                       margin: [15, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "ASCENSO:", style: "itemsTable" }],
+                      text: [{ text: "ASCENSO: ", style: "itemsTable" }, {text:this.tipoAccion[2]}],
                       margin: [15, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "SUBROGACIÓN:", style: "itemsTable" }],
+                      text: [{ text: "SUBROGACIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[3]}],
                       margin: [15, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "ENCARGO:", style: "itemsTable" }],
+                      text: [{ text: "ENCARGO: ", style: "itemsTable" }, {text:this.tipoAccion[4]}],
                       margin: [15, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "VACACIONES:", style: "itemsTable" }],
+                      text: [{ text: "VACACIONES: ", style: "itemsTable" }, {text:this.tipoAccion[5]}],
                       margin: [15, 0, 0, 0],
                     },
                   ],
@@ -1070,41 +1203,41 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: [{ text: "TRASLADO:", style: "itemsTable" }],
+                      text: [{ text: "TRASLADO: ", style: "itemsTable" }, {text:this.tipoAccion[6]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "TRASPASO:", style: "itemsTable" }],
-                      margin: [5, 0, 0, 0],
-                    },
-                  ],
-                  [
-                    {
-                      text: [
-                        { text: "CAMBIO ADMINISTRATIVO:", style: "itemsTable" },
-                      ],
-                      margin: [5, 0, 0, 0],
-                    },
-                  ],
-                  [
-                    {
-                      text: [{ text: "INTERCAMBIO:", style: "itemsTable" }],
+                      text: [{ text: "TRASPASO: ", style: "itemsTable" }, {text:this.tipoAccion[7]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
                       text: [
-                        { text: "COMISIÓN DE SERVICIOS:", style: "itemsTable" },
+                        { text: "CAMBIO ADMINISTRATIVO: ", style: "itemsTable" }, {text:this.tipoAccion[8]},
                       ],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "LICENCIA:", style: "itemsTable" }],
+                      text: [{ text: "INTERCAMBIO: ", style: "itemsTable" }, {text:this.tipoAccion[9]}],
+                      margin: [5, 0, 0, 0],
+                    },
+                  ],
+                  [
+                    {
+                      text: [
+                        { text: "COMISIÓN DE SERVICIOS: ", style: "itemsTable" }, {text:this.tipoAccion[10]},
+                      ],
+                      margin: [5, 0, 0, 0],
+                    },
+                  ],
+                  [
+                    {
+                      text: [{ text: "LICENCIA: ", style: "itemsTable" }, {text:this.tipoAccion[11]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
@@ -1118,37 +1251,37 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: [{ text: "REVALORIZACIÓN:", style: "itemsTable" }],
+                      text: [{ text: "REVALORIZACIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[12]}],
                       margin: [10, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "RECLASIFICACIÓN:", style: "itemsTable" }],
+                      text: [{ text: "RECLASIFICACIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[13]}],
                       margin: [10, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "UBICACIÓN:", style: "itemsTable" }],
+                      text: [{ text: "UBICACIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[14]}],
                       margin: [10, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "REINTEGRO:", style: "itemsTable" }],
+                      text: [{ text: "REINTEGRO: ", style: "itemsTable" }, {text:this.tipoAccion[15]}],
                       margin: [10, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "REINSTITUCIONAL:", style: "itemsTable" }],
+                      text: [{ text: "REINSTITUCIONAL: ", style: "itemsTable" }, {text:this.tipoAccion[16]}],
                       margin: [10, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "RENUNCIA:", style: "itemsTable" }],
+                      text: [{ text: "RENUNCIA: ", style: "itemsTable" }, {text:this.tipoAccion[17]}],
                       margin: [10, 0, 0, 0],
                     },
                   ],
@@ -1162,78 +1295,80 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: [{ text: "SUPRESIÓN:", style: "itemsTable" }],
+                      text: [{ text: "SUPRESIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[18]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "DESTITUCIÓN:", style: "itemsTable" }],
+                      text: [{ text: "DESTITUCIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[19]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "REMOCIÓN:", style: "itemsTable" }],
+                      text: [{ text: "REMOCIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[20]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      text: [{ text: "JUBILACIÓN:", style: "itemsTable" }],
+                      text: [{ text: "JUBILACIÓN: ", style: "itemsTable" }, {text:this.tipoAccion[21]}],
                       margin: [5, 0, 0, 0],
                     },
                   ],
                   [
                     {
-                      table: {
-                        widths: ["auto", "*"],
-                        body: [
-                          [
-                            {
-                              border: [false, false, false, false],
-                              table: {
-                                body: [
-                                  [
-                                    {
-                                      text: [
-                                        { text: "OTRO:", style: "itemsTable" },
-                                      ],
-                                    },
-                                  ],
-                                ],
-                              },
-                              layout: "noBorders",
-                            },
-                            {
-                              border: [false, false, false, false],
-                              table: {
-                                margin: [10, -20, 0, 0],
-                                body: [
-                                  [
-                                    {
-                                      text: "---------------------",
-                                      color: "white",
-                                      style: "itemsTable",
-                                    },
-                                  ],
-                                  [
-                                    {
-                                      text: "---------------------",
-                                      color: "white",
-                                      style: "itemsTable",
-                                    },
-                                  ],
-                                ],
-                              },
-                              layout: "lightHorizontalLines",
-                            },
-                          ],
-                        ],
-                      },
-                      layout: {
-                        defaultBorder: false,
-                      },
+                      text: [{ text: "OTRO: ", style: "itemsTable" }, {text:this.tipoAccion[22]}],
+                      margin: [5, 0, 0, 0],
+                      // table: {
+                      //   widths: ["auto", "*"],
+                      //   body: [
+                      //     [
+                      //       {
+                      //         border: [false, false, false, false],
+                      //         table: {
+                      //           body: [
+                      //             [
+                      //               {
+                      //                 text: [
+                      //                   { text: "OTRO: ", style: "itemsTable" },
+                      //                 ],
+                      //               },
+                      //             ],
+                      //           ],
+                      //         },
+                      //         layout: "noBorders",
+                      //       },
+                      //       {
+                      //         border: [false, false, false, false],
+                      //         table: {
+                      //           margin: [10, -20, 0, 0],
+                      //           body: [
+                      //             [
+                      //               {
+                      //                 text: this.tipoAccion[22],
+                      //                 color: "black",
+                      //                 style: "itemsTable",
+                      //               },
+                      //             ],
+                      //             [
+                      //               {
+                      //                 text: "---------------------",
+                      //                 color: "white",
+                      //                 style: "itemsTable",
+                      //               },
+                      //             ],
+                      //           ],
+                      //         },
+                      //         layout: "lightHorizontalLines",
+                      //       },
+                      //     ],
+                      //   ],
+                      // },
+                      // layout: {
+                      //   defaultBorder: false,
+                      // },
                     },
                   ],
                 ],
@@ -1562,8 +1697,8 @@ export class ListarPedidoAccionComponent implements OnInit {
                         {
                           text:
                             "PARTIDA PRESUPUESTARIA: " +
-                            "  " +
-                            this.datosPedido[0].tipo.toUpperCase() +
+                            // "  " +
+                            // this.datosPedido[0].tipo.toUpperCase() +
                             "\n" +
                             this.datosPedido[0].num_partida,
                           style: "itemsTable",
@@ -1856,7 +1991,7 @@ export class ListarPedidoAccionComponent implements OnInit {
                                 body: [
                                   [
                                     {
-                                      text: this.salario_propuesto,
+                                      text: this.datosPedido[0].salario_propuesto,
                                       style: "itemsTable",
                                       color: this.texto_color_salario,
                                     },
@@ -1960,8 +2095,8 @@ export class ListarPedidoAccionComponent implements OnInit {
                         body: [
                           [
                             {
-                              text: "-------------------------------",
-                              color: "white",
+                              text: this.datosPedido[0].act_final_concurso,
+                              color: "black",
                               style: "itemsTable",
                             },
                           ],
@@ -1988,8 +2123,10 @@ export class ListarPedidoAccionComponent implements OnInit {
                         body: [
                           [
                             {
-                              text: "------------------------------",
-                              color: "white",
+                              text: moment(this.datosPedido[0].fec_act_final_concurso).format(
+                                "DD MMMM YYYY"
+                              ),
+                              color: "black",
                               style: "itemsTable",
                             },
                           ],
@@ -2239,7 +2376,7 @@ export class ListarPedidoAccionComponent implements OnInit {
                           [
                             {
                               text: moment(
-                                this.datosPedido[0].fec_rige_desde
+                                this.datosPedido[0].fec_creacion
                               ).format("DD MMMM YYYY"),
                               style: "itemsTable",
                             },
@@ -2283,7 +2420,15 @@ export class ListarPedidoAccionComponent implements OnInit {
                               style: "itemsTable",
                             },
                           ],
-                          [{ text: "Nombre:", style: "itemsTable" }],
+                          [
+                            { 
+                              text: this.empleado_4[0].apellido.toUpperCase() + 
+                                    this.empleado_4[0].nombre.toUpperCase() +
+                                    "\n RESPONSABLE DEL REGISTRO" , 
+                              style: "itemsTable",
+                              alignment: "center",
+                            }
+                          ],
                         ],
                       },
                       layout: "lightHorizontalLines",
@@ -2410,8 +2555,9 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: "--------------------------------------------",
-                      color: "white",
+                      text: this.datosPedido[0].nombre_reemp.toUpperCase(),
+                      color: "black",
+                      style: "itemsTable"
                     },
                   ],
                   [
@@ -2436,8 +2582,9 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: "--------------------------------------------",
-                      color: "white",
+                      text:this.datosPedido[0].puesto_reemp.toUpperCase(),
+                      color: "black",
+                      style: "itemsTable"
                     },
                   ],
                   [
@@ -2529,8 +2676,9 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: "----------------------------------------------",
-                      color: "white",
+                      text: this.datosPedido[0].num_accion_reemp,
+                      color: "black",
+                      style: "itemsTable"
                     },
                   ],
                   [
@@ -2555,8 +2703,11 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: "-------------------------------------------",
-                      color: "white",
+                      text: moment(
+                        this.datosPedido[0].primera_fecha_reemp
+                      ).format("DD MMMM YYYY"),
+                      color: "black",
+                      style: "itemsTable"
                     },
                   ],
                   [
@@ -2730,8 +2881,9 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: "------------------------------------------------",
-                      color: "white",
+                      text: this.empleado_1[0].apellido.toUpperCase() + this.empleado_1[0].nombre.toUpperCase(),
+                      color: "black",
+                      style: "itemsTable",
                     },
                   ],
                   [
@@ -2758,8 +2910,9 @@ export class ListarPedidoAccionComponent implements OnInit {
                 body: [
                   [
                     {
-                      text: "------------------------------------------------",
-                      color: "white",
+                      text: this.empleado_1[0].cedula.toUpperCase(),
+                      color: "black",
+                      style: "itemsTable",
                     },
                   ],
                   [
@@ -3004,6 +3157,171 @@ export class ListarPedidoAccionComponent implements OnInit {
       },
     };
   }
+
+    /* ****************************************************************************************************
+   *                               PARA LA EXPORTACIÓN DE ARCHIVOS XLSX INDIVIDUAL
+   * ****************************************************************************************************/
+
+  generarExcel(){
+    const workbook = xlsx.utils.book_new();
+    const worksheet = xlsx.utils.aoa_to_sheet([]);
+
+    //ESTABLECER TAMAÑO DE LAS COLUMNAS
+    const columnas = [
+      { width: 5 },
+      { width: 3 },
+      { width: 16 },
+      { width: 3 },
+      { width: 3 },
+      { width: 24 },
+      { width: 3 },
+      { width: 3 },
+      { width: 16 },
+      { width: 3 },
+      { width: 3 },
+      { width: 12 },
+      { width: 3 },
+      { width: 3 },
+      { width: 18 },
+      { width: 3 },
+    ];
+    worksheet['!cols'] = columnas;
+    
+    // DEFINE LOS RANGOS DE LAS CELDAS A UNIR
+    const mergeRange1 = 'C2:I4';
+    const mergeRange2 = 'K2:P2';
+    const mergeRange3 = 'N3:O3';
+    const mergeRange4 = 'N4:O4';
+    const mergeRange5 = 'J7:L7';
+    const mergeRange6 = 'C9:H9';
+    const mergeRange7 = 'C10:H10';
+    const mergeRange8 = 'I9:O9';
+    const mergeRange9 = 'I10:O10';
+    const mergeRange10 = 'C11:F11';
+    const mergeRange11 = 'C12:F12';
+    const mergeRange12 = 'G11:K11';
+    const mergeRange13 = 'G12:K12';
+    const mergeRange14 = 'L11:O11';
+    const mergeRange15 = 'L12:O12';
+    const mergeRange16 = 'C13:O13';
+    const mergeRange17 = 'D14:O14';
+    const mergeRange18 = 'C15:O15';
+
+    // UNE LAS CELDAS
+    const merges = [
+      { s: xlsx.utils.decode_range(mergeRange1).s, e: xlsx.utils.decode_range(mergeRange1).e },
+      { s: xlsx.utils.decode_range(mergeRange2).s, e: xlsx.utils.decode_range(mergeRange2).e },
+      { s: xlsx.utils.decode_range(mergeRange3).s, e: xlsx.utils.decode_range(mergeRange3).e },
+      { s: xlsx.utils.decode_range(mergeRange4).s, e: xlsx.utils.decode_range(mergeRange4).e },
+      { s: xlsx.utils.decode_range(mergeRange5).s, e: xlsx.utils.decode_range(mergeRange5).e },
+      { s: xlsx.utils.decode_range(mergeRange6).s, e: xlsx.utils.decode_range(mergeRange6).e },
+      { s: xlsx.utils.decode_range(mergeRange7).s, e: xlsx.utils.decode_range(mergeRange7).e },
+      { s: xlsx.utils.decode_range(mergeRange8).s, e: xlsx.utils.decode_range(mergeRange8).e },
+      { s: xlsx.utils.decode_range(mergeRange9).s, e: xlsx.utils.decode_range(mergeRange9).e },
+      { s: xlsx.utils.decode_range(mergeRange10).s, e: xlsx.utils.decode_range(mergeRange10).e },
+      { s: xlsx.utils.decode_range(mergeRange11).s, e: xlsx.utils.decode_range(mergeRange11).e },
+      { s: xlsx.utils.decode_range(mergeRange12).s, e: xlsx.utils.decode_range(mergeRange12).e },
+      { s: xlsx.utils.decode_range(mergeRange13).s, e: xlsx.utils.decode_range(mergeRange13).e },
+      { s: xlsx.utils.decode_range(mergeRange14).s, e: xlsx.utils.decode_range(mergeRange14).e },
+      { s: xlsx.utils.decode_range(mergeRange15).s, e: xlsx.utils.decode_range(mergeRange15).e },
+      { s: xlsx.utils.decode_range(mergeRange16).s, e: xlsx.utils.decode_range(mergeRange16).e },
+      { s: xlsx.utils.decode_range(mergeRange17).s, e: xlsx.utils.decode_range(mergeRange17).e },
+      { s: xlsx.utils.decode_range(mergeRange18).s, e: xlsx.utils.decode_range(mergeRange18).e }
+    ];
+
+    worksheet['!merges'] = merges;
+
+
+    //VARIABLES AUXILIARES PARA LOS DATOS
+    let fecha1 = moment(this.datosPedido[0].fec_creacion).format(
+      "DD MMMM YYYY");
+    let fecha2 = moment(this.datosPedido[0].fec_rige_desde).format(
+      "dddd DD MMMM YYYY");
+    let nombreEmpleado = this.empleado_1[0].nombre.toUpperCase();
+    let apellidoEmpleado = this.empleado_1[0].apellido.toUpperCase();
+
+    //AGREGA LOS DATOS A LAS CELDAS CORRESPONDIENTES
+    xlsx.utils.sheet_add_aoa(worksheet, [['ACCIÓN DE PERSONAL']], {origin: 'K2'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['N°']], {origin: 'L3'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.datosPedido[0].identi_accion_p]], {origin: 'N3'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['FECHA:']], {origin: 'L4'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[fecha1]], {origin: 'N4'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['DECRETO:']], {origin: 'C5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.decreto[0]]], {origin: 'D5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['ACUERDO:']], {origin: 'F5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.decreto[1]]], {origin: 'G5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['RESOLUCIÓN:']], {origin: 'I5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.decreto[2]]], {origin: 'J5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['OTRO:']], {origin: 'L5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.decreto[3]]], {origin: 'O5'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['N°']], {origin: 'E7'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['FECHA:']], {origin: 'I7'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[apellidoEmpleado]], {origin: 'C9'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['APELLIDO']], {origin: 'C10'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[nombreEmpleado]], {origin: 'I9'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['NOMBRE']], {origin: 'I10'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['N°. de cédula de ciudadanía']], {origin: 'C11'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.empleado_1[0].cedula]], {origin: 'C11'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['N°. de afiliación IESS']], {origin: 'G11'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['Rige a partir de:']], {origin: 'L11'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[fecha2]], {origin: 'L11'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['EXPLICACIÓN:']], {origin: 'C13'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['BASE LEGAL:']], {origin: 'C14'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.datosPedido[0].base_legal]], {origin: 'D14'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.datosPedido[0].adicion_legal]], {origin: 'C15'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['INGRESO:']], {origin: 'C18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[0]]], {origin: 'D18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['NOMBRAMIENTO:']], {origin: 'C20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[1]]], {origin: 'D20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['ASCENSO:']], {origin: 'C22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[2]]], {origin: 'D22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['SUBROGACIÓN:']], {origin: 'C24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[3]]], {origin: 'D24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['ENCARGO:']], {origin: 'C26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[4]]], {origin: 'D26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['VACACIONES:']], {origin: 'C28'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[5]]], {origin: 'D28'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['TRASLADO:']], {origin: 'F18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[6]]], {origin: 'G18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['TRASPASO:']], {origin: 'F20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[7]]], {origin: 'G20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['CAMBIO ADMINISTRATIVO:']], {origin: 'F22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[8]]], {origin: 'G22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['INTERCAMBIO:']], {origin: 'F24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[9]]], {origin: 'G24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['COMISIÓN DE SERVICIOS:']], {origin: 'F26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[10]]], {origin: 'G26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['LICENCIA:']], {origin: 'F28'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[11]]], {origin: 'G28'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['REVALORIZACIÓN:']], {origin: 'I18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[12]]], {origin: 'J18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['RECLASIFICACIÓN:']], {origin: 'I20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[13]]], {origin: 'J20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['UBICACIÓN:']], {origin: 'I22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[14]]], {origin: 'J22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['REINTREGO:']], {origin: 'I24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[15]]], {origin: 'J24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['REINSTITUCIONAL:']], {origin: 'I26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[16]]], {origin: 'J26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['RENUNCIA:']], {origin: 'I28'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[17]]], {origin: 'J28'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['SUPRESION:']], {origin: 'L18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[18]]], {origin: 'M18'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['DESTITUCION:']], {origin: 'L20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[19]]], {origin: 'M20'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['REMOCION:']], {origin: 'L22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[20]]], {origin: 'M22'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['JUBILACION:']], {origin: 'L24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[21]]], {origin: 'M24'});
+    xlsx.utils.sheet_add_aoa(worksheet, [['OTRO:']], {origin: 'L26'});
+    xlsx.utils.sheet_add_aoa(worksheet, [[this.tipoAccion[22]]], {origin: 'O26'});
+    
+    // Agrega la hoja de trabajo al libro y descarga el archivo
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Hoja 1');
+    xlsx.writeFile(workbook, 'ejemplo.xlsx');
+
+  }
+  
 
   LimpiarCampos() {
     this.codigo.reset();
@@ -3278,7 +3596,19 @@ export class ListarPedidoAccionComponent implements OnInit {
    ** ************************************************************************************************** **/
 
   ExportToCVS() {
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.listaPedidos);
+    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(
+      this.listaPedidos.map((obj) => {
+        return {
+          Codigo: obj.id,
+          Cedula: obj.cedula,
+          Empleado: obj.apellido + " " + obj.nombre,
+          Fecha_creacion: obj.fecCreacion_,
+          Rige_desde: obj.fecDesde_,
+          Rige_hasta: obj.fecHasta_,
+          Numero_partida: obj.num_partida,
+        };
+      })
+    );
     const csvDataC = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataC], {
       type: "text/csv;charset=utf-8;",
