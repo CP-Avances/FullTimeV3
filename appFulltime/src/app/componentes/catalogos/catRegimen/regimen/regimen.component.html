@@ -122,8 +122,8 @@
                     </div>
                 </form>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <a [routerLink]="['/listarRegimen']" class="btn btn-sm button">Atrás</a>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" type="submit" class="float-left" [routerLink]="['/listarRegimen']">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
 
@@ -313,8 +313,8 @@
                     </div>
                 </form>
                 <div>
-                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right" [disabled]="siguiente">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious>Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right" [disabled]="siguiente">Siguiente</button>
                 </div>
             </mat-step>
 
@@ -557,12 +557,12 @@
                         </div>
                     </div>
                     <div style="text-align: center;">
-                        <button matStepperPrevious class="btn btn-sm float-left">Atrás</button>
-                        <button
+                        <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                        <button mat-raised-button id="btn-raised"
                             (click)="VerificarRegistro(primerFormulario.value, segundoFormulario.value, tercerFormulario.value)"
-                            [disabled]="activar_guardar" class="btn btn-sm">Guardar
+                            [disabled]="activar_guardar">Guardar
                         </button>
-                        <button (click)="CerrarVentana()" class="btn btn-sm float-right">Cancelar</button>
+                        <button mat-raised-button id="btn-raised" (click)="CerrarVentana()" class="float-right">Cancelar</button>
                     </div>
                 </form>
             </mat-step>

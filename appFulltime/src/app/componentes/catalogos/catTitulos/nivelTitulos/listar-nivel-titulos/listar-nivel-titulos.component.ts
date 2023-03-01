@@ -112,7 +112,7 @@ export class ListarNivelTitulosComponent implements OnInit {
 
   // METODO PARA REGISTRAR NIVEL DE TITULO
   AbrirVentanaNivelTitulo(): void {
-    this.ventana.open(RegistrarNivelTitulosComponent, { width: '400px' })
+    this.ventana.open(RegistrarNivelTitulosComponent, { width: '500px' })
       .afterClosed().subscribe(items => {
         this.ObtenerNiveles();
       });
@@ -151,7 +151,7 @@ export class ListarNivelTitulosComponent implements OnInit {
 
   // METODO PARA EDITAR NIVEL DE TITULO
   AbrirVentanaEditarTitulo(datosSeleccionados: any): void {
-    this.ventana.open(EditarNivelTituloComponent, { width: '400px', data: datosSeleccionados })
+    this.ventana.open(EditarNivelTituloComponent, { width: '450px', data: datosSeleccionados })
       .afterClosed().subscribe(items => {
         this.ObtenerNiveles();
       });

@@ -12,7 +12,7 @@
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
         <li class="material-tree-node" *ngIf="!barraInicial; else showItemsMenu">
           <ul>
-            <a class="btn btn-sm btn-block" [ngClass]="{active: node.name == nombreSelect}" *ngIf="node.color === true"
+            <a class="btn btn-sm btn-block"  [ngClass]="{active: node.name == nombreSelect}" *ngIf="node.color === true"
               (click)="manejarEstadoActivo(node.name);" [routerLink]="[node.url]">
               <mat-icon id="icono-menu_" style="float: left;">done</mat-icon>
               <p style="float: left; margin-top: 4%; margin-bottom: -2%; margin-left: -3%;"> {{node.name}}</p>
