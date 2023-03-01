@@ -44,10 +44,6 @@ mat-tree-node{
 
 .btn-block{
   padding: -1%;
-<<<<<<< HEAD
-=======
-  margin: -1% -5% 1% 1%;
->>>>>>> b39b08b (Actualizacion fulltime 4.0, 27/02/2023)
   text-align: left;
   font-size: 12px;
   color: rgb(17, 167, 236);
@@ -209,16 +205,9 @@ a.mat-menu-item.noti_menu:hover {
 
 .material-tree-node {
   border-left: 3px solid rgb(5, 162, 253);
-<<<<<<< HEAD
   margin-left: 11%;
   background: transparent;
   width: 100%;
-=======
-  margin-left: 10%;
-  margin-right: -5%;
-  padding: 0%;
-  width: 90%;
->>>>>>> b39b08b (Actualizacion fulltime 4.0, 27/02/2023)
 }
 
 .degradado {
