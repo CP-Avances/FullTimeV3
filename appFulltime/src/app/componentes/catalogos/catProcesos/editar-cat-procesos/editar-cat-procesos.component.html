@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR PROCESOS</span>
+    <mat-icon class="float-right" id="cerrar" (click)="Salir()">highlight_off</mat-icon>
 </div>
 <div style="text-align: center">
     <form [formGroup]="nuevoProcesoForm">
@@ -49,9 +50,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <input type="submit" class="btn btn-sm" (click)="insertarProceso(nuevoProcesoForm.value)"
-            [disabled]="!nuevoProcesoForm.valid" value="Guardar">
-        <input type="submit" class="btn btn-sm" (click)="Salir()" value="Salir">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="insertarProceso(nuevoProcesoForm.value)"
+            [disabled]="!nuevoProcesoForm.valid">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="Salir()">Salir</button-->
     </div>
 </div>

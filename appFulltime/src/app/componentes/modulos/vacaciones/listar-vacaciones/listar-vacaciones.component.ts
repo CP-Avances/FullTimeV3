@@ -320,7 +320,7 @@ export class ListarVacacionesComponent implements OnInit {
       console.log('ver vacaciones ', res)
       this.ventana.open(EditarVacacionesEmpleadoComponent,
         {
-          width: '900px',
+          width: '450px',
           data: {
             info: this.vacaciones_lista[0], id_empleado: this.vacaciones_lista[0].id_empleado,
             id_contrato: this.vacaciones_lista[0].id_contrato

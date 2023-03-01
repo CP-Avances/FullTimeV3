@@ -1,10 +1,11 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        EDITAR PLANIFICACION SERVICIO ALIMENTACIÓN</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarRegistroPlanificacion()">highlight_off</mat-icon>
+</div>
 <!-- FORMULARIO DE PLANIFICACIÓN DE SERVICIO DE ALIMENTACIÓN -->
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            EDITAR PLANIFICACION SERVICIO ALIMENTACIÓN</span>
-    </div>
     <div class="nota">
         <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
             Guardar.</span>
@@ -108,9 +109,9 @@
             </mat-form-field>
         </div>
     </form>
-    <div style="text-align: center;">
-        <input type="submit" class="btn btn-sm" (click)="InsertarPlanificacion(PlanificacionComidasForm.value)"
-            [disabled]="!PlanificacionComidasForm.valid" value="Guardar">
-        <input type="submit" class="btn btn-sm" (click)="CerrarRegistroPlanificacion()" value="Salir">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarPlanificacion(PlanificacionComidasForm.value)"
+            [disabled]="!PlanificacionComidasForm.valid">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarRegistroPlanificacion()">Salir</button-->
     </div>
 </div>
