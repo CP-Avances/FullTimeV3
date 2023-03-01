@@ -5,11 +5,11 @@
                 <span>NIVELES DE TÍTULOS PROFESIONALES</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
-                <div class="d-flex flex-wrap justify-content-center">
-                    <button mat-button type="submit" class="btn btn-sm" (click)="AbrirVentanaNivelTitulo()">
+                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaNivelTitulo()">
                         Crear nivel título profesional
                     </button>
-                    <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampos()" matSuffix
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix
                         matTooltipPosition="right"
                         matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
                         Mostrar lista

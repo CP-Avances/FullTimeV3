@@ -1,13 +1,18 @@
+<div id="resultados">
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane" id="mover">
+        NIVEL DE SEGURIDAD
+    </span>
+</div>
 <mat-card-content>
-    <div>
+    <div style="padding: 2%;">
         <p>Se le recuerda que al eliminar este registro automáticamente se eliminarán <b>TODOS</b> los registro con los
             que guarde
             alguna relación. <b>Podría afectar al buen funcionamiento del sistema.</b> </p>
         <p id="mensaje">¿ESTÁ SEGURO DE ELIMINAR ESTE REGISTRO?</p>
     </div>
 </mat-card-content>
-<div style="text-align: center;">
-    <button id="aceptar" mat-button class="btn btn-primary btn-sm" (click)="Confirmar()"
+<div style="text-align: center; margin-bottom: 2%;">
+    <button mat-raised-button id="aceptar" class="btn btn-sm" (click)="Confirmar()"
         cdkFocusInitial>Aceptar</button>
-    <button mat-button id="cancelar" class="btn btn-sm" (click)="CerrarVentana()">Cancelar</button>
+    <button mat-raised-button id="btn-raised" (click)="CerrarVentana()">Cancelar</button>
 </div>
