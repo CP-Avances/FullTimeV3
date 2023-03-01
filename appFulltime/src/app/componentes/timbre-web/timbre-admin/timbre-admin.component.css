@@ -21,3 +21,15 @@ table {
     width: 100%;
     font-size: 12px;
 }
+
+mat-form-field.input-tables {
+    background: transparent;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    fill: none;
+    height: 65px;
+}
+
+.codigo { width: 70px; }
+.cedula { width: 100px; }

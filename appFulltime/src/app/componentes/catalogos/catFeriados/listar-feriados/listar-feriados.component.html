@@ -5,7 +5,7 @@
                 <span>FERIADOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
-                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%;">
+                <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
                     <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarFeriado()">
                         Crear feriado</button>
                     <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix 
@@ -21,19 +21,28 @@
                 <span>REGISTRO MULTIPLE DE FERIADOS</span>
             </div>
             <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-center" id="carta1">
-                <form method="post" enctype="multipart/form-data">
-                    <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
-                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                    <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
-                        matTooltip="Presionar para seleccionar Plantilla con nombre Feriados.">
-                        Subir feriados
-                    </label>
-                </form>
-                <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
-                    matTooltip="Dar click para ver o descargar el documento."
-                    href="{{hipervinculo}}/plantillaD/documento/Feriados.xlsx">
-                    <span class="material-icons">cloud_download</span> Descargar plantilla feriados
-                </a>
+
+                <div style="display: flex; padding: 3%; margin: auto;">
+                    <div>
+                        <form method="post" enctype="multipart/form-data">
+                            <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                            <label for="file" class="btn-2" matSuffix matTooltipPosition="right" style="height: 64px;"
+                                matTooltip="Presionar para seleccionar Plantilla con nombre Feriados.">
+                                Subir feriados
+                            </label>
+                        </form>
+                    </div>
+                    <div>
+                        <a  id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
+                            matTooltip="Dar click para ver o descargar el documento."
+                            href="{{hipervinculo}}/plantillaD/documento/Feriados.xlsx">
+                            <span class="material-icons">cloud_download</span> 
+                            <br>
+                            Descargar plantilla feriados
+                        </a>
+                   </div>
+                </div>
             </mat-card>
         </div>
     </div>
