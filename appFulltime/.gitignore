@@ -1,3 +1,4 @@
+/.angular/cache
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 /.angular/cache
@@ -10,8 +11,8 @@
 /bazel-out
 
 # dependencies
-/node_modules
-/node_modules.rar
+node_modules/
+node_modules.rar/
 
 # profiling files
 chrome-profiler-events*.json
