@@ -6,7 +6,7 @@ mat-icon {
 
 p{
   font-size: 12px;
-  margin: 5px 0px 0px 10px;
+  margin: 5px 0px 0px 5px;
   font-style: normal;
   font-weight: 900;
   letter-spacing: 0px;
@@ -89,13 +89,13 @@ a.mat-menu-item {
 
 #icono-menu_ {
   font-size: 12px;
-  margin-top: 5%;
+  margin-top: 3%;
   color: rgb(5, 162, 253);
 }
 
 #icono-menu_x {
   font-size: 12px;
-  margin-top: 5%;
+  margin-top: 3%;
   color: rgb(99, 105, 107);
 }
 
@@ -141,7 +141,7 @@ a.mat-menu-item {
 
 .name-uno {
   font-size: 15px;
-  margin: 8px 0px 0px 10px;
+  margin: 10px 0px 0px 10px;
   color: rgb(40, 40, 40);
   font-style: normal;
   font-weight: 900;
@@ -151,7 +151,7 @@ a.mat-menu-item {
 
 .subtitulo {
   font-size: 14px;
-  margin: 8px 0px 0px 10px;
+  margin: 10px 0px 0px 10px;
   color: rgb(3, 85, 51);
   font-style: normal;
   font-weight: 900;
@@ -205,12 +205,11 @@ a.mat-menu-item.noti_menu:hover {
 
 .material-tree-node {
   border-left: 3px solid rgb(5, 162, 253);
-  margin-left: 11%;
+  margin-left: 12%;
   background: transparent;
   width: 100%;
-  padding-top: -1%;
-  padding-bottom: -1%;
-  height: 20px;
+  padding-top: -10%;
+  height: 32px;
 }
 
 .degradado {
@@ -221,12 +220,10 @@ a.mat-menu-item.noti_menu:hover {
 .active {
   border-radius: 0px 25px 25px 0px;
   border: none;
-  margin-left: -10px;
-  padding-top: -1%;
-  padding-bottom: -1%;
+  margin-left: -12px;
   background: rgba(226, 226, 226, 0.739);
   box-shadow: none;
   outline: none;
   width: 100%;
-  height: 20px;
+  height: 32px;
 }
