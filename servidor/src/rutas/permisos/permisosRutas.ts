@@ -53,6 +53,7 @@ class PermisosRutas {
         this.router.get('/documentos/:docs', PERMISOS_CONTROLADOR.ObtenerDocumentoPermiso);
         // ENVIAR CORREO MEDIANTE APLICACION WEB
         this.router.post('/mail-noti/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.EnviarCorreoWeb);
+<<<<<<< HEAD
 
 
 
@@ -63,6 +64,8 @@ class PermisosRutas {
 
 
 
+=======
+>>>>>>> 67fd5cc (Actualikzacion sistemaweb Fulltime 4.0 02 de marzo del 2023)
 
 
 
@@ -70,6 +73,28 @@ class PermisosRutas {
 
 
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+<<<<<<< HEAD
+
+
+
+
+
+>>>>>>> d882c50 (actualizar-registro-permiso-individual)
+=======
+>>>>>>> 596be04 (actualizado validaciones permisos multiples)
+>>>>>>> 67fd5cc (Actualikzacion sistemaweb Fulltime 4.0 02 de marzo del 2023)
         this.router.get('/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisos);
         this.router.get('/lista/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarEstadosPermisos);
         this.router.get('/lista-autorizados/', [TokenValidation, ModuloPermisosValidation], PERMISOS_CONTROLADOR.ListarPermisosAutorizados);
