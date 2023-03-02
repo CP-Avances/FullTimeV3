@@ -22,10 +22,6 @@ class FuncionesControlador {
 
 
 
-
-
-
-
     public async RegistrarFunciones(req: Request, res: Response): Promise<void> {
         const { id, hora_extra, accion_personal, alimentacion, permisos } = req.body;
         await pool.query('INSERT INTO funciones ( id, hora_extra, accion_personal, alimentacion, permisos ) ' +

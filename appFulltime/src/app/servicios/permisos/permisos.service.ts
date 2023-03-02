@@ -132,7 +132,6 @@ export class PermisosService {
   }
 
 
-
   ObtenerUnPermiso(id: number) {
     return this.http.get(`${environment.url}/empleadoPermiso/${id}`)
   }
@@ -140,7 +139,6 @@ export class PermisosService {
   ObtenerUnPermisoEditar(id: number) {
     return this.http.get(`${environment.url}/empleadoPermiso/permiso/editar/${id}`)
   }
-
 
 
   BuscarPermisoContrato(id: any) {

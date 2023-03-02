@@ -29,14 +29,6 @@ export class RealTimeService {
   }
 
 
-
-
-
-
-
-
-
-
   ObtenerTodasNotificaciones() {
     return this.http.get(`${environment.url}/noti-real-time/`);
   }
@@ -56,7 +48,6 @@ export class RealTimeService {
   }
 
 
-
   PutVistaNotificacion(id_realtime: number) {
     let data = { visto: true };
     return this.http.put(`${environment.url}/noti-real-time/vista/${id_realtime}`, data);
@@ -70,7 +61,6 @@ export class RealTimeService {
   /** ************************************************************************************ **
    ** **                        METODOS PARA CONFIG_NOTI                                ** ** 
    ** ************************************************************************************ **/
-
 
 
   IngresarConfigNotiEmpleado(datos: any) {

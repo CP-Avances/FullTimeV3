@@ -43,7 +43,7 @@ class DatosGeneralesControlador {
             SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
                 ciudades AS c 
             WHERE s.id_ciudad = c.id ORDER BY s.id
-            `).then(result => { return result.rows; });
+            `).then((result) => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
@@ -52,14 +52,14 @@ class DatosGeneralesControlador {
                 SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
                 FROM cg_departamentos AS d, sucursales AS s
                 WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
-                `, [dep.id_suc]).then(result => {
-                    return result.rows.filter(obj => {
+                `, [dep.id_suc]).then((result) => {
+                    return result.rows.filter((obj) => {
                         return obj.name_dep != 'Ninguno';
                     });
                 });
                 return dep;
             })));
-            let depa = departamentos.filter(obj => {
+            let depa = departamentos.filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (depa.length === 0)
@@ -87,7 +87,7 @@ class DatosGeneralesControlador {
                                 AND co.id_regimen = r.id AND e.estado = $2
                                 ORDER BY name_empleado ASC
                             `, [empl.id_depa, estado])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                     }
                     else {
                         empl.empleado = yield database_1.default.query(`
@@ -109,7 +109,7 @@ class DatosGeneralesControlador {
                                 AND co.id_regimen = r.id AND e.estado = $2
                                 ORDER BY name_empleado ASC
                             `, [empl.id_depa, estado])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                     }
                     return empl;
                 })));
@@ -118,12 +118,12 @@ class DatosGeneralesControlador {
             if (lista.length === 0)
                 return res.status(404)
                     .jsonp({ message: 'No se han encontrado registros.' });
-            let respuesta = lista.map(obj => {
+            let respuesta = lista.map((obj) => {
                 obj.departamentos = obj.departamentos.filter((ele) => {
                     return ele.empleado.length > 0;
                 });
                 return obj;
-            }).filter(obj => {
+            }).filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (respuesta.length === 0)
@@ -200,7 +200,7 @@ class DatosGeneralesControlador {
                 ecr.id_empl_contrato = ecn.id AND
                 ecn.id_empleado = e.id AND
                 e.id = c.id_empleado
-            `, [depa_user_loggin]).then(result => { return result.rows; });
+            `, [depa_user_loggin]).then((result) => { return result.rows; });
             if (JefesDepartamentos.length === 0)
                 return res.status(400)
                     .jsonp({

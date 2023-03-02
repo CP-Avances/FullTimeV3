@@ -43,7 +43,7 @@ class LoginControlador {
           SELECT e.estado AS empleado, u.estado AS usuario, e.codigo, e.web_access 
           FROM empleados AS e, usuarios AS u WHERE e.id = u.id_empleado AND u.id = $1
           `, [USUARIO.rows[0].id])
-                        .then(result => {
+                        .then((result) => {
                         return result.rows;
                     });
                     const { empleado, usuario, codigo, web_access } = ACTIVO[0];
@@ -57,7 +57,7 @@ class LoginControlador {
                     // BUSQUEDA DE MODULOS DEL SISTEMA
                     const [modulos] = yield database_1.default.query(`
           SELECT * FROM funciones LIMIT 1
-          `).then(result => { return result.rows; });
+          `).then((result) => { return result.rows; });
                     // BUSQUEDA DE CLAVE DE LICENCIA
                     const EMPRESA = yield database_1.default.query(`
           SELECT public_key, id AS id_empresa FROM cg_empresa

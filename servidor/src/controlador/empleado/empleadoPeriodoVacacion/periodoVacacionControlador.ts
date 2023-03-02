@@ -28,27 +28,6 @@ class PeriodoVacacionControlador {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public async ListarPerVacaciones(req: Request, res: Response) {
         const VACACIONES = await pool.query('SELECT * FROM peri_vacaciones WHERE estado = 1 ORDER BY fec_inicio DESC');
         if (VACACIONES.rowCount > 0) {
@@ -69,8 +48,6 @@ class PeriodoVacacionControlador {
                 dia_perdido, horas_vacaciones, min_vacaciones, codigo]);
         res.jsonp({ message: 'Período de Vacación guardado' });
     }
-
-
 
     public async EncontrarPerVacaciones(req: Request, res: Response): Promise<any> {
         const { codigo } = req.params;

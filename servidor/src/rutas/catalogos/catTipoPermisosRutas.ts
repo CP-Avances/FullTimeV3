@@ -6,7 +6,6 @@ import { TokenValidation } from '../../libs/verificarToken';
 class TipoPermisosRutas {
     public router: Router = Router();
 
-
     constructor() {
         this.configuracion();
     }

@@ -108,7 +108,7 @@ class PlanHoraExtraControlador {
   public async TiempoAutorizado(req: Request, res: Response) {
     const id = parseInt(req.params.id);
     const { hora } = req.body;
-    let respuesta = await pool.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then(result => {
+    let respuesta = await pool.query('UPDATE plan_hora_extra_empleado SET tiempo_autorizado = $2 WHERE id = $1', [id, hora]).then((result: any) => {
       return { message: 'Tiempo de hora autorizada confirmada' }
     });
     res.jsonp(respuesta)
@@ -313,7 +313,7 @@ class PlanHoraExtraControlador {
         FROM datos_actuales_empleado AS da, empl_cargos AS ec
         WHERE da.id = $1 AND ec.id = da.id_cargo
       `,
-        [id_empl_envia]).then(resultado => { return resultado.rows[0] });
+        [id_empl_envia]).then((resultado: any) => { return resultado.rows[0] });
 
       let data = {
         from: email,

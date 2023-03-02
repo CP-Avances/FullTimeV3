@@ -425,7 +425,6 @@ export class PedidoHoraExtraComponent implements OnInit {
           () => { },
         )
       }
-
     })
   }
 

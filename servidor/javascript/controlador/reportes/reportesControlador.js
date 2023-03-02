@@ -173,7 +173,7 @@ class ReportesControlador {
                 'ec.id = (SELECT MAX(cargo_id) FROM datos_empleado_cargo WHERE codigo::int = $1) AND ' +
                 'p.codigo = $1 ORDER BY p.num_permiso ASC', [id_empleado]);
             if (DATOS.rowCount > 0) {
-                DATOS.rows.map(obj => {
+                DATOS.rows.map((obj) => {
                     if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
                         var autorizaciones = obj.id_documento.split(',');
                         let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
@@ -248,7 +248,7 @@ class ReportesControlador {
                 'p.fec_inicio::date BETWEEN $2 AND $3 AND p.codigo = $1 ' +
                 'ORDER BY p.num_permiso ASC', [id_empleado, fechaInicio, fechaFinal]);
             if (DATOS.rowCount > 0) {
-                DATOS.rows.map(obj => {
+                DATOS.rows.map((obj) => {
                     if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
                         var autorizaciones = obj.id_documento.split(',');
                         let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
@@ -454,7 +454,7 @@ function AtrasosTimbresConAcciones(id_empleado, fechaInicio, fechaFinal) {
             't.fec_hora_timbre::date BETWEEN h.fec_inicio AND h.fec_final AND ' +
             't.fec_hora_timbre::date BETWEEN $2 AND $3 AND ' +
             't.fec_hora_timbre::time > hora_total ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
     });
@@ -474,12 +474,12 @@ function AtrasosTimbresSinAcciones(id_empleado, fechaInicio, fechaFinal) {
             't.fec_hora_timbre::date BETWEEN h.fec_inicio AND h.fec_final AND ' +
             't.fec_hora_timbre::date BETWEEN $2 AND $3 AND ' +
             't.fec_hora_timbre::time > hora_total ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
         if (arrayModelado.length === 0)
             return [];
-        return arrayModelado.filter(obj => {
+        return arrayModelado.filter((obj) => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             // console.log(obj); console.log(h);
             let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('05:00:00');
@@ -506,8 +506,8 @@ function AtrasosTimbresPlanificadosConAcciones(id_empleado, fechaInicio, fechaFi
             'AND t.accion IN (\'EoS\',\'E\') AND t.fec_hora_timbre::date BETWEEN ph.fec_inicio AND ph.fec_final ' +
             'AND t.fec_hora_timbre::date = fecha AND t.fec_hora_timbre::time > hora_total ' +
             'ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
-            return result.rows.map(obj => {
+            .then((result) => {
+            return result.rows.map((obj) => {
                 obj.accion = obj.tipo_accion;
                 return obj;
             });
@@ -531,19 +531,19 @@ function AtrasosTimbresPlanificadosSinAcciones(id_empleado, fechaInicio, fechaFi
             'AND t.accion IN (\'EoS\',\'E\') AND t.fec_hora_timbre::date BETWEEN ph.fec_inicio AND ph.fec_final ' +
             'AND t.fec_hora_timbre::date = fecha AND t.fec_hora_timbre::time > hora_total ' +
             'ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
         if (arrayModelado.length === 0)
             return [];
-        return arrayModelado.filter(obj => {
+        return arrayModelado.filter((obj) => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             // console.log(obj); console.log(h);
             let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('05:00:00');
             let hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_total);
             let hora_final = hora_inicio + (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00');
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
-        }).map(obj => {
+        }).map((obj) => {
             obj.accion = obj.tipo_accion;
             return obj;
         });
@@ -565,8 +565,8 @@ function EntradaSalidaHorarioConAcciones(id_empleado, fechaInicio, fechaFinal) {
             't.fec_hora_timbre::date BETWEEN h.fec_inicio AND h.fec_final ' +
             'AND t.accion = h.tipo_accion ' +
             'ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
-            return result.rows.map(obj => {
+            .then((result) => {
+            return result.rows.map((obj) => {
                 console.log(obj);
                 obj.accion = obj.tipo_accion;
                 return obj;
@@ -588,19 +588,19 @@ function EntradaSalidaHorarioSinAcciones(id_empleado, fechaInicio, fechaFinal) {
             'ON t.id_empleado::varchar(15) = h.codigo AND t.fec_hora_timbre::date BETWEEN $2 AND $3 AND ' +
             't.fec_hora_timbre::date BETWEEN h.fec_inicio AND h.fec_final ' +
             'ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
         const arrayModelado1 = yield database_1.default.query('SELECT t.fec_hora_timbre::date AS fecha, ' +
             't.fec_hora_timbre::time AS hora, t.accion FROM timbres AS t WHERE t.id_empleado = $1 AND ' +
             't.fec_hora_timbre BETWEEN $2 AND $3 ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
         //console.log('ver timbres', arrayModelado1)
         if (arrayModelado.length === 0)
             return [];
-        return arrayModelado.filter(obj => {
+        return arrayModelado.filter((obj) => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             //let h = obj.hora;
             // console.log(obj); console.log(h);
@@ -614,7 +614,7 @@ function EntradaSalidaHorarioSinAcciones(id_empleado, fechaInicio, fechaFinal) {
             //console.log('ver horas -------------- ', h + ' ' + hora_timbre + ' ' + hora_inicio + ' ' +
             //    hora_final + ' ' + obj.hora);
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
-        }).map(obj => {
+        }).map((obj) => {
             //obj.accion = obj.tipo_accion
             console.log('ver informacion ************************************** ', obj);
             return obj;
@@ -638,7 +638,7 @@ function EntradaSalidaPlanificacionConAcciones(id_empleado, fechaInicio, fechaFi
             'AND t.fec_hora_timbre::date BETWEEN ph.fec_inicio AND ph.fec_final ' +
             'AND t.fec_hora_timbre::date = fecha AND ph.tipo_accion = t.accion ' +
             'ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
     });
@@ -660,19 +660,19 @@ function EntradaSalidaPlanificacionSinAcciones(id_empleado, fechaInicio, fechaFi
             'AND t.fec_hora_timbre::date BETWEEN ph.fec_inicio AND ph.fec_final ' +
             'AND t.fec_hora_timbre::date = fecha ' +
             'ORDER BY t.fec_hora_timbre ASC', [id_empleado, fechaInicio, fechaFinal])
-            .then(result => {
+            .then((result) => {
             return result.rows;
         });
         if (arrayModelado.length === 0)
             return [];
-        return arrayModelado.filter(obj => {
+        return arrayModelado.filter((obj) => {
             let h = obj.fec_hora_timbre.toJSON().split('T')[1].split('.')[0];
             // console.log(obj); console.log(h);
             let hora_timbre = (0, SubMetodosGraficas_1.HHMMtoSegundos)(h) - (0, SubMetodosGraficas_1.HHMMtoSegundos)('05:00:00');
             let hora_inicio = (0, SubMetodosGraficas_1.HHMMtoSegundos)(obj.hora_total);
             let hora_final = hora_inicio + (0, SubMetodosGraficas_1.HHMMtoSegundos)('02:00:00');
             return hora_timbre >= hora_inicio && hora_timbre <= hora_final;
-        }).map(obj => {
+        }).map((obj) => {
             obj.accion = obj.tipo_accion;
             return obj;
         });

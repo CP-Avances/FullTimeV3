@@ -7,7 +7,6 @@ import { environment } from '../../../environments/environment'
 })
 
 export class PeriodoVacacionesService {
-
   constructor(
     private http: HttpClient,
   ) { }
@@ -37,7 +36,6 @@ export class PeriodoVacacionesService {
   CrearPerVacaciones(datos: any) {
     return this.http.post(`${environment.url}/perVacacion`, datos);
   }
-
 
 
   ObtenerPeriodoVacaciones(codigo: number) {

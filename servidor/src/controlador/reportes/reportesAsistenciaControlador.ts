@@ -25,7 +25,7 @@ class ReportesAsistenciaControlador {
             WHERE s.id_ciudad = c.id 
             ORDER BY s.id
             `)
-            .then(result => { return result.rows });
+            .then((result: any) => { return result.rows });
 
         if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
 
@@ -36,13 +36,13 @@ class ReportesAsistenciaControlador {
                 FROM cg_departamentos AS d, sucursales AS s
                 WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
                 `, [dep.id_suc])
-                .then(result => {
+                .then((result: any) => {
                     return result.rows
                 });
             return dep;
         }));
 
-        let depa = departamentos.filter(obj => {
+        let depa = departamentos.filter((obj: any) => {
             return obj.departamentos.length > 0
         });
 
@@ -66,7 +66,7 @@ class ReportesAsistenciaControlador {
                             AND (cn.comunicado_mail = true OR cn.comunicado_noti = true)
                         `
                         , [ele.id_depa, estado])
-                        .then(result => { return result.rows })
+                        .then((result: any) => { return result.rows })
 
                 } else {
                     ele.empleado = await pool.query(
@@ -84,7 +84,7 @@ class ReportesAsistenciaControlador {
                             AND (cn.comunicado_mail = true OR cn.comunicado_noti = true)
                         `
                         , [ele.id_depa, estado])
-                        .then(result => { return result.rows })
+                        .then((result: any) => { return result.rows })
                 }
                 return ele
             }));
@@ -93,12 +93,12 @@ class ReportesAsistenciaControlador {
 
         if (lista.length === 0) return res.status(404).jsonp({ message: 'No se ha encontrado registros de usuarios.' })
 
-        let respuesta = lista.map(obj => {
+        let respuesta = lista.map((obj: any) => {
             obj.departamentos = obj.departamentos.filter((ele: any) => {
                 return ele.empleado.length > 0
             })
             return obj
-        }).filter(obj => {
+        }).filter((obj: any) => {
             return obj.departamentos.length > 0
         });
 
@@ -107,15 +107,6 @@ class ReportesAsistenciaControlador {
 
         return res.status(200).jsonp(respuesta)
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -139,7 +130,7 @@ class ReportesAsistenciaControlador {
                     ele.empleado = await Promise.all(ele.empleado.map(async (o: emp) => {
 
                         let timbres = await BuscarTimbresEoSReporte(desde, hasta, o.codigo);
-                        o.timbres = await Promise.all(timbres.map(async (e) => {
+                        o.timbres = await Promise.all(timbres.map(async (e: any) => {
                             return await ModelarAtrasosReporte(e);
                         }))
                         return o
@@ -212,9 +203,9 @@ class ReportesAsistenciaControlador {
                 ele.empleado = await Promise.all(ele.empleado.map(async (o: emp) => {
 
                     let faltas = await BuscarHorarioEmpleado(desde, hasta, o.codigo);
-                    o.faltas = faltas.filter(o => {
+                    o.faltas = faltas.filter((o: any) => {
                         return o.registros === 0
-                    }).map(o => {
+                    }).map((o: any) => {
                         return { fecha: o.fecha }
                     })
 
@@ -256,12 +247,12 @@ class ReportesAsistenciaControlador {
         let n = await Promise.all(datos.map(async (obj: IReporteAtrasos) => {
             obj.departamentos = await Promise.all(obj.departamentos.map(async (ele: dep) => {
                 ele.empleado = await Promise.all(ele.empleado.map(async (o: emp) => {
-                    o.contrato = await pool.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].contrato })
-                    o.cargo = await pool.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].cargo })
+                    o.contrato = await pool.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then((result: any) => { return result.rows[0].contrato })
+                    o.cargo = await pool.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then((result: any) => { return result.rows[0].cargo })
                     let faltas = await BuscarHorarioEmpleado(desde, hasta, o.codigo);
-                    o.faltas = faltas.filter(o => {
+                    o.faltas = faltas.filter((o: any) => {
                         return o.registros === 0
-                    }).map(o => {
+                    }).map((o: any) => {
                         return { fecha: o.fecha }
                     })
 
@@ -377,8 +368,8 @@ class ReportesAsistenciaControlador {
             let n = await Promise.all(datos.map(async (obj: IReportePuntualidad) => {
                 obj.departamentos = await Promise.all(obj.departamentos.map(async (ele) => {
                     ele.empleado = await Promise.all(ele.empleado.map(async (o) => {
-                        o.contrato = await pool.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].contrato })
-                        o.cargo = await pool.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].cargo })
+                        o.contrato = await pool.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then((result: any) => { return result.rows[0].contrato })
+                        o.cargo = await pool.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then((result: any) => { return result.rows[0].cargo })
                         let timbres = await BuscarTimbresEoSReporte(desde, hasta, o.codigo);
                         // console.log('Return del timbre: ',timbres);
                         if (timbres.length === 0) {
@@ -388,7 +379,7 @@ class ReportesAsistenciaControlador {
                                 return await ModelarPuntualidad(e);
                             }))
                             var array: any = [];
-                            aux.forEach(u => {
+                            aux.forEach((u: any) => {
                                 if (u[0] > 0) {
                                     array.push(u[0])
                                 }

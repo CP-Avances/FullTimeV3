@@ -107,6 +107,11 @@ class Servidor {
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.raw({ type: 'image/*', limit: '2Mb' }));
         this.app.set('trust proxy', true);
+        this.app.get('/',(req, res)=> {
+            res.status(200).json({
+                status:'success'
+            });
+        });
     }
 
     rutas(): void {
@@ -253,6 +258,10 @@ class Servidor {
             next();
         })
 
+        this.app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*:*');
+            next();
+        })
 
         io.on('connection', (socket: any) => {
             console.log('Connected client on port %s.', this.app.get('puerto'));

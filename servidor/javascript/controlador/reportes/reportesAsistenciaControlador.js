@@ -33,7 +33,7 @@ class ReportesAsistenciaControlador {
             WHERE s.id_ciudad = c.id 
             ORDER BY s.id
             `)
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             let departamentos = yield Promise.all(suc.map((dep) => __awaiter(this, void 0, void 0, function* () {
@@ -42,12 +42,12 @@ class ReportesAsistenciaControlador {
                 FROM cg_departamentos AS d, sucursales AS s
                 WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
                 `, [dep.id_suc])
-                    .then(result => {
+                    .then((result) => {
                     return result.rows;
                 });
                 return dep;
             })));
-            let depa = departamentos.filter(obj => {
+            let depa = departamentos.filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (depa.length === 0)
@@ -68,7 +68,7 @@ class ReportesAsistenciaControlador {
                             AND co.id_regimen = r.id AND e.estado = $2
                             AND (cn.comunicado_mail = true OR cn.comunicado_noti = true)
                         `, [ele.id_depa, estado])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                     }
                     else {
                         ele.empleado = yield database_1.default.query(`
@@ -84,7 +84,7 @@ class ReportesAsistenciaControlador {
                             AND co.id_regimen = r.id AND e.estado = $2
                             AND (cn.comunicado_mail = true OR cn.comunicado_noti = true)
                         `, [ele.id_depa, estado])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                     }
                     return ele;
                 })));
@@ -92,12 +92,12 @@ class ReportesAsistenciaControlador {
             })));
             if (lista.length === 0)
                 return res.status(404).jsonp({ message: 'No se ha encontrado registros de usuarios.' });
-            let respuesta = lista.map(obj => {
+            let respuesta = lista.map((obj) => {
                 obj.departamentos = obj.departamentos.filter((ele) => {
                     return ele.empleado.length > 0;
                 });
                 return obj;
-            }).filter(obj => {
+            }).filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (respuesta.length === 0)
@@ -178,9 +178,9 @@ class ReportesAsistenciaControlador {
                 obj.departamentos = yield Promise.all(obj.departamentos.map((ele) => __awaiter(this, void 0, void 0, function* () {
                     ele.empleado = yield Promise.all(ele.empleado.map((o) => __awaiter(this, void 0, void 0, function* () {
                         let faltas = yield BuscarHorarioEmpleado(desde, hasta, o.codigo);
-                        o.faltas = faltas.filter(o => {
+                        o.faltas = faltas.filter((o) => {
                             return o.registros === 0;
-                        }).map(o => {
+                        }).map((o) => {
                             return { fecha: o.fecha };
                         });
                         return o;
@@ -211,12 +211,12 @@ class ReportesAsistenciaControlador {
             let n = yield Promise.all(datos.map((obj) => __awaiter(this, void 0, void 0, function* () {
                 obj.departamentos = yield Promise.all(obj.departamentos.map((ele) => __awaiter(this, void 0, void 0, function* () {
                     ele.empleado = yield Promise.all(ele.empleado.map((o) => __awaiter(this, void 0, void 0, function* () {
-                        o.contrato = yield database_1.default.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].contrato; });
-                        o.cargo = yield database_1.default.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].cargo; });
+                        o.contrato = yield database_1.default.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then((result) => { return result.rows[0].contrato; });
+                        o.cargo = yield database_1.default.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then((result) => { return result.rows[0].cargo; });
                         let faltas = yield BuscarHorarioEmpleado(desde, hasta, o.codigo);
-                        o.faltas = faltas.filter(o => {
+                        o.faltas = faltas.filter((o) => {
                             return o.registros === 0;
-                        }).map(o => {
+                        }).map((o) => {
                             return { fecha: o.fecha };
                         });
                         return o;
@@ -304,8 +304,8 @@ class ReportesAsistenciaControlador {
                 let n = yield Promise.all(datos.map((obj) => __awaiter(this, void 0, void 0, function* () {
                     obj.departamentos = yield Promise.all(obj.departamentos.map((ele) => __awaiter(this, void 0, void 0, function* () {
                         ele.empleado = yield Promise.all(ele.empleado.map((o) => __awaiter(this, void 0, void 0, function* () {
-                            o.contrato = yield database_1.default.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].contrato; });
-                            o.cargo = yield database_1.default.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then(result => { return result.rows[0].cargo; });
+                            o.contrato = yield database_1.default.query('SELECT r.descripcion AS contrato FROM cg_regimenes AS r, empl_contratos AS c WHERE c.id_regimen = r.id AND c.id_empleado = $1 ORDER BY c.fec_ingreso DESC LIMIT 1 ', [o.id]).then((result) => { return result.rows[0].contrato; });
+                            o.cargo = yield database_1.default.query('SELECT tc.cargo FROM empl_contratos AS co, empl_cargos AS ca, tipo_cargo AS tc WHERE co.id_empleado = $1 AND co.id = ca.id_empl_contrato AND tc.id = ca.cargo ORDER BY ca.fec_inicio DESC LIMIT 1 ', [o.id]).then((result) => { return result.rows[0].cargo; });
                             let timbres = yield BuscarTimbresEoSReporte(desde, hasta, o.codigo);
                             // console.log('Return del timbre: ',timbres);
                             if (timbres.length === 0) {
@@ -316,7 +316,7 @@ class ReportesAsistenciaControlador {
                                     return yield ModelarPuntualidad(e);
                                 })));
                                 var array = [];
-                                aux.forEach(u => {
+                                aux.forEach((u) => {
                                     if (u[0] > 0) {
                                         array.push(u[0]);
                                     }

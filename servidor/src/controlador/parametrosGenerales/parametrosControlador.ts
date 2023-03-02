@@ -164,28 +164,6 @@ class ParametrosControlador {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // METODO PARA CREAR FORMATO XML
     public async FileXML(req: Request, res: Response): Promise<any> {
         var xml = builder.create('root').ele(req.body).end({ pretty: true });

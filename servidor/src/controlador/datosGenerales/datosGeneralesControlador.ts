@@ -37,7 +37,7 @@ class DatosGeneralesControlador {
                 ciudades AS c 
             WHERE s.id_ciudad = c.id ORDER BY s.id
             `
-        ).then(result => { return result.rows });
+        ).then((result: any) => { return result.rows });
 
         if (suc.length === 0) return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
 
@@ -50,15 +50,15 @@ class DatosGeneralesControlador {
                 WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
                 `
                 , [dep.id_suc]
-            ).then(result => {
-                return result.rows.filter(obj => {
+            ).then((result: any) => {
+                return result.rows.filter((obj: any) => {
                     return obj.name_dep != 'Ninguno';
                 })
             });
             return dep;
         }));
 
-        let depa = departamentos.filter(obj => {
+        let depa = departamentos.filter((obj: any) => {
             return obj.departamentos.length > 0
         });
 
@@ -89,7 +89,7 @@ class DatosGeneralesControlador {
                                 ORDER BY name_empleado ASC
                             `,
                         [empl.id_depa, estado])
-                        .then(result => { return result.rows });
+                        .then((result: any) => { return result.rows });
 
                 } else {
                     empl.empleado = await pool.query(
@@ -113,7 +113,7 @@ class DatosGeneralesControlador {
                                 ORDER BY name_empleado ASC
                             `,
                         [empl.id_depa, estado])
-                        .then(result => { return result.rows });
+                        .then((result: any) => { return result.rows });
                 }
 
                 return empl;
@@ -124,12 +124,12 @@ class DatosGeneralesControlador {
         if (lista.length === 0) return res.status(404)
             .jsonp({ message: 'No se han encontrado registros.' });
 
-        let respuesta = lista.map(obj => {
+        let respuesta = lista.map((obj: any) => {
             obj.departamentos = obj.departamentos.filter((ele: any) => {
                 return ele.empleado.length > 0;
             })
             return obj;
-        }).filter(obj => {
+        }).filter((obj: any) => {
             return obj.departamentos.length > 0;
         });
 
@@ -213,7 +213,7 @@ class DatosGeneralesControlador {
                 e.id = c.id_empleado
             `
             ,
-            [depa_user_loggin]).then(result => { return result.rows });
+            [depa_user_loggin]).then((result: any) => { return result.rows });
 
         if (JefesDepartamentos.length === 0) return res.status(400)
             .jsonp({

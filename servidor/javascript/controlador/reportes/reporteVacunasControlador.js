@@ -50,7 +50,7 @@ const BuscarVacunas = function (id) {
             'ev.id_tipo_vacuna_2, ev.id_tipo_vacuna_3, ev.carnet, ev.nom_carnet, ev.dosis_1, ev.dosis_2, ' +
             'ev.dosis_3, ev.fecha_1, ev.fecha_2, ev.fecha_3 FROM empl_vacuna AS ev WHERE ev.id_empleado = $1 ' +
             'ORDER BY ev.id DESC', [id])
-            .then(res => {
+            .then((res) => {
             return res.rows;
         });
     });

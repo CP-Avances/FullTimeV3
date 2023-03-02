@@ -44,12 +44,12 @@ function AniosEmpleado(idEmpleado) {
         f.setUTCHours(f.getHours());
         let anioHoy = f.toJSON().split("-")[0];
         let anioInicio = yield database_1.default.query(`SELECT pv.fec_inicio FROM empl_contratos co, peri_vacaciones pv 
-    WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id ORDER BY pv.fec_inicio ASC limit 1`, [idEmpleado]).then(result => {
+    WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id ORDER BY pv.fec_inicio ASC limit 1`, [idEmpleado]).then((result) => {
             return JSON.stringify(result.rows[0].fec_inicio);
         });
         let anioPresente = yield database_1.default.query(`SELECT pv.fec_final FROM empl_contratos co, peri_vacaciones pv 
         WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id AND 
-        CAST(pv.fec_final AS VARCHAR) like $2 || \'%\'`, [idEmpleado, anioHoy]).then(result => {
+        CAST(pv.fec_final AS VARCHAR) like $2 || \'%\'`, [idEmpleado, anioHoy]).then((result) => {
             return JSON.stringify(result.rows[0].fec_final);
         });
         const total = parseInt(anioPresente.slice(1, 5)) - parseInt(anioInicio.slice(1, 5));
@@ -60,7 +60,7 @@ function ObtenerIdEmpleado(idContrato) {
     return __awaiter(this, void 0, void 0, function* () {
         let id_empleado = yield database_1.default.query('SELECT e.id FROM empl_contratos co, empleados e WHERE co.id = $1 AND co.id_empleado = e.id AND e.estado = 1 LIMIT 1', [idContrato])
             .then((result) => __awaiter(this, void 0, void 0, function* () {
-            let id = yield result.rows.map(obj => { return obj.id; });
+            let id = yield result.rows.map((obj) => { return obj.id; });
             return id[0];
         }));
         return id_empleado;
@@ -117,7 +117,7 @@ const Peri_Vacacion_Automatico = function () {
                 f1.setUTCHours(f1.getHours());
                 var d1 = sumaDias(f1, 1);
                 var yearIncrementado = sumaYear(d1, 1);
-                periodos.forEach(obj => {
+                periodos.forEach((obj) => {
                     CrearNuevoPeriodo(obj, descripcion, diaIncrementado, yearIncrementado);
                 });
             }
@@ -143,7 +143,7 @@ const beforeFiveDays = function () {
             console.log(avisoVacacion.rows);
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
-                avisoVacacion.rows.forEach(obj => {
+                avisoVacacion.rows.forEach((obj) => {
                     (0, settingsMail_1.Credenciales)(0);
                     let data = {
                         to: obj.correo,
@@ -182,7 +182,7 @@ const beforeTwoDays = function () {
             console.log(avisoVacacion.rows);
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
-                avisoVacacion.rows.forEach(obj => {
+                avisoVacacion.rows.forEach((obj) => {
                     (0, settingsMail_1.Credenciales)(0);
                     let data = {
                         to: obj.correo,

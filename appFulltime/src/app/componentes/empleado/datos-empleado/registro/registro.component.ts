@@ -18,7 +18,7 @@ import { RolesService } from 'src/app/servicios/catalogos/catRoles/roles.service
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.scss'],
+  styleUrls: ['./registro.component.css'],
 
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },

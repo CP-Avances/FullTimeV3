@@ -103,6 +103,11 @@ class Servidor {
         this.app.use(express_1.default.urlencoded({ extended: false }));
         this.app.use(express_1.default.raw({ type: 'image/*', limit: '2Mb' }));
         this.app.set('trust proxy', true);
+        this.app.get('/', (req, res) => {
+            res.status(200).json({
+                status: 'success'
+            });
+        });
     }
     rutas() {
         this.app.use('/', indexRutas_1.default);

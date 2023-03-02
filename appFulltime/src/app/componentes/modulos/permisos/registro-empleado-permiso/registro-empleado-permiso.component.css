@@ -13,6 +13,18 @@ mat-label {
     font-size: 13px;
 }
 
+#boton {
+    background-color: rgb(80, 87, 97);
+    color: white;
+}
+
+mat-form-field {
+    padding: 10px 10px 0px 10px;
+}
+
+#letras {
+    font-size: 14px;
+}
 
 [type="file"] {
     height: 0;

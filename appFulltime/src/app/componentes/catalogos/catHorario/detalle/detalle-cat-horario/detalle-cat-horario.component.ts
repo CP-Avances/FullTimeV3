@@ -305,7 +305,6 @@ export class DetalleCatHorarioComponent implements OnInit {
         if (datos.orden === 2 || datos.orden === 3) {
           comida = comida + 1;
         }
-
         if (datos.orden === 1 && (datos.hora + ':00') > obj.hora && this.datosHorario[0].nocturno === false) {
           entrada = entrada + 1;
         }

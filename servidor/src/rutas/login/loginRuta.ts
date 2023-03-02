@@ -21,9 +21,6 @@ class LoginRuta {
 
 
 
-
-
-        
         this.router.post('/auditar', LOGIN_CONTROLADOR.Auditar);
 
     }

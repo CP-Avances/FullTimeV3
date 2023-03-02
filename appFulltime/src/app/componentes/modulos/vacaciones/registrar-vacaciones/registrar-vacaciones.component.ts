@@ -472,7 +472,6 @@ export class RegistrarVacacionesComponent implements OnInit {
           () => { },
         )
       }
-
     })
   }
 

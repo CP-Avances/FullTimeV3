@@ -35,7 +35,7 @@ export const CalcularHoraExtra = async function(id_empleado: number, fec_desde: 
 
         let ArrayDatos = {
             info: ids,
-            detalle: horas_extras[0].map(obj => {
+            detalle: horas_extras[0].map((obj: any) => {
                 return {
                     fec_inicio: obj.fec_inicio,
                     fec_final: obj.fec_final,
@@ -64,7 +64,7 @@ async function FeriadosPorIdCargo(id_cargo: number, fec_desde: Date, fec_hasta: 
     return await pool.query('SELECT f.fecha, f.fec_recuperacion, f.descripcion FROM empl_cargos AS ec, sucursales AS s, ciudades AS c, ' +
     'ciud_feriados AS cf, cg_feriados AS f WHERE ec.id = $1 AND ec.id_sucursal = s.id AND s.id_ciudad = c.id AND ' +
     'cf.id_ciudad = s.id AND f.id = cf.id_feriado AND f.fecha between $2 and $3',[id_cargo, fec_desde, fec_hasta])
-    .then(result => { return result.rows})
+    .then((result: any) => { return result.rows})
 }
 
 function SumaValorPagoEmpleado(horas_extras: any[]) {
@@ -98,7 +98,7 @@ async function ListaHorasExtras(cg_horas_extras: any,codigo: number, id_cargo: n
     const valor_dia = sueldo / 30;
     const valor_hora = valor_dia /horas_trabaja;
     
-    arrayUnido.forEach(obj => {
+    arrayUnido.forEach((obj: any) => {
         obj.valores_calculos = cg_horas_extras.filter((res:any) => {
             if (obj.nocturno === true) {
                 return res;
@@ -116,7 +116,7 @@ async function ListaHorasExtras(cg_horas_extras: any,codigo: number, id_cargo: n
      *  2. calcular horas suplementarias de 50% y 100%;
      *  3. calcular horas extraordinarias;
      */
-    arrayUnido.forEach(obj => {
+    arrayUnido.forEach((obj: any) => {
         obj.calculos = obj.valores_calculos.map((res:any) => {  
             if (res.tipo_funcion === 1) {
                 // console.log('funcion 1');
@@ -153,8 +153,8 @@ async function HorasExtrasSolicitadas(id_empleado: number, id_cargo: number, fec
     return await pool.query('SELECT h.fec_inicio, h.fec_final, h.descripcion, h.num_hora, h.tiempo_autorizado ' + 
     'FROM hora_extr_pedidos AS h WHERE h.id_empl_cargo = $1 AND h.fec_inicio between $2 and $3 ' + 
     'AND h.fec_final between $2 and $3 ORDER BY h.fec_inicio',[id_cargo, fec_desde, fec_hasta])
-    .then(result => { 
-        return Promise.all(result.rows.map(async(obj) => {
+    .then((result: any) => { 
+        return Promise.all(result.rows.map(async (obj: any) => {
             var f1 = new Date(obj.fec_inicio)
             var f2 = new Date(obj.fec_final)
             f1.setUTCHours(f1.getUTCHours() - 5);
@@ -186,8 +186,8 @@ async function PlanificacionHorasExtrasSolicitadas(id_empleado: number, id_cargo
     return await pool.query('SELECT h.fecha_desde, h.hora_inicio, h.fecha_hasta, h.hora_fin, h.descripcion, h.horas_totales, ph.tiempo_autorizado ' +
     'FROM plan_hora_extra_empleado AS ph, plan_hora_extra AS h WHERE ph.id_empl_cargo = $1 AND ph.id_plan_hora = h.id ' +
     'AND h.fecha_desde between $2 and $3 AND h.fecha_hasta between $2 and $3 ORDER BY h.fecha_desde',[id_cargo, fec_desde, fec_hasta])
-    .then(result => {
-        return Promise.all(result.rows.map(async(obj) => {
+    .then((result: any) => {
+        return Promise.all(result.rows.map(async (obj: any) => {
             var f1 = new Date(obj.fecha_desde.toJSON().split('T')[0] + 'T' + obj.hora_inicio);
             var f2 = new Date(obj.fecha_hasta.toJSON().split('T')[0] + 'T' + obj.hora_fin);
             f1.setUTCHours(f1.getUTCHours() - 5);
@@ -218,8 +218,8 @@ async function PlanificacionHorasExtrasSolicitadas(id_empleado: number, id_cargo
 async function ObtenerTimbres(id_empleado: number, fec_desde: string, fec_hasta: string) {
     // console.log('$$$$$$$$$$$$', fec_desde, fec_hasta);
     return await pool.query('SELECT fec_hora_timbre, accion FROM timbres WHERE id_empleado = $1 AND accion  in (\'EoS\', \'E\', \'S\') AND fec_hora_timbre BETWEEN $2 AND $3 ORDER BY fec_hora_timbre',[id_empleado, fec_desde, fec_hasta])
-    .then(result => { 
-        return result.rows.map(obj => {
+    .then((result: any) => { 
+        return result.rows.map((obj: any) => {
             var f1 = new Date(obj.fec_hora_timbre.toJSON().split('.')[0])
             f1.setUTCHours(f1.getUTCHours() - 15);
             obj.fec_hora_timbre = new Date(f1.toJSON().split('.')[0]);
@@ -233,7 +233,7 @@ async function CargoContratoByFecha(id_empleado: number, fec_desde: Date, fec_ha
     try {
         const cargo_contrato = await pool.query('SELECT (e.nombre || \' \' || e.apellido) as nombre, e.codigo, e.cedula, ca.id AS id_cargo, ca.fec_inicio, ca.fec_final, co.id AS id_contrato, ca.sueldo, ca.hora_trabaja FROM empleados AS e, empl_contratos AS co, empl_cargos AS ca ' +
             'WHERE e.id = co.id_empleado AND co.id_empleado = $1 AND ca.id_empl_contrato = co.id OR ca.fec_inicio BETWEEN $2 AND $3 OR ca.fec_final BETWEEN $2 AND $3 ', [id_empleado, fec_desde, fec_hasta])
-            .then(result => {
+            .then((result: any) => {
                 return result.rows;
             });
             console.log(cargo_contrato);
@@ -271,8 +271,8 @@ async function CargoContratoByFecha(id_empleado: number, fec_desde: Date, fec_ha
  * N: NORMAL 
  */
 async function CatalogoHorasExtras() {
-    return await pool.query('SELECT id, descripcion, tipo_descuento, reca_porcentaje, hora_inicio, hora_final, hora_jornada, tipo_dia, tipo_funcion FROM cg_hora_extras').then(result => {
-        return result.rows.map(obj => {
+    return await pool.query('SELECT id, descripcion, tipo_descuento, reca_porcentaje, hora_inicio, hora_final, hora_jornada, tipo_dia, tipo_funcion FROM cg_hora_extras').then((result: any) => {
+        return result.rows.map((obj: any) => {
             obj.hora_inicio = HHMMtoSegundos(obj.hora_inicio);
             obj.hora_final = HHMMtoSegundos(obj.hora_final);
             (obj.tipo_descuento === 1) ? obj.tipo_descuento = 'HE' : obj.tipo_descuento = 'RN';

@@ -51,6 +51,4 @@ export class CiudadService {
     return this.http.get(`${environment.url}/ciudades/${id}`);
   }
 
-
-
 }

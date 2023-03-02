@@ -115,13 +115,6 @@ class UbicacionControlador {
 
 
 
-
-
-
-
-
-    
-
     // ASIGNAR COORDENADAS GENERALES DE UBICACIÓN A LOS USUARIOS
     public async RegistrarCoordenadasUsuario(req: Request, res: Response): Promise<void> {
         const { codigo, id_empl, id_ubicacion } = req.body;

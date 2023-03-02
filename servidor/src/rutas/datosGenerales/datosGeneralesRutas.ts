@@ -29,14 +29,6 @@ class CiudadRutas {
 
 
 
-
-
-
-
-
-
-
-
         /** INICIO RUTAS PARA ACCEDER A CONSULTAS PARA FILTRAR INFORMACIÓN */
         this.router.get('/filtros/sucursal/:id', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarEmpleadoSucursal);
         this.router.get('/filtros/sucursal/departamento/:id_sucursal/:id_departamento', TokenValidation, DATOS_GENERALES_CONTROLADOR.ListarEmpleadoSucuDepa);

@@ -94,7 +94,7 @@ class DepartamentoControlador {
     );
 
     if (SIN_DEPA_PADRE.rowCount > 0 && CON_DEPA_PADRE.rowCount > 0) {
-      SIN_DEPA_PADRE.rows.forEach(obj => {
+      SIN_DEPA_PADRE.rows.forEach((obj: any) => {
         CON_DEPA_PADRE.rows.push(obj);
       });
       return res.jsonp(CON_DEPA_PADRE.rows);
@@ -142,7 +142,7 @@ class DepartamentoControlador {
     );
 
     if (SIN_DEPA_PADRE.rowCount > 0 && CON_DEPA_PADRE.rowCount > 0) {
-      SIN_DEPA_PADRE.rows.forEach(obj => {
+      SIN_DEPA_PADRE.rows.forEach((obj: any) => {
         CON_DEPA_PADRE.rows.push(obj);
       });
       return res.jsonp(CON_DEPA_PADRE.rows);
