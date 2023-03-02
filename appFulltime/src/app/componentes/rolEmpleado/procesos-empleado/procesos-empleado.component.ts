@@ -5,7 +5,6 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
 import { EmpleadoProcesosService } from 'src/app/servicios/empleado/empleadoProcesos/empleado-procesos.service';
-import { EmplCargosService } from 'src/app/servicios/empleado/empleadoCargo/empl-cargos.service';
 
 import { MetodosComponent } from 'src/app/componentes/administracionGeneral/metodoEliminar/metodos.component';
 import { RegistrarEmpleProcesoComponent } from '../../modulos/accionesPersonal/procesos/registrar-emple-proceso/registrar-emple-proceso.component';
@@ -13,7 +12,6 @@ import { EditarEmpleadoProcesoComponent } from '../../modulos/accionesPersonal/p
 import { ValidacionesService } from 'src/app/servicios/validaciones/validaciones.service';
 import { ParametrosService } from 'src/app/servicios/parametrosGenerales/parametros.service';
 import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-generales.service';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-procesos-empleado',

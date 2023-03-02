@@ -367,7 +367,7 @@ class ReportesAsistenciaControlador {
 
         let { desde, hasta } = req.params
         let datos: any[] = req.body;
-        let params_query = req.query
+        let params_query: any = req.query
         // console.log(params_query);  
 
         //false sin acciones || true con acciones
@@ -733,7 +733,7 @@ class ReportesAsistenciaControlador {
 
     public async ReporteTimbresAbiertos(req: Request, res: Response) {
 
-        const { data, desde, hasta } = req.query;
+        const { data, desde, hasta }: any = req.query;
 
         try {
             const array = JSON.parse(data);

@@ -44,7 +44,7 @@ export class EditarHoraExtraEmpleadoComponent implements OnInit {
   horaInicioF = new FormControl('');
   FechaFinF = new FormControl('', [Validators.required]);
   horaFinF = new FormControl('', [Validators.required]);
-  estadoF = new FormControl('', [Validators.required]);
+  estadoF = new FormControl(null, [Validators.required]);
   horasF = new FormControl('', [Validators.required]);
 
   archivoForm = new FormControl('');

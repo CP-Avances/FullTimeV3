@@ -20,9 +20,8 @@ import { EmpleadoService } from 'src/app/servicios/empleado/empleadoRegistro/emp
 import { FeriadosService } from 'src/app/servicios/catalogos/catFeriados/feriados.service';
 import { LoginService } from 'src/app/servicios/login/login.service';
 
-import { SettingsComponent } from 'src/app/componentes/administracionGeneral/preferecias/settings/settings.component';
 import { VerEmpleadoComponent } from 'src/app/componentes/empleado/ver-empleado/ver-empleado.component';
-import { PermisosMultiplesEmpleadosComponent } from '../multiples/permisos-multiples-empleados/permisos-multiples-empleados.component';
+import { SettingsComponent } from 'src/app/componentes/administracionGeneral/preferecias/settings/settings.component';
 
 interface opcionesDiasHoras {
   valor: string;
@@ -78,11 +77,8 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   // INFORMACION DEL PERMISO
   informacion1: string = '';
   informacion2: string = '';
-  informacion3: string = '';
 
   // CONTROL DE CAMPOS Y VALIDACIONES DEL FORMULARIO
-  horas_alimentacionF = new FormControl('');
-  horas_solicitadasF = new FormControl('');
   nombreCertificadoF = new FormControl('');
   descripcionF = new FormControl('');
   fechaInicioF = new FormControl('', [Validators.required]);
@@ -98,19 +94,17 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   horasF = new FormControl('');
   diasF = new FormControl('');
 
-  // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
+  // ASIGNACIÓN DE VALIDACIONES A INPUTS DEL FORMULARIO
   public formulario = new FormGroup({
-    horas_alimentacionForm: this.horas_alimentacionF,
-    horas_solicitadasForm: this.horas_solicitadasF,
     nombreCertificadoForm: this.nombreCertificadoF,
     horasIngresoForm: this.horaIngresoF,
     descripcionForm: this.descripcionF,
     fechaInicioForm: this.fechaInicioF,
     fechaFinalForm: this.fechaFinalF,
     horaSalidaForm: this.horaSalidaF,
-    diaLaboralForm: this.diaLaboralF,
     idPermisoForm: this.idPermisoF,
     solicitarForm: this.solicitarF,
+    diaLaboralForm: this.diaLaboralF,
     diaLibreForm: this.diaLibreF,
     especialForm: this.especialF,
     horasForm: this.horasF,
@@ -126,15 +120,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     private restP: PermisosService,
     private restH: EmpleadoHorariosService,
     public restE: EmpleadoService,
+    public validar: ValidacionesService,
+    public restAutoriza: AutorizacionService,
+    public parametro: ParametrosService,
+    public componente: VerEmpleadoComponent,
+    public planificar: PlanGeneralService,
+    public restPerV: PeriodoVacacionesService,
     public feriado: FeriadosService,
     public ventana: MatDialog,
-    public validar: ValidacionesService,
-    public restPerV: PeriodoVacacionesService,
-    public parametro: ParametrosService,
-    public componente1: VerEmpleadoComponent,
-    public componente2: PermisosMultiplesEmpleadosComponent,
-    public planificar: PlanGeneralService,
-    public restAutoriza: AutorizacionService,
 
   ) {
     this.idEmpleadoIngresa = parseInt(localStorage.getItem('empleado'));
@@ -145,7 +138,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     console.log(this.datos)
     var f = moment();
     this.FechaActual = f.format('YYYY-MM-DD');
-    this.ObtenerInformacionEmpleado();
+    this.obtenerInformacionEmpleado();
     this.ImprimirNumeroPermiso();
     this.ObtenerTiposPermiso();
     this.ObtenerEmpleado();
@@ -202,16 +195,13 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   // IMPRIMIR DATOS DEL TIPO DE PERMISO SELECCIONADO
-  activar_comida: boolean = false;
   activar_hora: boolean = false;
   informacion: boolean = false;
   legalizado: boolean = false;
   certificado: boolean = false;
   ImprimirDatos(form: any) {
-    this.LimpiarComida(false);
     this.datosPermiso = [];
     this.tipoPermiso.BuscarUnTipoPermiso(form.idPermisoForm).subscribe(datos => {
-      console.log('datos de tipo de permisos ', datos)
       // VARIABLES GLOBALES SETEADAS EN 0
       this.Tdias = 0;
       this.Thoras = 0;
@@ -260,14 +250,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       else {
         this.periodo_vacaciones = 0;
       }
-
-      // MENSAJE DESCUENTO ALIMENTACION
-      if (this.datosPermiso.almu_incluir === true) {
-        this.informacion3 = `Aplica descuento de minutos de alimentación si el permisos solicitado se encuentra dentro del horario de alimentación.`;
-      }
-      else {
-        this.informacion3 = '';
-      }
     })
   }
 
@@ -301,7 +283,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   // ACTIVAR FORMULARIO DE ACUERDO A SELECCION DE TIPO 
   ActivarDiasHoras(form: any) {
-    this.LimpiarComida(false);
     if (form.solicitarForm === 'Dias') {
       this.LimpiarFormulario('00:00');
       this.activar_hora = false;
@@ -317,8 +298,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   // METODO DE VALIDACIONES DE FECHA DE INICIO
   dSalida: any;
   ValidarFechaSalida(event: any, form: any) {
-
-    this.LimpiarComida(false);
 
     // LIMPIAR CAMPOS DE FECHAS
     if (form.solicitarForm === 'Dias') {
@@ -432,7 +411,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
                 this.LimpiarInformacion('00:00');
                 // NO EXISTEN PERMISOS SOLICITADOS POR DIAS
               } else {
-                this.ValidarConfiguracionDias();
+                this.ValidarConfiguracionDias(form);
               }
             })
           }, error => {
@@ -444,7 +423,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           });
         }
         else if (form.solicitarForm === 'Horas') {
-          this.LimpiarComida(false);
           // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
           let solicitud = {
             fec_inicio: inicio,
@@ -460,8 +438,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
               });
               this.fechaInicioF.setValue('');
               this.LimpiarInformacion('00:00');
-              this.LimpiarComida(false);
-
               // NO EXISTEN PERMISOS SOLICITADOS POR DIAS
             } else {
               this.ImprimirFecha(form);
@@ -476,12 +452,11 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         timeOut: 4000,
       });
       this.LimpiarInformacion('');
-      this.LimpiarComida(false);
     }
   }
 
   // METODO PARA VALIDAR QUE SE INGRESE DIAS - HORAS DE SOLICITUD DE PERMISOS
-  ValidarConfiguracionDias() {
+  ValidarConfiguracionDias(form: any) {
     if (this.configuracion_permiso === 'Dias') {
       const resta = this.dIngreso.diff(this.dSalida, 'days');
       this.diasF.setValue(resta + 1);
@@ -492,10 +467,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           timeOut: 6000,
         });
         this.LimpiarInformacion('00:00');
-        this.LimpiarComida(false);
       }
       else {
-        this.ContarDiasSolicitados();
+        this.ContarDiasSolicitados(form)
       }
     }
     else if (this.configuracion_permiso === 'Horas') {
@@ -506,7 +480,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           timeOut: 6000,
         })
       this.LimpiarInformacion('');
-      this.LimpiarComida(false);
     }
   }
 
@@ -521,7 +494,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     var verificador: number = 0;
     var datos: any = [];
     this.horasF.setValue('');
-    this.LimpiarComida(false);
 
     // VERIFICAR QUE SE HAYA INGRESADO HORAS
     if (form.horaSalidaForm != '' && form.horasIngresoForm != '') {
@@ -557,7 +529,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
             });
             this.fechaInicioF.setValue('');
             this.LimpiarInformacion('00:00');
-            this.LimpiarComida(false);
             // NO EXISTEN PERMISOS SOLICITADOS POR HORAS
           } else {
             // SEE LEE METODOS DE ACUERDO A SELECCION DE USUARIO
@@ -579,8 +550,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   // METODO PARA LEER DATOS DE HORAS EN EL MISMO DIA
   VerificarFechasIguales(form: any, datos: any, verificador: any, fecha_inicio: any, fecha_final: any, hora_inicio_: any, hora_final_: any) {
-    datos = [];
-    this.LimpiarComida(false);
     // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
     let horario = {
       fecha_inicio: fecha_inicio,
@@ -597,12 +566,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         for (let i = 0; i < datos.length; i++) {
           if (hora_inicio_ >= datos[i].hora_inicio && hora_final_ <= datos[i].hora_final) {
             verificador = 1;
-            if (this.datosPermiso.almu_incluir === true) {
-              this.VerificarFechasIgualesComida(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i]);
-            }
-            else {
-              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-            }
+            this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
             break;
           }
           else {
@@ -623,20 +587,17 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
             // LA HORA INGRESADA DE INICIO DEDE SER >= QUE LA HORA DE INICIO DE JORNADA
             if (hora_inicio_ >= datos[i].hora_inicio) {
               // CONDICIONES QUE DEBEN CUMPLIR
-              // LA HORA FINAL ES 00:00:00 (HORA DE FINALIZACION DE DIA SE TOMA COMO UN NUEVO DIA)
+              // LA HORA FINAL ES 24:00:00 (HORA DE FINALIZACION DE DIA)
               if (hora_final_ === '00:00:00') {
-                verificador = 2;
+                verificador = 1;
+                this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
+                break;
               }
               else {
                 // LA HORA FINAL ES <= '23:59:00' Y LA HORA FINAL ES > QUE LA HORA DE INICIO
                 if (hora_final_ <= '23:59:00' && hora_final_ > datos[i].hora_inicio) {
                   verificador = 1;
-                  if (this.datosPermiso.almu_incluir === true) {
-                    this.VerificarFechasIgualesComida(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i]);
-                  }
-                  else {
-                    this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-                  }
+                  this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                   break;
                 }
                 else {
@@ -657,24 +618,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
                 // SI LA HORA DE INICIO ES 00:00:00 (INICIO DE UN NUEVO DIA)
                 if (hora_inicio_ === '00:00:00') {
                   verificador = 1;
-                  if (this.datosPermiso.almu_incluir === true) {
-                    this.VerificarFechasIgualesComida(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i]);
-                  }
-                  else {
-                    this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-                  }
+                  this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                   break;
                 }
                 else {
                   // LA HORA DE INICIO DEBE SER >= 00:01:00 Y LA HORA DE INICIO DEBE SER < QUE LA HORA DE SALIDA DEL USUARIO
                   if (hora_inicio_ >= '00:01:00' && hora_inicio_ < datos[i].hora_final) {
                     verificador = 1;
-                    if (this.datosPermiso.almu_incluir === true) {
-                      this.VerificarFechasIgualesComida(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i]);
-                    }
-                    else {
-                      this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-                    }
+                    this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                     break;
                   }
                   else {
@@ -706,14 +657,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
               // LA HORA FINAL ES 24:00:00 (HORA DE FINALIZACION DE DIA)
               if (hora_final_ === '00:00:00') {
                 verificador = 1;
-                this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
+                this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                 break;
               }
               else {
                 // LA HORA FINAL ES <= '23:59:00' Y LA HORA FINAL ES > QUE LA HORA DE INICIO
                 if (hora_final_ <= '23:59:00' && hora_final_ > datos[i].hora_inicio) {
                   verificador = 1;
-                  this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
+                  this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                   break;
                 }
                 else {
@@ -734,14 +685,14 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
               // SI LA HORA DE INICIO ES 00:00:00 (INICIO DE UN NUEVO DIA)
               if (hora_inicio_ === '00:00:00') {
                 verificador = 1;
-                this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
+                this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                 break;
               }
               else {
                 // LA HORA DE INICIO DEBE SER >= 00:01:00 Y LA HORA DE INICIO DEBE SER < QUE LA HORA DE SALIDA DEL USUARIO
                 if (hora_inicio_ >= '00:01:00' && hora_inicio_ < datos[i].hora_final) {
                   verificador = 1;
-                  this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
+                  this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
                   break;
                 }
                 else {
@@ -755,7 +706,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           }
           else if (intermedio === fecha_inicio) {
             verificador = 1;
-            this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
+            this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
             break;
           }
         }
@@ -772,7 +723,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   // METODO PARA LEER DATOS DE HORAS EN DIAS DIFERENTES
   VerificarFechasDiferentes(form: any, datos: any, verificador: any, fecha_inicio: any, fecha_final: any, hora_inicio_: any, hora_final_: any) {
-    this.LimpiarComida(false);
     // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
     let horario = {
       fecha_inicio: fecha_inicio,
@@ -789,13 +739,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         for (let i = 0; i < datos.length; i++) {
           if (hora_inicio_ >= datos[i].hora_inicio && hora_final_ <= datos[i].hora_final) {
             verificador = 1;
-            if (this.datosPermiso.almu_incluir === true) {
-              this.VerificarFechasDiferentesComida(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
-            }
-            else {
-              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-            }
-            break;
+            this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
           }
           else {
             verificador = 2;
@@ -813,8 +757,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           if (entrada === fecha_inicio) {
             if (hora_inicio_ >= datos[i].hora_inicio) {
               verificador = 1;
-              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-              break;
+              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
             }
             else {
               verificador = 2;
@@ -823,120 +766,11 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           else if (intermedio === fecha_inicio) {
             if (hora_final_ <= datos[i].hora_final) {
               verificador = 1;
-              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-              break;
+              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_);
             }
             else {
               verificador = 2;
             }
-          }
-        }
-      }
-      // SI NO CUMPLE CON LAS CONDICIONES
-      if (verificador === 2) {
-        this.EmitirMensajeError();
-      }
-    }, vacio => {
-      this.EmitirMensajeError();
-    })
-  }
-
-  // METODO PARA LEER DATOS DE HORAS - ALIMENTACION EN EL MISMO DIA
-  VerificarFechasIgualesComida(form: any, fecha_inicio: any, fecha_final: any, hora_inicio_: any, hora_final_: any, horario_: any) {
-    let verificador = 0;
-    let datos: any = [];
-    // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
-    let horario = {
-      fecha_inicio: fecha_inicio,
-      hora_inicio: form.horaSalidaForm,
-      hora_final: form.horasIngresoForm,
-      codigo: this.empleado.codigo
-    }
-    // BUSQUEDA DE HORARIOS EN UN DIA Y HORAS
-    this.restH.BuscarComidaHorarioHorasMD(horario).subscribe(informacion => {
-      console.log('informacion comida', informacion)
-      datos = informacion.respuesta;
-      // HORARIOS CON FINALIZACION DE JORNADA EN UN MISMO DIA
-      if (informacion.message === 'CASO_1') {
-        for (let i = 0; i < datos.length; i++) {
-          this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i].min_almuerzo);
-        }
-      }
-      // HORARIOS CON FINALIZACION DE JORNADA AL SIGUIENTE DIA
-      else if (informacion.message === 'CASO_2') {
-        // RECORRER TODOS LOS DATOS DE HORARIOS EXISTENTES
-        for (let i = 0; i < datos.length; i++) {
-          // FORMATEAR FECHAS
-          var entrada = String(moment(datos[i].fecha_entrada, "YYYY/MM/DD").format("YYYY-MM-DD"));
-          var salida = String(moment(datos[i].fecha_salida, "YYYY/MM/DD").format("YYYY-MM-DD"));
-          // CONDICION UNO: FECHA INGRESADA = A LA FECHA DE INGRESO DEL USUARIO
-          if (entrada === fecha_inicio) {
-
-            if ((hora_final_ <= '23:59:00' && hora_final_ > datos[i].hora_inicio) &&
-              ((hora_inicio_ <= datos[i].hora_inicio || hora_inicio_ >= datos[i].hora_inicio) &&
-                hora_inicio_ >= horario_.hora_inicio)) {
-              console.log('entra if entrada = fecha_inicio')
-              verificador = 1;
-              this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i].min_almuerzo);
-              break;
-            }
-            else {
-              console.log('entra else entrada = fecha_inicio')
-              verificador = 2;
-            }
-          }
-          else {
-            // CONDICION DOS: FECHA INGRESADA = A LA FECHA DE SALIDA DEL USUARIO
-            if (salida === fecha_inicio) {
-              if ((hora_inicio_ >= '00:00:00' && hora_inicio_ < datos[i].hora_final) &&
-                ((hora_final_ >= datos[i].hora_final || hora_final_ <= datos[i].hora_final) &&
-                  hora_final_ <= horario_.hora_final)) {
-                console.log('entra if salida = fecha_inicio')
-                verificador = 1;
-                this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos[i].min_almuerzo);
-                break;
-              }
-              else {
-                console.log('entra else salida = fecha_inicio')
-                verificador = 2;
-              }
-            }
-          }
-        }
-      }
-      if (verificador === 2) {
-        this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-      }
-    }, vacio => {
-      console.log('entra sin validaciones')
-      this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, 0);
-    })
-  }
-
-  // METODO PARA LEER DATOS DE HORAS - ALIMENTACION EN DIAS DIFERENTES
-  VerificarFechasDiferentesComida(form: any, fecha_inicio: any, fecha_final: any, hora_inicio_: any, hora_final_: any) {
-    let datos_ = [];
-    let verificador = 0;
-    // METODO PARA BUSCAR PERMISOS SOLICITADOS POR DIAS
-    let horario = {
-      fecha_inicio: fecha_inicio,
-      fecha_final: fecha_final,
-      codigo: this.empleado.codigo
-    }
-    // BUSQUEDA DE HORARIOS EN UN DIA Y HORAS
-    this.restH.BuscarComidaHorarioHorasDD(horario).subscribe(informacion => {
-      datos_ = informacion.respuesta;
-      console.log('ver informacion comida caso 4', informacion)
-      // HORARIOS CON FINALIZACION DE JORNADA EN DIAS DIFERENTES (SEGUNDO DIA)
-      if (informacion.message === 'CASO_4') {
-        // RECORRER TODOS LOS DATOS DE HORARIOS EXISTENTES
-        for (let i = 0; i < datos_.length; i++) {
-          if (hora_inicio_ >= datos_[i].hora_inicio && hora_final_ <= datos_[i].hora_final) {
-            verificador = 1;
-            this.CalcularHoras(form, fecha_inicio, fecha_final, hora_inicio_, hora_final_, datos_[i].min_almuerzo);
-          }
-          else {
-            verificador = 2;
           }
         }
       }
@@ -950,8 +784,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   }
 
   // METODO PARA CALCULAR HORAS DE PERMISO
-  CalcularHoras(form: any, fecha_inicio: string, fecha_final: string, hora_inicio: string, hora_final: string, comida: any) {
-
+  CalcularHoras(form: any, fecha_inicio: string, fecha_final: string, hora_inicio: string, hora_final: string) {
     this.horasF.setValue('');
 
     // METODO PARA BUSCAR PERMISOS SOLICITADOS POR HORAS
@@ -974,7 +807,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
           // NO EXISTEN PERMISOS SOLICITADOS POR HORAS
         } else {
-
           if (hora_final === '00:00:00') {
             hora_final = '24:00:00'
           }
@@ -1011,18 +843,10 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
           // COLOCAR FORMATO DE HORAS EN FORMULARIO
           var tiempoTotal: string = horas + ':' + minutos;
 
-          // ACTIVAR ALIMENTACION
-          if (comida != 0) {
-            // VERIFICAR ALIMENTCION
-            this.CalcularAlimentacion(comida, tiempoTotal);
-          }
-          else {
-            this.activar_comida = false;
-            this.horasF.setValue(tiempoTotal);
-            // VALIDAR NUMERO DE HORAS SOLICITADAS
-            this.ValidarConfiguracionHoras(tiempoTotal + ':00');
-          }
+          this.horasF.setValue(tiempoTotal);
 
+          // VALIDAR NUMERO DE HORAS SOLICITADAS
+          this.ValidarConfiguracionHoras(tiempoTotal + ':00');
         }
       }
       else {
@@ -1031,46 +855,6 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
         })
       }
     })
-  }
-
-  // METODO PARA CALCULAR DESCUENTO POR ALIMENTACION
-  CalcularAlimentacion(comida: any, tiempoTotal: any) {
-    this.activar_comida = true;
-    let descuento = this.TransformarSegundoHoras(comida * 60);
-    this.horas_alimentacionF.setValue(descuento);
-    this.horas_solicitadasF.setValue(tiempoTotal);
-
-    var descuento_comida = moment.duration(descuento);
-    var tiempo_solicitado = moment.duration((tiempoTotal + ':00'));
-
-    if (descuento_comida >= tiempo_solicitado) {
-      this.toastr.warning(
-        `Revisar descuento de minutos de alimentación.`,
-        `Ha solicitado '00:00:00' horas de permiso.`, {
-        timeOut: 6000,
-      });
-      this.horasF.setValue('');
-    }
-    else {
-      var total = tiempo_solicitado.subtract(descuento_comida);
-
-      // COLOCAR FORMATO DE HORAS EN FORMULARIO
-      var horast = String(total.hours());
-      var minutost = String(total.minutes());
-
-      if (total.hours() < 10) {
-        horast = '0' + total.hours();
-      }
-      if (total.minutes() < 10) {
-        minutost = '0' + total.minutes();
-      }
-      // COLOCAR FORMATO DE HORAS EN FORMULARIO
-      var valorTotal: string = horast + ':' + minutost;
-
-      this.horasF.setValue(valorTotal);
-      // VALIDAR NUMERO DE HORAS SOLICITADAS
-      this.ValidarConfiguracionHoras(valorTotal + ':00');
-    }
   }
 
   // MENSAJE PARA MOSTRAR QUE NO SE ENCUENTRA PLANIFICACION
@@ -1084,6 +868,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   // METODO PARA VERIFICAR INGRESO DE HORAS DE ACUERDO A LA CONFIGURACION DEL PERMISO
   ValidarConfiguracionHoras(valor: any) {
+    console.log(valor)
     if (valor === '00:00:00') {
       this.toastr.warning(
         `Ha solicitado ${valor} horas de permiso.`,
@@ -1164,8 +949,10 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       fecha_final: moment(form.fechaFinalForm).format('YYYY-MM-DD'),
       codigo: this.empleado.codigo
     }
+    console.log('datos de fechas horario ', datos)
     this.planificar.BuscarHorarioFechas(datos).subscribe(data => {
       this.horario = data;
+      console.log('datos de horario ', this.horario)
     })
   }
 
@@ -1175,7 +962,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
   contar_feriados: number = 0;
   contar_recuperables: number = 0;
   contar_laborables: number = 0;
-  ContarDiasSolicitados() {
+  ContarDiasSolicitados(form: any) {
     // ENCERAR VARIABLES
     this.contar_libres = 0;
     this.contar_feriados = 0;
@@ -1194,6 +981,8 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       var newDate = start.setDate(start.getDate() + 1);
       start = new Date(newDate);
     }
+
+    console.log('ver fecha ', this.fechas_solicitud, 'feriados ', this.feriados, ' recuperar ', this.recuperar, ' horario ', this.horario)
 
     // BUSCAR FERIADOS 
     if (this.feriados.length != 0) {
@@ -1249,7 +1038,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
     if (total_laborables === 0) {
       this.toastr.warning(
-        `Esta realizando una solicitud de permiso en días libres o días configurados como feriados.`,
+        `Esta realizando una solicitud de permiso en días libres o dias configurados como feriados.`,
         `Ha solicitado ${total_laborables} días laborables y ${total_libres} días libres.`, {
         timeOut: 6000,
       });
@@ -1323,16 +1112,9 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
       if (this.datosPermiso.documento === true) {
         this.SubirRespaldo(permiso, form);
       }
-      else {
-        if (this.archivoSubido != undefined) {
-          this.SubirRespaldo(permiso, form);
-        }
-      }
+      this.EnviarCorreoPermiso(permiso);
       this.IngresarAutorizacion(permiso);
-      if (this.datosPermiso.correo_crear === true) {
-        this.EnviarCorreoPermiso(permiso);
-        this.EnviarNotificacion(permiso);
-      }
+      this.EnviarNotificacion(permiso);
       this.CerrarVentana();
     });
 
@@ -1424,7 +1206,7 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
 
   // METODO PARA OBTENER CONFIGURACION DE NOTIFICACIONES
   solInfo: any;
-  ObtenerInformacionEmpleado() {
+  obtenerInformacionEmpleado() {
     this.informacion_.ObtenerInfoConfiguracion(this.datos.id_empleado).subscribe(
       res => {
         if (res) {
@@ -1656,25 +1438,12 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     });
   }
 
-  // METODO PARA LIMPIAR HORAS ALIMENTACION
-  LimpiarComida(valor: boolean) {
-    this.activar_comida = valor;
-    this.horas_solicitadasF.setValue('');
-    this.horas_alimentacionF.setValue('');
-  }
-
   // CERRAR VENTANA DE REGISTRO
   CerrarVentana() {
     this.LimpiarCampos();
-    if (this.datos.ventana === 'empleado') {
-      this.componente1.formulario_permiso = false;
-      this.componente1.solicitudes_permiso = true;
-      this.componente1.ObtenerPermisos(this.componente1.formato_fecha, this.componente1.formato_hora);
-    }
-    else {
-      this.componente2.activar_busqueda = true;
-      this.componente2.permiso_individual = false;
-    }
+    this.componente.formulario_permiso = false;
+    this.componente.solicitudes_permiso = true;
+    this.componente.ObtenerPermisos(this.componente.formato_fecha, this.componente.formato_hora);
   }
 
   // VALIDACIONES INGRESAR SOLO NUMEROS
@@ -1682,16 +1451,4 @@ export class RegistroEmpleadoPermisoComponent implements OnInit {
     this.horasF.setValue('');
     return this.validar.IngresarSoloNumeros(evt);
   }
-
-  // METODO PARA FORMATEAR HORAS
-  TransformarSegundoHoras(segundos: number) {
-    let h: string | number = Math.floor(segundos / 3600);
-    h = (h < 10) ? '0' + h : h;
-    let m: string | number = Math.floor((segundos / 60) % 60);
-    m = (m < 10) ? '0' + m : m;
-    let s: string | number = segundos % 60;
-    s = (s < 10) ? '0' + s : s;
-    return h + ':' + m + ':' + s;
-  }
-
 }

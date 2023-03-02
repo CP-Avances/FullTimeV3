@@ -41,12 +41,12 @@ export class RegistrarVacacionesComponent implements OnInit {
   fechaInicio = new FormControl('', Validators.required);
   fechaFinal = new FormControl('', Validators.required);
   fechaIngreso = new FormControl('', Validators.required);
-  dialibreF = new FormControl('', [Validators.required]);
-  dialaborableF = new FormControl('', [Validators.required]);
+  dialibreF = new FormControl(null, [Validators.required]);
+  dialaborableF = new FormControl(null, [Validators.required]);
   legalizadoF = new FormControl('', [Validators.required]);
   calcularF = new FormControl('');
   totalF = new FormControl('');
-  diasTF = new FormControl('');
+  diasTF = new FormControl(null);
 
   public VacacionesForm = new FormGroup({
     nombreEmpleadoForm: this.nombreEmpleado,

@@ -232,8 +232,8 @@ class EmpleadoHorariosControlador {
         }
     }
 
-    // METODO PARA BUSCAR HORAS DE ALIMENTACION EN EL MISMO DIA (MD)
-    public async ObtenerComidaHorarioHorasMD(req: Request, res: Response) {
+     // METODO PARA BUSCAR HORAS DE ALIMENTACION EN EL MISMO DIA (MD)
+     public async ObtenerComidaHorarioHorasMD(req: Request, res: Response) {
         let { codigo, fecha_inicio, hora_inicio, hora_final } = req.body;
 
         // CONSULTA DE HORARIO DEL USUARIO INGRESO = SALIDA
@@ -274,7 +274,6 @@ class EmpleadoHorariosControlador {
         }
     }
 
-
     // METODO PARA CONSULTAR MINUTOS DE ALIMENTACION EN DIAS DIFERENTES (DD)
     public async ObtenerComidaHorarioHorasDD(req: Request, res: Response) {
         let { codigo, fecha_inicio, fecha_final } = req.body;
@@ -298,6 +297,7 @@ class EmpleadoHorariosControlador {
             return res.status(200).jsonp({ message: 'CASO_4', respuesta: CASO_4 });
         }
     }
+
 
 
 

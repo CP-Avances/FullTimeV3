@@ -32,7 +32,7 @@ export class EditarDetalleCatHorarioComponent implements OnInit {
   segundoF = new FormControl(false);
   terceroF = new FormControl(false);
   accionF = new FormControl('', [Validators.required]);
-  ordenF = new FormControl('', [Validators.required]);
+  ordenF = new FormControl(null, [Validators.required]);
   horaF = new FormControl('', [Validators.required]);
 
   // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
