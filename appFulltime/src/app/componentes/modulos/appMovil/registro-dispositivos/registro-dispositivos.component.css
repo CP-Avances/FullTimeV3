@@ -11,17 +11,9 @@ mat-form-field.input-tables {
     height: 65px;
 }
 
-.codigo {
-    width: 60px;
-}
-
-.nombre {
-    width: 120px;
-}
-
-.cedula {
-    width: 100px;
-}
+.codigo {width: 70px;}
+.nombre {width: 120px;}
+.cedula {width: 110px;}
 
 mat-expansion-panel-header {
     text-align: center;

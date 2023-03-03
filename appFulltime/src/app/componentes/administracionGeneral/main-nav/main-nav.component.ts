@@ -184,6 +184,8 @@ export class MainNavComponent implements OnInit {
       this.restEmpresa.ConsultarEmpresas().subscribe(res => {
         localStorage.setItem('name_empresa', res[0].nombre);
         this.MetodoSubSelectMenu(res[0].nombre)
+        console.log("Informacion: ",res)
+        console.log("Estado: ",this.HabilitarAlimentacion);
       })
     }
   }
@@ -348,7 +350,6 @@ export class MainNavComponent implements OnInit {
             icono: 'local_dining',
             color: true,
             children: [
-              { name: 'Configurar Servicio', url: '/listarTipoComidas', color: true },
               { name: 'Planificar Servicio', url: '/alimentacion', color: true },
               { name: 'Listar Planificación', url: '/listaPlanComida', color: true },
               { name: 'Aprobación Múltiple', url: '/listaSolicitaComida', color: true },

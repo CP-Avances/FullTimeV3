@@ -9,7 +9,7 @@
                             <form [formGroup]="formulario">
                                 <mat-form-field>
                                     <mat-label>Ingresa tu Usuario</mat-label>
-                                    <input matInput 
+                                    <input matInput style="font-size: 14px;"
                                         placeholder="pat@example.com" 
                                         [formControl]="userMail" 
                                         required>
@@ -18,7 +18,7 @@
                                 <br>
                                 <mat-form-field>
                                     <mat-label>Ingresa tu Contraseña</mat-label>
-                                    <input matInput 
+                                    <input matInput style="font-size: 13px;"
                                         (keyup.enter)="hide1 = true; ValidarUsuario(formulario.value)"
                                         [formControl]="pass"
                                         [type]="hide1 ? 'password' : 'text'" 

@@ -5,8 +5,8 @@
                 <span>TIPO DE PERMISOS</span>
             </div>
             <mat-card class="example-card mat-elevation-z9">
-                <div class="d-flex flex-wrap justify-content-center">
-                    <button mat-button type="submit" class="btn btn-sm" [routerLink]="['/tipoPermisos']">
+                <div class="d-flex justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
+                    <button mat-raised-button id="btn-raised" type="submit" [routerLink]="['/tipoPermisos']">
                         Crear tipo permiso
                     </button>
                     <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampos()" matSuffix
