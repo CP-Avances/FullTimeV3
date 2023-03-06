@@ -35,14 +35,14 @@ export class HorariosMultiplesComponent implements OnInit {
   // CAMPOS DE FORMULARIO
   fechaInicioF = new FormControl('', Validators.required);
   fechaFinalF = new FormControl('', Validators.required);
-  horarioF = new FormControl('', Validators.required);
-  miercolesF = new FormControl('');
-  viernesF = new FormControl('');
-  domingoF = new FormControl('');
-  martesF = new FormControl('');
-  juevesF = new FormControl('');
-  sabadoF = new FormControl('');
-  lunesF = new FormControl('');
+  horarioF = new FormControl(null, Validators.required);
+  miercolesF = new FormControl(false);
+  viernesF = new FormControl(false);
+  domingoF = new FormControl(false);
+  martesF = new FormControl(false);
+  juevesF = new FormControl(false);
+  sabadoF = new FormControl(false);
+  lunesF = new FormControl(false);
 
   // ASIGNACION DE VALIDACIONES A INPUTS DEL FORMULARIO
   public formulario = new FormGroup({

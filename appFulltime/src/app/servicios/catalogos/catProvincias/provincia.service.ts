@@ -60,13 +60,6 @@ export class ProvinciaService {
 
 
 
-
-
-
-
-
-
-
   
   getIdProvinciaRest(nombre: string) {
     return this.http.get(`${environment.url}/provincia/nombreProvincia/${nombre}`);

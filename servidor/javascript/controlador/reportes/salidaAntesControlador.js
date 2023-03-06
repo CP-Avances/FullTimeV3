@@ -52,7 +52,7 @@ const BuscarTimbresS = function (fec_inicio, fec_final, id) {
             'FROM timbres AS t ' +
             'WHERE t.id_empleado = $3 ' +
             'AND t.fec_hora_timbre::date BETWEEN $1 AND $2 AND t.accion = \'S\'', [fec_inicio, fec_final, id])
-            .then(res => {
+            .then((res) => {
             return res.rows;
         });
     });
@@ -64,7 +64,7 @@ const BuscarHoraHorario = function (fecha, codigo) {
             'WHERE eh.codigo = $2 ' +
             'AND $1 BETWEEN eh.fec_inicio AND eh.fec_final ' +
             'AND dh.id_horario = eh.id_horarios AND dh.orden = 4', [fecha, codigo])
-            .then(res => {
+            .then((res) => {
             return res.rows;
         });
     });

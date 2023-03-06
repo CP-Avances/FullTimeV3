@@ -336,7 +336,6 @@ export class EditarEstadoAutorizaccionComponent implements OnInit {
           () => { },
         )
       }
-
     })
   }
 

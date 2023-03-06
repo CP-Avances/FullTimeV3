@@ -27,7 +27,7 @@ export class RegistroHorarioComponent implements OnInit {
 
   // VALIDACIONES PARA EL FORMULARIO
   horaTrabajo = new FormControl('', [Validators.required, Validators.pattern("^[0-9]*(:[0-9][0-9])?$")]);
-  minAlmuerzo = new FormControl('', Validators.pattern('[0-9]*'));
+  minAlmuerzo = new FormControl(null, Validators.pattern('[0-9]*'));
   archivoForm = new FormControl('');
   documentoF = new FormControl('');
   detalleF = new FormControl('');

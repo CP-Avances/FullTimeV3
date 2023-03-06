@@ -98,7 +98,7 @@ class EmpleadoHorariosControlador {
 			    AND (($2 BETWEEN eh.fec_inicio AND eh.fec_final)
 			    OR ($3 BETWEEN eh.fec_inicio AND eh.fec_final))
             `, [codigo, fecha_inicio, fecha_final])
-            .then(result => { return result.rows });
+            .then((result: any) => { return result.rows });
 
         if (fijo.length === 0) {
 
@@ -112,7 +112,7 @@ class EmpleadoHorariosControlador {
                     AND (($2 BETWEEN ph.fec_inicio AND ph.fec_final)
                     OR ($3 BETWEEN ph.fec_inicio AND ph.fec_final))
                 `, [codigo, fecha_inicio, fecha_final])
-                .then(result => { return result.rows });
+                .then((result: any) => { return result.rows });
 
 
             if (rotativo.length === 0) {
@@ -142,7 +142,7 @@ class EmpleadoHorariosControlador {
                 AND (($3 BETWEEN hora_inicio AND hora_final) AND ($4 BETWEEN hora_inicio AND hora_final))
             `
             , [codigo, fecha_inicio, hora_inicio, hora_final])
-            .then(result => { return result.rows });
+            .then((result: any) => { return result.rows });
 
         if (CASO_1.length === 0) {
 
@@ -156,7 +156,7 @@ class EmpleadoHorariosControlador {
                     AND ($2 = he.fecha_entrada OR $2 = hs.fecha_salida)
                 `
                 , [codigo, fecha_inicio])
-                .then(result => { return result.rows });
+                .then((result: any) => { return result.rows });
 
             if (CASO_2.length === 0) {
 
@@ -170,7 +170,7 @@ class EmpleadoHorariosControlador {
                         AND ($2 = he.fecha_entrada OR $2 = hs.fecha_salida OR $2= (he.fecha_entrada + interval '1 day'))
                 `
                     , [codigo, fecha_inicio])
-                    .then(result => { return result.rows });
+                    .then((result: any) => { return result.rows });
 
                 if (CASO_3.length === 0) {
                     return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
@@ -203,7 +203,7 @@ class EmpleadoHorariosControlador {
 				AND $2 = he.fecha_entrada AND $3 = hs.fecha_salida
             `
             , [codigo, fecha_inicio, fecha_final])
-            .then(result => { return result.rows });
+            .then((result: any) => { return result.rows });
 
         if (CASO_4.length === 0) {
 
@@ -218,7 +218,7 @@ class EmpleadoHorariosControlador {
                     AND ($3 = hs.fecha_salida OR $3 = (he.fecha_entrada + interval '1 day'))
                 `
                 , [codigo, fecha_inicio, fecha_final])
-                .then(result => { return result.rows });
+                .then((result: any) => { return result.rows });
 
             if (CASO_5.length === 0) {
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
@@ -232,8 +232,8 @@ class EmpleadoHorariosControlador {
         }
     }
 
-    // METODO PARA BUSCAR HORAS DE ALIMENTACION EN EL MISMO DIA (MD)
-    public async ObtenerComidaHorarioHorasMD(req: Request, res: Response) {
+     // METODO PARA BUSCAR HORAS DE ALIMENTACION EN EL MISMO DIA (MD)
+     public async ObtenerComidaHorarioHorasMD(req: Request, res: Response) {
         let { codigo, fecha_inicio, hora_inicio, hora_final } = req.body;
 
         // CONSULTA DE HORARIO DEL USUARIO INGRESO = SALIDA
@@ -246,7 +246,7 @@ class EmpleadoHorariosControlador {
                 AND (($3 BETWEEN hora_inicio AND hora_final) OR ($4 BETWEEN hora_inicio AND hora_final))
             `
             , [codigo, fecha_inicio, hora_inicio, hora_final])
-            .then(result => { return result.rows });
+            .then((result : any)=> { return result.rows });
 
         if (CASO_1.length === 0) {
 
@@ -260,7 +260,7 @@ class EmpleadoHorariosControlador {
                     AND ($2 = ci.fecha_entrada OR $2 = cf.fecha_salida)
                 `
                 , [codigo, fecha_inicio])
-                .then(result => { return result.rows });
+                .then((result: any) => { return result.rows });
 
             if (CASO_2.length === 0) {
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
@@ -273,7 +273,6 @@ class EmpleadoHorariosControlador {
             return res.status(200).jsonp({ message: 'CASO_1', respuesta: CASO_1 });
         }
     }
-
 
     // METODO PARA CONSULTAR MINUTOS DE ALIMENTACION EN DIAS DIFERENTES (DD)
     public async ObtenerComidaHorarioHorasDD(req: Request, res: Response) {
@@ -289,7 +288,7 @@ class EmpleadoHorariosControlador {
                 AND $2 = ci.fecha_entrada AND $3 = cf.fecha_salida
             `
             , [codigo, fecha_inicio, fecha_final])
-            .then(result => { return result.rows });
+            .then((result: any) => { return result.rows });
 
         if (CASO_4.length === 0) {
             return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
@@ -305,70 +304,7 @@ class EmpleadoHorariosControlador {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
@@ -698,7 +634,6 @@ class EmpleadoHorariosControlador {
     }
 
 
-
     public async ActualizarEmpleadoHorarios(req: Request, res: Response): Promise<any> {
         const { id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles,
             jueves, viernes, sabado, domingo, id_horarios, estado, id } = req.body;
@@ -706,7 +641,7 @@ class EmpleadoHorariosControlador {
             // console.log(req.body);
             const [result] = await pool.query('UPDATE empl_horarios SET id_empl_cargo = $1, id_hora = $2, fec_inicio = $3, fec_final = $4, lunes = $5, martes = $6, miercoles = $7, jueves = $8, viernes = $9, sabado = $10, domingo = $11, id_horarios = $12, estado = $13 WHERE id = $14 RETURNING *',
                 [id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves, viernes, sabado, domingo, id_horarios, estado, id])
-                .then(result => { return result.rows });
+                .then((result: any) => { return result.rows });
 
             if (result === undefined) return res.status(404).jsonp({ message: 'Horario no actualizado' })
 

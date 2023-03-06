@@ -184,6 +184,8 @@ export class MainNavComponent implements OnInit {
       this.restEmpresa.ConsultarEmpresas().subscribe(res => {
         localStorage.setItem('name_empresa', res[0].nombre);
         this.MetodoSubSelectMenu(res[0].nombre)
+        console.log("Informacion: ",res)
+        console.log("Estado: ",this.HabilitarAlimentacion);
       })
     }
   }
@@ -348,7 +350,6 @@ export class MainNavComponent implements OnInit {
             icono: 'local_dining',
             color: true,
             children: [
-              { name: 'Configurar Servicio', url: '/listarTipoComidas', color: true },
               { name: 'Planificar Servicio', url: '/alimentacion', color: true },
               { name: 'Listar Planificación', url: '/listaPlanComida', color: true },
               { name: 'Aprobación Múltiple', url: '/listaSolicitaComida', color: true },
@@ -493,11 +494,7 @@ export class MainNavComponent implements OnInit {
             color: true,
             subtitulo: true,
             children: [
-              { name: 'Timbres', url: '/reporteTimbres', color: true },
-              { name: 'Atrasos', url: '/reporteAtrasos', color: true },
-              { name: 'Empleados', url: '/reporteEmpleados', color: true },
               { name: 'Entradas Salidas', url: '/reporteEntradaSalida', color: true },
-              { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos', color: true },
               { name: 'Asistencia Detalle Consolidado', url: '/reporteAsistenciaConsolidado', color: true },
             ]
           },
@@ -581,12 +578,15 @@ export class MainNavComponent implements OnInit {
             icono: 'group',
             color: true,
             children: [
+              // { name: 'Atrasos', url: '/reporteAtrasos', color: true },
               { name: 'Faltas', url: '/reporte-faltas', color: true },
-              //{ name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
+              { name: 'Atrasos', url: '/reporte-atrasos-multiples', color: true },
               { name: 'Timbres', url: '/reporte-timbres-multiples', color: true },
               { name: 'Timbre Horario Abierto', url: '/reporte-timbre-abierto', color: true },
               { name: 'Puntualidad', url: '/reporte-puntualidad', color: true },
               //{ name: 'Horas Trabajadas', url: '/reporte-horas-trabaja', color: true },
+              { name: 'Empleados Activos', url: '/reporteEmpleados', color: true },
+              { name: 'Empleados Inactivos', url: '/reporte-emp-inactivos', color: true },
               { name: 'Empleados Vacunados', url: '/lista-vacunados', color: true },
               //{ name: 'Timbre Incompleto', url: '/reporte-timbre-incompleto', color: true },
               //{ name: 'Salidas Anticipadas', url: '/salidas-anticipadas', color: true },

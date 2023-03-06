@@ -85,20 +85,6 @@ class NotificacionTiempoRealControlador {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   public async ListarNotificacion(req: Request, res: Response) {
     const REAL_TIME_NOTIFICACION = await pool.query('SELECT * FROM realtime_noti ORDER BY id DESC');
 
@@ -114,8 +100,8 @@ class NotificacionTiempoRealControlador {
     const id = req.params.id_send;
     const REAL_TIME_NOTIFICACION = await pool.query('SELECT * FROM realtime_noti WHERE id_send_empl = $1 ' +
       'ORDER BY id DESC', [id]).
-      then(result => {
-        return result.rows.map(obj => {
+      then((result: any) => {
+        return result.rows.map((obj: any) => {
           obj
           return obj
         })
@@ -137,8 +123,8 @@ class NotificacionTiempoRealControlador {
         FROM realtime_noti AS r, empleados AS e 
         WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC
       `, [id])
-      .then(result => {
-        return result.rows.map(obj => {
+      .then((result: any) => {
+        return result.rows.map((obj: any) => {
           console.log(obj);
           return {
             id: obj.id,
@@ -183,7 +169,7 @@ class NotificacionTiempoRealControlador {
     if (arrayIdsRealtimeNotificaciones.length > 0) {
       arrayIdsRealtimeNotificaciones.forEach(async (obj: number) => {
         await pool.query('DELETE FROM realtime_noti WHERE id = $1', [obj])
-          .then(result => {
+          .then((result: any) => {
             console.log(result.command, 'REALTIME ELIMINADO ====>', obj);
           });
       });
@@ -229,7 +215,6 @@ class NotificacionTiempoRealControlador {
   /** ******************************************************************************************** **
    ** **                               CONSULTAS DE NOTIFICACIONES                              ** ** 
    ** ******************************************************************************************** **/
-
 
 
   public async ListarNotificacionUsuario(req: Request, res: Response): Promise<any> {
@@ -367,18 +352,6 @@ class NotificacionTiempoRealControlador {
       res.jsonp({ message: 'Ups! algo salio mal!!! No fue posible enviar correo electrónico.' });
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

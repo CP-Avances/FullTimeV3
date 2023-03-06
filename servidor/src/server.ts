@@ -76,25 +76,29 @@ import PARAMETROS_RUTAS from './rutas/parametrosGenerales/parametrosRutas';
 import UBICACION_RUTAS from './rutas/empleado/empleadoUbicacion/emplUbicacionRutas';
 
 import { createServer, Server } from 'http';
-const socketIo = require('socket.io');
+
+var io: any;
 
 class Servidor {
 
     public app: Application;
-    private server: Server;
-    private io: SocketIO.Server;
+    public server: Server;
 
     constructor() {
         this.app = express();
         this.configuracion();
         this.rutas();
-        this.server = createServer(this.app);
         //this.server = require("http").createServer(this.app);
-        this.io = socketIo(this.server);
+        this.server = createServer(this.app);
         this.app.use(cors());
+        io = require('socket.io')(this.server, {
+            cors: {
+                origin: '*',
+                methods: ['GET', 'POST'],
+            }
+        });
 
     }
-
     configuracion(): void {
         this.app.set('puerto', process.env.PORT || 3001);
         this.app.use(morgan('dev'));
@@ -103,6 +107,11 @@ class Servidor {
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.raw({ type: 'image/*', limit: '2Mb' }));
         this.app.set('trust proxy', true);
+        this.app.get('/',(req, res)=> {
+            res.status(200).json({
+                status:'success'
+            });
+        });
     }
 
     rutas(): void {
@@ -244,10 +253,12 @@ class Servidor {
 
         });
 
+        this.app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*:*');
+            next();
+        })
 
-
-
-        this.io.on('connection', (socket: any) => {
+        io.on('connection', (socket: any) => {
             console.log('Connected client on port %s.', this.app.get('puerto'));
 
             socket.on("nueva_notificacion", (data: any) => {

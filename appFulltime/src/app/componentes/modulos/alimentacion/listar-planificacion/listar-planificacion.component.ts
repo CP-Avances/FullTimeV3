@@ -343,7 +343,6 @@ export class ListarPlanificacionComponent implements OnInit {
 
     this.restC.ObtenerPlanComidaPorIdPlan(id).subscribe(res => {
       this.planEmpleados = res;
-
       this.FormatearDatos(this.planEmpleados, this.formato_fecha, this.formato_hora);
       this.tipo_accion = accion;
       this.lista_empleados = lista_empleados;

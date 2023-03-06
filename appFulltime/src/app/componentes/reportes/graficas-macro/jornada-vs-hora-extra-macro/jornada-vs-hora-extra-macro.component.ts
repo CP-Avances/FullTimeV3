@@ -201,7 +201,6 @@ export class JornadaVsHoraExtraMacroComponent implements OnInit {
         fecha = f.format('YYYY-MM-DD');
         h.setUTCHours(h.getHours());
         var time = h.toJSON().split("T")[1].split(".")[0];
-
         return {
           margin: 10,
           columns: [

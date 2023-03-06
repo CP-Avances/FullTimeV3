@@ -108,7 +108,7 @@ class PlanComidasControlador {
       'WHERE da.id_departamento = $1 AND da.estado = true AND da.id_empl_cargo = ecr.id AND ' +
       'da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ' +
       'ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id AND e.id = c.id_empleado', [id_departamento])
-      .then(result => {
+      .then((result: any) => {
         return result.rows
       })
 
@@ -126,7 +126,7 @@ class PlanComidasControlador {
           'empl_contratos AS ecn, empleados AS e, config_noti AS c WHERE da.id_departamento = $1 AND ' +
           'da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ' +
           'ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id AND e.id = c.id_empleado', [depa_padre])
-          .then(result => {
+          .then((result: any) => {
             return result.rows
           });
         if (JefeDepaPadre.length === 0) {
@@ -335,7 +335,7 @@ class PlanComidasControlador {
         ecn.id_empleado = e.id AND 
         e.id = c.id_empleado
         `
-        , [id_departamento]).then(result => { return result.rows });
+        , [id_departamento]).then((result: any) => { return result.rows });
       console.log(JefesDepartamentos);
 
       if (JefesDepartamentos.length === 0) return res.status(400)
@@ -413,7 +413,7 @@ class PlanComidasControlador {
         ecn.id_empleado = e.id AND 
         e.id = c.id_empleado
         `
-      , [id_departamento]).then(result => { return result.rows });
+      , [id_departamento]).then((result: any) => { return result.rows });
     console.log(JefesDepartamentos);
 
     if (JefesDepartamentos.length === 0) return res.status(400)
@@ -968,7 +968,7 @@ class PlanComidasControlador {
         FROM datos_actuales_empleado AS da, empl_cargos AS ec
         WHERE da.id = $1 AND ec.id = da.id_cargo
       `,
-        [id_envia]).then(resultado => { return resultado.rows[0] });
+        [id_envia]).then((resultado: any) => { return resultado.rows[0] });
       console.log('envia...', Envia)
       const SERVICIO_SOLICITADO = await pool.query(
         `

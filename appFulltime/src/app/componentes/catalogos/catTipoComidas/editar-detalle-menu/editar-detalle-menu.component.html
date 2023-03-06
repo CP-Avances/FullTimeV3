@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR DETALLE DE MENÚ</span>
+    <mat-icon class="float-right" id="cerrar" (click)="Salir()">highlight_off</mat-icon>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="TipoComidaForm">
@@ -40,8 +41,8 @@
         </div>
     </div>
 </form>
-<div class="d-flex flex-wrap justify-content-center">
-    <input type="submit" class="btn btn-sm button" [disabled]="!TipoComidaForm.valid"
-        (click)="InsertarTipoComida(TipoComidaForm.value)" value="Guardar">
-    <input type="submit" class="btn btn-sm button" (click)="Salir()" value="Salir">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarTipoComida(TipoComidaForm.value)"
+        [disabled]="!TipoComidaForm.valid">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="Salir()">Salir</button-->
 </div>

@@ -22,21 +22,10 @@ export class AutorizacionService {
 
 
 
-
-
-
-
-
-
-
-
-
-
   // realtime
   EnviarNotificacionRealTimeEstado(data: any) {
     this.socket.emit('nueva_notificacion', data);
   }
-
 
 
   // ACTUALIZACION DE APROBACION
@@ -49,7 +38,6 @@ export class AutorizacionService {
   getAutorizacionesRest() {
     return this.http.get<any>(`${environment.url}/autorizaciones`);
   }
-
 
 
   getUnaAutorizacionByVacacionRest(id_vacacion: number) {

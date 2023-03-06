@@ -117,7 +117,7 @@ export class PrincipalProvinciaComponent implements OnInit {
 
   // METODO PARA REGISTRAR PROVINCIAS
   AbrirVentanaRegistrarProvincia() {
-    this.ventana.open(RegistroProvinciaComponent, { width: '400px' }).afterClosed().subscribe(item => {
+    this.ventana.open(RegistroProvinciaComponent, { width: '550px' }).afterClosed().subscribe(item => {
       this.ListarProvincias();
     });
   }

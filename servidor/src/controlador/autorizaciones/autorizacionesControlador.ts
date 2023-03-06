@@ -23,34 +23,6 @@ class AutorizacionesControlador {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public async ListarAutorizaciones(req: Request, res: Response) {
         const AUTORIZACIONES = await pool.query('SELECT * FROM autorizaciones ORDER BY id');
         if (AUTORIZACIONES.rowCount > 0) {
@@ -60,7 +32,6 @@ class AutorizacionesControlador {
             return res.status(404).jsonp({ text: 'No se encuentran registros' });
         }
     }
-
 
 
     public async ObtenerAutorizacionByVacacion(req: Request, res: Response) {

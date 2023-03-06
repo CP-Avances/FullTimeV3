@@ -191,7 +191,7 @@ class PermisosControlador {
                 e.id = c.id_empleado
             `
             ,
-            [depa_user_loggin]).then(result => { return result.rows });
+            [depa_user_loggin]).then((result: any) => { return result.rows });
 
         if (JefesDepartamentos.length === 0) return res.status(400)
             .jsonp({
@@ -278,7 +278,7 @@ class PermisosControlador {
                 e.id = c.id_empleado
             `
             ,
-            [depa_user_loggin]).then(result => { return result.rows });
+            [depa_user_loggin]).then((result: any) => { return result.rows });
 
         if (JefesDepartamentos.length === 0) return res.status(400)
             .jsonp({
@@ -586,40 +586,6 @@ class PermisosControlador {
             res.jsonp({ message: 'Ups!!! algo salio mal. No fue posible enviar correo electrónico.' });
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

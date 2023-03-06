@@ -5,7 +5,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">person_pin</mat-icon>
-            Perfil Usuario
+            <h6 id="items">Perfil Usuario</h6>
         </ng-template>
         <div class="container" *ngFor="let e of empleadoUno" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
@@ -184,7 +184,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">school</mat-icon>
-            Asignaciones
+            <h6 id="items">Asignaciones</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
@@ -288,7 +288,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">local_hospital</mat-icon>
-            Vacunación
+            <h6 id="items">Vacunación</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
@@ -365,7 +365,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">description</mat-icon>
-            Contrato y Cargo
+            <h6 id="items">Contrato y Cargo</h6>
         </ng-template>
 
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
@@ -756,8 +756,9 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">event</mat-icon>
-            Horario
+            <h6 id="items" style="margin-top: 10%;">Horario</h6>
         </ng-template>
+
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
                 <div class="col-md">
@@ -866,7 +867,7 @@
     <mat-tab>
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">today</mat-icon>
-            Horarios Rotativos
+            <h6 id="items">Horarios Rotativos</h6>
         </ng-template>
 
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
@@ -931,7 +932,7 @@
     <mat-tab *ngIf="HabilitarPermisos">
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">transfer_within_a_station</mat-icon>
-            Permisos
+            <h6 id="items">Permisos</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <app-registro-empleado-permiso [solicita_permiso]="solicita_permiso" *ngIf="formulario_permiso">
@@ -1068,7 +1069,7 @@
     <mat-tab *ngIf="habilitarVacaciones">
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">flight_takeoff</mat-icon>
-            Vacaciones
+            <h6 id="items"> Vacaciones</h6>
         </ng-template>
 
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
@@ -1226,7 +1227,7 @@
     <mat-tab *ngIf="HabilitarHorasE">
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">query_builder</mat-icon>
-            Horas Extras
+            <h6 id="items"> Horas Extras</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;" *ngIf="solicita_horas">
             <mat-card class="mat-elevation-z8">
@@ -1391,7 +1392,7 @@
     <mat-tab *ngIf="HabilitarAlimentacion">
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">local_dining</mat-icon>
-            Alimentación
+            <h6 id="items"> Alimentación</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;" *ngIf="solicita_comida">
             <mat-card class="mat-elevation-z8">
@@ -1572,7 +1573,7 @@
     <mat-tab *ngIf="HabilitarAccion">
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">wc</mat-icon>
-            Procesos
+            <h6 id="items"> Procesos</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row">
@@ -1638,7 +1639,7 @@
     <mat-tab *ngIf="autorizar">
         <ng-template mat-tab-label>
             <mat-icon class="example-tab-icon">supervisor_account</mat-icon>
-            Autorización
+            <h6 id="items"> Autorización</h6>
         </ng-template>
         <div class="container" style="padding-top: 15px; padding-bottom: 25px;">
             <div class="row" *ngIf="HabilitarAlimentacion">

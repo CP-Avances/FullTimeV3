@@ -3,8 +3,18 @@ mat-divider {
 }
 
 p {
+    margin-top: 1%;
     font-size: x-small;
 }
+
+#items{
+    font-size: 14px;
+    margin-top: 8%;
+    font-style: normal;
+    font-weight: 900;
+    letter-spacing: 1px;
+    word-wrap: break-word;
+  }
 
 .material-icons {
     margin-right: 8px;

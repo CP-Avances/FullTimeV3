@@ -53,7 +53,7 @@ function CalcularHoras(fecha, hora) {
         let datoConsulta = fecha + ' ' + hora;
         console.log('FECHA ====>', datoConsulta);
         let timbres = yield database_1.default.query('SELECT CAST(fec_hora_timbre AS VARCHAR), accion, id_empleado, id FROM timbres WHERE CAST(fec_hora_timbre AS VARCHAR) LIKE $1 || \'%\'', [datoConsulta])
-            .then(result => { return result.rows; });
+            .then((result) => { return result.rows; });
         console.log(timbres);
         if (timbres.length > 0) {
             for (let i = 0; i < timbres.length; i++) {
@@ -110,7 +110,7 @@ function CalcularHoras(fecha, hora) {
                         tiempo_horario === null || tiempo_horario === void 0 ? void 0 : tiempo_horario.arrayJefes.forEach((element) => __awaiter(this, void 0, void 0, function* () {
                             try {
                                 yield database_1.default.query('INSERT INTO realtime_timbres(create_at, id_send_empl, id_receives_empl, descripcion, id_timbre) VALUES($1,$2,$3,$4,$5)', [fec_hora_timbre, id_empleado, element.empleado, mensaje, id])
-                                    .then(result => {
+                                    .then((result) => {
                                     console.log('notificacion enviada');
                                 });
                             }
@@ -129,13 +129,13 @@ function CalcularHoras(fecha, hora) {
 function HorarioEmpleado(codigo, orden, fecha) {
     return __awaiter(this, void 0, void 0, function* () {
         let [IdCgHorario] = yield database_1.default.query('SELECT id_horarios, id_empl_cargo FROM empl_horarios WHERE codigo = $1 AND estado = 1 AND fec_inicio <= $2 AND fec_final >= $2 ORDER BY fec_inicio DESC LIMIT 1', [codigo, fecha])
-            .then(result => { return result.rows; });
+            .then((result) => { return result.rows; });
         console.log('id Catalogo Horario ===>', IdCgHorario);
         if (IdCgHorario === undefined)
             return { err: 'No hay horarios en esa fecha' };
         let [hora_detalle] = yield database_1.default.query('SELECT hora, minu_espera FROM deta_horarios WHERE id_horario = $1 AND orden = $2', [IdCgHorario.id_horarios, orden])
-            .then(result => {
-            return result.rows.map(obj => {
+            .then((result) => {
+            return result.rows.map((obj) => {
                 return SegundosTotal(obj.hora, obj.minu_espera);
             });
         });
@@ -146,7 +146,7 @@ function HorarioEmpleado(codigo, orden, fecha) {
             'FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, empleados AS e ' +
             'WHERE da.estado = true AND ecr.id = $1 AND cg.id = ecr.id_departamento AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id ' +
             'AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id ', [IdCgHorario.id_empl_cargo])
-            .then(result => { return result.rows; });
+            .then((result) => { return result.rows; });
         if (JefesDepartamentos.length === 0)
             return { err: 'No hay jefes de departamentos.' };
         let depa_padre = JefesDepartamentos[0].depa_padre;
@@ -155,7 +155,7 @@ function HorarioEmpleado(codigo, orden, fecha) {
             console.log('ID PADRE >>>>>>>>>>>>>>>>>>>', depa_padre);
             do {
                 JefeDepaPadre = yield database_1.default.query('SELECT da.estado, cg.id AS id_dep, cg.depa_padre, cg.nivel, s.id AS id_suc, e.id AS empleado FROM depa_autorizaciones AS da, empl_cargos AS ecr, cg_departamentos AS cg, sucursales AS s, empl_contratos AS ecn, empleados AS e WHERE da.estado = true AND da.id_departamento = $1 AND da.id_empl_cargo = ecr.id AND da.id_departamento = cg.id AND cg.id_sucursal = s.id AND ecr.id_empl_contrato = ecn.id AND ecn.id_empleado = e.id', [depa_padre])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (JefeDepaPadre.length > 0) {
                     depa_padre = JefeDepaPadre[0].depa_padre;
                     JefesDepartamentos.push(JefeDepaPadre[0]);

@@ -53,9 +53,9 @@ const BuscarVacaciones = async function (id: number, desde: string, hasta: strin
         'FROM vacaciones AS v, autorizaciones AS a ' +
         'WHERE v.id = a.id_vacacion AND v.codigo = $1 AND fec_inicio BETWEEN $2 AND $3',
         [id, desde, hasta])
-        .then(res => {
+        .then((res: any) => {
             if (res.rowCount > 0) {
-                res.rows.map(obj => {
+                res.rows.map((obj: any) => {
                     if (obj.id_documento != null && obj.id_documento != '' && obj.estado != 1) {
                         var autorizaciones = obj.id_documento.split(',');
                         let empleado_id = autorizaciones[autorizaciones.length - 2].split('_')[0];
@@ -82,7 +82,7 @@ const BuscarVacaciones = async function (id: number, desde: string, hasta: strin
 const BuscarAprobacion = async function (id: number) {
     return await pool.query('SELECT e.nombre, e.apellido FROM empleados AS e WHERE e.id = $1 ',
         [id])
-        .then(res => {
+        .then((res: any) => {
             return res.rows[0].nombre + ' ' + res.rows[0].apellido
         });
 }

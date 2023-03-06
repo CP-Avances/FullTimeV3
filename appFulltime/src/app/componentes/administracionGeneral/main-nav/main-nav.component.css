@@ -1,6 +1,16 @@
 mat-icon {
   font-size: 20px;
-  margin-right: 8px;
+  margin-right: 5px;
+  padding: 0%;
+}
+
+p{
+  font-size: 12px;
+  margin: 5px 0px 0px 5px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0px;
+  word-wrap: break-word;
 }
 
 .mat-mini-fab {
@@ -28,6 +38,13 @@ mat-tree {
   width: 100%;
 }
 
+.btn-block{
+  padding: -1%;
+  text-align: left;
+  font-size: 12px;
+  color: rgb(17, 167, 236);
+}
+
 a.mat-menu-item {
   width: 210%;
   height: 100%;
@@ -38,12 +55,13 @@ a.mat-menu-item {
 }
 
 .mat-tree-node {
-  margin-bottom: -17px;
+  margin-bottom: -10px;
   margin-top: -17px;
+  padding: 0%;
 }
 
 .divider {
-  margin-top: -9%;
+  margin-top: -4%;
   margin-left: -25%;
   width: 150%;
 }
@@ -67,11 +85,13 @@ a.mat-menu-item {
 
 #icono-menu_ {
   font-size: 12px;
+  margin-top: 3%;
   color: rgb(5, 162, 253);
 }
 
 #icono-menu_x {
   font-size: 12px;
+  margin-top: 3%;
   color: rgb(99, 105, 107);
 }
 
@@ -88,7 +108,7 @@ a.mat-menu-item {
 }
 
 #icono-despliega {
-  margin: 8px 0px 0px 10px;
+  margin: 8px 5px 0px 10px;
   color: rgb(5, 162, 253);
 }
 
@@ -105,6 +125,7 @@ a.mat-menu-item {
 .btn-sm:focus .btn-block:focus {
   box-shadow: none;
   outline: none;
+  border: none;
 }
 
 #logo {
@@ -118,12 +139,20 @@ a.mat-menu-item {
   font-size: 15px;
   margin: 10px 0px 0px 10px;
   color: rgb(40, 40, 40);
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1px;
+  word-wrap: break-word;
 }
 
 .subtitulo {
   font-size: 14px;
-  margin: 10px 0px 0px 20px;
+  margin: 10px 0px 0px 10px;
   color: rgb(3, 85, 51);
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 1px;
+  word-wrap: break-word;
 }
 
 #icono-subtitulo {
@@ -142,8 +171,8 @@ a.mat-menu-item {
 .example-tree ul,
 .example-tree li {
   list-style-type: none;
-  margin-bottom: 0;
-  margin-top: 0;
+  margin-bottom: 0%;
+  margin-top: 0%;
 }
 
 .mostrar-noti:hover {
@@ -168,9 +197,10 @@ a.mat-menu-item.noti_menu:hover {
 
 .material-tree-node {
   border-left: 3px solid rgb(5, 162, 253);
-  margin-left: 10px;
+  margin-left: 12%;
   background: transparent;
   width: 100%;
+  padding-top: -10%;
 }
 
 .degradado {
@@ -179,11 +209,11 @@ a.mat-menu-item.noti_menu:hover {
 }
 
 .active {
-  border-radius: 25px;
-  margin-left: -30px;
+  border-radius: 0px 25px 25px 0px;
+  border: none;
+  margin-left: -12px;
   background: rgba(226, 226, 226, 0.739);
   box-shadow: none;
   outline: none;
-  color: rgb(255, 255, 255);
   width: 100%;
 }

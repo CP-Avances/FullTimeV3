@@ -38,13 +38,13 @@ async function AniosEmpleado(idEmpleado: number): Promise<number> {
     let anioInicio: string = await pool.query(
         `SELECT pv.fec_inicio FROM empl_contratos co, peri_vacaciones pv 
     WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id ORDER BY pv.fec_inicio ASC limit 1`,
-        [idEmpleado]).then(result => {
+        [idEmpleado]).then((result: any) => {
             return JSON.stringify(result.rows[0].fec_inicio);
         });
     let anioPresente: string = await pool.query(
         `SELECT pv.fec_final FROM empl_contratos co, peri_vacaciones pv 
         WHERE co.id_empleado = $1 AND pv.id_empl_contrato = co.id AND 
-        CAST(pv.fec_final AS VARCHAR) like $2 || \'%\'`, [idEmpleado, anioHoy]).then(result => {
+        CAST(pv.fec_final AS VARCHAR) like $2 || \'%\'`, [idEmpleado, anioHoy]).then((result: any) => {
             return JSON.stringify(result.rows[0].fec_final);
         });
     const total = parseInt(anioPresente.slice(1, 5)) - parseInt(anioInicio.slice(1, 5));
@@ -55,8 +55,8 @@ async function AniosEmpleado(idEmpleado: number): Promise<number> {
 async function ObtenerIdEmpleado(idContrato: number): Promise<any> {
     let id_empleado =
         await pool.query('SELECT e.id FROM empl_contratos co, empleados e WHERE co.id = $1 AND co.id_empleado = e.id AND e.estado = 1 LIMIT 1', [idContrato])
-            .then(async (result) => {
-                let id = await result.rows.map(obj => { return obj.id });
+            .then(async (result: any) => {
+                let id = await result.rows.map((obj: any) => { return obj.id });
                 return id[0];
             });
     return id_empleado;
@@ -82,7 +82,7 @@ async function CrearNuevoPeriodo(Obj: any, descripcion: string, dia: Date, anio:
     await pool.query('INSERT INTO peri_vacaciones(id_empl_contrato, descripcion, dia_vacacion, dia_antiguedad, estado, fec_inicio, fec_final, dia_perdido, horas_vacaciones, min_vacaciones) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 )', [Obj.id_empl_contrato, descripcion, regimen.dia_anio_vacacion, antiguedad, 1, dia, anio, Obj.dia_perdido, Obj.horas_vacaciones, Obj.min_vacaciones])
         .then(() => {
             console.log('Registros insertados');
-        }).catch((err) => {
+        }).catch((err: any) => {
             console.log('Error al insertar registro ===>', err);
         });
 }
@@ -121,7 +121,7 @@ export const Peri_Vacacion_Automatico = function () {
                 var d1 = sumaDias(f1, 1);
                 var yearIncrementado = sumaYear(d1, 1);
 
-                periodos.forEach(obj => {
+                periodos.forEach((obj: any) => {
                     CrearNuevoPeriodo(obj, descripcion, diaIncrementado, yearIncrementado);
                 });
             }
@@ -153,7 +153,7 @@ export const beforeFiveDays = function () {
             console.log(avisoVacacion.rows);
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
-                avisoVacacion.rows.forEach(obj => {
+                avisoVacacion.rows.forEach((obj: any) => {
                     Credenciales(0);
 
                     let data = {
@@ -198,7 +198,7 @@ export const beforeTwoDays = function () {
             console.log(avisoVacacion.rows);
             if (avisoVacacion.rowCount > 0) {
                 // Enviar mail a todos los que nacieron en la fecha seleccionada
-                avisoVacacion.rows.forEach(obj => {
+                avisoVacacion.rows.forEach((obj: any) => {
 
                     Credenciales(0);
                     let data = {

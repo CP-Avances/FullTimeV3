@@ -20,15 +20,6 @@ class DepartamentoRutas {
         // METODO PARA BUSCAR PERIODO DE VACACIONES
         this.router.get('/buscar/:id_empleado', TokenValidation, PERIODO_VACACION_CONTROLADOR.EncontrarIdPerVacaciones);
 
-
-
-
-
-
-
-
-
-
         this.router.get('/', TokenValidation, PERIODO_VACACION_CONTROLADOR.ListarPerVacaciones);
         this.router.get('/infoPeriodo/:codigo', TokenValidation, PERIODO_VACACION_CONTROLADOR.EncontrarPerVacaciones);
 

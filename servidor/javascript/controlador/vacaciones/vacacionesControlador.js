@@ -143,7 +143,7 @@ class VacacionesControlador {
         ecr.id_empl_contrato = ecn.id AND 
         ecn.id_empleado = e.id AND 
         e.id = c.id_empleado
-        `, [depa_user_loggin]).then(result => { return result.rows; });
+        `, [depa_user_loggin]).then((result) => { return result.rows; });
                 if (JefesDepartamentos.length === 0)
                     return res.status(400)
                         .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });
@@ -217,7 +217,7 @@ class VacacionesControlador {
         ecr.id_empl_contrato = ecn.id AND 
         ecn.id_empleado = e.id AND
         e.id = c.id_empleado
-        `, [depa_user_loggin]).then(result => { return result.rows; });
+        `, [depa_user_loggin]).then((result) => { return result.rows; });
                 if (JefesDepartamentos.length === 0)
                     return res.status(400)
                         .jsonp({ message: 'Ups !!! algo salio mal. Solicitud ingresada, pero es necesario verificar configuraciones jefes de departamento.' });

@@ -1,5 +1,5 @@
-<button mat-mini-fab mat-icon-button [matMenuTriggerFor]="settings">
-    <mat-icon id="iconos-navegador" style="margin-left: 8px;" matSuffix 
+<button mat-mini-fab [matMenuTriggerFor]="settings">
+    <mat-icon id="iconos-navegador" style="margin-left: 8px; margin-right: 8px;" matSuffix 
         matTooltipPosition="right" matTooltip="Configuración correo y notificaciones">arrow_drop_down</mat-icon>
 </button>
 <mat-menu #settings="matMenu">
@@ -8,18 +8,18 @@
     </div>
     <button mat-menu-item (click)="AbrirSettings()">
         <mat-icon>mark_email_unread</mat-icon>
-        <span>Correo y notificaciones</span>
+        <span style="font-size: 14px;">Correo y notificaciones</span>
     </button>
     <button mat-menu-item (click)="AbrirAccionesTimbres()">
         <mat-icon>access_time</mat-icon>
-        <span>Acciones de timbres</span>
+        <span style="font-size: 14px;">Acciones de timbres</span>
     </button>
     <button mat-menu-item (click)="AbrirVentanaAyuda()">
         <mat-icon>contact_support</mat-icon>
-        <span>Contactos Soporte Técnico</span>
+        <span style="font-size: 14px;">Contactos Soporte Técnico</span>
     </button>
     <button mat-menu-item (click)="loginService.logout()">
         <mat-icon>logout</mat-icon>
-        <span>Cerrar Sesión</span>
+        <span style="font-size: 14px;">Cerrar Sesión</span>
     </button>
 </mat-menu>

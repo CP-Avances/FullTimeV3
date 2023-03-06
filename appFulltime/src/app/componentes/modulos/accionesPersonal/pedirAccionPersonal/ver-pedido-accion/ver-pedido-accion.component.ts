@@ -66,16 +66,24 @@ export class VerPedidoAccionComponent implements OnInit {
   datoEmpleado: string = '';
   datoEmpleadoH: string = '';
   datoEmpleadoG: string = '';
+  datoEmpleadoR: string = '';
   sueldo: string = '';
+  ciudad: string = '';
   cargo: string = '';
   cargoH: string = '';
   cargoG: string = '';
+  cargoR: string = '';
+  cargop: string = '';
+  decreto: string = '';
   departamentoE: string = '';
+  proceso: string = '';
   cedula: string = '';
   CargarInformacion(formato_fecha: string) {
     this.restAccion.BuscarDatosPedidoId(parseInt(this.idPedido)).subscribe(data => {
       this.datosPedido = data;
       this.datosPedido[0].fec_creacion_ = this.validar.FormatearFecha(this.datosPedido[0].fec_creacion, formato_fecha, this.validar.dia_completo);
+      this.datosPedido[0].fec_rige_desde_ = this.validar.FormatearFecha(this.datosPedido[0].fec_rige_desde, formato_fecha, this.validar.dia_completo);
+      this.datosPedido[0].fec_rige_hasta_ = this.validar.FormatearFecha(this.datosPedido[0].fec_rige_hasta, formato_fecha, this.validar.dia_completo);
       console.log('datos', this.datosPedido);
       this.restAccion.BuscarDatosPedidoEmpleados(this.datosPedido[0].id_empleado).subscribe(data1 => {
         console.log('empleado', data1)
@@ -90,9 +98,25 @@ export class VerPedidoAccionComponent implements OnInit {
           this.restAccion.BuscarDatosPedidoEmpleados(this.datosPedido[0].firma_empl_dos).subscribe(data3 => {
             this.datoEmpleadoG = data3[0].apellido + ' ' + data3[0].nombre;
             this.cargoG = data3[0].cargo;
+            this.restAccion.BuscarDatosPedidoEmpleados(this.datosPedido[0].id_empl_responsable).subscribe(data4 =>{
+              this.datoEmpleadoR = data4[0].apellido + ' ' + data4[0].nombre;
+              this.cargoR = data4[0].cargo;
+            });
+            this.restAccion.BuscarDatosPedidoCiudades(this.datosPedido[0].id_ciudad).subscribe(data5 =>{
+              this.ciudad = data5[0].descripcion;
+            });
+            this.restProcesos.getOneProcesoRest(this.datosPedido[0].proceso_propuesto).subscribe(data6 => {
+              this.proceso = data6[0].nombre;
+            });
+            this.restAccion.ConsultarUnCargoPropuesto(this.datosPedido[0].cargo_propuesto).subscribe(data7 => {
+              this.cargop = data7[0].descripcion;
+            });
+            this.restAccion.ConsultarUnDecreto(this.datosPedido[0].decre_acue_resol).subscribe(data8 =>{
+              this.decreto = data8[0].descripcion;
+            });
           });
-        })
-      })
+        });
+      });
     })
   }
 

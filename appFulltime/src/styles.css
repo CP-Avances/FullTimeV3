@@ -1,5 +1,5 @@
-/* ESTILOS COMO CONFIGURACION GLOBAL */
-@import "~leaflet/dist/leaflet.css";
+
+/* ESTILOS COMO CONFIGURACIÓN GLOBAL */
 
 html,
 body {
@@ -87,7 +87,8 @@ body {
 /* ESTILO ÍCONO DE AYUDA EN BUSQUEDAS DE TABLAS */
 #i-ayuda {
     cursor: pointer;
-    padding-top: 10px;
+    padding-top: 3px;
+    margin-bottom: 1%;
 }
 
 /* ESTILOS DE ÍCONOS DE ACCIONES DE TABLAS */
@@ -116,9 +117,19 @@ body {
 
 /* ESTILOS DE INPUTS DE BUSQUEDA EN TABLAS */
 #t-inputs {
-    font-size: 12px;
+    background: transparent;
+    font-size: 14px;
     text-align: center;
-    width: 100px;
+    outline: none;
+    fill: none;
+    width: 195px;
+    height: 65px;
+}
+
+#cerrar{
+    color: red;
+    cursor: pointer;
+    margin-right: 2%;
 }
 
 /* ESTILO PARA BARRA DE TÍTULOS */
@@ -129,6 +140,17 @@ body {
     color: white;
     padding-top: 14px;
     padding-bottom: 10px;
+}
+
+/* ESTILO PARA BOTONES DE TIPO "MAT-RAISED-BUTTON" */
+#btn-raised{
+    background-color: rgb(80, 87, 97);
+    margin: 5px 10px 5px 10px;
+    color: white;
+    font-style: normal;
+    font-weight: 900;
+    letter-spacing: 0px;
+    word-wrap: break-word;
 }
 
 /** ESTILO BARRA TÍTULO DE RESULTADOS DE BUSQUEDAS **/
@@ -191,3 +213,5 @@ body {
 mat-divider {
     background: rgba(131, 131, 131, 0.609);
 }
+
+@import "~leaflet/dist/leaflet.css";

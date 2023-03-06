@@ -19,7 +19,6 @@ import { DatosGeneralesService } from 'src/app/servicios/datosGenerales/datos-ge
 import { EmpleadoHorariosService } from 'src/app/servicios/horarios/empleadoHorarios/empleado-horarios.service';
 import { PeriodoVacacionesService } from 'src/app/servicios/periodoVacaciones/periodo-vacaciones.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 // CREACION DE LISTA DE OPCIONES DE SOLICITUD DE PERMISO 
 interface opcionesDiasHoras {
@@ -81,11 +80,11 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
   archivoForm = new FormControl('');
   fechaFinalF = new FormControl('', [Validators.required]);
   horaSalidaF = new FormControl('');
-  diaLaboralF = new FormControl('');
+  diaLaboralF = new FormControl(null);
   idPermisoF = new FormControl('', [Validators.required]);
   solicitarF = new FormControl('', [Validators.required]);
   especialF = new FormControl(false);
-  diaLibreF = new FormControl('');
+  diaLibreF = new FormControl(null);
   horasF = new FormControl('');
   diasF = new FormControl('');
 

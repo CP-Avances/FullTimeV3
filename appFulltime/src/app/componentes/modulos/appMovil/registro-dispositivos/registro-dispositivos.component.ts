@@ -184,6 +184,8 @@ export class RegistroDispositivosComponent implements OnInit {
   // METODO PARA ELIMINAR REGISTROS
   EliminarRegistro(array: any) {
     this.habilitar = false;
+    this.multiple = false;
+    this.individual = true;
     // VALIDAR SELECCION DE REGISTROS
     if (array.length === 0) return this.toastr.
       warning('Debe seleccionar al menos un usuario para modificar su acceso al reloj virtual.');
@@ -206,7 +208,10 @@ export class RegistroDispositivosComponent implements OnInit {
             this.toastr.error(err.error.message)
           })
         }
-      })
+      }, () =>{
+        this.individual = true;
+        this.multiple = false;
+      } )
   }
 
   // SI EL NUMERO DE ELEMENTOS SELECCIONADOS COINCIDE CON EL NUMERO TOTAL DE FILAS. 

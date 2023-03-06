@@ -212,6 +212,14 @@ export class PermisosMultiplesComponent implements OnInit {
         this.descuento = false;
         this.periodo_vacaciones = 0;
       }
+      // TIPO DE DESCUENTO
+      if (this.datosPermiso.tipo_descuento === '1') {
+        this.descuento = true;
+      }
+      else {
+        this.descuento = false;
+        this.periodo_vacaciones = 0;
+      }
     })
   }
 
@@ -1390,8 +1398,6 @@ export class PermisosMultiplesComponent implements OnInit {
     this.restAutoriza.postAutorizacionesRest(newAutorizaciones).subscribe(res => {
     })
   }
-
-
 
 
 

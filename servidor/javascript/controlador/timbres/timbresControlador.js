@@ -27,9 +27,9 @@ class TimbresControlador {
                 FROM empleados AS e, timbres AS t 
                 WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
                 ORDER BY t.fec_hora_timbre DESC LIMIT 100
-                `, [id]).then(result => {
+                `, [id]).then((result) => {
                     return result.rows
-                        .map(obj => {
+                        .map((obj) => {
                         switch (obj.accion) {
                             case 'EoS':
                                 obj.accion = 'Entrada o Salida';
@@ -76,24 +76,24 @@ class TimbresControlador {
                     FROM empleados AS e, timbres AS t 
                     WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
                         AND t.accion in (\'PES\', \'E/P\', \'S/P\')
-                    `, [id]).then(result => { return result.rows[0].count; }),
+                    `, [id]).then((result) => { return result.rows[0].count; }),
                         timbres_AES: yield database_1.default.query(`
                     SELECT count(*) 
                     FROM empleados AS e, timbres AS t 
                     WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
                     AND t.accion in (\'AES\', \'E/A\', \'S/A\')
-                    `, [id]).then(result => { return result.rows[0].count; }),
+                    `, [id]).then((result) => { return result.rows[0].count; }),
                         timbres_EoS: yield database_1.default.query(`
                     SELECT count(*) 
                     FROM empleados AS e, timbres AS t 
                     WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado 
                         AND t.accion in (\'EoS\', \'E\', \'S\')
-                    `, [id]).then(result => { return result.rows[0].count; }),
+                    `, [id]).then((result) => { return result.rows[0].count; }),
                         total_timbres: yield database_1.default.query(`
                     SELECT count(*) 
                     FROM empleados AS e, timbres AS t 
                     WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado
-                    `, [id]).then(result => { return result.rows[0].count; })
+                    `, [id]).then((result) => { return result.rows[0].count; })
                     }];
                 return res.status(200).jsonp({
                     timbres: timbres,
@@ -103,7 +103,7 @@ class TimbresControlador {
                     FROM empl_contratos AS co, empl_cargos AS ca, empl_horarios AS eh, tipo_cargo AS tc
                     WHERE co.id_empleado = $1 AND ca.id_empl_contrato = co.id AND eh.id_empl_cargo = ca.id 
                         AND tc.id = ca.cargo ORDER BY eh.fec_inicio DESC LIMIT 1
-                    `, [id]).then(result => {
+                    `, [id]).then((result) => {
                         return result.rows;
                     }),
                 });
@@ -129,7 +129,7 @@ class TimbresControlador {
                 const id_empleado = req.userIdEmpleado;
                 let code = yield database_1.default.query(`
                 SELECT codigo FROM empleados WHERE id = $1
-                `, [id_empleado]).then(result => { return result.rows; });
+                `, [id_empleado]).then((result) => { return result.rows; });
                 if (code.length === 0)
                     return { mensaje: 'El usuario no tiene un código asignado.' };
                 var codigo = parseInt(code[0].codigo);
@@ -139,9 +139,9 @@ class TimbresControlador {
                 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id
                 `, [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo,
                     f.toLocaleString(), id_reloj, ubicacion, ip_cliente])
-                    .then(result => {
+                    .then((result) => {
                     return result.rows;
-                }).catch(err => {
+                }).catch((err) => {
                     return err;
                 });
                 if (timbre) {
@@ -169,7 +169,7 @@ class TimbresControlador {
                 let f = new Date();
                 let code = yield database_1.default.query(`
                 SELECT codigo FROM empleados WHERE id = $1
-                `, [id_empleado]).then(result => { return result.rows; });
+                `, [id_empleado]).then((result) => { return result.rows; });
                 if (code.length === 0)
                     return { mensaje: 'El usuario no tiene un código asignado.' };
                 var codigo = parseInt(code[0].codigo);
@@ -179,9 +179,9 @@ class TimbresControlador {
                 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                 `, [fec_hora_timbre, accion, tecl_funcion, observacion, latitud, longitud, codigo,
                     id_reloj, ip_cliente, f.toLocaleString()])
-                    .then(result => {
+                    .then((result) => {
                     res.status(200).jsonp({ message: 'Registro guardado.' });
-                }).catch(err => {
+                }).catch((err) => {
                     res.status(400).jsonp({ message: err });
                 });
             }
@@ -205,7 +205,7 @@ class TimbresControlador {
                     return yield Promise.all(result.rows.map((obj) => __awaiter(this, void 0, void 0, function* () {
                         let nombre = yield database_1.default.query(`
                             SELECT nombre, apellido FROM empleados WHERE id = $1
-                            `, [obj.id_send_empl]).then(ele => {
+                            `, [obj.id_send_empl]).then((ele) => {
                             return ele.rows[0].nombre + ' ' + ele.rows[0].apellido;
                         });
                         return {
@@ -251,12 +251,12 @@ class TimbresControlador {
             const { id_empleado } = req.params;
             console.log(id_empleado);
             const TIMBRES_NOTIFICACION = yield database_1.default.query('SELECT * FROM realtime_timbres WHERE id_receives_empl = $1 ORDER BY create_at DESC', [id_empleado])
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (TIMBRES_NOTIFICACION.length === 0)
                 return res.status(404).jsonp({ message: 'No se encuentran registros' });
             console.log(TIMBRES_NOTIFICACION);
             const tim = yield Promise.all(TIMBRES_NOTIFICACION.map((obj) => __awaiter(this, void 0, void 0, function* () {
-                let [empleado] = yield database_1.default.query('SELECT  (nombre || \' \' || apellido) AS fullname FROM empleados WHERE id = $1', [obj.id_send_empl]).then(ele => {
+                let [empleado] = yield database_1.default.query('SELECT  (nombre || \' \' || apellido) AS fullname FROM empleados WHERE id = $1', [obj.id_send_empl]).then((ele) => {
                     console.log('¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨', ele.rows);
                     return ele.rows;
                 });
@@ -282,7 +282,7 @@ class TimbresControlador {
             const { visto } = req.body;
             console.log(id, visto);
             yield database_1.default.query('UPDATE realtime_timbres SET visto = $1 WHERE id = $2', [visto, id])
-                .then(result => {
+                .then((result) => {
                 res.jsonp({ message: 'Vista Actualizada' });
             });
         });
@@ -294,7 +294,7 @@ class TimbresControlador {
             if (arrayIdsRealtimeTimbres.length > 0) {
                 arrayIdsRealtimeTimbres.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
                     yield database_1.default.query('DELETE FROM realtime_timbres WHERE id = $1', [obj])
-                        .then(result => {
+                        .then((result) => {
                         console.log(result.command, 'REALTIME ELIMINADO ====>', obj);
                     });
                 }));
@@ -308,8 +308,8 @@ class TimbresControlador {
             try {
                 const codigo = req.userCodigo;
                 let timbre = yield database_1.default.query('SELECT CAST(fec_hora_timbre AS VARCHAR) as timbre, accion FROM timbres WHERE id_empleado = $1 ORDER BY fec_hora_timbre DESC LIMIT 1', [codigo])
-                    .then(result => {
-                    return result.rows.map(obj => {
+                    .then((result) => {
+                    return result.rows.map((obj) => {
                         switch (obj.accion) {
                             case 'EoS':
                                 obj.accion = 'Entrada o Salida';
@@ -364,9 +364,9 @@ class TimbresControlador {
                 let timbres = yield database_1.default.query('SELECT CAST(t.fec_hora_timbre AS VARCHAR), t.accion, t.tecl_funcion, ' +
                     't.observacion, t.latitud, t.longitud, t.id_empleado, t.id_reloj ' +
                     'FROM empleados AS e, timbres AS t WHERE e.id = $1 AND CAST(e.codigo AS integer) = t.id_empleado ' +
-                    'ORDER BY t.fec_hora_timbre DESC LIMIT 50', [id]).then(result => {
+                    'ORDER BY t.fec_hora_timbre DESC LIMIT 50', [id]).then((result) => {
                     return result.rows
-                        .map(obj => {
+                        .map((obj) => {
                         switch (obj.accion) {
                             case 'EoS':
                                 obj.accion = 'Entrada o Salida';

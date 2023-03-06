@@ -42,7 +42,7 @@ td {
 
 .caja1 {
     padding: 0px 15px 0px 15px;
-
+    width: 300px;
 }
 
 .caja2 {
@@ -112,4 +112,5 @@ mat-radio-group {
 table {
     width: 100%;
     font-size: 14px;
+
 }

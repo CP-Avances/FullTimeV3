@@ -26,7 +26,7 @@ class PlanGeneralControlador {
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
                 `, [fec_hora_horario, maxi_min_espera, estado, id_det_horario, fec_horario, id_empl_cargo,
                     tipo_entr_salida, codigo, id_horario, tipo, salida_otro_dia])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (result === undefined)
                     return res.status(404).jsonp({ message: 'error' });
                 return res.jsonp({ message: 'Registro guardado.' });

@@ -53,7 +53,7 @@ const BuscarTimbresS = async function (fec_inicio: string, fec_final: string, id
         'WHERE t.id_empleado = $3 ' +
         'AND t.fec_hora_timbre::date BETWEEN $1 AND $2 AND t.accion = \'S\'',
         [fec_inicio, fec_final, id])
-        .then(res => {
+        .then((res: any) => {
             return res.rows;
         })
 }
@@ -65,7 +65,7 @@ const BuscarHoraHorario = async function (fecha: string, codigo: number) {
         'AND $1 BETWEEN eh.fec_inicio AND eh.fec_final ' +
         'AND dh.id_horario = eh.id_horarios AND dh.orden = 4',
         [fecha, codigo])
-        .then(res => {
+        .then((res: any) => {
             return res.rows;
         })
 }

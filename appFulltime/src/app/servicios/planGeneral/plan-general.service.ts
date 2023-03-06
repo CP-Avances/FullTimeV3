@@ -35,10 +35,6 @@ export class PlanGeneralService {
 
 
 
-
-
-
-
   BuscarFecha(datos: any) {
     return this.http.post(`${environment.url}/planificacion_general/buscar_fecha/plan`, datos);
   }

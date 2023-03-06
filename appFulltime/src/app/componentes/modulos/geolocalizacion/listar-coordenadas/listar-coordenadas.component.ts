@@ -237,7 +237,6 @@ export class ListarCoordenadasComponent implements OnInit {
     };
   }
 
-
   presentarDataPDFTipoPermisos() {
     return {
       columns: [

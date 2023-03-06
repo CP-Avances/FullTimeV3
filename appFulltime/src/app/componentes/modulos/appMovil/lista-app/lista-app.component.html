@@ -1,3 +1,4 @@
+<!--Revisar el sprint64-->
 <div style="padding-top: 20px;">
     <div id="titulo">CONFIGURAR USUARIOS RELOJ VIRTUAL</div>
     <!---------------------------------------- LISTA DE USUARIOS DESHABILITADOS --------------------------------------------------->
@@ -108,8 +109,12 @@
                         <span class="w-100 bd-highlight">
                             RESULTADO SUCURSALES
                         </span>
-                        <button class="btn btn-outline-light btn-sm" style="float: right; margin-right: 10px;"
-                            (click)="MostrarLista_DH()">Mostrar lista</button>
+                        <button class="btn btn-outline-light btn-sm" matSuffix
+                            matTooltipPosition="right"
+                            matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos."
+                            style="float: right; margin-right: 10px;" 
+                            (click)="MostrarLista_DH()">Mostrar lista
+                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover table-sm">

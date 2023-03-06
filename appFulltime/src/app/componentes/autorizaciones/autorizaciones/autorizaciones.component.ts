@@ -32,8 +32,8 @@ interface Documento {
 export class AutorizacionesComponent implements OnInit {
 
   // idDocumento = new FormControl('', Validators.required);
-  orden = new FormControl('', Validators.required);
-  estado = new FormControl('', Validators.required);
+  orden = new FormControl(null, Validators.required);
+  estado = new FormControl(null, Validators.required);
   idDepartamento = new FormControl('');
 
   public nuevaAutorizacionesForm = new FormGroup({

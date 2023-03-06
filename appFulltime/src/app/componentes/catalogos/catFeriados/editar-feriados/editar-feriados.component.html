@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR REGISTRO</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
 </div>
 <!-- FORMULARIO COMPLETO -->
 <form [formGroup]="formulario">
@@ -43,10 +44,10 @@
         </div>
     </mat-card-content>
 </form>
-<mat-card-actions class="d-flex justify-content-around">
-    <input type="submit" class="btn btn-sm" [disabled]="!formulario.valid"
-        (click)="ActualizarFeriados(formulario.value)" value="Guardar">
-    <input type="submit" class="btn btn-sm" (click)="CerrarVentana()" value="Salir">
+<mat-card-actions class="d-flex justify-content-around" style="margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" [disabled]="!formulario.valid"
+        (click)="ActualizarFeriados(formulario.value)" value="Guardar">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value="Salir">Salir</button-->
 </mat-card-actions>
 
 <div class="pantalla-progress" *ngIf="habilitarprogress">

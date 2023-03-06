@@ -3,11 +3,11 @@
         <span>ESTABLECIMIENTOS</span>
     </div>
     <mat-card class="example-card mat-elevation-z9">
-        <div class="d-flex flex-wrap justify-content-center">
-            <button mat-button type="submit" class="btn btn-sm" (click)="AbrirVentanaRegistrarSucursal()">
+        <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%;">
+            <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaRegistrarSucursal()">
                 Crear establecimiento
             </button>
-            <button mat-button type="submit" class="btn btn-sm" (click)="LimpiarCampoBuscar()" matSuffix
+            <button mat-raised-button id="btn-raised" type="submit" (click)="LimpiarCampoBuscar()" matSuffix
                 matTooltipPosition="right"
                 matTooltip="Limpiar campos de búsqueda de la tabla y mostrar todos los datos.">
                 Mostrar lista

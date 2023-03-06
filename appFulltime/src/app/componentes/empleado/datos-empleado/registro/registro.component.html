@@ -95,10 +95,12 @@
                     </div>
                 </form>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <a [routerLink]="['/empleado']" class="btn btn-sm button">Regresar lista usuarios</a>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" [routerLink]="['/empleado']" class="float-left">Regresar lista usuarios</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
+
+
             <mat-step [stepControl]="segundoFormGroup">
                 <form [formGroup]="segundoFormGroup">
                     <ng-template matStepLabel>
@@ -187,10 +189,12 @@
                     </div>
                 </form>
                 <div>
-                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
+
+
             <mat-step [stepControl]="terceroFormGroup">
                 <form [formGroup]="terceroFormGroup">
                     <ng-template matStepLabel>
@@ -244,13 +248,13 @@
                         </mat-form-field>
                     </div>
                     <div>
-                        <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                        <button
+                        <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                        <button button mat-raised-button id="btn-raised"
                             (click)="InsertarEmpleado(primeroFormGroup.value, segundoFormGroup.value, terceroFormGroup.value);"
-                            type="submit" class="btn btn-sm" [disabled]="!terceroFormGroup.valid">
+                            type="submit" [disabled]="!terceroFormGroup.valid">
                             Guardar
                         </button>
-                        <button (click)="stepper.reset()" class="btn btn-sm float-right">Cancelar</button>
+                        <button button mat-raised-button id="btn-raised" (click)="stepper.reset()" class="float-right">Cancelar</button>
                     </div>
                 </form>
             </mat-step>

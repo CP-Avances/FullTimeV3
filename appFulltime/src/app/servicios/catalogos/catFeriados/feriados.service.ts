@@ -62,11 +62,6 @@ export class FeriadosService {
   }
 
 
-
-
-
-
-
   subirArchivoExcel(formData) {
     return this.http.post<any>(environment.url + '/feriados/upload', formData);
   }

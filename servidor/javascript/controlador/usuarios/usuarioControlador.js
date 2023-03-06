@@ -115,7 +115,7 @@ class UsuarioControlador {
         SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
           ciudades AS c 
         WHERE s.id_ciudad = c.id ORDER BY s.id
-      `).then(result => { return result.rows; });
+      `).then((result) => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
@@ -124,12 +124,12 @@ class UsuarioControlador {
           SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
           FROM cg_departamentos AS d, sucursales AS s
           WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
-        `, [dep.id_suc]).then(result => {
+        `, [dep.id_suc]).then((result) => {
                     return result.rows;
                 });
                 return dep;
             })));
-            let depa = departamentos.filter(obj => {
+            let depa = departamentos.filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (depa.length === 0)
@@ -145,7 +145,7 @@ class UsuarioControlador {
               AND u.web_habilita = $3
             ORDER BY nombre
           `, [empl.id_depa, estado, habilitado])
-                        .then(result => { return result.rows; });
+                        .then((result) => { return result.rows; });
                     return empl;
                 })));
                 return obj;
@@ -153,12 +153,12 @@ class UsuarioControlador {
             if (lista.length === 0)
                 return res.status(404)
                     .jsonp({ message: 'No se han encontrado registros.' });
-            let respuesta = lista.map(obj => {
+            let respuesta = lista.map((obj) => {
                 obj.departamentos = obj.departamentos.filter((ele) => {
                     return ele.empleado.length > 0;
                 });
                 return obj;
-            }).filter(obj => {
+            }).filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (respuesta.length === 0)
@@ -179,7 +179,7 @@ class UsuarioControlador {
                         const [result] = yield database_1.default.query(`
             UPDATE usuarios SET web_habilita = $1 WHERE id = $2 RETURNING id
             `, [!o.web_habilita, o.userid])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                         return result;
                     }
                     catch (error) {
@@ -211,7 +211,7 @@ class UsuarioControlador {
         SELECT s.id AS id_suc, s.nombre AS name_suc, c.descripcion AS ciudad FROM sucursales AS s, 
           ciudades AS c 
         WHERE s.id_ciudad = c.id ORDER BY s.id
-      `).then(result => { return result.rows; });
+      `).then((result) => { return result.rows; });
             if (suc.length === 0)
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             // CONSULTA DE BUSQUEDA DE DEPARTAMENTOS
@@ -220,12 +220,12 @@ class UsuarioControlador {
           SELECT d.id as id_depa, d.nombre as name_dep, s.nombre AS sucursal
           FROM cg_departamentos AS d, sucursales AS s
           WHERE d.id_sucursal = $1 AND d.id_sucursal = s.id
-        `, [dep.id_suc]).then(result => {
+        `, [dep.id_suc]).then((result) => {
                     return result.rows;
                 });
                 return dep;
             })));
-            let depa = departamentos.filter(obj => {
+            let depa = departamentos.filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (depa.length === 0)
@@ -241,7 +241,7 @@ class UsuarioControlador {
               AND u.app_habilita = $3
             ORDER BY nombre
           `, [empl.id_depa, estado, habilitado])
-                        .then(result => { return result.rows; });
+                        .then((result) => { return result.rows; });
                     return empl;
                 })));
                 return obj;
@@ -249,12 +249,12 @@ class UsuarioControlador {
             if (lista.length === 0)
                 return res.status(404)
                     .jsonp({ message: 'No se han encontrado registros.' });
-            let respuesta = lista.map(obj => {
+            let respuesta = lista.map((obj) => {
                 obj.departamentos = obj.departamentos.filter((ele) => {
                     return ele.empleado.length > 0;
                 });
                 return obj;
-            }).filter(obj => {
+            }).filter((obj) => {
                 return obj.departamentos.length > 0;
             });
             if (respuesta.length === 0)
@@ -276,7 +276,7 @@ class UsuarioControlador {
                         const [result] = yield database_1.default.query(`
             UPDATE usuarios SET app_habilita = $1 WHERE id = $2 RETURNING id
             `, [!o.app_habilita, o.userid])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                         return result;
                     }
                     catch (error) {
@@ -301,7 +301,7 @@ class UsuarioControlador {
         SELECT e.codigo, (e.nombre || \' \' || e.apellido) AS nombre, e.cedula, d.id_dispositivo, d.modelo_dispositivo
         FROM id_dispositivos AS d INNER JOIN empleados AS e ON d.id_empleado = CAST(e.codigo AS Integer) 
         ORDER BY nombre
-        `).then(result => { return result.rows; });
+        `).then((result) => { return result.rows; });
                 if (DISPOSITIVOS.length === 0)
                     return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
                 return res.status(200).jsonp(DISPOSITIVOS);
@@ -324,7 +324,7 @@ class UsuarioControlador {
                         const [result] = yield database_1.default.query(`
             DELETE FROM id_dispositivos WHERE id_dispositivo = $1 RETURNING *
             `, [id_dispo])
-                            .then(result => { return result.rows; });
+                            .then((result) => { return result.rows; });
                         return result;
                     }
                     catch (error) {

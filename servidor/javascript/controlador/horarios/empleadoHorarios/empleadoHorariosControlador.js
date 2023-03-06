@@ -104,7 +104,7 @@ class EmpleadoHorariosControlador {
 			    AND (($2 BETWEEN eh.fec_inicio AND eh.fec_final)
 			    OR ($3 BETWEEN eh.fec_inicio AND eh.fec_final))
             `, [codigo, fecha_inicio, fecha_final])
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (fijo.length === 0) {
                 // METODO PARA BUSCAR HORARIOS ROTATIVOS
                 let rotativo = yield database_1.default.query(`
@@ -115,7 +115,7 @@ class EmpleadoHorariosControlador {
                     AND (($2 BETWEEN ph.fec_inicio AND ph.fec_final)
                     OR ($3 BETWEEN ph.fec_inicio AND ph.fec_final))
                 `, [codigo, fecha_inicio, fecha_final])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (rotativo.length === 0) {
                     return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
                 }
@@ -140,7 +140,7 @@ class EmpleadoHorariosControlador {
 				AND he.fecha_entrada = $2
                 AND (($3 BETWEEN hora_inicio AND hora_final) AND ($4 BETWEEN hora_inicio AND hora_final))
             `, [codigo, fecha_inicio, hora_inicio, hora_final])
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (CASO_1.length === 0) {
                 // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA (SEGUNDO DIA)
                 let CASO_2 = yield database_1.default.query(`
@@ -150,7 +150,7 @@ class EmpleadoHorariosControlador {
                     AND he.id_horario = hs.id_horario AND salida_otro_dia = 1 AND he.codigo::varchar = $1
                     AND ($2 = he.fecha_entrada OR $2 = hs.fecha_salida)
                 `, [codigo, fecha_inicio])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (CASO_2.length === 0) {
                     // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA (TERCER DIA)
                     let CASO_3 = yield database_1.default.query(`
@@ -160,7 +160,7 @@ class EmpleadoHorariosControlador {
                         AND he.id_horario = hs.id_horario AND salida_otro_dia = 2 AND he.codigo::varchar = $1
                         AND ($2 = he.fecha_entrada OR $2 = hs.fecha_salida OR $2= (he.fecha_entrada + interval '1 day'))
                 `, [codigo, fecha_inicio])
-                        .then(result => { return result.rows; });
+                        .then((result) => { return result.rows; });
                     if (CASO_3.length === 0) {
                         return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
                     }
@@ -189,7 +189,7 @@ class EmpleadoHorariosControlador {
                 AND he.id_horario = hs.id_horario AND salida_otro_dia = 1 AND he.codigo::varchar = $1
 				AND $2 = he.fecha_entrada AND $3 = hs.fecha_salida
             `, [codigo, fecha_inicio, fecha_final])
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (CASO_4.length === 0) {
                 // CONSULTA DE HORARIOS MAYORES O IGUALES A 48 HORAS
                 let CASO_5 = yield database_1.default.query(`
@@ -200,7 +200,7 @@ class EmpleadoHorariosControlador {
                     AND ($2 = he.fecha_entrada OR $2 = (he.fecha_entrada + interval '1 day')) 
                     AND ($3 = hs.fecha_salida OR $3 = (he.fecha_entrada + interval '1 day'))
                 `, [codigo, fecha_inicio, fecha_final])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (CASO_5.length === 0) {
                     return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
                 }
@@ -225,7 +225,7 @@ class EmpleadoHorariosControlador {
                 AND ci.fecha_entrada = $2
                 AND (($3 BETWEEN hora_inicio AND hora_final) OR ($4 BETWEEN hora_inicio AND hora_final))
             `, [codigo, fecha_inicio, hora_inicio, hora_final])
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (CASO_1.length === 0) {
                 // CONSULTA DE HORARIO DEL USUARIO INGRESO != SALIDA (SEGUNDO DIA)
                 let CASO_2 = yield database_1.default.query(`
@@ -235,7 +235,7 @@ class EmpleadoHorariosControlador {
                     AND ci.id_horario = cf.id_horario AND salida_otro_dia = 1 AND ci.codigo::varchar = $1
                     AND ($2 = ci.fecha_entrada OR $2 = cf.fecha_salida)
                 `, [codigo, fecha_inicio])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (CASO_2.length === 0) {
                     return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
                 }
@@ -260,7 +260,7 @@ class EmpleadoHorariosControlador {
                 AND ci.id_horario = cf.id_horario AND salida_otro_dia = 1 AND ci.codigo::varchar = $1
                 AND $2 = ci.fecha_entrada AND $3 = cf.fecha_salida
             `, [codigo, fecha_inicio, fecha_final])
-                .then(result => { return result.rows; });
+                .then((result) => { return result.rows; });
             if (CASO_4.length === 0) {
                 return res.status(404).jsonp({ message: 'No se han encontrado registros.' });
             }
@@ -575,7 +575,7 @@ class EmpleadoHorariosControlador {
             try {
                 // console.log(req.body);
                 const [result] = yield database_1.default.query('UPDATE empl_horarios SET id_empl_cargo = $1, id_hora = $2, fec_inicio = $3, fec_final = $4, lunes = $5, martes = $6, miercoles = $7, jueves = $8, viernes = $9, sabado = $10, domingo = $11, id_horarios = $12, estado = $13 WHERE id = $14 RETURNING *', [id_empl_cargo, id_hora, fec_inicio, fec_final, lunes, martes, miercoles, jueves, viernes, sabado, domingo, id_horarios, estado, id])
-                    .then(result => { return result.rows; });
+                    .then((result) => { return result.rows; });
                 if (result === undefined)
                     return res.status(404).jsonp({ message: 'Horario no actualizado' });
                 return res.status(200).jsonp({ message: 'El horario del empleado se registró con éxito' });

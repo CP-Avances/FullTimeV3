@@ -183,9 +183,10 @@
                     </mat-paginator>
                 </div>
             </div>
-            <input type="submit" class="btn btn-sm" [routerLink]="['/parametros/']" value="Lista parámetros generales">
-            <input *ngIf="formato" type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(tp)"
-                value="Registrar detalle">
+            <button mat-raised-button id="btn-raised" type="submit" [routerLink]="['/parametros/']" value="Lista parámetros generales">
+                Lista parámetros generales</button>
+            <button mat-raised-button id="btn-raised" *ngIf="formato" type="submit" (click)="AbrirVentanaDetalles(tp)"
+                value="Registrar detalle">Registrar detalle</button>
         </mat-card-content>
     </mat-card>
 </div>

@@ -83,8 +83,8 @@ class NotificacionTiempoRealControlador {
             const id = req.params.id_send;
             const REAL_TIME_NOTIFICACION = yield database_1.default.query('SELECT * FROM realtime_noti WHERE id_send_empl = $1 ' +
                 'ORDER BY id DESC', [id]).
-                then(result => {
-                return result.rows.map(obj => {
+                then((result) => {
+                return result.rows.map((obj) => {
                     obj;
                     return obj;
                 });
@@ -106,8 +106,8 @@ class NotificacionTiempoRealControlador {
         FROM realtime_noti AS r, empleados AS e 
         WHERE r.id_receives_empl = $1 AND e.id = r.id_send_empl ORDER BY id DESC
       `, [id])
-                .then(result => {
-                return result.rows.map(obj => {
+                .then((result) => {
+                return result.rows.map((obj) => {
                     console.log(obj);
                     return {
                         id: obj.id,
@@ -148,7 +148,7 @@ class NotificacionTiempoRealControlador {
             if (arrayIdsRealtimeNotificaciones.length > 0) {
                 arrayIdsRealtimeNotificaciones.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
                     yield database_1.default.query('DELETE FROM realtime_noti WHERE id = $1', [obj])
-                        .then(result => {
+                        .then((result) => {
                         console.log(result.command, 'REALTIME ELIMINADO ====>', obj);
                     });
                 }));

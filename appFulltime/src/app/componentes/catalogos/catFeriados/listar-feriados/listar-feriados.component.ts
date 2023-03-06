@@ -520,7 +520,14 @@ export class ListarFeriadosComponent implements OnInit {
 
   ExportToCVS() {
     this.OrdenarDatos(this.feriados);
-    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.feriados);
+    const wse: xlsx.WorkSheet = xlsx.utils.json_to_sheet(this.feriados.map(obj => {
+      return {
+        CODIGO: obj.id,
+        FERIADO: obj.descripcion,
+        FECHA: obj.fecha_,
+        FECHA_RECUPERA: obj.fec_recuperacion_
+      }
+    }));
     const csvDataC = xlsx.utils.sheet_to_csv(wse);
     const data: Blob = new Blob([csvDataC], { type: 'text/csv;charset=utf-8;' });
     FileSaver.saveAs(data, "FeriadosCSV" + new Date().getTime() + '.csv');

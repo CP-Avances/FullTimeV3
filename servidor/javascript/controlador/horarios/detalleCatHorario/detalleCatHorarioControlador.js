@@ -24,10 +24,10 @@ class DetalleCatalogoHorarioControlador {
             const HORARIO = yield database_1.default.query(`
             SELECT * FROM deta_horarios WHERE id_horario = $1 ORDER BY orden ASC
             `, [id_horario])
-                .then(result => {
+                .then((result) => {
                 if (result.rowCount === 0)
                     return [];
-                return result.rows.map(o => {
+                return result.rows.map((o) => {
                     switch (o.tipo_accion) {
                         case 'E':
                             o.tipo_accion_show = 'Entrada';
