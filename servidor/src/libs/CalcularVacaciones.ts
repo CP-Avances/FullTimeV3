@@ -153,7 +153,7 @@ async function ObtenerPeriodosEmpleado(id_empl: number, diasObliga: any, fec_fin
         return obj.fec_final.getFullYear();
     });
 
-    var nuevo = [...new Set(aniosInicio.concat(aniosFinal))];
+    var nuevo: any = [...new Set(aniosInicio.concat(aniosFinal))];
     // console.log(nuevo);
     let aniosLaborados = nuevo[nuevo.length - 1] - nuevo[0];
     let obj_antiguedad = ObtenerDiasAdicionales(aniosLaborados) as InfoLabora; // APLICA SOLO A CODIGO DE TRABAJO

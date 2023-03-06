@@ -218,6 +218,10 @@ class Servidor {
             res.header('Access-Control-Allow-Origin', '*:*');
             next();
         });
+        this.app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*:*');
+            next();
+        });
         io.on('connection', (socket) => {
             console.log('Connected client on port %s.', this.app.get('puerto'));
             socket.on("nueva_notificacion", (data) => {
