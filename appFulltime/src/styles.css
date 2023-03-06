@@ -21,27 +21,27 @@ body {
 
 .i-pdf {
     color: red;
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-print {
     color: rgb(0, 0, 0);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-download {
     color: rgb(0, 102, 255);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-excel {
     color: rgb(19, 172, 19);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-help {
     color: rgb(100, 100, 100);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 /* ESTILOS DE ÍCONOS DE DESCARGA DE REPORTES DE PANTALLAS PRINCIPALES */

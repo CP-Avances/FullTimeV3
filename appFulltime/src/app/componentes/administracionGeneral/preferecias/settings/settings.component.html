@@ -6,7 +6,7 @@
 </div>
 <form class="example-form" [formGroup]="formGroup" ngNativeValidate>
     <br>
-    <div class="d-flex flex-wrap">
+    <div class="d-flex flex-wrap" style="margin-left: 3%;">
         <div class="caja">
             <p>PERMISOS</p>
             <div class="d-flex flex-wrap justify-content-start">
@@ -44,7 +44,7 @@
         </div>
     </div>
 </form>
-<div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 3%;">
     <button *ngIf="btnActualizar" mat-raised-button id="btn-raised" type="submit" (click)="ActualizarConfiguracion(formGroup.value)">
         Guardar
     </button>
