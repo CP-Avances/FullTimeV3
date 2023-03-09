@@ -52,7 +52,7 @@ mat-grid-tile:hover {
 
 #datosF {
     font-weight: bold;
-    font-size: 13px;
+    font-size: 15px;
     padding-right: 5px;
 }
 
@@ -81,7 +81,7 @@ mat-grid-tile:hover {
     color: green;
     margin-right: 5px;
     cursor: pointer;
-    font-size: 15px;
+    margin-left: 15px;
     text-align: center;
 }
 

@@ -141,7 +141,7 @@ a.mat-menu-item {
   color: rgb(40, 40, 40);
   font-style: normal;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 0.1px;
   word-wrap: break-word;
 }
 
@@ -151,7 +151,7 @@ a.mat-menu-item {
   color: rgb(3, 85, 51);
   font-style: normal;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 0.1px;
   word-wrap: break-word;
 }
 

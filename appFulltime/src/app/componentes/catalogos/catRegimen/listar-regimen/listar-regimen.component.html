@@ -68,13 +68,14 @@
                                 class="fas fa-eye" id="t-ver" [routerLink]="['/verRegimen/',regimenL.id]">
                                 <p>Ver</p>
                             </i>
-                            <i class="fas fa-edit" [routerLink]="['/regimen/laboral/',regimenL.id]" id="t-editar"
+                            <i class="fas fa-edit" id="t-editar" [routerLink]="['/regimen/laboral/',regimenL.id]" 
                                 matSuffix matTooltipPosition="right"
                                 matTooltip="Editar los datos generales de este registro.">
                                 <p>Editar</p>
                             </i>
-                            <i (click)="ConfirmarDelete(regimenL)" class="far fa-trash-alt" id="t-eliminar" matSuffix
-                                matTooltipPosition="right" matTooltip="Eliminar este registro.">
+                            <i  class="far fa-trash-alt" id="t-eliminar" matSuffix
+                                matTooltipPosition="right" matTooltip="Eliminar este registro."
+                                (click)="ConfirmarDelete(regimenL)">
                                 <p>Eliminar</p>
                             </i>
                         </td>

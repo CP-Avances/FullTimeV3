@@ -26,9 +26,10 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
+                       
                         <mat-form-field>
                             <mat-label>Departamento</mat-label>
-                            <input matInput placeholder="Ej: Contabilidad" [formControl]="nombre" required>
+                             <input matInput placeholder="Ej: Contabilidad" [formControl]="nombre" required>
                             <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Ingresar nombre del nuevo departamento.">help_outline</mat-icon>
                         </mat-form-field>
@@ -46,8 +47,9 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
+                        
                         <mat-form-field>
-                            <mat-label id="letras">Departamento superior</mat-label>
+                             <mat-label id="letras">Departamento superior</mat-label>
                             <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Seleccionar departamento superior del nuevo departamento.">help_outline
                             </mat-icon>
@@ -55,7 +57,7 @@
                                 <mat-option *ngFor="let departamento of departamentos" [value]="departamento.id">
                                     {{departamento.nombre}}
                                 </mat-option>
-                            </mat-select>
+                             </mat-select>
                         </mat-form-field>
                     </div>
                 </div>
