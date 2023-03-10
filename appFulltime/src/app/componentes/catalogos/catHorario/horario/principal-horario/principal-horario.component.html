@@ -34,10 +34,10 @@
                                     Cargar horario
                                 </label>
                             </form>
-                            <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
+                            <a type="submit" id="descargar" class="btn btn-sm" matSuffix
                                 matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento."
                                 href="{{hipervinculo}}/plantillaD/documento/Catalogo Horarios.xlsx">
-                                <span class="material-icons">cloud_download</span>Descargar plantilla horario
+                                <span class="material-icons">cloud_download</span> <br>Descargar plantilla horario
                             </a>
                         </div>
                     </div>
@@ -51,10 +51,10 @@
                                     matTooltip="Presionar para seleccionar Plantilla con nombre Detalles Horarios.">Cargar
                                     detalles</label>
                             </form>
-                            <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
+                            <a type="submit" id="descargar" class="btn btn-sm" matSuffix
                                 matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento."
                                 href="{{hipervinculo}}/plantillaD/documento/Detalles Horarios.xlsx">
-                                <span class="material-icons">cloud_download</span> Descargar plantilla detalles
+                                <span class="material-icons">cloud_download</span><br> Descargar plantilla detalles
                             </a>
                         </div>
                     </div>
@@ -93,6 +93,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td></td>
                         <td>
                             <mat-icon id="i-ayuda" matSuffix matTooltipPosition="right"
                                 matTooltip="Búsqueda de horario por el nombre.">
@@ -113,7 +114,8 @@
                                 matTooltipPosition="right" matTooltip="Dar click para ver o descargar el documento."
                                 href="{{hipervinculo}}/horario/documentos/{{horario.documento}}" target="_blank">
                                 <p>{{horario.doc_nombre}}</p>
-                            </a></td>
+                            </a>
+                        </td>
                         <td class="d-flex justify-content-center">
                             <i *ngIf="horario.detalle == true" matSuffix matTooltipPosition="right"
                                 matTooltip="Ver datos generales de este registro." class="fas fa-eye" id="t-ver"
@@ -121,7 +123,7 @@
                                 <p>Ver</p>
                             </i>
                             <i *ngIf="horario.detalle == true" matSuffix matTooltipPosition="right"
-                                matTooltip="Agregar Detalles de Horario." class="far fa-list-alt" id="t-detalles"
+                                matTooltip="Agregar Detalles de Horario." class="fas fa-list-alt" id="t-detalles"
                                 (click)="AbrirRegistraDetalle(horario)">
                                 <p>Detalle</p>
                             </i>

@@ -2,9 +2,7 @@
     <div class="container" style="padding-bottom: 15px;">
         <mat-card class="mat-elevation-z8">
             <div id="titulo">
-                <p style="float:left; margin-left: 1%;  position:absolute;">Solicitud: VAC_{{id_vacacion}} </p>
-                <h5>INFORMACIÓN DE VACACIÓN</h5>
-                
+                <h5>INFORMACIÓN DE VACACIÓN</h5>  
             </div>
             <mat-card-content>
                 <div class="container" *ngFor="let v of vacacion" style="padding-top: 15px;">
@@ -98,11 +96,11 @@
                             <div *ngIf="estado" class="caja1 d-flex justify-content-start">
                                 <label id="datosF">Descargar Vacación:</label>
                                 <label>
-                                    <a id="iconos" (click)="GenerarPdf('download')" matSuffix matTooltipPosition="right"
+                                    <i id="iconos" (click)="GenerarPdf('download')" matSuffix matTooltipPosition="right"
                                         matTooltip="Descargar Solicitud de Permiso en formato PDF">
                                         <label
                                             style="font-size: 14px; color: red; font-weight: bold;">Solicitud.pdf</label>
-                                    </a>
+                                    </i>
                                 </label>
                             </div>
                         </div>
@@ -113,8 +111,8 @@
                         <div class="col">
                         </div>
                         <div class="col" style="text-align: right;">
-                            <i *ngIf="!habilitarActualizar" class="fas fa-edit" id="i-cursor"
-                                style="color:green; text-align: center;" matSuffix matTooltipPosition="right"
+                            <i *ngIf="!habilitarActualizar" class="fas fa-edit" id="t-editar"
+                                matSuffix matTooltipPosition="right"
                                 (click)="AbrirVentanaEditarAutorizacion(a)" matTooltip="Cambiar el estado del permiso" [hidden] = "ocultar">
                                 <p>Estado</p>
                             </i>

@@ -48,12 +48,12 @@
                                 matTooltip="Modificar los datos generales de este registro">
                                 <p>Editar</p>
                             </i>
-                            <a *ngIf="auto_individual" class="fas fa-file-alt"
+                            <i *ngIf="auto_individual" class="fas fa-file-alt"
                                 style="color:rgb(197, 95, 11); margin-left: 15px;" matSuffix matTooltipPosition="right"
                                 matTooltip="Cambiar el estado del documentdo de autorazación"
                                 [routerLink]="['/ver-permiso',e.id]">
                                 <p>Autorizar</p>
-                            </a>
+                            </i>
                         </td>
                     </tr>
                 </tbody>
@@ -112,12 +112,12 @@
                         <td>{{e.fec_inicio_}}</td>
                         <td>{{e.fec_final_}}</td>
                         <td class="d-flex justify-content-center">
-                            <a *ngIf="auto_individual" class="fas fa-file-alt"
+                            <i *ngIf="auto_individual" class="fas fa-file-alt"
                                 style="color:rgb(197, 95, 11); margin-left: 15px;" matSuffix matTooltipPosition="right"
                                 matTooltip="Cambiar el estado del documentdo de autorización"
                                 [routerLink]="['/ver-permiso',e.id]">
                                 <p>Documento</p>
-                            </a>
+                            </i>
                         </td>
                     </tr>
                 </tbody>

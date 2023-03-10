@@ -38,3 +38,7 @@ mat-progress-spinner {
     color: rgb(8, 8, 8);
     font-size: 13px;
 }
+
+mat-label{
+    font-size: 13px;
+}

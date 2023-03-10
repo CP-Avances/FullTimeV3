@@ -138,11 +138,14 @@
                                 <td>{{s.nombre}}</td>
                                 <td class="d-flex justify-content-center">
                                     <i (click)="GuardarRegistros(s.id)" id="plan" *ngIf="auto_individual"
-                                        class="fa fa-calendar" matSuffix matTooltipPosition="right"
+                                        class="fas fa-calendar" matSuffix matTooltipPosition="right"
                                         matTooltip="Abrir formulario de registro de horarios."
                                         [ngStyle]="habilitado">
                                         <p>Planificar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -201,6 +204,9 @@
                                         [ngStyle]="habilitado">
                                         <p>Planificar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -263,6 +269,9 @@
                                         [ngStyle]="habilitado">
                                         <p>Planificar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
