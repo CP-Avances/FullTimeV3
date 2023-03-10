@@ -1,9 +1,13 @@
 <div id="titulo">
-    <h5>MODIFICAR TÍTULO PROFESIONAL</h5>
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR TÍTULO PROFESIONAL</span>
+    <mat-icon class="float-right" id="cerrar" (click)="Cancelar()" matSuffix matTooltipPosition="right" matTooltip="Salir">
+        highlight_off</mat-icon>
 </div>
 <form [formGroup]="formulario">
     <mat-card-content>
-        <div class="container" style="padding-top: 15px; text-align: center;">
+        <div class="container" style="text-align: center;">
             <div class="nota">
                 <span>
                     NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
@@ -35,16 +39,16 @@
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center;">
+<div style="text-align: center; margin: 2% 0% 3% 0%">
     <button mat-button type="submit" class="btn" (click)="ActualizarTituloEmpleado(formulario.value); Cancelar();"
         [disabled]="!formulario.valid">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Guardar registro">save</span>
     </button>
-    <button mat-button type="submit" class="btn" (click)="Cancelar()">
+    <!--button mat-button type="submit" class="btn" (click)="Cancelar()">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Cancelar registro">close</span>
-    </button>
+    </button-->
     <button mat-button type="submit" class="btn" (click)="VerificarTitulo()">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Verificar título profesional del empleado antes de registrarlo">insert_link</span>

@@ -3,6 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR HORARIO
     </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
 </div>
 <!-- FORMULARIO COMPLETO -->
 <form [formGroup]="formulario">
@@ -106,8 +107,8 @@
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center;">
-    <button type="submit" class="btn btn-sm" (click)="InsertarEmpleadoHorario(formulario.value)"
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarEmpleadoHorario(formulario.value)"
         [disabled]="!formulario.valid">Guardar</button>
-    <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
 </div>

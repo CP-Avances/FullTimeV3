@@ -1,5 +1,8 @@
 <div id="titulo">
-    <h5>{{texto}} DISCAPACIDAD</h5>
+    <span style="margin: auto;">
+        {{texto}} DISCAPACIDAD</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarRegistro()" matSuffix matTooltipPosition="right" matTooltip="Salir">
+        highlight_off</mat-icon>
 </div>
 <!-- FORMULARIO COMPLETO -->
 <form [formGroup]="formulario">
@@ -56,22 +59,23 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col">
-                    <mat-label>Porcentaje de discapacidad *</mat-label>
-                    <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                <div class="col" style="padding: 5% 15% 0% 15%;">
+                    <mat-label class="float-left" style="font-size: 13px;">Porcentaje de discapacidad *</mat-label>
+                    <mat-icon class="float-right" id="i-cursor" matSuffix matTooltipPosition="right"
                         matTooltip="Indique el valor porcentual de discapacidad.">
                         help_outline
                     </mat-icon>
-                    <br>
-                    <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="1" min="1" max="100"
-                        [formControl]="porcentaje" required>
+                    <br><br>
+                    <mat-slider showTickMarks discrete min="0" max="100" step="1" 
+                        [formControl]="porcentaje" [displayWith]= "formatLabel" required>
+                        <input matSliderThumb>
                     </mat-slider>
                 </div>
             </div>
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center;">
+<div style="text-align: center; margin: 2% 0% 3% 0%">
     <button type="submit" class="btn" (click)="InsertarCarnet(formulario.value)"
         [disabled]="!formulario.valid">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
@@ -81,8 +85,8 @@
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Borrar datos ingresados.">backspace</span>
     </button>
-    <button type="submit" class="btn" (click)="CerrarRegistro()">
+    <!--button type="submit" class="btn" (click)="CerrarRegistro()">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Cancelar registro.">close</span>
-    </button>
+    </button-->
 </div>

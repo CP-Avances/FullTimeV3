@@ -1,10 +1,11 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR AUTORIZAR DEPARTAMENTO
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
+</div>
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            MODIFICAR AUTORIZAR DEPARTAMENTO
-        </span>
-    </div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="formulario">
         <mat-card-content>
@@ -17,7 +18,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md">
-                        <div class="d-flex flex-wrap justify-content-around">
+                        <div class="d-flex flex-wrap justify-content-center">
                             <mat-form-field>
                                 <mat-label>Empleado</mat-label>
                                 <input id="letras" matInput placeholder="Empleado" [formControl]="nombreEmpleadoF"
@@ -37,7 +38,7 @@
                         </div>
                     </div>
                     <div class="col-md">
-                        <div class="d-flex flex-wrap justify-content-around">
+                        <div class="d-flex flex-wrap justify-content-center">
                             <mat-form-field>
                                 <mat-label>Departamento</mat-label>
                                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -54,11 +55,11 @@
                                 </label>
                                 <mat-radio-button class="example-match" ngDefaultControl [(ngModel)]="selec1"
                                     [checked]="selec1" [ngModelOptions]="{standalone: true}" value="true">
-                                    Si
+                                    <label id="textoradiobtn">Si</label>
                                 </mat-radio-button>
                                 <mat-radio-button class="example-match" ngDefaultControl [(ngModel)]="selec2"
                                     [checked]="selec2" [ngModelOptions]="{standalone: true}" value="false">
-                                    No
+                                    <label id="textoradiobtn">No</label>
                                 </mat-radio-button>
                             </mat-radio-group>
                         </div>
@@ -67,9 +68,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="InsertarAutorizacion(formulario.value)"
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarAutorizacion(formulario.value)"
             [disabled]="!formulario.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
     </div>
 </div>

@@ -1,5 +1,7 @@
 mat-slider {
-    width: 190px;
+    width: 200px;
+    font-size: 11px;
+    margin-top: 2%;
 }
 
 .btn {

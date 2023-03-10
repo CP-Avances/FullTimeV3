@@ -95,29 +95,41 @@ body {
 #t-ver {
     color: indianred;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #ver {
     color: rgb(78, 20, 238);
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #t-editar {
     color: green;
-    margin-left: 20px;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #t-eliminar {
     color: red;
-    margin-left: 20px;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #t-detalles {
     color: rgb(38, 0, 255);
-    margin-left: 20px;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 /* ESTILOS DE INPUTS DE BUSQUEDA EN TABLAS */
@@ -213,6 +225,14 @@ body {
     text-align: justify;
     padding-bottom: 10px;
     color: rgb(15, 0, 228);
+}
+
+#textoradiobtn {
+    font-size: 14px;
+    margin: 12px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.1px;
 }
 
 /* ESTILO LINEA DE DIVISION */

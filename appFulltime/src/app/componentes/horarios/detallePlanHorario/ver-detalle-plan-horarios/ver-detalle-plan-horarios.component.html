@@ -26,11 +26,16 @@
                         </div>
                     </div>
                 </mat-card-content>
-
-                <mat-card-actions *ngFor="let h of datosPlanificacion" style="text-align: center">
-                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaDetalles(h)" value="Registrar detalle">
-                    <input type="submit" class="btn btn-sm" [routerLink]="['/verEmpleado/',idEmpleado]"
-                        value="Regresar">
+                <mat-card-actions *ngFor="let h of datosPlanificacion" style="padding: auto; width: 100%;">
+                    <div class="d-flex flex-wrap justify-content-center" style="margin-top: 1%; margin-bottom: 2%; width: 100%;">
+                        <button mat-raised-button id="btn-raised" type="submit" [routerLink]="['/verEmpleado/',idEmpleado]" matSuffix 
+                            matTooltipPosition="right"
+                            matTooltip="Regresar a la ventana de Usuario." value="Regresar">
+                            Regresar
+                        </button>
+                        <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaDetalles(h)" value="Registrar detalle">
+                            Registrar detalle</button>
+                    </div>
                 </mat-card-actions>
             </mat-card>
         </div>
@@ -38,27 +43,28 @@
             <div id="titulo">
                 <span>CARGAR HORARIO PLANTILLAS</span>
             </div>
-            <mat-card class="example-card mat-elevation-z9" id="carta1">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md" style="text-align: center;">
-                            <form method="post" enctype="multipart/form-data">
-                                <input (change)="fileChangePlantilla($event)" type="file" [formControl]="archivo1Form"
-                                    id="file1"
-                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                                <label for="file1" class="btn-2" matSuffix matTooltipPosition="right"
-                                    matTooltip="Presionar para seleccionar Plantilla con nombre Detalle Planificacion Empleado">Cargar
-                                    detalles</label>
-                            </form>
-                        </div>
-                        <div class="col-md" style="text-align: center;">
-                            <a mat-button type="submit" id="descargar" class="btn btn-sm" matSuffix
-                                matTooltipPosition="right" matTooltip="Dar click para ver o descargar la plantilla"
-                                href="{{hipervinculo}}/plantillaD/documento/Detalle Planificacion Empleado.xlsx">
-                                <span class="material-icons">cloud_download</span> Descargar plantilla detalle
-                            </a>
-                        </div>
+
+            <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-around" id="carta1">
+                <div style="display: flex; padding: 3%; margin: auto;">
+                    <div>
+                        <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around">
+                            <input (change)="fileChangePlantilla($event)" type="file" [formControl]="archivo1Form" id="file"
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                            <label for="file" class="btn-2" matSuffix matTooltipPosition="right"
+                                matTooltip="Dar click para selecionar plantilla y cargar registros.">
+                                Cargar detalles
+                            </label>
+                        </form>
                     </div>
+                    <div>
+                        <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right" style="height: 70px;"
+                            matTooltip="Dar click para ver o descargar el documento." 
+                            href="{{hipervinculo}}/plantillaD/documento/Detalle Planificacion Empleado.xlsx">
+                            <span class="material-icons">cloud_download</span>
+                            <br>
+                            Descargar plantilla usuarios
+                        </a>
+                   </div>
                 </div>
             </mat-card>
         </div>
@@ -91,8 +97,8 @@
                                 class="fas fa-edit">
                                 <p>Editar</p>
                             </i>
-                            <i class="far fa-trash-alt" (click)="ConfirmarDelete(dh)"
-                                style="color:red; margin-left: 15px;" id="i-cursor" matSuffix
+                            <i class="far fa-trash-alt" (click)="ConfirmarDelete(dh)" style="margin-left: 4%;"
+                                id="delete" matSuffix
                                 matTooltipPosition="right" matTooltip="Eliminar registro">
                                 <p>Eliminar</p>
                             </i>

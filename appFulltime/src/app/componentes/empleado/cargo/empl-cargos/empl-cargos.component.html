@@ -1,10 +1,11 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR CARGO
-        </span>
-    </div>
+<div id="titulo">
+    <span style="margin: auto;">
+        REGISTRAR CARGO
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()" matSuffix matTooltipPosition="right" matTooltip="Salir">
+        highlight_off</mat-icon>
+</div>
+<div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="formulario">
         <mat-card-content>
@@ -89,12 +90,12 @@
                     </div>
                     <div class="col-md">
                         <div class="d-flex flex-wrap justify-content-around">
-                            <mat-form-field>
-                                <mat-label>Sueldo</mat-label>
-                                <input matInput [formControl]="sueldo" style="text-align: right;"
+                            <mat-form-field appearance="fill" floatLabel="always">
+                                <mat-label id="letras">Sueldo</mat-label>
+                                <input matInput type="number" [formControl]="sueldo" class="example-right-align" placeholder="0"
                                     (keypress)="IngresarSoloNumeros($event)" required>
-                                <span matPrefix>$&nbsp;</span>
-                                <span matSuffix>.00</span>
+                                <span matTextPrefix>$&nbsp;</span>
+                                <span matTextSuffix>.00</span>
                                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Ingresar sueldo del usuario.">
                                     help_outline
@@ -116,9 +117,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="ValidarDatosRegistro(formulario.value)"
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="ValidarDatosRegistro(formulario.value)"
             [disabled]="!formulario.valid"> Guardar </button>
-        <button type="submit" class="btn btn-sm" (click)="CerrarVentana()"> Salir </button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()"> Salir </button-->
     </div>
 </div>

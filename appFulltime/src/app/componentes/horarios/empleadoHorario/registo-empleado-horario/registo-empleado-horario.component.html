@@ -5,8 +5,9 @@
     </span>
     <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
 </div>
-<!-- FORMULARIO COMPLETO -->
-<form [formGroup]="formulario">
+<div>
+    <!-- FORMULARIO COMPLETO -->
+    <form [formGroup]="formulario">
     <mat-card-content>
         <div class="container" style="text-align: center;">
             <div class="nota">
@@ -75,7 +76,8 @@
                             </div>
                             <div class="col-sm" style="text-align: left;">
                                 <br>
-                                <mat-checkbox [formControl]="viernesF" [(ngModel)]="viernes">Viernes
+                                <mat-checkbox [formControl]="viernesF" [(ngModel)]="viernes">
+                                    Viernes
                                 </mat-checkbox>
                                 <br>
                                 <mat-checkbox [formControl]="sabadoF" [(ngModel)]="sabado">
@@ -92,9 +94,10 @@
             </div>
         </div>
     </mat-card-content>
-</form>
-<div style="text-align: center;">
-    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarEmpleadoHorario(formulario.value)"
-        [disabled]="!formulario.valid">Guardar</button>
-    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
+    </form>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarEmpleadoHorario(formulario.value)"
+            [disabled]="!formulario.valid">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
+    </div>
 </div>
