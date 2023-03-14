@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.url = this.router.url;
-    this.Geolocalizar();
+    //this.Geolocalizar();
   }
 
   // METODO QUE PERMITE ACCEDER A UBICACION DEL USUARIO
@@ -147,11 +147,11 @@ export class LoginComponent implements OnInit {
       pass: clave,
     };
 
-    if (this.latitud === undefined) {
+ /*   if (this.latitud === undefined) {
       this.Geolocalizar();
       return this.toastr.error('Es necesario permitir el acceso a la ubicación del usuario.')
     }
-
+*/
     // VALIDACION DEL LOGIN
     this.rest.ValidarCredenciales(dataUsuario).subscribe(datos => {
       if (datos.message === 'error') {

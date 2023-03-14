@@ -30,26 +30,31 @@ const DesactivarFinContratoEmpleado = function () {
         let hora = parseInt(f.toLocaleTimeString().split(':')[0]);
         // let hora: number = 9; // =====> solo para probar
         f.setUTCHours(hora);
-        let fecha = f.toJSON().split('T')[0];
-        if (hora === HORA_EJECUTA) {
-            console.log(fecha);
-            let idsEmpleados_FinContrato = yield database_1.default.query('SELECT DISTINCT id_empleado FROM empl_contratos WHERE CAST(fec_salida AS VARCHAR) LIKE $1 || \'%\' ORDER BY id_empleado DESC', [fecha])
-                .then(result => {
-                return result.rows;
-            });
-            console.log(idsEmpleados_FinContrato);
-            if (idsEmpleados_FinContrato.length > 0) {
-                idsEmpleados_FinContrato.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
-                    yield database_1.default.query('UPDATE empleados SET estado = 2 WHERE id = $1', [obj.id_empleado]) // 2 => desactivado o inactivo
-                        .then(result => {
-                        console.log(result.command, 'EMPLEADO ====>', obj.id_empleado);
-                    });
-                    yield database_1.default.query('UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1', [obj.id_empleado]) // false => Ya no tiene acceso
-                        .then(result => {
-                        console.log(result.command, 'USUARIO ====>', obj.id_empleado);
-                    });
-                }));
+        if (f.setUTCHours(hora)) {
+            let fecha = f.toJSON().split('T')[0];
+            if (hora === HORA_EJECUTA) {
+                console.log(fecha);
+                let idsEmpleados_FinContrato = yield database_1.default.query('SELECT DISTINCT id_empleado FROM empl_contratos WHERE CAST(fec_salida AS VARCHAR) LIKE $1 || \'%\' ORDER BY id_empleado DESC', [fecha])
+                    .then(result => {
+                    return result.rows;
+                });
+                console.log(idsEmpleados_FinContrato);
+                if (idsEmpleados_FinContrato.length > 0) {
+                    idsEmpleados_FinContrato.forEach((obj) => __awaiter(this, void 0, void 0, function* () {
+                        yield database_1.default.query('UPDATE empleados SET estado = 2 WHERE id = $1', [obj.id_empleado]) // 2 => desactivado o inactivo
+                            .then(result => {
+                            console.log(result.command, 'EMPLEADO ====>', obj.id_empleado);
+                        });
+                        yield database_1.default.query('UPDATE usuarios SET estado = false, app_habilita = false WHERE id_empleado = $1', [obj.id_empleado]) // false => Ya no tiene acceso
+                            .then(result => {
+                            console.log(result.command, 'USUARIO ====>', obj.id_empleado);
+                        });
+                    }));
+                }
             }
+        }
+        else {
+            console.log('controlado');
         }
     }), 3600000);
 };
