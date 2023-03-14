@@ -331,7 +331,7 @@ export class VerEmpleadoComponent implements OnInit {
       this.empleadoUno[0].fec_nacimiento_ = this.validar.FormatearFecha(this.empleadoUno[0].fec_nacimiento, formato_fecha, this.validar.dia_abreviado);
       var empleado = data[0].nombre + data[0].apellido;
       if (data[0].imagen != null) {
-        this.urlImagen = `${environment.url}/empleado/img/` + data[0].imagen;
+        this.urlImagen = `${environment.url}/imagenesEmpleados/img/` + data[0].imagen;
         this.mostrarImagen = true;
         this.textoBoton = 'Editar foto';
       } else {
@@ -841,7 +841,7 @@ export class VerEmpleadoComponent implements OnInit {
     if (this.datoActual.id_cargo != undefined) {
       this.ventana.open(RegistoEmpleadoHorarioComponent,
         {
-          width: '600px',
+          width: '640px',
           data: {
             idEmpleado: this.idEmpleado, idCargo: this.datoActual.id_cargo,
             horas_trabaja: this.cargoEmpleado[0].hora_trabaja
@@ -861,7 +861,7 @@ export class VerEmpleadoComponent implements OnInit {
   AbrirEditarHorario(datoSeleccionado: any): void {
     this.ventana.open(EditarHorarioEmpleadoComponent,
       {
-        width: '600px',
+        width: '640px',
         data: {
           idEmpleado: this.idEmpleado, datosHorario: datoSeleccionado,
           horas_trabaja: this.cargoEmpleado[0].hora_trabaja
@@ -1967,7 +1967,7 @@ export class VerEmpleadoComponent implements OnInit {
   // VENTANA PARA REGISTRAR ADMINISTRACION DE MÓDULO DE ALIMENTACIÓN 
   AbrirVentanaAdminComida(): void {
     this.ventana.open(AdministraComidaComponent,
-      { width: '400px', data: { idEmpleado: this.idEmpleado } })
+      { width: '450px', data: { idEmpleado: this.idEmpleado } })
       .afterClosed().subscribe(item => {
         this.VerAdminComida();
       });
@@ -2337,7 +2337,7 @@ export class VerEmpleadoComponent implements OnInit {
   IngresarFrase(): void {
     this.restU.BuscarDatosUser(this.idEmpleadoLogueado).subscribe(data => {
       if (data[0].frase === null || data[0].frase === '') {
-        this.ventana.open(FraseSeguridadComponent, { width: '350px', data: this.idEmpleado })
+        this.ventana.open(FraseSeguridadComponent, { width: '450px', data: this.idEmpleado })
           .afterClosed()
           .subscribe((confirmado: Boolean) => {
             if (confirmado) {
@@ -2353,7 +2353,7 @@ export class VerEmpleadoComponent implements OnInit {
 
   // CAMBIAR FRASE 
   CambiarFrase(): void {
-    this.ventana.open(CambiarFraseComponent, { width: '350px', data: this.idEmpleado })
+    this.ventana.open(CambiarFraseComponent, { width: '450px', data: this.idEmpleado })
       .disableClose = true;
   }
 

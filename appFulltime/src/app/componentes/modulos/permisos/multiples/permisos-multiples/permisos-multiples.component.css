@@ -72,11 +72,11 @@ mat-label {
 }
 
 #formulario {
-    width: 150px;
+    width: 200px;
 }
 
 #calculos {
-    width: 180px;
+    width: 200px;
 }
 
 ::ng-deep.mat-checkbox-checked.mat-accent.mat-checkbox-disabled .mat-checkbox-background,

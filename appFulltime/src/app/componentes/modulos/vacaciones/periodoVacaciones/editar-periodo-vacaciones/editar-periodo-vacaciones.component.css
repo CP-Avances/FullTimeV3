@@ -1,8 +1,8 @@
-#dias { font-size: 15px; }
+#dias { font-size: 13px; }
 
 #nomEmple { font-size: 13px; }
 
-#fec { font-size: 14px; }
+#fec { font-size: 13px; }
 
 .mat-radio-button ~ .mat-radio-button { margin-left: 16px; }
 
@@ -26,3 +26,20 @@ mat-form-field { width: 210px; padding: 10px 10px 0px 10px;}
     width: 12px;
     background-color: #F5F5F5; 
 }
+
+label {
+    font-size: 14px;
+    margin: 12px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+}
+
+#diasvaca{
+    width: 300px;
+}
+
+#fechas{
+    width: 250px;
+}
+

@@ -1,6 +1,8 @@
-<mat-icon id="movilidad">open_with</mat-icon>
-<div class="tituloNotifica">
-    <span mat-dialog-title cdkDrag cdkDragRootElement=".cdk-overlay-pane">Registrar Autorización</span>
+<div id="resultados">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR AUTORIZACIÓN</span>
+    <mat-icon class="float-right" id="cerrar" (click)="dialogRef.close()">highlight_off</mat-icon>
 </div>
 <form [formGroup]="nuevaAutorizacionesForm">
     <mat-card-content>
@@ -60,9 +62,8 @@
         </div>
     </mat-card-content>
 </form>
-
-<div style="text-align: center;">
-    <input type="submit" class="btn btn-sm" (click)="insertarAutorizacion(nuevaAutorizacionesForm.value)"
-        [disabled]="!nuevaAutorizacionesForm.valid" value="Guardar">
-    <input type="submit" (click)="dialogRef.close()" class="btn btn-sm" value="Salir" style="margin-left: 15px;">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="insertarAutorizacion(nuevaAutorizacionesForm.value)"
+        [disabled]="!nuevaAutorizacionesForm.valid">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="dialogRef.close()">Salir</button-->
 </div>

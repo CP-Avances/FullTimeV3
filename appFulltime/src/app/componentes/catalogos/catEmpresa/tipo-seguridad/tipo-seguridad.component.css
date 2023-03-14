@@ -28,6 +28,14 @@ mat-progress-spinner {
     z-index: 100;
 }
 
+label {
+    font-size: 14px;
+    margin: 15px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.1px;
+}
+
 #mover {
     cursor: grab;
 }

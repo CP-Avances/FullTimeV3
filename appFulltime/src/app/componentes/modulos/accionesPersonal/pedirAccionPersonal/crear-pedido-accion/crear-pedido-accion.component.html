@@ -48,7 +48,7 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-end">
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button matStepperNext id="btn-raised" class="float-right">Siguiente</button>
                 </div>
             </mat-step>
 
@@ -106,8 +106,8 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button matStepperPrevious id="btn-raised" class="float-left">Atrás</button>
+                    <button mat-raised-button matStepperNext id="btn-raised" class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="thirdFormGroup">
@@ -183,8 +183,8 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="fourthFormGroup">
@@ -313,8 +313,8 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="fifthFormGroup">
@@ -358,8 +358,8 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="sixthFormGroup">
@@ -435,8 +435,8 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="seventhFormGroup">
@@ -503,8 +503,8 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="eighthFormGroup">
@@ -548,16 +548,16 @@
                 </form>
                 <br>
                 <div class="d-flex flex-wrap justify-content-start">
-                    <button matStepperPrevious class="btn btn-sm float-right">Atrás</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
                 </div>
             </mat-step>
 
         </mat-horizontal-stepper>
-        <div style="text-align: center;">
-            <input type="submit" class="btn btn-sm"
+        <div style="text-align: center; margin-bottom: 3%;">
+            <button mat-raised-button id="btn-raised" type="submit"
                 (click)="InsertarAccionPersonal(firstFormGroup.value,secondFormGroup.value,thirdFormGroup.value,fourthFormGroup.value,fifthFormGroup.value,sixthFormGroup.value,seventhFormGroup.value,eighthFormGroup.value)"
-                [disabled]="!eighthFormGroup.valid" value="Guardar">
-            <input type="submit" class="btn btn-sm" [routerLink]="['/listaPedidos/']" value="Cancelar">
+                [disabled]="!eighthFormGroup.valid" value="Guardar">Guardar</button>
+            <button mat-raised-button id="btn-raised" type="submit" [routerLink]="['/listaPedidos/']" value="Cancelar">Cancelar</button>
         </div>
     </mat-card>
 </div>

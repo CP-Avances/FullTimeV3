@@ -1,9 +1,10 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR SOLICITUD DE VACACIÓN</span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR SOLICITUD DE VACACIÓN</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentanaRegistroVacaciones()">highlight_off</mat-icon>
+</div>
+<div>
     <!-- Formulario Completo -->
     <form [formGroup]="VacacionesForm">
         <mat-card-content>
@@ -66,7 +67,7 @@
                             help_outline</mat-icon>
                     </mat-form-field>
                     <mat-form-field>
-                        <mat-label>Vacaciones: días libres</mat-label>
+                        <mat-label id="dias">Vacaciones: días libres</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento" [formControl]="dialibreF"
                             required (keypress)="IngresarSoloNumeros($event)">
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -74,7 +75,7 @@
                             help_outline</mat-icon>
                     </mat-form-field>
                     <mat-form-field>
-                        <mat-label id="i-cursor">Vacaciones: días Feriados</mat-label>
+                        <mat-label id="dias">Vacaciones: días Feriados</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento" [formControl]="diasTF"
                             required (keypress)="IngresarSoloNumeros($event)">
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -82,7 +83,7 @@
                             help_outline</mat-icon>
                     </mat-form-field>
                     <mat-form-field>
-                        <mat-label>Días totales</mat-label>
+                        <mat-label id="dias">Días totales</mat-label>
                         <input readonly="readonly" matInput placeholder="Días de incremento" [formControl]="totalF"
                             required (keypress)="IngresarSoloNumeros($event)">
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -97,17 +98,21 @@
                                 help_outline</mat-icon>
                         </label>
                         <div class="d-flex justify-content-around">
-                            <mat-radio-button value="true">Si</mat-radio-button>
-                            <mat-radio-button value="false">No</mat-radio-button>
+                            <mat-radio-button value="true">
+                                <label>Si</label>
+                            </mat-radio-button>
+                            <mat-radio-button value="false">
+                                <label>No</label>
+                            </mat-radio-button>
                         </div>
                     </mat-radio-group>
                 </div>
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="ValidarDatosVacacion(VacacionesForm.value)"
-            [disabled]="!VacacionesForm.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="CerrarVentanaRegistroVacaciones()">Salir</button>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" [disabled]="!VacacionesForm.valid"
+        (click)="ValidarDatosVacacion(VacacionesForm.value)" value="Guardar"> Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentanaRegistroVacaciones()" value="Salir">Salir</button-->
     </div>
 </div>

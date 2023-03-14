@@ -1,9 +1,10 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR PERIODO VACACIONES</span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR PERIODO VACACIONES</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentanaRegistroPerVacaciones()">highlight_off</mat-icon>
+</div>
+<div>
     <!-- Formulario Completo -->
     <form [formGroup]="PerVacacionesForm">
         <mat-card-content>
@@ -36,8 +37,10 @@
                             </mat-icon>
                         </label>
                         <div class="d-flex justify-content-around">
-                            <mat-radio-button [value]=1>Si</mat-radio-button>
-                            <mat-radio-button [value]=2>No</mat-radio-button>
+                            <mat-radio-button [value]=1>
+                                <label>Si</label></mat-radio-button>
+                            <mat-radio-button [value]=2>
+                                <label>No</label></mat-radio-button>
                         </div>
                     </mat-radio-group>
                     <mat-form-field>
@@ -101,11 +104,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center">
-        <mat-card-actions style="text-align: center">
-            <input type="submit" class="btn btn-sm" [disabled]="!PerVacacionesForm.valid"
-                (click)="ValidarDatosPerVacacion(PerVacacionesForm.value)" value="Guardar">
-            <input type="submit" (click)="CerrarVentanaRegistroPerVacaciones()" class="btn btn-sm" value=" Salir">
-        </mat-card-actions>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" [disabled]="!PerVacacionesForm.valid"
+        (click)="ValidarDatosPerVacacion(PerVacacionesForm.value)" value="Guardar"> Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentanaRegistroPerVacaciones()" value="Salir">Salir</button-->
     </div>
 </div>

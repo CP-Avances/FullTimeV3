@@ -181,7 +181,7 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA PARA REVISAR FORMATO DE REPORTES COLORES
   AbrirVentanaReportes(datos_empresa: any, ventana: any) {
-    this.ventana.open(ColoresEmpresaComponent, {width: '400px',data: { datos: datos_empresa, ventana: ventana }})
+    this.ventana.open(ColoresEmpresaComponent, {width: '340px',data: { datos: datos_empresa, ventana: ventana }})
       .afterClosed().subscribe((items: any) => {
         if (items) {
           if (items.actualizar === true) {
@@ -226,7 +226,7 @@ export class VerEmpresaComponent implements OnInit {
 
   // VENTANA DE REGISTRO DE FRASE DE SEGURIDAD
   AbrirVentanaSeguridad(datosSeleccionados: any) {
-    this.ventana.open(TipoSeguridadComponent, { width: '350px', data: datosSeleccionados })
+    this.ventana.open(TipoSeguridadComponent, { width: '340px', data: datosSeleccionados })
       .afterClosed().subscribe((items: any) => {
         this.ObtenerSucursal();
         this.ObtenerLogotipo();

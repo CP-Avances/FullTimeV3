@@ -3,7 +3,18 @@ img {
 }
 
 mat-form-field {
-    width: 230px;
+    width: 250px;
+}
+
+mat-hint{
+    width: max-content;
+    font-size: 11px;
+    margin: 0%;
+    padding: 0%;
+}
+
+textarea{
+    font-size: 13px;
 }
 
 .btn {

@@ -1,7 +1,8 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="resultados">
-        <span>APROBACIÓN SERVICIO DE ALIMENTACIÓN</span>
-    </div>
+<div id="resultados">
+    <span style="margin: auto;">APROBACIÓN SERVICIO DE ALIMENTACIÓN</span>
+    <mat-icon class="float-right" id="cerrar" (click)="Cerrar()">highlight_off</mat-icon>
+</div>
+<div>
     <br *ngIf="multiple">
     <mat-card-content *ngIf="multiple">
         <div class="row">
@@ -80,22 +81,22 @@
             <div class="row">
                 <div class="col-md" *ngIf="boton_autorizar">
                     <div class="d-flex justify-content-around" style="padding-bottom: 10px;">
-                        <button mat-button type="button" class="btn btn-sm" (click)="ActualizarEstado(true)">Autorizar
+                        <button mat-raised-button id="btn-raised" type="submit" (click)="ActualizarEstado(true)">Autorizar
                         </button>
                     </div>
                 </div>
                 <div class="col-md" *ngIf="boton_negar">
                     <div class="d-flex justify-content-around" style="padding-bottom: 10px;">
-                        <button mat-button type="button" class="btn btn-sm" (click)="ActualizarEstado(false)">Negar
+                        <button mat-raised-button id="btn-raised" type="submit" (click)="ActualizarEstado(false)">Negar
                         </button>
                     </div>
                 </div>
-                <div class="col-md">
+                <!--div class="col-md">
                     <div class="d-flex justify-content-around" style="padding-bottom: 10px;">
-                        <button mat-button type="submit" class="btn btn-sm" (click)="Cerrar()">Cancelar
+                        <button mat-raised-button id="btn-raised" type="submit" (click)="Cerrar()">Cancelar
                         </button>
                     </div>
-                </div>
+                </div-->
             </div>
         </div>
 

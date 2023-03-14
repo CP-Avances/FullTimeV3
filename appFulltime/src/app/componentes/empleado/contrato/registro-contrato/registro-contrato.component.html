@@ -1,10 +1,12 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR CONTRATO {{empleados.nombre_}}
-        </span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR CONTRATO {{empleados.nombre_}}
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()" matSuffix matTooltipPosition="right" matTooltip="Salir">
+        highlight_off</mat-icon>
+</div>
+<div>
     <!-- FORMULARIO COMPLETO -->
     <mat-card-content>
         <div class="container" style="text-align: center">
@@ -79,12 +81,12 @@
                                     <mat-radio-button matSuffix matTooltipPosition="right"
                                         matTooltip="No permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
                                         value="true">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button matSuffix matTooltipPosition="right"
                                         matTooltip="Sí permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
                                         value="false">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -118,10 +120,10 @@
                                 </label>
                                 <div class="d-flex justify-content-around">
                                     <mat-radio-button value="true">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button value="false">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -154,11 +156,11 @@
             </form>
         </div>
     </mat-card-content>
-    <div style="text-align: center">
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
         <mat-card-actions style="text-align: center">
-            <input type="submit" class="btn btn-sm" [disabled]="!formulario.valid"
-                (click)="ValidarDatosContrato(formulario.value)" value="Guardar">
-            <input type="submit" (click)="CerrarVentana()" class="btn btn-sm" value=" Salir">
+            <button mat-raised-button id="btn-raised" type="submit" [disabled]="!formulario.valid"
+                (click)="ValidarDatosContrato(formulario.value)" value="Guardar">Guardar</button>
+            <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value=" Salir">Salir</button-->
         </mat-card-actions>
     </div>
 </div>

@@ -18,6 +18,9 @@ mat-form-field {
     text-transform: uppercase;
     font-size: x-small;
     height: 50px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    word-wrap: break-word;
 }
 
 #botonTimbreFin {
@@ -29,6 +32,9 @@ mat-form-field {
     text-transform: uppercase;
     font-size: x-small;
     height: 50px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    word-wrap: break-word;
 }
 
 #botonTimbreAbierto {
@@ -55,12 +61,6 @@ mat-form-field {
 .scrollbar-primary::-webkit-scrollbar {
     width: 12px;
     background-color: #F5F5F5;
-}
-
-#cerrar {
-    color: rgb(253, 250, 253);
-    cursor: pointer;
-    margin-right: 10px;
 }
 
 #reloj {

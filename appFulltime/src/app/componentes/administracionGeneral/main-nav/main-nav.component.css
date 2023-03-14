@@ -47,7 +47,7 @@ mat-tree {
 
 a.mat-menu-item {
   width: 210%;
-  height: 100%;
+  height: 90%;
 }
 
 #iconos-navegador {
@@ -108,7 +108,7 @@ a.mat-menu-item {
 }
 
 #icono-despliega {
-  margin: 8px 5px 0px 10px;
+  margin: 8px 2px 0px 5px;
   color: rgb(5, 162, 253);
 }
 
@@ -141,7 +141,7 @@ a.mat-menu-item {
   color: rgb(40, 40, 40);
   font-style: normal;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 0.1px;
   word-wrap: break-word;
 }
 
@@ -151,7 +151,7 @@ a.mat-menu-item {
   color: rgb(3, 85, 51);
   font-style: normal;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 0.1px;
   word-wrap: break-word;
 }
 

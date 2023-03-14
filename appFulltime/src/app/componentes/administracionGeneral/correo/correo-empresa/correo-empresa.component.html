@@ -11,7 +11,7 @@
                 Guardar.</span>
         </div>
         <div class="row">
-            <div class="col">
+            <div class="col-m">
                 <mat-form-field>
                     <mat-label>Correo notificaciones</mat-label>
                     <input matInput placeholder="casapazmino@gmail.com" [formControl]="emailF">
@@ -20,7 +20,8 @@
                         create</mat-icon>
                     <mat-error *ngIf="emailF.invalid">Ingresar una dirección de correo válida.</mat-error>
                 </mat-form-field>
-                <mat-form-field>
+
+                <mat-form-field class="servidor">
                     <mat-label>Servidor de correo</mat-label>
                     <input matInput placeholder="smpt.gmail.com" [formControl]="servidorF">
                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -28,7 +29,7 @@
                         create
                     </mat-icon>
                 </mat-form-field>
-                <mat-form-field>
+                <mat-form-field class="puerto">
                     <mat-label>Puerto de salida</mat-label>
                     <input matInput placeholder="465" [formControl]="puertoF" (keypress)="IngresarSoloNumeros($event)">
                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -37,23 +38,23 @@
                     </mat-icon>
                 </mat-form-field>
 
-                <mat-form-field>
+                <mat-form-field class="contrasena">
                     <mat-label>Contraseña</mat-label>
                     <input matInput [type]="hide ? 'password' : 'text'" [formControl]="passwordF"
                         (keydown)="ValidacionContrasenia($event)">
                     <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
                         [attr.aria-pressed]="hide">
-                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        <mat-icon id="i-cursor">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error *ngIf="passwordF.invalid">Escriba una contraseña.</mat-error>
                 </mat-form-field>
-                <mat-form-field>
+                <mat-form-field class="contrasena">
                     <mat-label>Confirmar contraseña</mat-label>
                     <input matInput [type]="hide1 ? 'password' : 'text'" [formControl]="password_confirmF"
                         (keydown)="ValidacionConfirmarContrasenia($event)">
                     <button mat-icon-button matSuffix (click)="hide1 = !hide1" [attr.aria-label]="'Hide password'"
                         [attr.aria-pressed]="hide1">
-                        <mat-icon>{{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        <mat-icon id="i-cursor">{{hide1 ? 'visibility_off' : 'visibility'}}</mat-icon>
                     </button>
                     <mat-error *ngIf="password_confirmF.invalid">{{ObtenerErrorPasswordConfirm()}}</mat-error>
                 </mat-form-field>
@@ -61,7 +62,7 @@
         </div>
     </div>
 </form>
-<div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 15px; margin-bottom: 3%;">
     <button mat-raised-button id="btn-raised" type="submit" [disabled]="btnDisableGuardar" value="Guardar"
     (click)="GuardarConfiguracion(formulario.value)">Guardar</button>
     <!--button mat-raised-button id="btn-raised" type="submit" (click)="ventana.close({actualizar: false})" value="Salir">Salir</button-->

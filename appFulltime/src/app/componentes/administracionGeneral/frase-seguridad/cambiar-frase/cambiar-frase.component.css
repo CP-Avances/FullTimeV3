@@ -6,6 +6,17 @@ mat-form-field {
     width: 230px;
 }
 
+mat-hint{
+    width: max-content;
+    font-size: 11px;
+    margin: 0%;
+    padding: 0%;
+}
+
+textarea{
+    font-size: 13px;
+}
+
 .verde {
     margin-left: 5px;
     font-size: 13px;

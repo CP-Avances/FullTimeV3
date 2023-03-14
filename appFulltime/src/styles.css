@@ -21,27 +21,27 @@ body {
 
 .i-pdf {
     color: red;
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-print {
     color: rgb(0, 0, 0);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-download {
     color: rgb(0, 102, 255);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-excel {
     color: rgb(19, 172, 19);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .i-help {
     color: rgb(100, 100, 100);
-    font-size: 30px;
+    font-size: 25px;
 }
 
 /* ESTILOS DE ÍCONOS DE DESCARGA DE REPORTES DE PANTALLAS PRINCIPALES */
@@ -95,24 +95,41 @@ body {
 #t-ver {
     color: indianred;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
+}
+
+#ver {
+    color: rgb(78, 20, 238);
+    cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #t-editar {
     color: green;
-    margin-left: 20px;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #t-eliminar {
     color: red;
-    margin-left: 20px;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 #t-detalles {
     color: rgb(38, 0, 255);
-    margin-left: 20px;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 15px;
+    text-align: center;
 }
 
 /* ESTILOS DE INPUTS DE BUSQUEDA EN TABLAS */
@@ -149,7 +166,7 @@ body {
     color: white;
     font-style: normal;
     font-weight: 900;
-    letter-spacing: 0px;
+    letter-spacing: 0.2px;
     word-wrap: break-word;
 }
 
@@ -180,7 +197,7 @@ body {
 }*/
 
 .nota {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
     text-align: justify;
     padding: 13px 5px 10px 5px;
@@ -190,6 +207,7 @@ body {
 /* ESTILO CURSO EN ICONOS */
 #i-cursor {
     cursor: pointer;
+    
 }
 
 /* ESTILO PARA ICONO DE MOVILIDAD */
@@ -207,6 +225,14 @@ body {
     text-align: justify;
     padding-bottom: 10px;
     color: rgb(15, 0, 228);
+}
+
+#textoradiobtn {
+    font-size: 14px;
+    margin: 12px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.1px;
 }
 
 /* ESTILO LINEA DE DIVISION */

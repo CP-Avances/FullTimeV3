@@ -32,3 +32,11 @@ mat-progress-spinner {
 #mover {
     cursor: grab;
 }
+
+label {
+    font-size: 14px;
+    margin: 13px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.1px;
+}

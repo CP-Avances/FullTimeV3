@@ -50,12 +50,15 @@
                                 matTooltip="Modificar los datos generales de este registro">
                                 <p>Editar</p>
                             </i>
-                            <a *ngIf="auto_individual" class="fas fa-file-alt" id="individual" matSuffix
+                            <i *ngIf="auto_individual" class="fas fa-file-alt" id="individual" matSuffix
                                 matTooltipPosition="right"
                                 matTooltip="Cambiar el estado de la solicitud de servicio de alimentación."
                                 (click)="AbrirAutorizaciones(e, 'individual')">
                                 <p>Autorizar</p>
-                            </a>
+                            </i>
+                            <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                <br><br>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -140,12 +143,15 @@
                                 matTooltip="Modificar los datos generales de este registro">
                                 <p>Editar</p>
                             </i>
-                            <a *ngIf="auto_individual_estado" class="fas fa-file-alt"
+                            <i *ngIf="auto_individual_estado" class="fas fa-file-alt"
                                 style="color:rgb(197, 95, 11); margin-left: 15px;" matSuffix matTooltipPosition="right"
                                 matTooltip="Cambiar el estado de la solicitud de servicio de alimentación."
                                 (click)="AbrirAutorizaciones(e, 'individual')">
                                 <p>Actualizar</p>
-                            </a>
+                            </i>
+                            <div *ngIf="!auto_individual_estado" style="padding-bottom: 1%;">
+                                <br><br>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

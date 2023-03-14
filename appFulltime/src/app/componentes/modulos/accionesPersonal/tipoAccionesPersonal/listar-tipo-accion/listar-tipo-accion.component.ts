@@ -142,7 +142,7 @@ export class ListarTipoAccionComponent implements OnInit {
 
   AbrirVentanaEditarTipoAccion(datos: any): void {
     const DIALOG_REF = this.vistaTipoPermiso.open(EditarTipoAccionComponent,
-      { width: '900px', data: datos }).afterClosed().subscribe(item => {
+      { width: '650px', data: datos }).afterClosed().subscribe(item => {
         this.ObtenerTipoAccionesPersonal();
       });
   }

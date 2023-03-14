@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         APROBACIÓN DE HORA EXTRA</span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close()">highlight_off</mat-icon>
 </div>
 <div class="container" style="text-align: center;">
     <div class="nota">
@@ -21,8 +22,8 @@
         </mat-form-field>
     </form>
 </div>
-<div style="text-align: center;">
-    <input type="submit" class="btn btn-sm" (click)="ActualizarEstadoAutorizacion(estadoAutorizacionesForm.value)"
-        [disabled]="!estadoAutorizacionesForm.valid" value="Guardar">
-    <input type="submit" (click)="ventana.close()" class="btn btn-sm" value="Salir" style="margin-left: 15px;">
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="ActualizarEstadoAutorizacion(estadoAutorizacionesForm.value)"
+        [disabled]="!estadoAutorizacionesForm.valid">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="ventana.close()">Salir</button-->
 </div>

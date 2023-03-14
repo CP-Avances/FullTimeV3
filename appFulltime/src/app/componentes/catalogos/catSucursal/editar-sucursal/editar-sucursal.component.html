@@ -16,7 +16,7 @@
             <div class="col-md">
                 <div class="d-flex flex-wrap justify-content-between">
                     <mat-form-field>
-                        <mat-label id="cont">Seleccionar Continente</mat-label>
+                        <mat-label>Seleccionar Continente</mat-label>
                         <mat-icon id="i-cursor" matSuffix matTooltipPosition="right" matTooltip="Lista de continentes.">
                             help_outline</mat-icon>
                         <mat-select [formControl]="nombreContinenteF" required>
@@ -27,6 +27,7 @@
                         </mat-select>
                     </mat-form-field>
                     <mat-form-field>
+                        <mat-label>Pais</mat-label>
                         <input type="text" placeholder="Seleccionar país" aria-label="Number" matInput
                             [formControl]="nombrePaisF" [matAutocomplete]="auto" required [readonly]="ver_pais">
                         <mat-autocomplete #auto="matAutocomplete">
@@ -41,6 +42,7 @@
                         </mat-icon>
                     </mat-form-field>
                     <mat-form-field>
+                        <mat-label>Provincia</mat-label>
                         <input type="text" placeholder="Seleccionar provincia" aria-label="Number" matInput
                             [formControl]="idProvinciaF" [matAutocomplete]="auto1" required [readonly]="ver_provincia">
                         <mat-autocomplete #auto1="matAutocomplete">
@@ -59,6 +61,7 @@
             <div class="col-md">
                 <div class="d-flex flex-wrap justify-content-between">
                     <mat-form-field>
+                        <mat-label>Ciudad</mat-label>
                         <input type="text" placeholder="Seleccionar ciudad" aria-label="Number" matInput
                             [formControl]="idCiudad" [matAutocomplete]="auto2" required [readonly]="ver_ciudad">
                         <mat-autocomplete #auto2="matAutocomplete">

@@ -9,7 +9,8 @@
             <form [formGroup]="">
                 <mat-radio-group class="d-flex flex-wrap justify-content-center" [formControl]="seleccion">
                     <mat-radio-button class="example-radio-button" *ngFor="let c of check" [value]="c.opcion"
-                        (change)="BuscarPorTipo($event)">{{c.valor}}</mat-radio-button>
+                        (change)="BuscarPorTipo($event)">
+                        <label id="textoradiobtn">{{c.valor}}</label></mat-radio-button>
                 </mat-radio-group>
             </form>
             <!-- FORM PARA SUCURSALES -->
@@ -131,6 +132,9 @@
                                         matTooltip="Registrar planificación servicio de alimentación." id='menu'>
                                         <p>Planificar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -186,6 +190,9 @@
                                         matTooltip="Registrar planificación servicio de alimentación." id='menu'>
                                         <p>Planificar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -245,6 +252,9 @@
                                         matTooltip="Registrar planificación servicio de alimentación." id='menu'>
                                         <p>Planificar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

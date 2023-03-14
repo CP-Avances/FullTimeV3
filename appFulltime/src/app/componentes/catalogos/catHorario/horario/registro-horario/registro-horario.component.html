@@ -82,15 +82,16 @@
                                     matTooltip="Cargar archivo como respaldo de registro de horario. (Opcional)">
                                     Documento</label>
                             </form>
-                        </div>
-                        <div class="separar">
-                            <input type="text" id="respaldo" placeholder="Ningún archivo seleccionado"
-                                class="form-control" style="width: 200px;" [formControl]="documentoF">
+                            <br>
+                            <div class="separar" style="margin-top: -4px;">
+                                <input type="text" id="respaldo" placeholder="Ningún archivo seleccionado"
+                                    class="form-control" style="width: 200px;" [formControl]="documentoF">
 
-                            <i *ngIf="HabilitarBtn" class="far fa-trash-alt" style="color:red; margin-left: 5px;"
-                                id="i-cursor" (click)="RetirarArchivo()" matSuffix matTooltipPosition="right"
-                                matTooltip="Eliminar archivo seleccionado.">
-                            </i>
+                                <i *ngIf="HabilitarBtn" class="far fa-trash-alt" style="color:red; margin-left: 5px;"
+                                    id="i-cursor" (click)="RetirarArchivo()" matSuffix matTooltipPosition="right"
+                                    matTooltip="Eliminar archivo seleccionado.">
+                                </i>
+                            </div>
                         </div>
                     </div>
                 </div>

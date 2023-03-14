@@ -3,6 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRAR MENSAJE DE CUMPLEAÑOS
     </span>
+    <mat-icon class="float-right" id="cerrar" (click)="cerrarVentana()">highlight_off</mat-icon>
 </div>
 <form [formGroup]="formulario">
     <div class="container">
@@ -40,23 +41,26 @@
                 <mat-hint align="start"><strong>Solo puede ingresar hasta 255 caracteres</strong></mat-hint>
                 <mat-hint align="end">{{message.value.length}} / 255</mat-hint>
             </mat-form-field>
-            <div class="d-flex flex-wrap justify-content-between" style="padding: 15px 0px 5px 0px;">
-                <div class="align-self-center" style="margin: 5px 5px 5px 5px;">
-                    <form method="post" enctype="multipart/form-data">
-                        <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
-                        <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()">Subir imagen *</label>
-                    </form>
-                </div>
-                <div class="align-self-center" style="margin: 5px 5px 5px 5px; width: 200px;">
-                    <input type="text" id="imagen" placeholder="Ningún archivo seleccionado." class="form-control"
-                        [formControl]="imagenF" required>
+            <div style="width: 100%; padding: 20px 0px 15px 0px;">
+                <div class="d-flex flex-wrap justify-content-center" style="width: min-content; margin: auto;">
+                    <div class="separar">
+                        <form method="post" enctype="multipart/form-data">
+                            <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
+                            <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()">Subir imagen *</label>
+                        </form>
+                    </div>
+                    <br>
+                    <div class="separar" style="width: 200px;">
+                        <input type="text" id="imagen" placeholder="Ningún archivo seleccionado." class="form-control"
+                            [formControl]="imagenF" required>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </form>
-<div class="d-flex flex-wrap justify-content-center">
-    <button class="btn btn-sm" type="submit" [disabled]="!formulario.valid"
-        (click)="InsertarMensajeBirthday(formulario.value)">Guardar</button>
-    <button mat-button class="btn btn-sm" type="submit" (click)="cerrarVentana()">Salir</button>
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarMensajeBirthday(formulario.value)"
+        [disabled]="!formulario.valid">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
 </div>

@@ -108,3 +108,7 @@ mat-progress-spinner {
     background: transparent;
     z-index: 100;
 }
+
+mat-label{
+    font-size: 13px;
+}

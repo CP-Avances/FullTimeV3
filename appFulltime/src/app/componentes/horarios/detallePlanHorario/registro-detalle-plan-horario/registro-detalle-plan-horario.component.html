@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         REGISTRAR DETALLE HORARIO</span>
+    <mat-icon class="float-right" id="cerrar" (click)="Salir()">highlight_off</mat-icon>
 </div>
 <!-- Formulario Completo -->
 <form [formGroup]="DetallePlanHorarioForm">
@@ -52,10 +53,8 @@
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center">
-    <mat-card-actions style="text-align: center">
-        <input type="submit" class="btn btn-sm" [disabled]="!DetallePlanHorarioForm.valid"
-            (click)="ValidarRegistro(DetallePlanHorarioForm.value)" value="Guardar">
-        <input type="submit" (click)="Salir()" class="btn btn-sm" value=" Salir">
-    </mat-card-actions>
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" [disabled]="!DetallePlanHorarioForm.valid"
+        (click)="ValidarRegistro(DetallePlanHorarioForm.value)" value="Guardar">Guardar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="Salir()" value=" Salir">Salir</button-->
 </div>

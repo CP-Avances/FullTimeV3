@@ -1814,6 +1814,7 @@ export class EditarPermisoEmpleadoComponent implements OnInit {
     this.componente.formulario_editar_permiso = false;
     this.componente.solicitudes_permiso = true;
     this.componente.ObtenerPermisos(this.componente.formato_fecha, this.componente.formato_hora);
+    close();
   }
 
   // METODO PARA FORMATEAR HORAS

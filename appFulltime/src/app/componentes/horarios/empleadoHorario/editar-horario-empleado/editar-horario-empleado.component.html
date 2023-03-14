@@ -3,6 +3,7 @@
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         MODIFICAR HORARIO
     </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
 </div>
 <!-- FORMULARIO COMPLETO -->
 <form [formGroup]="formulario">
@@ -70,33 +71,33 @@
                             <div class="col-sm" style="text-align: left;">
                                 <br>
                                 <mat-checkbox [formControl]="lunesF" [(ngModel)]="lunes">
-                                    Lunes
+                                    <label id="textoradiobtn">Lunes</label>
                                 </mat-checkbox>
                                 <br>
                                 <mat-checkbox [formControl]="martesF" [(ngModel)]="martes">
-                                    Martes
+                                    <label id="textoradiobtn">Martes</label>
                                 </mat-checkbox>
                                 <br>
                                 <mat-checkbox [formControl]="miercolesF" [(ngModel)]="miercoles">
-                                    Miércoles
+                                    <label id="textoradiobtn">Miércoles</label>
                                 </mat-checkbox>
                                 <br>
                                 <mat-checkbox [formControl]="juevesF" [(ngModel)]="jueves">
-                                    Jueves
+                                    <label id="textoradiobtn">Jueves</label>
                                 </mat-checkbox>
                             </div>
                             <div class="col-sm" style="text-align: left;">
                                 <br>
                                 <mat-checkbox [formControl]="viernesF" [(ngModel)]="viernes">
-                                    Viernes
+                                    <label id="textoradiobtn">Viernes</label>
                                 </mat-checkbox>
                                 <br>
                                 <mat-checkbox [formControl]="sabadoF" [(ngModel)]="sabado">
-                                    Sábado
+                                    <label id="textoradiobtn">Sábado</label>
                                 </mat-checkbox>
                                 <br>
                                 <mat-checkbox [formControl]="domingoF" [(ngModel)]="domingo">
-                                    Domingo
+                                    <label id="textoradiobtn">Domingo</label>
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -106,8 +107,8 @@
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center;">
-    <button type="submit" class="btn btn-sm" (click)="InsertarEmpleadoHorario(formulario.value)"
+<div class="d-flex flex-wrap justify-content-center" style="padding-top: 2%; margin-bottom: 2%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarEmpleadoHorario(formulario.value)"
         [disabled]="!formulario.valid">Guardar</button>
-    <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
 </div>
