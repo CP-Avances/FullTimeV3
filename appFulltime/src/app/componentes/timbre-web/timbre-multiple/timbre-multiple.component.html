@@ -9,7 +9,9 @@
             <form [formGroup]="">
                 <mat-radio-group class="d-flex flex-wrap justify-content-center" [formControl]="seleccion">
                     <mat-radio-button class="example-radio-button" *ngFor="let c of check" [value]="c.opcion"
-                        (change)="BuscarPorTipo($event)">{{c.valor}}</mat-radio-button>
+                        (change)="BuscarPorTipo($event)">
+                        <label id="textoradiobtn">{{c.valor}}</label>
+                    </mat-radio-button>
                 </mat-radio-group>
             </form>
             <!-- FORM PARA SUCURSALES -->
@@ -140,11 +142,14 @@
                                 <td>{{s.nombre}}</td>
                                 <td class="d-flex justify-content-center">
                                     <i (click)="GuardarRegistros(s.id)" id="accion" *ngIf="auto_individual"
-                                        class="far fa-clock" matSuffix matTooltipPosition="right"
+                                        class="fas fa-clock" matSuffix matTooltipPosition="right"
                                         matTooltip="Abrir formulario de registro de timbres."
                                         [ngStyle]="habilitado">
                                         <p>Timbrar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -200,11 +205,14 @@
                                 <td>{{d.nombre}}</td>
                                 <td class="d-flex justify-content-center">
                                     <i (click)="GuardarRegistros(d.id)" id="accion" *ngIf="auto_individual"
-                                        class="far fa-clock" matSuffix matTooltipPosition="right"
+                                        class="fas fa-clock" matSuffix matTooltipPosition="right"
                                         matTooltip="Abrir formulario de registro de timbres."
                                         [ngStyle]="habilitado">
                                         <p>Timbrar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -264,11 +272,14 @@
                                 <td>{{e.codigo}}</td>
                                 <td class="d-flex justify-content-center">
                                     <i (click)="ConfirmarTimbre(e)" id="accion" *ngIf="auto_individual"
-                                        class="far fa-clock" matSuffix matTooltipPosition="right"
+                                        class="fas fa-clock" matSuffix matTooltipPosition="right"
                                         matTooltip="Abrir formulario de registro de timbres."
                                         [ngStyle]="habilitado">
                                         <p>Timbrar</p>
                                     </i>
+                                    <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                        <br><br>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

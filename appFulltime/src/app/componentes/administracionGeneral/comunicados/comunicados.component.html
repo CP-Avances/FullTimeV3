@@ -53,7 +53,9 @@
             <form [formGroup]="">
                 <mat-radio-group class="d-flex flex-wrap justify-content-center" [formControl]="seleccion">
                     <mat-radio-button class="example-radio-button" *ngFor="let c of check" [value]="c.opcion"
-                        (change)="BuscarPorTipo($event)">{{c.valor}}</mat-radio-button>
+                        (change)="BuscarPorTipo($event)">
+                        <label id="textoradiobtn">{{c.valor}}</label>
+                    </mat-radio-button>
                 </mat-radio-group>
             </form>
             <!-- Form para SUCURSALES -->

@@ -24,14 +24,14 @@
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field id="t-inputs">
+                            <mat-form-field  class="input-tables cedula">
                                 <input matInput placeholder="Buscar" [(ngModel)]="filtroCedula" maxlength="10"
                                     oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     [formControl]="cedula" type="text" (keypress)="IngresarSoloNumeros($event)">
                             </mat-form-field>
                         </td>
                         <td>
-                            <mat-form-field class="input-tables cedula">
+                            <mat-form-field id="t-inputs">
                                 <input matInput placeholder="Buscar" [(ngModel)]="filtroEmpleado" [formControl]="nombre"
                                     type="text" (keypress)="IngresarSoloLetras($event)">
                             </mat-form-field>
@@ -77,7 +77,7 @@
         <div id="titulo">LISTA DE TIMBRES DE {{selec_nombre.toUpperCase()}}
             <mat-icon style="float: right; margin-right: 10px;" (click)="CerrarTabla()" matSuffix
                 matTooltipPosition="right" matTooltip="Cerrar lista de datos seleccionada." id="cerrar">
-                close</mat-icon>
+                highlight_off</mat-icon>
         </div>
         <div class="table-responsive">
             <table class="table table-hover table-sm">
@@ -97,7 +97,7 @@
                     <tr>
                         <td></td>
                         <td>
-                            <mat-form-field id="t-inputs">
+                            <mat-form-field class="input-tables fecha">
                                 <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
                             </mat-form-field>
                         </td>

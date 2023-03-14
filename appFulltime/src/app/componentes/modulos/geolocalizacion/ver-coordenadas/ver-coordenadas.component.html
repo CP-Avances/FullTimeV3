@@ -29,8 +29,8 @@
                     </i>
                 </div>
                 <div style="text-align: right;">
-                    <input type="submit" class="btn btn-sm" (click)="AbrirVentanaBusqueda()" value="Asignar a usuario">
-                    <input type="submit" class="btn btn-sm" [routerLink]="['/coordenadas/']" value="Atras">
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="AbrirVentanaBusqueda()" value="Asignar a usuario">Asignar a usuario</button>
+                    <button mat-raised-button id="btn-raised" type="submit" class="float-right" [routerLink]="['/coordenadas/']" value="Atras">Atras</button>
                 </div>
             </div>
             <hr>
@@ -84,6 +84,9 @@
                                             (click)="ConfirmarDelete(dp)" id="t-eliminar">
                                             <p>Eliminar</p>
                                         </i>
+                                        <div *ngIf="!auto_individual" style="padding-bottom: 1%;">
+                                            <br><br>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -110,7 +113,8 @@
             <form [formGroup]="">
                 <mat-radio-group class="d-flex flex-wrap justify-content-center" [formControl]="seleccion">
                     <mat-radio-button class="example-radio-button" *ngFor="let c of check" [value]="c.opcion"
-                        (change)="BuscarPorTipo($event)">{{c.valor}}</mat-radio-button>
+                        (change)="BuscarPorTipo($event)">
+                        <label id="textoradiobtn">{{c.valor}}</label></mat-radio-button>
                 </mat-radio-group>
             </form>
             <!-- Form para SUCURSALES -->
@@ -182,9 +186,8 @@
                 </div>
             </form>
             <div class="d-flex justify-content-around">
-                <input type="submit" class="btn btn-sm" (click)="GuardarRegistros()" value="Guardar registro">
-                <button mat-button type="submit" class="btn btn-sm" id="boton"
-                    (click)="limpiarCampos()">Cancelar</button>
+                <button mat-raised-button id="btn-raised" type="submit" (click)="GuardarRegistros()" value="Guardar registro">Guardar registro</button>
+                <button mat-raised-button id="btn-raised" type="submit" (click)="limpiarCampos()">Cancelar</button>
             </div>
 
 

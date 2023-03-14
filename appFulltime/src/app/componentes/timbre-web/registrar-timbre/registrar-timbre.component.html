@@ -1,14 +1,14 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        REGISTRAR TIMBRE
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close({close: true})" matSuffix
+        matTooltipPosition="right" matTooltip="Cerrar ventana.">
+        highlight_off
+    </mat-icon>
+</div>
 <div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            REGISTRAR TIMBRE
-        </span>
-        <mat-icon class="float-right" id="cerrar" (click)="ventana.close({close: true})" matSuffix
-            matTooltipPosition="right" matTooltip="Cerrar ventana.">
-            highlight_off
-        </mat-icon>
-    </div>
     <div class="container d-flex flex-wrap justify-content-center" style="padding-top: 8px;">
         <span>{{f | date: 'fullDate' : undefined : 'es-EC'}}</span>
     </div>
@@ -41,26 +41,26 @@
             <div class="row" *ngIf='botones_normal' style="padding-top: 20px;">
                 <div class="col-sm">
                     <div class="d-flex flex-wrap justify-content-center">
-                        <button mat-button id="botonTimbreInicio" (click)="AlmacenarDatos(1, formulario.value)">
+                        <button mat-raised-button id="botonTimbreInicio" (click)="AlmacenarDatos(1, formulario.value)">
                             Inicio Jornada Laboral
                         </button>
-                        <button mat-button id="botonTimbreInicio" (click)="AlmacenarDatos(3, formulario.value)">
+                        <button mat-raised-button id="botonTimbreInicio" (click)="AlmacenarDatos(3, formulario.value)">
                             Inicio Alimentación
                         </button>
-                        <button mat-button id="botonTimbreInicio" (click)="AlmacenarDatos(5, formulario.value)">
+                        <button mat-raised-button id="botonTimbreInicio" (click)="AlmacenarDatos(5, formulario.value)">
                             Inicio Permiso
                         </button>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="d-flex flex-wrap justify-content-center">
-                        <button mat-button id="botonTimbreFin" (click)="AlmacenarDatos(2, formulario.value)">
+                        <button mat-raised-button id="botonTimbreFin" (click)="AlmacenarDatos(2, formulario.value)">
                             Fin Jornada Laboral
                         </button>
-                        <button mat-button id="botonTimbreFin" (click)="AlmacenarDatos(4, formulario.value)">
+                        <button mat-raised-button id="botonTimbreFin" (click)="AlmacenarDatos(4, formulario.value)">
                             Fin Alimentación
                         </button>
-                        <button mat-button id="botonTimbreFin" (click)="AlmacenarDatos(6, formulario.value)">
+                        <button mat-raised-button id="botonTimbreFin" (click)="AlmacenarDatos(6, formulario.value)">
                             Fin Permiso
                         </button>
                     </div>

@@ -32,7 +32,6 @@ table {
 
 #plan {
     color: rgb(52, 65, 84);
-    font-size: 20px;
     text-align: center;
     cursor: pointer;
 }
@@ -52,7 +51,6 @@ p {
 
 #plan_dh {
     color: rgb(3, 50, 120);
-    font-size: 20px;
     text-align: center;
     cursor: pointer;
 }

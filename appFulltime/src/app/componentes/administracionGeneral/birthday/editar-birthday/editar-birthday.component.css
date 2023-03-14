@@ -74,3 +74,7 @@ textarea {
 [type="file"]+label.btn-2:hover::before {
     right: 80%
 }
+
+.separar {
+    margin: auto;
+}

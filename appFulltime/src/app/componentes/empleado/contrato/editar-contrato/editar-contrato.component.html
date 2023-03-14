@@ -82,12 +82,12 @@
                                 <mat-radio-button matSuffix matTooltipPosition="right"
                                     matTooltip="No permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
                                     [value]="true">
-                                    Si
+                                    <label id="textoradiobtn">Si</label>
                                 </mat-radio-button>
                                 <mat-radio-button matSuffix matTooltipPosition="right"
                                     matTooltip="Sí permitirá solicitar vacaciones o permisos si el usuario no tienen saldo de vacaciones."
                                     [value]="false">
-                                    No
+                                    <label id="textoradiobtn">No</label>
                                 </mat-radio-button>
                             </div>
                         </mat-radio-group>
@@ -118,8 +118,12 @@
                                 <mat-label>Controlar Asistencia *</mat-label>
                             </label>
                             <div class="d-flex justify-content-around">
-                                <mat-radio-button [value]="true">Si</mat-radio-button>
-                                <mat-radio-button [value]="false">No</mat-radio-button>
+                                <mat-radio-button [value]="true">
+                                    <label id="textoradiobtn">Si</label>
+                                </mat-radio-button>
+                                <mat-radio-button [value]="false">
+                                    <label id="textoradiobtn">No</label>
+                                </mat-radio-button>
                             </div>
                         </mat-radio-group>
                     </div>
@@ -132,17 +136,17 @@
                                     <div class="row">
                                         <div class="col-md">
                                             <mat-radio-button value=1 (click)="RetirarArchivo()">
-                                                Retirar archivo
+                                                <label id="textoradiobtn">Retirar archivo</label>
                                             </mat-radio-button>
                                         </div>
                                         <div class="col-md">
                                             <mat-radio-button value=2 (click)="ActivarArchivo()">
-                                                Actualizar archivo
+                                                <label id="textoradiobtn">Actualizar archivo</label>
                                             </mat-radio-button>
                                         </div>
                                         <div class="col-md" *ngIf="acciones">
                                             <mat-radio-button value=3 (click)="LimpiarAcciones()">
-                                                Cancelar
+                                                <label id="textoradiobtn">Cancelar</label>
                                             </mat-radio-button>
                                         </div>
                                     </div>

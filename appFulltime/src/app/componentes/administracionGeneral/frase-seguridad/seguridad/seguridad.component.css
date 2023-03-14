@@ -3,10 +3,15 @@ img {
 }
 
 mat-form-field {
-    width: 230px;
+    width: 300px;
+}
+
+mat-label{
+    font-size: 14px;
 }
 
 .verde {
+    margin-bottom: 3%;
     margin-left: 5px;
     font-size: 13px;
     color: rgb(23, 173, 9);

@@ -41,16 +41,19 @@
                     <mat-hint align="start"><strong>Solo puede ingresar hasta 255 caracteres</strong></mat-hint>
                     <mat-hint align="end">{{message.value.length}} / 255</mat-hint>
                 </mat-form-field>
-                <div class="d-flex flex-wrap justify-content-between" style="padding: 15px 0px 5px 0px;">
-                    <div class="align-self-center" style="margin: 5px 5px 5px 5px;">
-                        <form method="post" enctype="multipart/form-data">
-                            <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
-                            <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()">Subir imagen</label>
-                        </form>
-                    </div>
-                    <div class="align-self-center" style="margin: 5px 5px 5px 5px; width: 200px;">
-                        <input type="text" id="imagen" placeholder="Ningún archivo seleccionado." class="form-control"
-                            [formControl]="imagenF">
+                <div style="width: 100%; padding: 20px 0px 15px 0px;">
+                    <div class="d-flex flex-wrap justify-content-center" style="width: min-content; margin: auto;">
+                        <div class="separar">
+                            <form method="post" enctype="multipart/form-data">
+                                <input (change)="fileChange($event)" type="file" [formControl]="archivoForm" id="file">
+                                <label for="file" class="btn-2" (click)="LimpiarNombreArchivo()">Subir imagen</label>
+                            </form>
+                        </div>
+                        <br>
+                        <div class="separar" style="width: 200px;">
+                            <input type="text" id="imagen" placeholder="Ningún archivo seleccionado." class="form-control"
+                                [formControl]="imagenF">
+                        </div>
                     </div>
                 </div>
             </div>
