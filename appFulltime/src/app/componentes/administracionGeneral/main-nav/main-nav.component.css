@@ -140,7 +140,7 @@ a.mat-menu-item {
   margin: 10px 0px 0px 10px;
   color: rgb(40, 40, 40);
   font-style: normal;
-  font-weight: 900;
+  font-weight: 500;
   letter-spacing: 0.1px;
   word-wrap: break-word;
 }
@@ -150,7 +150,7 @@ a.mat-menu-item {
   margin: 10px 0px 0px 10px;
   color: rgb(3, 85, 51);
   font-style: normal;
-  font-weight: 900;
+  font-weight: 500;
   letter-spacing: 0.1px;
   word-wrap: break-word;
 }
