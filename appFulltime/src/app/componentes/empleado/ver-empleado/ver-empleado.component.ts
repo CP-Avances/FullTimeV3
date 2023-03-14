@@ -331,7 +331,7 @@ export class VerEmpleadoComponent implements OnInit {
       this.empleadoUno[0].fec_nacimiento_ = this.validar.FormatearFecha(this.empleadoUno[0].fec_nacimiento, formato_fecha, this.validar.dia_abreviado);
       var empleado = data[0].nombre + data[0].apellido;
       if (data[0].imagen != null) {
-        this.urlImagen = `${environment.url}/empleado/img/` + data[0].imagen;
+        this.urlImagen = `${environment.url}/imagenesEmpleados/img/` + data[0].imagen;
         this.mostrarImagen = true;
         this.textoBoton = 'Editar foto';
       } else {
