@@ -53,7 +53,7 @@
                                 </mat-form-field>
 
                                 <mat-form-field>
-                                    <mat-label>Nombre del dispositivo</mat-label>
+                                    <mat-label id="letras">Nombre del dispositivo</mat-label>
                                     <input matInput placeholder="Nombre del dispositivo" [formControl]="nombreF"
                                         required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -63,7 +63,7 @@
                                 </mat-form-field>
 
                                 <mat-form-field>
-                                    <mat-label>Código</mat-label>
+                                    <mat-label id="letras">Código</mat-label>
                                     <input matInput placeholder="Código del dispositivo" [formControl]="codigoF"
                                         required (keypress)="IngresarSoloNumeros($event)">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -76,7 +76,7 @@
                         <div class="col-md">
                             <div class="d-flex flex-wrap justify-content-start">
                                 <mat-form-field>
-                                    <mat-label>IP</mat-label>
+                                    <mat-label id="letras">IP</mat-label>
                                     <input matInput placeholder="Ingresar IP del reloj." [formControl]="ipF"
                                         (keypress)="IngresarIp($event)" required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -87,7 +87,7 @@
                                 </mat-form-field>
 
                                 <mat-form-field>
-                                    <mat-label>Puerto</mat-label>
+                                    <mat-label id="letras">Puerto</mat-label>
                                     <input matInput placeholder="Ingresar puerto" [formControl]="puertoF"
                                         (keypress)="IngresarSoloNumeros($event)" required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -103,10 +103,10 @@
                                     </label>
                                     <div class="d-flex justify-content-around">
                                         <mat-radio-button value="true" (click)="ActivarVista()">
-                                            Si
+                                            <label id="textoradiobtn">Si</label>
                                         </mat-radio-button>
                                         <mat-radio-button value="false" (click)="DesactivarVista()">
-                                            No
+                                            <label id="textoradiobtn">No</label> 
                                         </mat-radio-button>
                                     </div>
                                 </mat-radio-group>
@@ -124,8 +124,8 @@
                     </div>
                 </form>
                 <div style="text-align: center; padding-top: 25px;">
-                    <button (click)="CerrarVentana()" class="btn btn-sm float-left">Cancelar</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" class="float-left">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
 
@@ -216,11 +216,11 @@
                     </div>
                 </form>
                 <div style="text-align: center; padding-top: 25px;">
-                    <button matStepperPrevious class="btn btn-sm float-left">Atrás</button>
-                    <button (click)="InsertarReloj(primerFormulario.value, segundoFormulario.value)"
-                        [disabled]="!segundoFormulario.valid" class="btn btn-sm">Guardar
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" (click)="InsertarReloj(primerFormulario.value, segundoFormulario.value)"
+                        [disabled]="!segundoFormulario.valid">Guardar
                     </button>
-                    <button (click)="CerrarVentana()" class="btn btn-sm float-right">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" (click)="CerrarVentana()" class="float-right">Cancelar</button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>

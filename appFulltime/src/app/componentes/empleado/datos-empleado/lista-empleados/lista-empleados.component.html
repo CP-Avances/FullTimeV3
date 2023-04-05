@@ -29,30 +29,35 @@
                 </div>
             </mat-card>
         </div>
+
         <div class="col-md">
             <div id="titulo">
                 <span>REGISTRO MÚLTIPLE DE USUARIOS</span>
             </div>
-            <mat-card class="mat-elevation-z9 d-flex flex-wrap justify-content-around" id="carta1">
-                <div style="display: flex; padding: 3%; margin: auto;">
-                    <div>
-                        <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around">
-                            <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                            <label for="file" class="btn-2" matSuffix matTooltipPosition="right" style="height: 65px;"
-                                matTooltip="Dar click para selecionar plantilla y cargar registros.">
-                                Subir plantilla
-                            </label>
-                        </form>
+            <mat-card class="example-card mat-elevation-z9">
+                <div class="row">
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <form method="post" enctype="multipart/form-data" class="d-flex flex-wrap justify-content-around" style="margin: 2% 0% -1% 0%;">
+                                <input (change)="FileChange($event)" type="file" [formControl]="archivoForm" id="file"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                                <label for="file" class="btn-2" matSuffix matTooltipPosition="right" style="height: 65px;"
+                                    matTooltip="Dar click para selecionar plantilla y cargar registros.">
+                                    Subir plantilla
+                                </label>
+                            </form>
+                        </div>
                     </div>
-                    <div>
-                        <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right"
-                            matTooltip="Dar click para ver o descargar el documento." href="{{link}}">
-                            <span class="material-icons">cloud_download</span>
-                            <br>
-                            Descargar plantilla usuarios
-                        </a>
-                   </div>
+                    <div class="col-md">
+                        <div class="d-flex flex-wrap justify-content-around">
+                            <a id="descargar" class="btn btn-sm" matSuffix matTooltipPosition="right" style="margin: 2% 0% 3% 0%;"
+                                matTooltip="Dar click para ver o descargar el documento." href="{{link}}">
+                                <span class="material-icons">cloud_download</span>
+                                <br>
+                                Descargar plantilla usuarios
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </mat-card>
         </div>

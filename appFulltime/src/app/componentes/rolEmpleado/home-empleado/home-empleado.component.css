@@ -36,7 +36,7 @@
 .boton-cin { background: linear-gradient(to right, rgb(255, 67, 224), rgb(185, 45, 162));}
 
 #charts_atraso { width: 100%; height: 350px;}
-#charts_horas_extras { width: 100%; height: 350px;};
+#charts_horas_extras { width: 100%; height: 350px;}
 #charts_permisos { width: 100%; height: 350px;}
 #charts_vacaciones { width: 100%; height: 350px;}
 

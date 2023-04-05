@@ -2,6 +2,7 @@
     <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
     <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
         HABILITAR NOTIFICACIONES</span>
+    <mat-icon class="float-right" id="cerrar" (click)="this.ventana.close(false)">highlight_off</mat-icon>
 </div>
 <form class="example-form" [formGroup]="formGroup" ngNativeValidate>
     <br>
@@ -43,8 +44,8 @@
         </div>
     </div>
 </form>
-<div class="d-flex justify-content-around" style="padding-top: 10px;">
-    <button class="btn btn-primary" type="submit" mat-button [mat-dialog-close]="empleados" cdkFocusInitial
+<div class="d-flex justify-content-around" style="padding-top: 2%; margin-bottom: 3%;">
+    <button mat-raised-button id="btn-raised" type="submit" [mat-dialog-close]="empleados" cdkFocusInitial
         (click)="ActualizarConfiguracion(formGroup.value)">Guardar</button>
-    <button class="btn" type="submit" (click)="this.ventana.close(false)" mat-button mat-dialog-close>Cancelar</button>
+    <!--button mat-raised-button id="btn-raised" type="submit" (click)="this.ventana.close(false)" mat-button mat-dialog-close>Cancelar</button-->
 </div>

@@ -29,20 +29,20 @@
                     <mat-datepicker touchUi #pickerYearF></mat-datepicker>
                 </mat-form-field>
             </form>
-            <div class="d-flex flex-wrap justify-content-around" style="margin: 0px 10px 0px 10px;">
-                <button mat-button type="submit" class="btn btn-sm" id="botones" [disabled]="fechasConsultaForm.invalid"
+            <div class="d-flex flex-wrap justify-content-around" style="margin: 10px 10px 0px 10px;">
+                <button mat-raised-button id="btn-raised" type="submit" [disabled]="fechasConsultaForm.invalid"
                     (click)="ValidarRangofechas(fechasConsultaForm.value)">Aceptar</button>
-                <button mat-button type="submit" class="btn btn-sm" id="botones"
+                <button mat-raised-button id="btn-raised" type="submit"
                     (click)="limpiarCamposRango()">Cancelar</button>
             </div>
         </div>
     </mat-card>
     <mat-card class="example-card mat-elevation-z8">
         <div class="d-flex bd-highlight">
-            <div class="p-2 flex-grow-1 bd-highlight">
+            <div class="p-2 flex-grow-1 bd-highlight" style="padding: 1%;">
                 <h5><b>JORNADA VS HORAS EXTRAS</b></h5>
                 <p>
-                    <b>Desde: </b> {{f_inicio_req}}
+                    <b>Desde: </b> {{f_inicio_req}}&nbsp;
                     <b>Hasta: </b> {{f_final_req}}
                 </p>
             </div>

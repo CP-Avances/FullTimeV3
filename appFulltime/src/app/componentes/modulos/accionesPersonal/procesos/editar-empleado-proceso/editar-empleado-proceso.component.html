@@ -1,9 +1,10 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            MODIFICAR ASIGNACIÓN DE PROCESOS</span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR ASIGNACIÓN DE PROCESOS</span>
+    <mat-icon class="float-right" id="cerrar" (click)="Salir()">highlight_off</mat-icon>
+</div>
+<div>    
     <!-- Formulario Completo -->
     <form [formGroup]="EmpleProcesoForm">
         <mat-card-content>
@@ -59,9 +60,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="ValidarDatosProeso(EmpleProcesoForm.value)"
-            [disabled]="!EmpleProcesoForm.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="Salir()">Salir</button>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" [disabled]="!EmpleProcesoForm.valid"
+        (click)="ValidarDatosProeso(EmpleProcesoForm.value)" value="Guardar"> Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="Salir()" value="Salir">Salir</button-->
     </div>
 </div>

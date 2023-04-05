@@ -28,10 +28,13 @@ export const NotificacionSinTimbres = function () {
             console.log('Dia===', f.getDay());
             var num_dia = f.getDay();
 
-            let fecha: string = f.toJSON().split('T')[0];
-            var h = f.toJSON().split('T')[1];
-            let horarios = await LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
-            console.log(horarios);
+            if(f.toJSON()){
+                let fecha: string = f.toJSON().split('T')[0];
+                var h = f.toJSON().split('T')[1];
+                let horarios = await LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
+                console.log(horarios);
+            }
+            
         }  
     }
 

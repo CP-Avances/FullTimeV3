@@ -28,7 +28,7 @@
                                     <mat-label>Nombre de empresa</mat-label>
                                     <input matInput placeholder="Nombre empresa" [formControl]="nombreF" required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar nombre de la Empresa.">
+                                        matTooltip="Ingresar nombre de la empresa.">
                                         help_outline</mat-icon>
                                 </mat-form-field>
                                 <mat-form-field>
@@ -37,7 +37,7 @@
                                         oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                         (keypress)="IngresarSoloNumeros($event)" required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar RUC de la Empresa.">
+                                        matTooltip="Ingresar RUC de la empresa.">
                                         help_outline
                                     </mat-icon>
                                 </mat-form-field>
@@ -46,7 +46,7 @@
                                     <input matInput placeholder="Ingresar número" [formControl]="numeroF"
                                         (keypress)="IngresarSoloNumeros($event)">
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar número de partida presupuestaria de la Empresa.">
+                                        matTooltip="Ingresar número de partida presupuestaria de la empresa.">
                                         help_outline
                                     </mat-icon>
                                 </mat-form-field>
@@ -54,14 +54,14 @@
                         </div>
                         <div class="col-md">
                             <div class="d-flex flex-wrap justify-content-start">
-                                <mat-form-field>
+                                <mat-form-field id="campos">
                                     <mat-label>Teléfono</mat-label>
                                     <input matInput placeholder="Ingresar teléfono" [formControl]="telefonoF"
                                         maxlength="10" (keypress)="IngresarSoloNumeros($event)"
                                         oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                         required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar número de contacto de la Empresa">
+                                        matTooltip="Ingresar número de contacto de la empresa.">
                                         help_outline</mat-icon>
                                 </mat-form-field>
                                 <mat-form-field>
@@ -69,7 +69,7 @@
                                     <input matInput placeholder="Ingresar dirección" [formControl]="direccionF"
                                         required>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar dirección de ubicación de la Empresa">
+                                        matTooltip="Ingresar dirección de ubicación de la empresa.">
                                         help_outline
                                     </mat-icon>
                                 </mat-form-field>
@@ -80,7 +80,7 @@
                                         Ingresar una dirección de correo válida.
                                     </mat-error>
                                     <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
-                                        matTooltip="Ingresar correo electrónico de la Empresa">
+                                        matTooltip="Ingresar correo electrónico empresarial.">
                                         help_outline
                                     </mat-icon>
                                 </mat-form-field>

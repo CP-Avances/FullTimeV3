@@ -1,9 +1,10 @@
+<div id="titulo">
+    <span ngDefaultControl [(ngModel)]="num" [ngModelOptions]="{standalone: true}">
+        SOLICITUD DE PERMISO N° {{num}}
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
+</div>
 <mat-card class="example-card mat-elevation-z8">
-    <div id="titulo">
-        <span ngDefaultControl [(ngModel)]="num" [ngModelOptions]="{standalone: true}">
-            SOLICITUD DE PERMISO N° {{num}}
-        </span>
-    </div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="formulario">
         <mat-card-content>
@@ -199,9 +200,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="InsertarPermiso(formulario.value)"
+    <div style="text-align: center; margin-bottom: 3%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarPermiso(formulario.value)"
             [disabled]="!formulario.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
     </div>
 </mat-card>

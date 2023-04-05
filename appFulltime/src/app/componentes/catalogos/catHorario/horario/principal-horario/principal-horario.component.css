@@ -94,10 +94,10 @@ p {
 
 #descargar:hover {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     font-family: "Poppins", sans-serif;
     border-radius: 5px;
-    height: 58px;
+    height: 60px;
     background-color: rgb(0, 76, 255);
     padding-top: 10px;
     padding-bottom: 6px;
@@ -108,10 +108,10 @@ p {
 
 #descargar {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     font-family: "Poppins", sans-serif;
     border-radius: 5px;
-    height: 55px;
+    height: 60px;
     background-color: #93a3c7;
     overflow: hidden;
     padding-top: 10px;

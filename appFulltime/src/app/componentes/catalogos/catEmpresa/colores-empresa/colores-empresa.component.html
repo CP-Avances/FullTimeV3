@@ -40,38 +40,33 @@
         <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
     </div>
     <div class="container">
-        <div class="row">
-            <div class="col-4">
-                <form [formGroup]="fraseForm">
-                    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
-                        <mat-radio-group aria-label="Select an option" [formControl]="fraseReporte" required>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button (change)="CambiarFrase($event)" value="Confidencial">
-                                    Confidencial
-                                </mat-radio-button>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button (change)="CambiarFrase($event)" value="FullTime">
-                                    FullTime
-                                </mat-radio-button>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button (change)="CambiarFrase($event)" value="">
-                                    Ninguna
-                                </mat-radio-button>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button (click)="IngresarFrase()" value="Otro">
-                                    Otra
-                                </mat-radio-button>
-                            </div>
-                        </mat-radio-group>
+        <form [formGroup]="fraseForm">
+            <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; width: 100%;">
+                <mat-radio-group aria-label="Select an option" [formControl]="fraseReporte" required>
+                    <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 3px;">
+                        <mat-radio-button (change)="CambiarFrase($event)" value="Confidencial">
+                            <label>Confidencial</label>
+                        </mat-radio-button>
                     </div>
-                </form>
+                    <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 3px;">
+                        <mat-radio-button (change)="CambiarFrase($event)" value="FullTime">
+                            <label>FullTime</label>
+                        </mat-radio-button>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 3px;">
+                        <mat-radio-button (change)="CambiarFrase($event)" value="">
+                            <label>Ninguna</label>
+                        </mat-radio-button>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 3px;">
+                        <mat-radio-button (click)="IngresarFrase()" value="Otro">
+                            <label>Otra</label>
+                        </mat-radio-button>
+                    </div>
+                </mat-radio-group>
             </div>
-            <div class="col-4">
-            </div>
-        </div>
+         </form>
+
         <div class="d-flex flex-wrap justify-content-start">
             <mat-form-field *ngIf="ingresarOtro">
                 <mat-label>Frase</mat-label>
@@ -83,7 +78,7 @@
                 </mat-icon>
             </mat-form-field>
         </div>
-        <div class="d-flex flex-wrap justify-content-center" style="padding-top: 15px; margin-bottom: 2%;">
+        <div class="d-flex flex-wrap justify-content-center" style="padding-top: 15px; margin-bottom: 3%;">
             <button mat-raised-button id="btn-raised" type="submit" (click)="VerArchivo(fraseForm.value)">Visualizar</button>
             <button mat-raised-button id="btn-raised" type="submit" (click)="GuardarFrase(fraseForm.value)">Guardar</button>
         </div>

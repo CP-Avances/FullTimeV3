@@ -1,5 +1,5 @@
 #letras {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 #mensaje {
@@ -7,7 +7,7 @@
 }
 
 mat-form-field {
-    width: 250px;
+    width: 300px;
     padding: 10px 10px 0px 10px;
 }
 

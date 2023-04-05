@@ -1,5 +1,9 @@
 <div id="titulo">
-    <h5>MODIFICAR DATOS VACUNA</h5>
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        MODIFICAR DATOS VACUNA</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarRegistro()" matSuffix matTooltipPosition="right" matTooltip="Salir">
+        highlight_off</mat-icon>
 </div>
 <!-- FORMULARIO COMPLETO -->
 <form [formGroup]="formulario">
@@ -94,7 +98,7 @@
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center;">
+<div style="text-align: center; margin-bottom: 3%;">
     <button type="submit" class="btn" (click)="GuardarDatosCarnet(formulario.value)" [disabled]="!formulario.valid">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Guardar datos registrados.">save</span>
@@ -103,8 +107,8 @@
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Borrar datos ingresados.">backspace</span>
     </button>
-    <button type="submit" class="btn" (click)="CerrarRegistro()">
+    <!--button type="submit" class="btn" (click)="CerrarRegistro()">
         <span class="material-icons alinear" matSuffix matTooltipPosition="right"
             matTooltip="Cerrar ventana de registro de vacunación.">close</span>
-    </button>
+    </button-->
 </div>

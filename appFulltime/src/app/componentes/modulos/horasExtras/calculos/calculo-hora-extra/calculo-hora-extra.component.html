@@ -1,8 +1,8 @@
-<div class="container" style="padding-top: 15px;">
+<div id="titulo">
+    <span style="margin: auto;">Calcular Horas Extras Realizadas</span>
+</div>
+<div class="container" style="padding-top: 5px;">
     <mat-card class="example-card mat-elevation-z8">
-        <div id="titulo">
-            <span>Calcular Horas Extras Realizadas</span>
-        </div>
         <form [formGroup]="PedirHoraExtraForm">
             <div class="container">
                 <br>
@@ -111,8 +111,7 @@
             </div>
         </form>
         <div>
-            <button mat-button class="btn">Calcular Horas Extras
-            </button>
+            <button mat-raised-button id="btn-raised">Calcular Horas Extras</button>
         </div>
     </mat-card>
 </div>

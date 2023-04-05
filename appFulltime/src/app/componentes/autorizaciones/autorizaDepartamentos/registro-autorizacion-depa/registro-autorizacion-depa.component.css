@@ -9,13 +9,13 @@
 }
 
 mat-radio-group {
-    width: 210px;
+    width: 250px;
     padding: 15px 20px 15px 20x;
     margin-bottom: 10px;
 }
 
 mat-form-field {
-    width: 210px;
+    width: 260px;
     padding: 10px 10px 0px 10px;
 }
 
@@ -40,4 +40,12 @@ mat-form-field {
 .scrollbar-primary::-webkit-scrollbar {
     width: 12px;
     background-color: #F5F5F5;
+}
+
+#textoradiobtn {
+    font-size: 14px;
+    margin: 12px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.1px;
 }

@@ -6,40 +6,31 @@
     <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana(false)">highlight_off</mat-icon>
 </div>
 <div class="container">
-    <div class="row">
-        <div class="col-4">
+    <form [formGroup]="formulario">
+        <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; width: 100%;">
+            <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
+                    <mat-radio-button value="contrasena" >
+                        <label>Usar contraseña</label>
+                    </mat-radio-button>
+                </div>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
+                    <mat-radio-button value="frase">
+                        <label>Usar frase</label>
+                    </mat-radio-button>
+                </div>
+                <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
+                    <mat-radio-button value="ninguna">
+                        <label>Ninguna</label>
+                    </mat-radio-button>
+                </div>
+            </mat-radio-group>
         </div>
-        <div class="col-4">
-            <div class="d-flex flex-wrap" style="padding-top: 10px;">
-                <form [formGroup]="formulario">
-                    <div class="d-flex flex-wrap justify-content-start" style="padding-top: 20px;">
-                        <mat-radio-group aria-label="Select an option" [formControl]="tipoF" required>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button value="contrasena">
-                                    Usar contraseña
-                                </mat-radio-button>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button value="frase">
-                                    Usar frase
-                                </mat-radio-button>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 5px;">
-                                <mat-radio-button value="ninguna">
-                                    Ninguna
-                                </mat-radio-button>
-                            </div>
-                        </mat-radio-group>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="col-4">
-        </div>
-    </div>
-    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px;">
-        <input type="submit" class="btn btn-sm button" [disabled]="!formulario.valid" value="Guardar"
-            (click)="InsertarEmpresa(formulario.value)">
+    </form>
+
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 20px; margin-bottom: 3%;">
+        <button mat-raised-button id="btn-raised" type="submit" [disabled]="!formulario.valid" value="Guardar"
+            (click)="InsertarEmpresa(formulario.value)">Guardar</button>
     </div>
 </div>
 <div class="pantalla-progress" *ngIf="habilitarprogress">

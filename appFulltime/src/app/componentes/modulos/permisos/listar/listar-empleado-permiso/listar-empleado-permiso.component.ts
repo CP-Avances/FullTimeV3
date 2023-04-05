@@ -221,7 +221,7 @@ export class ListarEmpleadoPermisoComponent implements OnInit {
         this.permisosTotales = datos;
         this.ventana
           .open(EditarPermisoEmpleadoComponent, {
-            width: "1200px",
+            width: "700px",
             data: {
               dataPermiso: this.permisosTotales[0],
               id_empleado: parseInt(id_empl),

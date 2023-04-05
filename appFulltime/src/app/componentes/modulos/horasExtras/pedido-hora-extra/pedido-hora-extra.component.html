@@ -1,9 +1,10 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            SOLICITUD DE REALIZACIÓN DE HORA EXTRA</span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        SOLICITUD DE REALIZACIÓN DE HORA EXTRA</span>
+    <mat-icon class="float-right" id="cerrar" (click)="ventana.close()">highlight_off</mat-icon>
+</div>
+<div>
     <div class="nota">
         <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
             Guardar.</span>
@@ -91,9 +92,9 @@
         </div>
     </form>
     <br>
-    <div class="d-flex justify-content-center">
-        <button class="btn btn-sm" (click)="InsertarSolicitud(PedirHoraExtraForm.value)"
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarSolicitud(PedirHoraExtraForm.value)"
             [disabled]="!PedirHoraExtraForm.valid">Guardar</button>
-        <button mat-button class="btn btn-sm" (click)="ventana.close()">Salir</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="ventana.close()">Salir</button-->
     </div>
 </div>

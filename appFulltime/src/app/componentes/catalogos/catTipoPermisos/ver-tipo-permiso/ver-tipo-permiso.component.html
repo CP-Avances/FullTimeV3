@@ -93,19 +93,25 @@
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_crear">
-                                                                <span id="color_fuente">Crear</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Crear</label> 
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_editar">
-                                                                <span id="color_fuente">Editar</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Editar</label>
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_eliminar">
-                                                                <span id="color_fuente">Eliminar</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Eliminar</label>
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                                 <label class="col-sm col-form-label">
@@ -117,25 +123,33 @@
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_preautorizar">
-                                                                <span id="color_fuente">Pre-autorizar</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Pre-autorizar</label>
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_autorizar">
-                                                                <span id="color_fuente">Autorizar</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Autorizar</label>
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_negar">
-                                                                <span id="color_fuente">Negar</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Negar</label> 
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                                 <div class="espacio d-flex justify-content-start"
                                                         style="position: relative; left: 40px; font-size: 12px;">
                                                         <mat-checkbox disabled [checked]="p.correo_legalizar">
-                                                                <span id="color_fuente">Legalizar</span>
+                                                                <span id="color_fuente">
+                                                                        <label id="textoradiobtn">Legalizar</label>
+                                                                </span>
                                                         </mat-checkbox>
                                                 </div>
                                         </div>
@@ -148,8 +162,8 @@
                                         </i>
                                 </div>
                         </div>
-                        <input type="submit" class="btn btn-sm" [routerLink]="['/verTipoPermiso/']"
-                                value="Ir a lista tipo de permisos">
+                        <button mat-raised-button id="btn-raised" type="submit" class="float-left" [routerLink]="['/verTipoPermiso/']"
+                                value="Ir a lista tipo de permisos">Ir a lista tipo de permisos</button>
                 </mat-card-content>
         </mat-card>
 </div>

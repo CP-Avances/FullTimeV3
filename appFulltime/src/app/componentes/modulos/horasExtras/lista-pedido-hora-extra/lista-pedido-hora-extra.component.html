@@ -223,12 +223,12 @@
                         <td>{{h.fec_final}}</td>
                         <td>{{h.tiempo_autorizado}}</td>
                         <td class="d-flex justify-content-center">
-                            <a *ngIf="auto_individual" class="fas fa-file-alt"
+                            <i *ngIf="auto_individual" class="fas fa-file-alt"
                                 style="color:rgb(197, 95, 11); margin-left: 15px;" matSuffix matTooltipPosition="right"
                                 matTooltip="Cambiar el estado del documento de autorización"
                                 [routerLink]="['/ver-hora-extra', h.id]">
                                 <p>Documento</p>
-                            </a>
+                            </i>
                         </td>
                     </tr>
                 </tbody>

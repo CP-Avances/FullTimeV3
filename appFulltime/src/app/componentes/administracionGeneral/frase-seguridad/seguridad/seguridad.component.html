@@ -1,8 +1,14 @@
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        HABILITAR NOTIFICACIONES</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarRegistro()">highlight_off</mat-icon>
+</div>
 <div style="text-align: center;" *ngIf='contrasena'>
     <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
     <span>Confirmar su contraseña</span>
     <form [formGroup]="formulario">
-        <div class="nota">
+        <div class="nota" style="padding: 5% 5% 5% 5%;">
             <span>
                 NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
                 Confirmar Contraseña.
@@ -22,23 +28,20 @@
             </button>
         </mat-form-field>
         <br>
-        <div style="text-align: center;">
-            <button type="submit" class="btn btn_b" (click)="CompararContrasenia(formulario.value)"
-                [disabled]="!formulario.valid">
-                Confirmar Contraseña
-            </button>
-        </div>
-        <br>
-        <div style="text-align: center;">
-            <button type="submit" class="btn btn_b" (click)="CerrarRegistro()">Salir</button>
+        <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 4%;">
+            <button mat-raised-button id="btn-raised" type="submit" (click)="CompararContrasenia(formulario.value)"
+                [disabled]="!formulario.valid">Confirmar Contraseña</button>
+            <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarRegistro()">Salir</button-->
         </div>
     </form>
 </div>
+
+<!-------------------------------Ventana de Confirmacion de Frse------------------------------------------------>
 <div style="text-align: center;" *ngIf='frase'>
     <img src="../../../../../assets/imagenes/logo/logoAdmin.png"> <br><br>
     <span>Confirmar su frase</span>
     <form [formGroup]="fraseForm">
-        <div class="nota">
+        <div class="nota" style="padding: 5% 5% 5% 5%;">
             <span>
                 NOTA: Por favor llenar los campos obligatorios (*) del formulario para activar el botón
                 Confirmar Frase.
@@ -55,18 +58,15 @@
             <mat-hint align="end">{{message.value.length}} / 100</mat-hint>
         </mat-form-field>
         <br>
-        <div class="caja1">
-            <button type="button" class="btn btn-link verde" (click)="RecuperarFrase()">
+        <div class="d-flex flex-wrap justify-content-center" style="padding-top: 6%; margin-bottom: 4%;">
+            <button mat-raised-button type="submit" class="btn btn-link verde" (click)="RecuperarFrase()">
                 Olvido su frase de seguridad?
             </button>
-        </div>
-        <div style="text-align: center;">
-            <button type="submit" class="btn btn_b" (click)="CompararFrase(fraseForm.value)"
-                [disabled]="!fraseForm.valid">Confirmar Frase</button>
-        </div>
-        <br>
-        <div style="text-align: center;">
-            <button type="submit" class="btn btn_b" (click)="CerrarRegistro()">Salir</button>
+            <button mat-raised-button id="btn-raised" type="submit" (click)="CompararFrase(fraseForm.value)"
+                [disabled]="!fraseForm.valid">
+                Confirmar Frase
+            </button>
+            <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarRegistro()">Salir</button-->
         </div>
     </form>
 </div>

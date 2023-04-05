@@ -23,8 +23,8 @@
         </div>
     </mat-card-content>
 </form>
-<div style="text-align: center;">
-    <button type="submit" class="btn btn-sm" (click)="EditarEstadoHoraExtra(HoraExtraForm.value)"
+<div style="text-align: center; margin-bottom: 3%;">
+    <button mat-raised-button id="btn-raised" type="submit" (click)="EditarEstadoHoraExtra(HoraExtraForm.value)"
         [disabled]="!HoraExtraForm.valid"> Guardar </button>
-    <button type="submit" class="btn btn-sm" (click)="dialogRef.close()"> Salir </button>
+    <button mat-raised-button id="btn-raised" type="submit" (click)="dialogRef.close()"> Salir </button>
 </div>

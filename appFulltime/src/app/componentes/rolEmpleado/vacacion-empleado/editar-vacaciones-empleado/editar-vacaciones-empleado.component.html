@@ -4,7 +4,7 @@
         MODIFICAR SOLICITUD DE VACACIÓN</span>
     <mat-icon class="float-right" id="cerrar" (click)="ventana.close(false)">highlight_off</mat-icon>
 </div>
-<div class="scrollbar scrollbar-primary">
+<div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="VacacionesForm">
         <mat-card-content>
@@ -13,7 +13,7 @@
                     <span>NOTA: Por favor llenar todos los campos obligatorios (*) del formulario para activar el botón
                         Guardar.</span>
                 </div>
-                <div class="d-flex flex-wrap justify-content-between">
+                <div class="d-flex flex-wrap justify-content-center">
                     <mat-form-field>
                         <mat-label id="fecVaca">Fecha Inicio de Vacaciones</mat-label>
                         <input (click)="LimpiarCalculo()" (dateInput)="LimpiarCalculo()" matInput

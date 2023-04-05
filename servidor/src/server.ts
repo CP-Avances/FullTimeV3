@@ -257,7 +257,6 @@ class Servidor {
             res.header('Access-Control-Allow-Origin', '*:*');
             next();
         })
-
         io.on('connection', (socket: any) => {
             console.log('Connected client on port %s.', this.app.get('puerto'));
 

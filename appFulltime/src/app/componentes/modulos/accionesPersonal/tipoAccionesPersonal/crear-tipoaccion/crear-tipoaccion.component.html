@@ -38,7 +38,7 @@
                             <mat-error *ngIf="otroTipoF.invalid">Ingresar un nombre válido</mat-error>
                         </mat-form-field>
                         <mat-form-field style="width: 100%;">
-                            <mat-label>Base Legal</mat-label>
+                            <mat-label id="letra">Base Legal</mat-label>
                             <textarea matInput #legal maxlength="500" placeholder="Ingresar base legal"
                                 [formControl]="baseLegalF" required></textarea>
                             <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -48,7 +48,7 @@
                             <mat-hint align="end">{{legal.value.length}} / 500</mat-hint>
                         </mat-form-field>
                         <mat-form-field style="width: 100%;">
-                            <mat-label>Descripción</mat-label>
+                            <mat-label id="letra">Descripción</mat-label>
                             <textarea matInput #des maxlength="100" placeholder="Ingresar base legal"
                                 [formControl]="descripcionF" required></textarea>
                             <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
@@ -70,22 +70,21 @@
                             help_outline
                         </mat-icon>
                     </label>
-
                     <section style="margin-left: 35px;">
                         <mat-radio-group aria-label="Select an option" formControlName="tipoForm">
                             <mat-radio-button ngDefaultControl [(ngModel)]="selec1" [checked]="selec1"
                                 [ngModelOptions]="{standalone: true}" (click)="CambiarEstadosPermisos()" value="true">
-                                Permiso
+                                <label id="textoradiobtn">Permiso</label>
                             </mat-radio-button>
                             <br>
                             <mat-radio-button ngDefaultControl [(ngModel)]="selec2" [checked]="selec2"
                                 [ngModelOptions]="{standalone: true}" (click)="CambiarEstadosVacaciones()" value="true">
-                                Vacación
+                                <label id="textoradiobtn">Vacación</label>
                             </mat-radio-button>
                             <br>
                             <mat-radio-button ngDefaultControl [(ngModel)]="selec3" [checked]="selec3"
                                 [ngModelOptions]="{standalone: true}" (click)="CambiarEstadosSituacion()" value="true">
-                                Situación Propuesta
+                                <label id="textoradiobtn">Situación Propuesta</label>
                             </mat-radio-button>
                         </mat-radio-group>
                     </section>

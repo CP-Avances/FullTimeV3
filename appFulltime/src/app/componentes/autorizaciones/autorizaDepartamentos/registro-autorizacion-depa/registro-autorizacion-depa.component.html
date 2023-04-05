@@ -1,10 +1,11 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            AUTORIZAR DEPARTAMENTO
-        </span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        AUTORIZAR DEPARTAMENTO
+    </span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
+</div>
+<div>
     <!-- FORMULARIO COMPLETO -->
     <form [formGroup]="formulario">
         <mat-card-content>
@@ -17,9 +18,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md">
-                        <div class="d-flex flex-wrap justify-content-around">
+                        <div class="d-flex flex-wrap justify-content-center">
                             <mat-form-field>
-                                <mat-label>Empleado</mat-label>
+                                <mat-label id="fuente">Empleado</mat-label>
                                 <input id="letras" matInput placeholder="Empleado" [formControl]="nombreEmpleadoF"
                                     readonly="readonly" required>
                             </mat-form-field>
@@ -37,9 +38,9 @@
                         </div>
                     </div>
                     <div class="col-md">
-                        <div class="d-flex flex-wrap justify-content-around">
+                        <div class="d-flex flex-wrap justify-content-center">
                             <mat-form-field>
-                                <mat-label>Departamento</mat-label>
+                                <mat-label id="fuente">Departamento</mat-label>
                                 <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
                                     matTooltip="Seleccionar el departamento en el que autoriza solicitudes.">
                                     help_outline</mat-icon>
@@ -54,8 +55,12 @@
                                     <span>Autoriza *</span>
                                 </label>
                                 <div class="d-flex justify-content-around">
-                                    <mat-radio-button class="example-match" value="true">Si</mat-radio-button>
-                                    <mat-radio-button class="example-match" value="false">No </mat-radio-button>
+                                    <mat-radio-button class="example-match" value="true">
+                                        <label id="textoradiobtn">Si</label>
+                                    </mat-radio-button>
+                                    <mat-radio-button class="example-match" value="false">
+                                        <label id="textoradiobtn">No</label>
+                                    </mat-radio-button>
                                 </div>
                             </mat-radio-group>
                         </div>
@@ -64,9 +69,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="InsertarAutorizacion(formulario.value)"
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarAutorizacion(formulario.value)"
             [disabled]="!formulario.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()">Salir</button-->
     </div>
 </div>

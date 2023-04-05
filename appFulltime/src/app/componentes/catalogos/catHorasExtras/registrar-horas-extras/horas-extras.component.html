@@ -41,12 +41,14 @@
                             </mat-select>
                         </mat-form-field>
                         <div class="caja">
-                            <mat-label>Porcentaje de recargo *</mat-label>
-                            <mat-icon id="i-cursor" matSuffix matTooltipPosition="right"
+                            <mat-label class="float-left" style="font-size: 13px;">Porcentaje de recargo *</mat-label>
+                            <mat-icon class="float-right" id="i-cursor" matSuffix matTooltipPosition="right"
                                 matTooltip="Indique el valor porcentual que tendrá la hora extra">
                                 help_outline</mat-icon>
-                            <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="25" min="0" max="100"
-                                [formControl]="recaPorcentaje" required>
+                            <br><br>
+                            <mat-slider showTickMarks discrete tickInterval="25" min="0" max="100"
+                                [formControl]="recaPorcentaje" [displayWith]= "formatLabel" required>
+                                <input matSliderThumb>
                             </mat-slider>
                         </div>
                         <mat-form-field>
@@ -77,10 +79,10 @@
                     </div>
                 </form>
                 <div>
-                    <button class="btn btn-sm" [routerLink]="['/listaHorasExtras']">Lista de horas extras
+                    <button mat-raised-button id="btn-raised" type="submit" class="float-left" [routerLink]="['/listaHorasExtras']">Lista de horas extras
                     </button>
-                    <button (click)="stepper.reset()" class="btn btn-sm">Cancelar</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="stepper.reset()">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" type="submit" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="segundoFormGroup">
@@ -144,14 +146,14 @@
                     </div>
                 </form>
                 <div>
-                    <button class="btn btn-sm" [routerLink]="['/listaHorasExtras']">Lista de horas extras
+                    <button mat-raised-button id="btn-raised" type="submit" class="float-left" [routerLink]="['/listaHorasExtras']">Lista de horas extras
                     </button>
-                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                    <button type="submit" class="btn btn-sm"
+                    <button mat-raised-button id="btn-raised" type="submit" matStepperPrevious>Atrás</button>
+                    <button mat-raised-button id="btn-raised" type="submit"
                         (click)="insertarHoraExtra(primeroFormGroup.value, segundoFormGroup.value); stepper.reset()"
                         [disabled]="!segundoFormGroup.valid" id="iconoG">Guardar
                     </button>
-                    <button (click)="stepper.reset()" class="btn btn-sm float-right">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" type="submit" (click)="stepper.reset()" class="float-right">Cancelar</button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>

@@ -6,9 +6,27 @@ hr { background-color: black; }
 
 .btn { margin-left: 15px; background-color: rgb(80,87,97); color: white; }
 
-#editarI { color:green; margin-left: 25px; cursor: pointer; }
+#editarI {  
+    color: green;
+    margin-right: 5px;
+    cursor: pointer;
+    margin-left: 15px;
+    text-align: center;
+}
 
-#editarF { color:green; cursor: pointer; text-align: center; margin-left: 15px;}
+#editarF {  
+    color: green;
+    margin-right: 5px;
+    cursor: pointer;
+    margin-left: 15px;
+    text-align: center;
+}
+
+#delete {
+    color: red;
+    cursor: pointer;
+    text-align: center;
+}
 
 #datosF { font-weight: bold; font-size: 15px;  padding-right: 5px;}
 

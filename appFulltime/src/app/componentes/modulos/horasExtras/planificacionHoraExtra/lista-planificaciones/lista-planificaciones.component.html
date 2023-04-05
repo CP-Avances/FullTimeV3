@@ -36,6 +36,9 @@
                                 matTooltip="Eliminar este registro.">
                                 <p>Eliminar</p>
                             </i>
+                            <div *ngIf="!ver_icono" style="padding-bottom: 1%;">
+                                <br><br>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -134,6 +137,9 @@
                                 matTooltip="Eliminar este registro.">
                                 <p>Eliminar</p>
                             </i>
+                            <div *ngIf="(!ver_editar) && (!ver_eliminar)" style="padding-bottom: 1%;">
+                                <br><br>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

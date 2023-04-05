@@ -26,3 +26,11 @@ mat-form-field { width: 210px; padding: 10px 10px 0px 10px;}
     width: 12px;
     background-color: #F5F5F5; 
 }
+
+label {
+    font-size: 14px;
+    margin: 12px 0px 0px 0px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+}

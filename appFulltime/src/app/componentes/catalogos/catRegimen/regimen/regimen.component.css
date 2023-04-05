@@ -21,36 +21,51 @@ p {
     text-align: center;
     position: relative;
     top: 15px;
-    left: 10px;
+    float: right;
     cursor: pointer;
     color: darkgreen;
 }
 
 mat-form-field {
-    width: 280px;
+    width: 320px;
     padding: 10px 10px 0px 10px;
 }
 
 
 /** ESTILO TAMAÑO DE mat-form-field */
 #periodo {
-    width: 145px;
-    padding: 0px 20px 0px 10px;
+    width: 160px;
+    padding: 0px 10px 0px 5px;
+}
+
+#Vacacion_periodo{
+    width: 240px;
+    padding: 0px 5px 0px 5px;
+}
+
+#Máximo_días{
+    width: 220px;
+    padding: 10px 10px 0px 10px;
 }
 
 #campos {
-    width: 130px;
-    padding: 0px 20px 0px 10px;
+    width: 140px;
+    padding: 0px 10px 0px 10px;
 }
 
 #campos_antiguedad {
     width: 120px;
-    padding: 0px 20px 0px 10px;
+    padding: 0px 5px 0px 5px;
+}
+
+#campos_calculos {
+    width: 230px;
+    padding: 5px 5px 0px 10px;
 }
 
 #campos_antiguedad_hasta {
-    width: 140px;
-    padding: 0px 20px 0px 10px;
+    width: 125px;
+    padding: 0px 10px 0px 10px;
 }
 
 button {
@@ -83,20 +98,21 @@ label {
 }
 
 #check {
-    width: 210px;
+    width: 300px;
     padding: 15px 20px 15px 20x;
     margin-bottom: 10px;
     margin-top: 20px;
-    margin-right: 28px;
-    font-size: 14px;
+    margin-right: 20px;
+    margin-left: 20px;
+    font-size: 12px;
 }
 
 .check {
     width: 210px;
-    padding: 15px 20px 15px 20x;
+    padding: 15px 10px 15px 10x;
     margin-bottom: 10px;
     margin-top: 20px;
-    margin-right: 28px;
+    margin-right: 5px;
     font-size: 14px;
 }
 
@@ -104,7 +120,7 @@ label {
     width: 210px;
     padding: 15px 20px 5px 20x;
     margin-top: 20px;
-    margin-right: 28px;
+    margin-right: 20px;
     font-size: 14px;
 }
 
@@ -128,13 +144,17 @@ mat-radio-group {
 }
 
 #error {
-    font-size: x-small;
+    font-size: xx-small;
     color: red;
+    width: max-content;
+    margin: 0%;
+    padding: 0%;
 }
 
 #error_ {
     font-size: xx-small;
     color: red;
+    width: max-content;
 }
 
 hr {

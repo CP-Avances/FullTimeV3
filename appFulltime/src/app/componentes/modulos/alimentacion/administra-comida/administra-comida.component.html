@@ -1,9 +1,10 @@
-<div class="scrollbar scrollbar-primary">
-    <div id="titulo">
-        <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
-        <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-            ADMINISTRAR MÓDULO DE ALIMENTACIÓN</span>
-    </div>
+<div id="titulo">
+    <mat-icon id="movilidad" class="float-left">open_with</mat-icon>
+    <span cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+        ADMINISTRAR MÓDULO DE ALIMENTACIÓN</span>
+    <mat-icon class="float-right" id="cerrar" (click)="CerrarVentana()">highlight_off</mat-icon>
+</div>
+<div>
     <!-- Formulario Completo -->
     <form [formGroup]="formulario">
         <mat-card-content>
@@ -35,13 +36,13 @@
                                         [checked]="selec1" [ngModelOptions]="{standalone: true}" value="true" matSuffix
                                         matTooltipPosition="right"
                                         matTooltip="Usuario Administra el Módulo de Alimentación.">
-                                        Si
+                                        <label id="textlabel">Si</label> 
                                     </mat-radio-button>
                                     <mat-radio-button class="example-match" ngDefaultControl [(ngModel)]="selec2"
                                         [checked]="selec2" [ngModelOptions]="{standalone: true}" value="false" matSuffix
                                         matTooltipPosition="right"
                                         matTooltip="Usuario NO Administra el Módulo de Alimentación.">
-                                        No
+                                        <label id="textlabel">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -51,9 +52,9 @@
             </div>
         </mat-card-content>
     </form>
-    <div style="text-align: center;">
-        <button type="submit" class="btn btn-sm" (click)="InsertarAutorizacion(formulario.value)"
-            [disabled]="!formulario.valid">Guardar</button>
-        <button type="submit" class="btn btn-sm" (click)="CerrarVentana()">Salir</button>
+    <div class="d-flex flex-wrap justify-content-center" style="padding-top: 1%; margin-bottom: 2%;">
+        <button mat-raised-button id="btn-raised" type="submit" (click)="InsertarAutorizacion(formulario.value)"
+            [disabled]="!formulario.valid" value="Guardar">Guardar</button>
+        <!--button mat-raised-button id="btn-raised" type="submit" (click)="CerrarVentana()" value="Salir">Salir</button-->
     </div>
 </div>

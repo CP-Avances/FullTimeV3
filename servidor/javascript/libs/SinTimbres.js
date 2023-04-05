@@ -37,10 +37,12 @@ const NotificacionSinTimbres = function () {
                 console.log(f.toJSON());
                 console.log('Dia===', f.getDay());
                 var num_dia = f.getDay();
-                let fecha = f.toJSON().split('T')[0];
-                var h = f.toJSON().split('T')[1];
-                let horarios = yield LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
-                console.log(horarios);
+                if (f.toJSON()) {
+                    let fecha = f.toJSON().split('T')[0];
+                    var h = f.toJSON().split('T')[1];
+                    let horarios = yield LlamarDetalleHorario(fecha, h.split(':')[0], num_dia, f);
+                    console.log(horarios);
+                }
             }
         }
     }), 60000);

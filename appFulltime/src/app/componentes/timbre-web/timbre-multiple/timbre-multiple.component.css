@@ -28,8 +28,10 @@ p {
 }
 
 #accion {
+    font-size: 15px;
     color: rgb(38, 0, 255);
     cursor: pointer;
+    text-align: center;
 }
 
 .mat-radio-button~.mat-radio-button {

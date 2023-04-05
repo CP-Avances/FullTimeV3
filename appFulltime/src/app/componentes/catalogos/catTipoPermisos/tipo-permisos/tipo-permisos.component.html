@@ -127,11 +127,11 @@
                 </form>
                 <br>
                 <div style="text-align: center;">
-                    <button class="btn btn-sm float-left" [routerLink]="['/verTipoPermiso']">
+                    <button mat-raised-button id="btn-raised" class="float-left" [routerLink]="['/verTipoPermiso']">
                         Lista tipo de permisos
                     </button>
-                    <button (click)="stepper.reset()" class="btn btn-sm btn btn-sm-danger">Cancelar</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" (click)="stepper.reset()">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="segundoFormGroup">
@@ -159,11 +159,11 @@
                                 <div class="d-flex justify-content-start">
                                     <mat-radio-button value="true" matSuffix matTooltipPosition="right"
                                         matTooltip="Aplica descuento de minutos de alimentación en la solicitud de permiso.">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button value="false" matSuffix matTooltipPosition="right"
                                         matTooltip="No aplica descuento de minutos de alimentación en la solicitud de permiso.">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -175,11 +175,11 @@
                                 <div class="d-flex justify-content-start">
                                     <mat-radio-button value="true" matSuffix matTooltipPosition="right"
                                         matTooltip="El usuario deberá cargar el certificado al solicitar el permiso.">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button value="false" matSuffix matTooltipPosition="right"
                                         matTooltip="El usuario podrá cargar el certificado tiempo de después de la solicitud del permiso.">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -192,11 +192,11 @@
                                 <div class="d-flex justify-content-start">
                                     <mat-radio-button value="true" matSuffix matTooltipPosition="right"
                                         matTooltip="La solicitud de permiso requiere ser legalizada.">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button value="false" matSuffix matTooltipPosition="right"
                                         matTooltip="La solicitud de permiso no requiere ser legalizada.">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -209,12 +209,12 @@
                                     <mat-radio-button (click)="VerCalendario()" value="true" matSuffix
                                         matTooltipPosition="right"
                                         matTooltip="El usuario no podrá solicitar el permiso en una fecha determinada.">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button (click)="OcultarCalendario()" value="false" matSuffix
                                         matTooltipPosition="right"
                                         matTooltip="El usuario podrá solicitar el permiso sin restricciones de fechas.">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -262,12 +262,12 @@
                                     <mat-radio-button (click)="ActivarJustificacion()" value="true" id="si" matSuffix
                                         matTooltipPosition="right"
                                         matTooltip="La solicitud de permiso requiere ser justificada.">
-                                        Si
+                                        <label id="textoradiobtn">Si</label>
                                     </mat-radio-button>
                                     <mat-radio-button (click)="DesactivarJustificacion()" value="false" id="no"
                                         matSuffix matTooltipPosition="right"
                                         matTooltip="La solicitud de permiso no requiere ser justificada.">
-                                        No
+                                        <label id="textoradiobtn">No</label>
                                     </mat-radio-button>
                                 </div>
                             </mat-radio-group>
@@ -291,7 +291,7 @@
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 20px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right" formControlName="feriadosForm"
                                     matTooltip="Si en la solicitud se encuentran días de feriado estos serán considerados como días normales.">
-                                    Feriados
+                                    <label id="textoradiobtn">Feriados</label>
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -299,9 +299,9 @@
                 </form>
                 <br>
                 <div class="d-flex justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                    <button (click)="stepper.reset()" class="btn btn-sm">Cancelar</button>
-                    <button matStepperNext class="btn btn-sm float-right">Siguiente</button>
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" (click)="stepper.reset()">Cancelar</button>
+                    <button mat-raised-button id="btn-raised" matStepperNext class="float-right">Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="tercerFormGroup">
@@ -332,21 +332,21 @@
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_crearForm"
                                     matTooltip="">
-                                    Crear
+                                    <label id="textoradiobtn">Crear</label>
                                 </mat-checkbox>
                             </div>
 
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_editarForm"
                                     matTooltip="">
-                                    Editar
+                                    <label id="textoradiobtn">Editar</label>
                                 </mat-checkbox>
                             </div>
 
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_eliminarForm"
                                     matTooltip="">
-                                    Eliminar
+                                    <label id="textoradiobtn">Eliminar</label>
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -360,21 +360,21 @@
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right"
                                     formControlName="correo_preautorizarForm" matTooltip="">
-                                    Pre-autorizar
+                                    <label id="textoradiobtn">Pre-autorizar</label> 
                                 </mat-checkbox>
                             </div>
 
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right"
                                     formControlName="correo_autorizarForm" matTooltip="">
-                                    Autorizar
+                                    <label id="textoradiobtn">Autorizar</label> 
                                 </mat-checkbox>
                             </div>
 
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right" formControlName="correo_negarForm"
                                     matTooltip="">
-                                    Negar
+                                    <label id="textoradiobtn">Negar</label> 
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -388,7 +388,7 @@
                             <div class="d-flex flex-wrap justify-content-start" style="position: relative; left: 40px;">
                                 <mat-checkbox matSuffix matTooltipPosition="right"
                                     formControlName="correo_legalizarForm" matTooltip="">
-                                    Legalizar
+                                    <label id="textoradiobtn">Legalizar</label> 
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -396,11 +396,11 @@
                 </form>
                 <br>
                 <div class="d-flex justify-content-between">
-                    <button matStepperPrevious class="btn btn-sm">Atrás</button>
-                    <input type="submit" class="btn btn-sm"
+                    <button mat-raised-button id="btn-raised" matStepperPrevious class="float-left">Atrás</button>
+                    <button mat-raised-button id="btn-raised" type="submit"
                         (click)="InsertarTipoPermiso(primeroFormGroup.value, segundoFormGroup.value, tercerFormGroup.value);"
-                        [disabled]="!tercerFormGroup.valid" value="Guardar">
-                    <button (click)="stepper.reset()" class="btn btn-sm float-right">Cancelar</button>
+                        [disabled]="!tercerFormGroup.valid" value="Guardar">Guardar</button>
+                    <button mat-raised-button id="btn-raised" (click)="stepper.reset()" class="float-right">Cancelar</button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>
